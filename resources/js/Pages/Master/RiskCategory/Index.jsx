@@ -143,7 +143,7 @@ export default function Index(props) {
             </DestroyModal>
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-2">
                         <div className="w-1/2">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
                                 <button
