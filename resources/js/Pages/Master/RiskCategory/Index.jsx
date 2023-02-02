@@ -41,14 +41,14 @@ const DownIcon = () => (
 );
 
 export default function Index(props) {
-    const { data: people, meta, filtered, attributes } = props.users;
+    const { data: Categories, meta, filtered, attributes } = props.riskCategories;
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                route("users.index"),
+                route("riskCategories.index"),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,
@@ -86,17 +86,17 @@ export default function Index(props) {
     const openAddDialog = () => {
         setIsOpenAddDialog(true);
     };
-    const openEditDialog = (person) => {
-        setState(person);
+    const openEditDialog = (category) => {
+        setState(category);
         setIsOpenEditDialog(true);
     };
-    const openDestroyDialog = (person) => {
-        setState(person);
+    const openDestroyDialog = (category) => {
+        setState(category);
         setIsOpenDestroyDialog(true);
     };
 
-    const destroyUser = () => {
-        router.delete(route("users.destroy", state.id), {
+    const destroyCategory = () => {
+        router.delete(route("riskCategories.destroy", state.id), {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
@@ -106,12 +106,12 @@ export default function Index(props) {
     const [state, setState] = useState([]);
     return (
         <>
-            <Head title="User" />
+            <Head title="Kategori Risiko" />
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
                 size="xl"
-                title="Tambah User"
+                title="Tambah Kategori Risiko"
             >
                 <Create
                     isOpenAddDialog={isOpenAddDialog}
@@ -122,7 +122,7 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="xl"
-                title={"Edit User"}
+                title="Edit Kategori Risiko"
             >
                 <Edit
                     model={state}
@@ -133,11 +133,11 @@ export default function Index(props) {
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
-                size="xl"
-                title="Delete User"
+                size="2xl"
+                title="Delete Kategori Risiko"
                 warning="Yakin hapus data ini ?"
             >
-                <DangerButton className="ml-2" onClick={destroyUser}>
+                <DangerButton className="ml-2" onClick={destroyCategory}>
                     Delete
                 </DangerButton>
             </DestroyModal>
@@ -238,31 +238,7 @@ export default function Index(props) {
                                                     </div>
                                                 </th>
 
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("email")
-                                                        }
-                                                    >
-                                                        Email
-                                                        {params.field ==
-                                                            "email" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "email" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
+                                               
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
@@ -273,7 +249,7 @@ export default function Index(props) {
                                                             sort("created_at")
                                                         }
                                                     >
-                                                        Joined
+                                                        Dibuat
                                                         {params.field ==
                                                             "created_at" &&
                                                             params.direction ==
@@ -299,19 +275,16 @@ export default function Index(props) {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {people.map((person, index) => (
-                                                <tr key={person.email}>
+                                            {Categories.map((category, index) => (
+                                                <tr key={index}>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {meta.from + index}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        {person.name}
+                                                        {category.name}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        {person.email}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {person.joined}
+                                                        {category.joined}
                                                     </td>
                                                     <td>
                                                         <Dropdown>
@@ -332,7 +305,7 @@ export default function Index(props) {
                                                                     className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                                     onClick={() =>
                                                                         openEditDialog(
-                                                                            person
+                                                                            category
                                                                         )
                                                                     }
                                                                 >
@@ -342,7 +315,7 @@ export default function Index(props) {
                                                                     className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                                     onClick={() =>
                                                                         openDestroyDialog(
-                                                                            person
+                                                                            category
                                                                         )
                                                                     }
                                                                 >
@@ -387,7 +360,7 @@ export default function Index(props) {
                     </div>
                 </div>
             </div>
-            </>
+        </>
     );
 }
 Index.layout = (page) => <App children={page} />;

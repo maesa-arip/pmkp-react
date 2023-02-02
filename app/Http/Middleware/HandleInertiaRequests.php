@@ -39,6 +39,10 @@ class HandleInertiaRequests extends Middleware
                     'location' => $request->url(),
                 ]);
             },
+            'flash' => [
+                'type' => $request->session()->get('type'),
+                'message' => $request->session()->get('message'),
+            ],
         ]);
     }
 }

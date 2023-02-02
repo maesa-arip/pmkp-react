@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+        const { flash } = usePage().props;
+        useEffect(() => {
+            flash.type && toast[flash.type](flash.message)
+        })
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <nav className="bg-white border-b border-gray-100">
+            <Toaster
+            position="top-center"
+            reverseOrder={false}
+            />
+            {/* <nav className="bg-white border-b border-gray-100">
                 <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
@@ -27,6 +36,12 @@ export default function Authenticated({ auth, header, children }) {
                                     active={route().current("dashboard")}
                                 >
                                     Dashboard
+                                </NavLink>
+                                <NavLink
+                                    href={route("users.index")}
+                                    active={route().current("users.index")}
+                                >
+                                    Users
                                 </NavLink>
                                 <div className="hidden sm:flex sm:items-center sm:ml-6">
                                     <div className="relative ml-3">
@@ -81,11 +96,85 @@ export default function Authenticated({ auth, header, children }) {
                                     </div>
                                 </div>
 
+                                <div className="hidden sm:flex sm:items-center sm:ml-6">
+                                    <div className="relative ml-3">
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span className="inline-flex rounded-md">
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
+                                                    >
+                                                        Master Resiko
+                                                        <svg
+                                                            className="ml-2 -mr-0.5 h-4 w-4"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+
+                                            <Dropdown.Content>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "riskcategories.index"
+                                                    )}
+                                                >
+                                                    Kategori Risiko
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "permission_ui.roles.index"
+                                                    )}
+                                                >
+                                                    Sumber Identifikasi
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "permission_ui.permissions.index"
+                                                    )}
+                                                >
+                                                    Lokasi
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "permission_ui.permissions.index"
+                                                    )}
+                                                >
+                                                    Jenis Insiden
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "permission_ui.permissions.index"
+                                                    )}
+                                                >
+                                                    Tipe Insiden
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "permission_ui.permissions.index"
+                                                    )}
+                                                >
+                                                    Penangung Jawab/PIC
+                                                </Dropdown.Link>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+
                                 
                             </div>
                         </div>
 
-                        {/* <div className="hidden sm:flex sm:items-center sm:ml-6">
+                        <div className="hidden sm:flex sm:items-center sm:ml-6">
                             <div className="relative ml-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -128,7 +217,7 @@ export default function Authenticated({ auth, header, children }) {
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
-                        </div> */}
+                        </div>
 
                         <div className="flex items-center -mr-2 sm:hidden">
                             <button
@@ -188,7 +277,7 @@ export default function Authenticated({ auth, header, children }) {
                         </ResponsiveNavLink>
                     </div>
 
-                    {/* <div className="pt-4 pb-1 border-t border-gray-200">
+                    <div className="pt-4 pb-1 border-t border-gray-200">
                         <div className="px-4">
                             <div className="text-base font-medium text-gray-800">
                                 {auth.user.name}
@@ -210,9 +299,9 @@ export default function Authenticated({ auth, header, children }) {
                                 Log Out
                             </ResponsiveNavLink>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
-            </nav>
+            </nav> */}
 
             {header && (
                 <header className="bg-white shadow">
