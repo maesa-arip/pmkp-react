@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\RiskTypeResource;
-use App\Models\RiskType;
+use App\Http\Resources\IdentificationSourceResource;
+use App\Models\IdentificationSource;
 use Illuminate\Http\Request;
 
-class RiskTypeController extends Controller
+class IdentificationSourceController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,16 +16,17 @@ class RiskTypeController extends Controller
     public $loadDefault = 10;
     public function index(Request $request)
     {
-        $riskTypes = RiskType::query();
+        $identificationSources = IdentificationSource::query();
+        
         if ($request->q) {
-            $riskTypes->where('name','like','%'.$request->q.'%');
+            $identificationSources->where('name','like','%'.$request->q.'%');
         }
 
         if ($request->has(['field','direction'])) {
-            $riskTypes->orderBy($request->field,$request->direction);
+            $identificationSources->orderBy($request->field,$request->direction);
         }
-        $riskTypes = (
-            RiskTypeResource::collection($riskTypes->latest()->fastPaginate($request->load)->withQueryString())
+        $identificationSources = (
+            IdentificationSourceResource::collection($identificationSources->latest()->fastPaginate($request->load)->withQueryString())
         )->additional([
             'attributes' => [
                 'total' => 1100,
@@ -40,9 +41,8 @@ class RiskTypeController extends Controller
 
             ]
         ]);
-        return inertia('Master/RiskType/Index',['riskTypes'=>$riskTypes]);
+        return inertia('Master/IdentificationSource/Index',['identificationSources'=>$identificationSources]);
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -66,66 +66,41 @@ class RiskTypeController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        RiskType::create($validated);
+        IdentificationSource::create($validated);
         return back()->with([
             'type' => 'success',
-            'message' => 'Data Tipe risiko berhasil disimpan',
+            'message' => 'Sumber identifikasi berhasil disimpan',
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\RiskType  $riskType
-     * @return \Illuminate\Http\Response
-     */
-    public function show(RiskType $riskType)
+    public function show(IdentificationSource $identificationSource)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\RiskType  $riskType
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(RiskType $riskType)
+    public function edit(IdentificationSource $identificationSource)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\RiskType  $riskType
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, RiskType $riskType)
+    public function update(Request $request, IdentificationSource $identificationSource)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
-        $riskType->update($validated);
+        $identificationSource->update($validated);
         return back()->with([
             'type' => 'success',
-            'message' => 'Tipe risiko berhasil diubah',
+            'message' => 'Sumber identifikasi berhasil diubah',
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\RiskType  $riskType
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(RiskType $riskType)
+    public function destroy(IdentificationSource $identificationSource)
     {
-        $riskType->delete();
+        $identificationSource->delete();
         return back()->with([
             'type' => 'success',
-            'message' => 'Tipe risiko berhasil dihapus',
+            'message' => 'Sumber identifikasi berhasil dihapus',
         ]);
     }
 }

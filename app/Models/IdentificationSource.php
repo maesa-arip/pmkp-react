@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class IndentificationSource extends Model
+class IdentificationSource extends Model
 {
     use HasFactory;
+    protected $fillable = ['name'];
 }

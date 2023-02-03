@@ -5,7 +5,7 @@ export default function AddModal({title,children, isOpenAddDialog,setIsOpenAddDi
   return (
     <div>
       <Transition  appear show={isOpenAddDialog} as={Fragment}>
-        <Dialog as="div" className="relative z-10" open={isOpenAddDialog} onClose={()=> setIsOpenAddDialog(false)}>
+        <Dialog as="div" className="relative z-10" open={isOpenAddDialog} onClose={()=> {}}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

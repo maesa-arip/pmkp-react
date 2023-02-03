@@ -16,7 +16,7 @@ export default function DestroyModal({
                     as="div"
                     className="relative z-10"
                     open={isOpenDestroyDialog}
-                    onClose={() => setIsOpenDestroyDialog(false)}
+                    onClose={() => {}}
                 >
                     <Transition.Child
                         as={Fragment}

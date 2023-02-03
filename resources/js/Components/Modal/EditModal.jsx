@@ -5,7 +5,7 @@ export default function EditModal({title,children, isOpenEditDialog,setIsOpenEdi
   return (
     <div>
       <Transition  appear show={isOpenEditDialog} as={Fragment}>
-        <Dialog as="div" className="relative z-10" open={isOpenEditDialog} onClose={()=> setIsOpenEditDialog(false)}>
+        <Dialog as="div" className="relative z-10" open={isOpenEditDialog} onClose={()=> {}}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

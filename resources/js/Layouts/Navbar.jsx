@@ -123,35 +123,35 @@ export default function Navbar() {
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "permission_ui.roles.index"
+                                                    "identificationSources.index"
                                                 )}
                                             >
                                                 Sumber Identifikasi
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "permission_ui.permissions.index"
+                                                    "locations.index"
                                                 )}
                                             >
                                                 Lokasi
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "permission_ui.permissions.index"
+                                                    "riskVarieties.index"
                                                 )}
                                             >
                                                 Jenis Insiden
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "permission_ui.permissions.index"
+                                                    "riskTypes.index"
                                                 )}
                                             >
                                                 Tipe Insiden
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "permission_ui.permissions.index"
+                                                    "pics.index"
                                                 )}
                                             >
                                                 Penangung Jawab/PIC

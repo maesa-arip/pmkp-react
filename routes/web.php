@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\IdentificationSourceController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PicController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiskCategoryController;
+use App\Http\Controllers\RiskTypeController;
+use App\Http\Controllers\RiskVarietyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +38,11 @@ Route::get('/dashboard', function () {
 
 Route::Resource('users', UserController::class);
 Route::Resource('riskCategories', RiskCategoryController::class);
+Route::Resource('identificationSources', IdentificationSourceController::class);
+Route::apiResource('locations', LocationController::class);
+Route::apiResource('riskVarieties', RiskVarietyController::class);
+Route::apiResource('riskTypes', RiskTypeController::class);
+Route::apiResource('pics', PicController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

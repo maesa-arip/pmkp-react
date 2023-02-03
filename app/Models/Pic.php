@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Pic extends Model
 {
     use HasFactory;
+    protected $fillable = ['name','location_id'];
 }

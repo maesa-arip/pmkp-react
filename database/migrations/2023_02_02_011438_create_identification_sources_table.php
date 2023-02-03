@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('indentification_sources', function (Blueprint $table) {
+        Schema::create('identification_sources', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('indentification_sources');
+        Schema::dropIfExists('identification_sources');
     }
 };

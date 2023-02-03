@@ -43,7 +43,7 @@ export default function Sidebar() {
                             <li>
                                 <Link
                                     href={route("users.index")}
-                                    active={route().current("users.index")}
+                                    // active={route().current("users.index")}
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
