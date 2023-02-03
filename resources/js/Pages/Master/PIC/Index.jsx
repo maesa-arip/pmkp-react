@@ -40,8 +40,9 @@ const DownIcon = () => (
     </svg>
 );
 
-export default function Index(props, locations) {
+export default function Index(props) {
     const { data: pics, meta, filtered, attributes } = props.pics;
+    const locations = props.locations;
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
     const reload = useCallback(
@@ -105,12 +106,12 @@ export default function Index(props, locations) {
     const [state, setState] = useState([]);
     return (
         <>
-            <Head title="Kategori Risiko" />
+            <Head title="Penanggung Jawab" />
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
                 size="xl"
-                title="Tambah Kategori Risiko"
+                title="Tambah Penanggung Jawab"
             >
                 <Create
                     ShouldMap={locations}
@@ -122,10 +123,11 @@ export default function Index(props, locations) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="xl"
-                title="Edit Kategori Risiko"
+                title="Edit Penanggung Jawab"
             >
                 <Edit
                     model={state}
+                    ShouldMap={locations}
                     isOpenEditDialog={isOpenEditDialog}
                     setIsOpenEditDialog={setIsOpenEditDialog}
                 />
@@ -134,7 +136,7 @@ export default function Index(props, locations) {
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
                 size="2xl"
-                title="Delete Kategori Risiko"
+                title="Delete Penanggung Jawab"
                 warning="Yakin hapus data ini ?"
             >
                 <DangerButton className="ml-2" onClick={destroypic}>
@@ -244,18 +246,18 @@ export default function Index(props, locations) {
                                                     <div
                                                         className="flex items-center cursor-pointer gap-x-2"
                                                         onClick={() =>
-                                                            sort("description")
+                                                            sort("location_id")
                                                         }
                                                     >
                                                         Keterangan
                                                         {params.field ==
-                                                            "description" &&
+                                                            "location_id" &&
                                                             params.direction ==
                                                                 "asc" && (
                                                                 <UpIcon />
                                                             )}
                                                         {params.field ==
-                                                            "description" &&
+                                                            "location_id" &&
                                                             params.direction ==
                                                                 "desc" && (
                                                                 <DownIcon />
@@ -309,10 +311,10 @@ export default function Index(props, locations) {
                                                         {pic.name}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        {pic.description}
+                                                        {pic.location.name}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        {pic.joined}
+                                                        {pic.created_at}
                                                     </td>
                                                     <td>
                                                         <Dropdown>

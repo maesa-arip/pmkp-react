@@ -9,4 +9,9 @@ class Location extends Model
 {
     use HasFactory;
     protected $fillable = ['name'];
+
+    public function pic()
+    {
+        return $this->hasOne(Pic::class);
+    }
 }

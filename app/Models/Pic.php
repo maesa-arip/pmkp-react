@@ -9,4 +9,9 @@ class Pic extends Model
 {
     use HasFactory;
     protected $fillable = ['name','location_id'];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
 }

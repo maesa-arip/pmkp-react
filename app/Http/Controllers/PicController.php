@@ -17,7 +17,7 @@ class PicController extends Controller
     public $loadDefault = 10;
     public function index(Request $request)
     {
-        $pics = Pic::query();
+        $pics = Pic::query()->with('location');
         if ($request->q) {
             $pics->where('name','like','%'.$request->q.'%');
         }
@@ -41,7 +41,8 @@ class PicController extends Controller
 
             ]
         ]);
-        $locations = Location::query();
+        $locations = Location::get();
+        // dd($locations);
         return inertia('Master/PIC/Index',['pics'=>$pics, 'locations'=> $locations]);
     }
 
@@ -65,6 +66,7 @@ class PicController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'location_id' => 'required|numeric',
         ]);
 
         Pic::create($validated);
@@ -107,6 +109,7 @@ class PicController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'location_id' => 'required|numeric',
         ]);
         $pic->update($validated);
         return back()->with([

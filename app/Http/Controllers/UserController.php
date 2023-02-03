@@ -12,7 +12,7 @@ class UserController extends Controller
     public $loadDefault = 10;
     public function index(Request $request)
     {
-        $users = User::query();
+        $users = User::query()->with('roles');
         if ($request->q) {
             $users->where('name','like','%'.$request->q.'%')
             ->orWhere('email','like','%'.$request->q.'%')

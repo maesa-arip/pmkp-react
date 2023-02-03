@@ -1,6 +1,5 @@
 import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-// import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 
 export default function ListBoxPage({ ShouldMap, selected, onChange }) {
     return (
@@ -13,10 +12,23 @@ export default function ListBoxPage({ ShouldMap, selected, onChange }) {
             <Listbox.Button className="flex justify-between w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <span className="block truncate">{selected.name}</span>
                 <span className="inset-y-0 right-0 flex items-center justify-between pointer-events-none">
-                    {/* <SelectorIcon
-                className="w-5 h-5 text-gray-400"
-                aria-hidden="true"
-              /> */}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5 text-gray-400 icon icon-tabler icon-tabler-selector"
+                        aria-hidden="true"
+                        width={24}
+                        height={24}
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M8 9l4 -4l4 4" />
+                        <path d="M16 15l-4 4l-4 -4" />
+                    </svg>
                 </span>
             </Listbox.Button>
             <Transition
@@ -25,7 +37,7 @@ export default function ListBoxPage({ ShouldMap, selected, onChange }) {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <Listbox.Options className="absolute w-full h-64 py-1 mt-1 overflow-hidden overflow-y-auto text-base bg-white rounded-md shadow-lg max-h-max ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                <Listbox.Options className="absolute w-full h-auto py-1 mt-1 overflow-hidden overflow-y-auto text-base bg-white rounded-md shadow-lg max-h-max ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                     {ShouldMap.map((item) => (
                         <Listbox.Option
                             key={item.id}
@@ -43,7 +55,7 @@ export default function ListBoxPage({ ShouldMap, selected, onChange }) {
                                     <span
                                         className={`block truncate ${
                                             selected
-                                                ? "font-medium"
+                                                ? "font-semibold"
                                                 : "font-normal"
                                         }`}
                                     >
@@ -57,7 +69,7 @@ export default function ListBoxPage({ ShouldMap, selected, onChange }) {
                                                 viewBox="0 0 24 24"
                                                 strokeWidth={1.5}
                                                 stroke="currentColor"
-                                                className="w-6 h-6"
+                                                className="w-5 h-5"
                                             >
                                                 <path
                                                     strokeLinecap="round"
@@ -65,8 +77,6 @@ export default function ListBoxPage({ ShouldMap, selected, onChange }) {
                                                     d="M4.5 12.75l6 6 9-13.5"
                                                 />
                                             </svg>
-
-                                            {/* <CheckIcon className="w-5 h-5" aria-hidden="true" /> */}
                                         </span>
                                     ) : null}
                                 </>

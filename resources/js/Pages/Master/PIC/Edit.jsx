@@ -2,10 +2,10 @@ import { useForm } from '@inertiajs/react';
 import React, { useEffect } from 'react'
 import Form from './Form';
 
-export default function Edit({ setIsOpenEditDialog, model }) {
+export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     const { data, setData, put, reset, errors } = useForm({
         name: model.name,
-        description: model.description,
+        location_id : model.location_id,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -21,6 +21,7 @@ export default function Edit({ setIsOpenEditDialog, model }) {
         setData({
             ...data,
             name: model.name,
+            location_id : model.location_id,
         });
     }, [model]);
   return (
@@ -28,6 +29,8 @@ export default function Edit({ setIsOpenEditDialog, model }) {
             <Form
                 errors={errors}
                 data={data}
+                model={model}
+                ShouldMap={ShouldMap}
                 setData={setData}
                 submit={"Update"}
                 closeButton = {closeButton}
