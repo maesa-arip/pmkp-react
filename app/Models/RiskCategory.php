@@ -9,4 +9,8 @@ class RiskCategory extends Model
 {
     protected $fillable =['name'];
     use HasFactory;
+    public function risk_register()
+    {
+        return $this->hasMany(RiskRegister::class);
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PICResource extends JsonResource
+class ControlValueResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +16,9 @@ class PICResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'value' => $this->value,
             'name' => $this->name,
-            'location' => [
-                'id' => $this->location->id,
-                'name' => $this->location->name,
-            ],
+            'type' => $this->type,
             'joined' => $this->created_at->diffForHumans(),
         ];
     }

@@ -14,4 +14,8 @@ class Pic extends Model
     {
         return $this->belongsTo(Location::class);
     }
+    public function risk_register()
+    {
+        return $this->hasMany(RiskRegister::class);
+    }
 }

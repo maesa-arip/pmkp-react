@@ -18,7 +18,7 @@ export default function App({ auth, header, children }) {
             <Container>
             <div className="grid grid-cols-12">
                 <Sidebar />
-                <div className="min-h-screen col-span-10 col-start-3 bg-white">
+                <div className="min-h-screen col-span-12 col-start-1 bg-white md:col-span-10 md:col-start-3">
                     <Navbar />
                     <main>{children}</main>
                 </div>

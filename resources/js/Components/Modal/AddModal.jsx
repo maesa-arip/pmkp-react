@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 
-export default function AddModal({title,children, isOpenAddDialog,setIsOpenAddDialog, size='6xl'}) {
+export default function AddModal({title,children, isOpenAddDialog,setIsOpenAddDialog, size='2xl'}) {
   return (
     <div>
       <Transition  appear show={isOpenAddDialog} as={Fragment}>

@@ -189,21 +189,21 @@ export default function Navbar() {
                                         <Dropdown.Content>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "riskCategories.index"
+                                                    "impactValues.index"
                                                 )}
                                             >
                                                 Dampak
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "identificationSources.index"
+                                                    "probabilityValues.index"
                                                 )}
                                             >
                                                 Probabilitas
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "locations.index"
+                                                    "controlValues.index"
                                                 )}
                                             >
                                                 Controllability
@@ -241,7 +241,7 @@ export default function Navbar() {
                                         <Dropdown.Content>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "riskCategories.index"
+                                                    "riskRegisterKlinis.index"
                                                 )}
                                             >
                                                 Risk Register Klinis

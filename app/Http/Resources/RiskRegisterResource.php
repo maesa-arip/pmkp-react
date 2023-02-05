@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PICResource extends JsonResource
+class RiskRegisterResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,14 +14,6 @@ class PICResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'location' => [
-                'id' => $this->location->id,
-                'name' => $this->location->name,
-            ],
-            'joined' => $this->created_at->diffForHumans(),
-        ];
+        return parent::toArray($request);
     }
 }

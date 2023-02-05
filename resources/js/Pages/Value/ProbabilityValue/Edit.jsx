@@ -4,13 +4,14 @@ import Form from './Form';
 
 export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     const { data, setData, put, reset, errors } = useForm({
+        value: model.value,
         name: model.name,
-        location_id : model.location.id,
+        type : model.type,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("pics.update", model.id), {
+        put(route("probabilityValues.update", model.id), {
             data,
             onSuccess: () => {
                 reset(), setIsOpenEditDialog(false);
@@ -20,8 +21,9 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     useEffect(() => {
         setData({
             ...data,
+            value: model.value,
             name: model.name,
-            location_id : model.location.id,
+            type : model.type,
         });
     }, [model]);
   return (

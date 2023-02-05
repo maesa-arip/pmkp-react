@@ -15,13 +15,13 @@ export default function Form({
     model,
     closeButton,
 }) {
-    // const onChangeLocationId = (e) => {
-    //     setData({ ...data, ["location_id"]: e.id });
-    // };
+    const onChangeTypeId = (e) => {
+        setData({ ...data, ["type"]: e.id });
+    };
     const defaultValue = [{ name: "Pilih" }];
     const [selected, setSelected] = useState(() => {
         if (model) {
-            return ShouldMap.find(x => x.id === model.location.id);
+            return ShouldMap[model.type - 1];
         }
         return defaultValue[0];
     });
@@ -29,6 +29,19 @@ export default function Form({
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-12 gap-6">
+                    <div className="col-span-12">
+                        <InputLabel for="value" value="Nilai" />
+                        <TextInput
+                            id="value"
+                            value={data.value}
+                            handleChange={(e) =>
+                                setData("value", e.target.value)
+                            }
+                            type="number"
+                            className="block w-full mt-1"
+                        />
+                        <InputError message={errors.value} className="mt-2" />
+                    </div>
                     <div className="col-span-12">
                         <InputLabel for="name" value="Nama" />
                         <TextInput
@@ -43,18 +56,17 @@ export default function Form({
                         <InputError message={errors.name} className="mt-2" />
                     </div>
                     <div className="col-span-12">
-                        <InputLabel for="location" value="Lokasi" />
+                        <InputLabel for="type" value="Tipe" />
                         <ListBoxPage
                             ShouldMap={ShouldMap}
                             selected={selected}
                             onChange={(e) => {
-                                setData({ ...data, ["location_id"]: e.id });
-                                // onChangeLocationId(e);
+                                onChangeTypeId(e);
                                 setSelected(e);
                             }}
                         />
                         <InputError
-                            message={errors.location_id}
+                            message={errors.type}
                             className="mt-2"
                         />
                     </div>

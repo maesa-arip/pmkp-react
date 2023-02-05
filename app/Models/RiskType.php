@@ -9,4 +9,8 @@ class RiskType extends Model
 {
     use HasFactory;
     protected $fillable = ['name'];
+    public function risk_register()
+    {
+        return $this->hasMany(RiskRegister::class);
+    }
 }

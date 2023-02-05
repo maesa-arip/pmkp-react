@@ -9,4 +9,8 @@ class RiskVariety extends Model
 {
     use HasFactory;
     protected $fillable = ['name','description'];
+    public function risk_register()
+    {
+        return $this->hasMany(RiskRegister::class);
+    }
 }

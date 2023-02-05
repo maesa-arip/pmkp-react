@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function Sidebar() {
   return (
-    <div className="min-h-screen col-span-2 col-start-1 p-4 antialiased text-gray-800">
+    <div className="hidden min-h-screen col-span-2 col-start-1 p-4 antialiased text-gray-800 md:block">
                 <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
                     <div className="flex-grow overflow-x-hidden overflow-y-auto">
                         <ul className="flex flex-col py-4 space-y-1">
@@ -157,13 +157,13 @@ export default function Sidebar() {
                             <li className="px-5">
                                 <div className="flex flex-row items-center h-8">
                                     <div className="text-sm font-light tracking-wide text-gray-500">
-                                        Permission
+                                        Report
                                     </div>
                                 </div>
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href={route('export.riskregisterklinis') } 
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
@@ -183,12 +183,12 @@ export default function Sidebar() {
                                         </svg>
                                     </span>
                                     <span className="ml-2 text-sm tracking-wide truncate">
-                                        Available Tasks
+                                        Risk Register Klinis
                                     </span>
                                 </a>
                             </li>
                             <li>
-                                <a
+                                {/* <a
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
@@ -213,6 +213,30 @@ export default function Sidebar() {
                                     </span>
                                     <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-green-500 bg-green-50 rounded-full">
                                         15
+                                    </span>
+                                </a> */}
+                                <a
+                                    href={route('export.riskregisterklinis') } 
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                >
+                                    <span className="inline-flex items-center justify-center ml-4">
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                            />
+                                        </svg>
+                                    </span>
+                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                        Risk Register Non Klinis
                                     </span>
                                 </a>
                             </li>

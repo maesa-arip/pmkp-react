@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\ControlValueController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\IdentificationSourceController;
+use App\Http\Controllers\ImpactValueController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PicController;
+use App\Http\Controllers\ProbabilityValueController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiskCategoryController;
+use App\Http\Controllers\RiskRegisterKlinisController;
 use App\Http\Controllers\RiskTypeController;
 use App\Http\Controllers\RiskVarietyController;
 use App\Http\Controllers\UserController;
@@ -32,7 +37,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
+Route::get('/dashboard ', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -43,6 +48,12 @@ Route::apiResource('locations', LocationController::class);
 Route::apiResource('riskVarieties', RiskVarietyController::class);
 Route::apiResource('riskTypes', RiskTypeController::class);
 Route::apiResource('pics', PicController::class);
+Route::apiResource('impactValues', ImpactValueController::class);
+Route::apiResource('probabilityValues', ProbabilityValueController::class);
+Route::apiResource('controlValues', ControlValueController::class);
+Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
+
+Route::get('export/riskregisterklinis', [ExportController::class, 'riskregisterklinis'])->name('export.riskregisterklinis');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
