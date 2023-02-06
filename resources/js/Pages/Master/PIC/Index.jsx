@@ -111,7 +111,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="xl"
+                size="2xl"
                 title="Tambah Penanggung Jawab"
             >
                 <Create
@@ -123,7 +123,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="xl"
+                size="2xl"
                 title="Edit Penanggung Jawab"
             >
                 <Edit

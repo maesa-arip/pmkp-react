@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 
-export default function EditModal({title,children, isOpenEditDialog,setIsOpenEditDialog, size='6xl'}) {
+export default function EditModal({title,children, isOpenEditDialog,setIsOpenEditDialog, size='4xl'}) {
   return (
     <div>
       <Transition  appear show={isOpenEditDialog} as={Fragment}>

@@ -4,6 +4,7 @@ import Dropdown from "@/Components/Dropdown";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
+import ThirdButton from "@/Components/ThirdButton";
 import App from "@/Layouts/App";
 import { Head, router } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
@@ -118,7 +119,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="xl"
+                size="2xl"
                 title="Tambah Nilai Controllability"
             >
                 <Create
@@ -128,10 +129,9 @@ export default function Index(props) {
                 />
             </AddModal>
             <EditModal
-                
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="xl"
+                size="2xl"
                 title="Edit Nilai Controllability"
             >
                 <Edit
@@ -157,13 +157,12 @@ export default function Index(props) {
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-1/2">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
-                                <button
+                                <ThirdButton
                                     type="button"
                                     onClick={openAddDialog}
-                                    className="px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                 >
                                     Tambah
-                                </button>
+                                </ThirdButton>
                             </div>
                         </div>
                         <div className="w-1/2">
@@ -345,14 +344,13 @@ export default function Index(props) {
                                                             {controlValue.value}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                controlValue.name
-                                                            }
+                                                            {controlValue.name}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                controlValue.type == 1 ? 'Klinis' : 'Non Klinis'
-                                                            }
+                                                            {controlValue.type ==
+                                                            1
+                                                                ? "Klinis"
+                                                                : "Non Klinis"}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {

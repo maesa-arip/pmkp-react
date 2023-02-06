@@ -22,6 +22,7 @@
     "dependencies": {
         "@heroicons/react": "^2.0.14",
         "@tabler/icons": "^2.1.2",
+        "puppeteer": "^19.6.3",
         "react-datepicker": "^4.10.0",
         "react-hot-toast": "^2.4.0"
     }

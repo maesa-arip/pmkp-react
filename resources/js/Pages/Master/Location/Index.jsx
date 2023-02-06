@@ -4,8 +4,9 @@ import Dropdown from "@/Components/Dropdown";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
+import ThirdButton from "@/Components/ThirdButton";
 import App from "@/Layouts/App";
-import { Head,  router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
@@ -110,7 +111,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="xl"
+                size="2xl"
                 title="Tambah Lokasi"
             >
                 <Create
@@ -121,7 +122,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="xl"
+                size="2xl"
                 title="Edit Lokasi"
             >
                 <Edit
@@ -146,13 +147,12 @@ export default function Index(props) {
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-1/2">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
-                                <button
+                                <ThirdButton
                                     type="button"
                                     onClick={openAddDialog}
-                                    className="px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                 >
                                     Tambah
-                                </button>
+                                </ThirdButton>
                             </div>
                         </div>
                         <div className="w-1/2">
@@ -238,7 +238,6 @@ export default function Index(props) {
                                                     </div>
                                                 </th>
 
-                                               
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
@@ -275,57 +274,59 @@ export default function Index(props) {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {locations.map((location, index) => (
-                                                <tr key={index}>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {meta.from + index}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {location.name}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {location.joined}
-                                                    </td>
-                                                    <td>
-                                                        <Dropdown>
-                                                            <Dropdown.Trigger>
-                                                                <button>
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        className="w-4 h-4 text-gray-400"
-                                                                        viewBox="0 0 20 20"
-                                                                        fill="currentColor"
+                                            {locations.map(
+                                                (location, index) => (
+                                                    <tr key={index}>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {meta.from + index}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {location.name}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {location.joined}
+                                                        </td>
+                                                        <td>
+                                                            <Dropdown>
+                                                                <Dropdown.Trigger>
+                                                                    <button>
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            className="w-4 h-4 text-gray-400"
+                                                                            viewBox="0 0 20 20"
+                                                                            fill="currentColor"
+                                                                        >
+                                                                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </Dropdown.Trigger>
+                                                                <Dropdown.Content>
+                                                                    <button
+                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                                        onClick={() =>
+                                                                            openEditDialog(
+                                                                                location
+                                                                            )
+                                                                        }
                                                                     >
-                                                                        <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                    </svg>
-                                                                </button>
-                                                            </Dropdown.Trigger>
-                                                            <Dropdown.Content>
-                                                            <button
-                                                                    className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                    onClick={() =>
-                                                                        openEditDialog(
-                                                                            location
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Edit
-                                                                </button>
-                                                                <button
-                                                                    className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                    onClick={() =>
-                                                                        openDestroyDialog(
-                                                                            location
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Hapus
-                                                                </button>
-                                                            </Dropdown.Content>
-                                                        </Dropdown>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                                                        Edit
+                                                                    </button>
+                                                                    <button
+                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                                        onClick={() =>
+                                                                            openDestroyDialog(
+                                                                                location
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Hapus
+                                                                    </button>
+                                                                </Dropdown.Content>
+                                                            </Dropdown>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>

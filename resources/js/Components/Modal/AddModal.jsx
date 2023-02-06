@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 
-export default function AddModal({title,children, isOpenAddDialog,setIsOpenAddDialog, size='2xl'}) {
+export default function AddModal({title,children, isOpenAddDialog,setIsOpenAddDialog, size='4xl'}) {
   return (
     <div>
       <Transition  appear show={isOpenAddDialog} as={Fragment}>
@@ -29,7 +29,7 @@ export default function AddModal({title,children, isOpenAddDialog,setIsOpenAddDi
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className={`w-full transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all max-w-${size}`}>
+                <Dialog.Panel className={`transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all max-w-${size}`}>
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"

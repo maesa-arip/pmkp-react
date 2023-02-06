@@ -141,7 +141,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="4xl"
+                size="2xl"
                 title="Tambah Risk Register Klinis"
             >
                 <Create
@@ -153,7 +153,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="4xl"
+                size="2xl"
                 title="Edit Risk Register Klinis"
             >
                 <Edit

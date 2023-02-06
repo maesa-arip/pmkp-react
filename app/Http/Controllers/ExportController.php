@@ -6,6 +6,7 @@ use App\Models\RiskRegister;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use PDF;
 
 class ExportController extends Controller
 {
@@ -43,5 +44,19 @@ class ExportController extends Controller
             // ->addHeader(['first_name', 'last_name'])
             // ->noHeaderRow()
             ->addRows($rows);
+    }
+    public function exportpdf(Request $request)
+    {
+        $users = User::get();
+        view()->share('users',$users);
+
+        if($request->has('download')) {
+        	// pass view file
+            $pdf = PDF::loadView('pdfview');
+            // download pdf
+            // return $pdf->download('userlist.pdf');
+            return $pdf->stream();
+        }
+        return view('pdfview');
     }
 }

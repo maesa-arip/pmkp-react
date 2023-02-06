@@ -54,6 +54,7 @@ Route::apiResource('controlValues', ControlValueController::class);
 Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
 
 Route::get('export/riskregisterklinis', [ExportController::class, 'riskregisterklinis'])->name('export.riskregisterklinis');
+Route::get('export/riskregisterklinispdf', [ExportController::class, 'exportpdf'])->name('export.riskregisterklinispdf');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
