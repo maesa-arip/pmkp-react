@@ -119,7 +119,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Tambah Nilai Dampak"
             >
                 <Create
@@ -131,7 +131,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Edit Nilai Dampak"
             >
                 <Edit
@@ -144,7 +144,7 @@ export default function Index(props) {
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Delete Nilai Dampak"
                 warning="Yakin hapus data ini ?"
             >

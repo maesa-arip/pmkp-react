@@ -445,7 +445,7 @@ export default function Form({
                                 setData("grading", e.target.value)
                             }
                             readOnly={false}
-                            type="text"
+                            type="number"
                             className="block w-full mt-1"
                         />
                         <InputError message={errors.grading} className="mt-2" />

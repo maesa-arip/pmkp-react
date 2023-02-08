@@ -111,7 +111,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Tambah User"
             >
                 <Create
@@ -122,7 +122,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title={"Edit User"}
             >
                 <Edit
@@ -134,7 +134,7 @@ export default function Index(props) {
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
-                size="xl"
+                size="max-w-4xl"
                 title="Delete User"
                 warning="Yakin hapus data ini ?"
             >
@@ -269,19 +269,19 @@ export default function Index(props) {
                                                 >
                                                     <div
                                                         className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("created_at")
-                                                        }
+                                                        // onClick={() =>
+                                                        //     sort("roles")
+                                                        // }
                                                     >
-                                                        Joined
+                                                        Roles
                                                         {params.field ==
-                                                            "created_at" &&
+                                                            "roles" &&
                                                             params.direction ==
                                                                 "asc" && (
                                                                 <UpIcon />
                                                             )}
                                                         {params.field ==
-                                                            "created_at" &&
+                                                            "roles" &&
                                                             params.direction ==
                                                                 "desc" && (
                                                                 <DownIcon />
@@ -296,6 +296,14 @@ export default function Index(props) {
                                                         Edit
                                                     </span>
                                                 </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div className="flex items-center cursor-pointer gap-x-2">
+                                                        
+                                                    </div>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
@@ -309,6 +317,18 @@ export default function Index(props) {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {person.email}
+                                                    </td>
+                                                    <td>
+                                                        {person.roles.map(
+                                                            (role, index) => (
+                                                                <span
+                                                                    key={index}
+                                                                    className="rounded-xl bg-blue-50 px-2 py-1 text-xs text-blue-500"
+                                                                >
+                                                                    {role.name}
+                                                                </span>
+                                                            )
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {person.joined}

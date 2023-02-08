@@ -104,7 +104,7 @@ class RiskRegisterKlinisController extends Controller
             'osd2_dampak' => 'required',
             'osd2_probabilitas' => 'required',
             'osd2_controllability' => 'required',
-            'grading' => 'required',
+            'grading' => 'required|numeric',
             'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
             'pengawasan_id' => 'required',

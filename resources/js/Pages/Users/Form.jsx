@@ -1,5 +1,6 @@
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
+import MyToggle from "@/Components/MyToggle";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
@@ -47,6 +48,18 @@ export default function Form({ errors, submit, data, setData, closeButton }) {
                             className="mt-2"
                         />
                     </div>
+                    <div className="col-span-6 sm:col-span-3">
+                        <InputLabel
+                            for="email"
+                            value="Email"
+                        />
+                        <MyToggle/>
+                        <InputError
+                            message={errors.email}
+                            className="mt-2"
+                        />
+                    </div>
+                    
                 </div>
             </div>
             <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

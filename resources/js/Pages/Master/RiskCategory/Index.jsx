@@ -116,7 +116,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Tambah Kategori Risiko"
             >
                 <Create
@@ -127,7 +127,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Edit Kategori Risiko"
             >
                 <Edit
@@ -139,7 +139,7 @@ export default function Index(props) {
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Delete Kategori Risiko"
                 warning="Yakin hapus data ini ?"
             >

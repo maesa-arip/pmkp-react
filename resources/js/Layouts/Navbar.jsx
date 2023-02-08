@@ -59,29 +59,28 @@ export default function Navbar() {
                                                 </button>
                                             </span>
                                         </Dropdown.Trigger>
-
                                         <Dropdown.Content>
-                                            <Dropdown.Link
+                                            <a className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                 href={route(
                                                     "permission_ui.users.index"
                                                 )}
                                             >
                                                 Users
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
+                                            </a>
+                                            <a className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                 href={route(
                                                     "permission_ui.roles.index"
                                                 )}
                                             >
                                                 Roles
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
+                                            </a>
+                                            <a className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                 href={route(
                                                     "permission_ui.permissions.index"
                                                 )}
                                             >
                                                 Permissions
-                                            </Dropdown.Link>
+                                            </a>
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>

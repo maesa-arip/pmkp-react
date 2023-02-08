@@ -141,7 +141,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Tambah Risk Register Klinis"
             >
                 <Create
@@ -153,7 +153,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="2xl"
+                size="max-w-4xl"
                 title="Edit Risk Register Klinis"
             >
                 <Edit
@@ -166,7 +166,7 @@ export default function Index(props) {
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
-                size="2xl"
+                size="max-w-2xl"
                 title="Delete Risk Register Klinis"
                 warning="Yakin hapus data ini ?"
             >
