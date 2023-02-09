@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -37,22 +38,29 @@ class UserController extends Controller
 
             ]
         ]);
-        return inertia('Users/Index',['users'=>$users]);
+        $roles = Role::get();
+        // $roles = Role::pluck('name', 'id');
+        return inertia('Users/Index',['users'=>$users, 'roles'=>$roles]);
     }
     public function store(Request $request)
     {
+        dd($request->all());
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
+            // 'roles' => ['required', 'array'],
         ]);
         $request->merge([
             'password' => Hash::make('password'),
         ]);
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
         ]);
+
+        $user->syncRoles($request->input('roless'));
+
         return back()->with([
             'type' => 'success',
             'message' => 'User berhasil dibuat',
@@ -60,6 +68,7 @@ class UserController extends Controller
     }
     public function update(Request $request, User $user)
     {
+        dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email','unique:users,email,'. optional($user)->id],

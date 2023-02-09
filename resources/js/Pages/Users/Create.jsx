@@ -2,7 +2,7 @@ import { useForm } from '@inertiajs/react';
 import React from 'react'
 import Form from './Form';
 
-export default function Create({setIsOpenAddDialog}) {
+export default function Create({setIsOpenAddDialog,roles, enabled, setEnabled}) {
     const { data, setData, post, reset, errors } = useForm({
         name: "",
         email: "",
@@ -20,7 +20,7 @@ export default function Create({setIsOpenAddDialog}) {
     };
   return (
     <form onSubmit={onSubmit}>
-            <Form {...{ errors, data, setData, submit: "Simpan", closeButton }} />
+            <Form {...{ errors, data, roles, enabled, setEnabled, setData, submit: "Simpan", closeButton }} />
         </form>
   )
 }

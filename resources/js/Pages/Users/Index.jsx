@@ -43,6 +43,7 @@ const DownIcon = () => (
 
 export default function Index(props) {
     const { data: people, meta, filtered, attributes } = props.users;
+    const roles = props.roles;
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
@@ -104,6 +105,7 @@ export default function Index(props) {
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [enabled, setEnabled] = useState(false);
     const [state, setState] = useState([]);
     return (
         <>
@@ -115,6 +117,9 @@ export default function Index(props) {
                 title="Tambah User"
             >
                 <Create
+                    roles={roles}
+                    enabled={enabled}
+                    setEnabled={setEnabled}
                     isOpenAddDialog={isOpenAddDialog}
                     setIsOpenAddDialog={setIsOpenAddDialog}
                 />
@@ -126,6 +131,7 @@ export default function Index(props) {
                 title={"Edit User"}
             >
                 <Edit
+                    roles={roles}
                     model={state}
                     isOpenEditDialog={isOpenEditDialog}
                     setIsOpenEditDialog={setIsOpenEditDialog}
@@ -300,9 +306,7 @@ export default function Index(props) {
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
-                                                    <div className="flex items-center cursor-pointer gap-x-2">
-                                                        
-                                                    </div>
+                                                    <div className="flex items-center cursor-pointer gap-x-2"></div>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -323,7 +327,7 @@ export default function Index(props) {
                                                             (role, index) => (
                                                                 <span
                                                                     key={index}
-                                                                    className="rounded-xl bg-blue-50 px-2 py-1 text-xs text-blue-500"
+                                                                    className="px-2 py-1 text-xs text-blue-500 rounded-xl bg-blue-50"
                                                                 >
                                                                     {role.name}
                                                                 </span>
