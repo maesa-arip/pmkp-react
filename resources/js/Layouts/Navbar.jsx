@@ -28,12 +28,12 @@ export default function Navbar() {
                             >
                                 Dashboard
                             </NavLink>
-                            <NavLink
+                            {/* <NavLink
                                 href={route("users.index")}
                                 active={route().current("users.index")}
                             >
                                 Users
-                            </NavLink>
+                            </NavLink> */}
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -60,27 +60,21 @@ export default function Navbar() {
                                             </span>
                                         </Dropdown.Trigger>
                                         <Dropdown.Content>
-                                            <a className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                href={route(
-                                                    "permission_ui.users.index"
-                                                )}
+                                            <Link className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                href={route("users.index")}
                                             >
                                                 Users
-                                            </a>
-                                            <a className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                href={route(
-                                                    "permission_ui.roles.index"
-                                                )}
+                                            </Link>
+                                            <Link className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                href={route("roles.index")}
                                             >
                                                 Roles
-                                            </a>
-                                            <a className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                href={route(
-                                                    "permission_ui.permissions.index"
-                                                )}
+                                            </Link>
+                                            <Link className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                href={route("permissions.index")}
                                             >
                                                 Permissions
-                                            </a>
+                                            </Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>

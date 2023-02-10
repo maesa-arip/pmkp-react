@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 
 export default function Form({
     errors,
-    roles,
+    permissions,
     submit,
     data,
     setData,
@@ -21,8 +21,8 @@ export default function Form({
         setData({ ...data, [e.target.id]: e.target.value });
     };
 
-    const optionsFromDB = roles;
-    let userrole = model ? model.roles.map((obj) => obj.id) : [];
+    const optionsFromDB = permissions;
+    let userrole = model ? model.permissions.map((obj) => obj.id) : [];
     const [options, setOptions] = useState([]);
     useEffect(() => {
         const selectedOptionsFromDB = userrole;
@@ -48,14 +48,14 @@ export default function Form({
         .filter((option) => option.isSelected)
         .map((option) => option.id);
     useEffect(() => {
-        setData({ ...data, ["roles"]: selectedOptionIds });
+        setData({ ...data, ["permissions"]: selectedOptionIds });
     }, [options]);
     
     return (
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-6">
+                    <div className="col-span-12">
                         <InputLabel for="name" value="Nama" />
                         <TextInput
                             id="name"
@@ -69,23 +69,9 @@ export default function Form({
                         />
                         <InputError message={errors.name} className="mt-2" />
                     </div>
-                    <div className="col-span-6">
-                        <InputLabel for="email" value="Email" />
-                        <TextInput
-                            id="email"
-                            value={data.email}
-                            handleChange={(e) =>
-                                setData("email", e.target.value)
-                            }
-                            // handleChange={onChange}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError message={errors.email} className="mt-2" />
-                    </div>
                     <div className="col-span-12 mt-2">
                         <p className="text-lg font-semibold text-gray-700">
-                            Pilih Roles
+                            Pilih Permissions
                         </p>
                     </div>
                     {options.map((option) => (

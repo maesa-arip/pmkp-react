@@ -44,7 +44,7 @@ class UserController extends Controller
     }
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
@@ -59,7 +59,7 @@ class UserController extends Controller
             'password' => $request->password,
         ]);
 
-        $user->syncRoles($request->input('roless'));
+        $user->syncRoles($request->input('roles'));
 
         return back()->with([
             'type' => 'success',
@@ -68,12 +68,13 @@ class UserController extends Controller
     }
     public function update(Request $request, User $user)
     {
-        dd($request->all());
+        // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email','unique:users,email,'. optional($user)->id],
         ]);
         $user->update($validated);
+        $user->syncRoles($request->input('roles'));
         return back()->with([
             'type' => 'success',
             'message' => 'User berhasil diubah',

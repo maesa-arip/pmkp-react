@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\IdentificationSourceController;
 use App\Http\Controllers\ImpactValueController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PicController;
 use App\Http\Controllers\ProbabilityValueController;
 use App\Http\Controllers\ProfileController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\RiskCategoryController;
 use App\Http\Controllers\RiskRegisterKlinisController;
 use App\Http\Controllers\RiskTypeController;
 use App\Http\Controllers\RiskVarietyController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +44,8 @@ Route::get('/dashboard ', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::Resource('users', UserController::class);
+Route::apiResource('roles', RoleController::class);
+Route::apiResource('permissions', PermissionController::class);
 Route::Resource('riskCategories', RiskCategoryController::class);
 Route::Resource('identificationSources', IdentificationSourceController::class);
 Route::apiResource('locations', LocationController::class);

@@ -42,15 +42,15 @@ const DownIcon = () => (
 );
 
 export default function Index(props) {
-    const { data: people, meta, filtered, attributes } = props.users;
-    const roles = props.roles;
+    const { data: roles, meta, filtered, attributes } = props.roles;
+    const permissions = props.permissions;
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                route("users.index"),
+                route("roles.index"),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,
@@ -88,17 +88,17 @@ export default function Index(props) {
     const openAddDialog = () => {
         setIsOpenAddDialog(true);
     };
-    const openEditDialog = (person) => {
-        setState(person);
+    const openEditDialog = (role) => {
+        setState(role);
         setIsOpenEditDialog(true);
     };
-    const openDestroyDialog = (person) => {
-        setState(person);
+    const openDestroyDialog = (role) => {
+        setState(role);
         setIsOpenDestroyDialog(true);
     };
 
-    const destroyUser = () => {
-        router.delete(route("users.destroy", state.id), {
+    const destroyRole = () => {
+        router.delete(route("roles.destroy", state.id), {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
@@ -109,15 +109,15 @@ export default function Index(props) {
     const [state, setState] = useState([]);
     return (
         <>
-            <Head title="User" />
+            <Head title="Role" />
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
                 size="max-w-4xl"
-                title="Tambah User"
+                title="Tambah Role"
             >
                 <Create
-                    roles={roles}
+                    permissions={permissions}
                     enabled={enabled}
                     setEnabled={setEnabled}
                     isOpenAddDialog={isOpenAddDialog}
@@ -128,10 +128,10 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="max-w-4xl"
-                title={"Edit User"}
+                title={"Edit Role"}
             >
                 <Edit
-                    roles={roles}
+                    permissions={permissions}
                     model={state}
                     isOpenEditDialog={isOpenEditDialog}
                     setIsOpenEditDialog={setIsOpenEditDialog}
@@ -141,10 +141,10 @@ export default function Index(props) {
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
                 size="max-w-4xl"
-                title="Delete User"
+                title="Delete Role"
                 warning="Yakin hapus data ini ?"
             >
-                <DangerButton className="ml-2" onClick={destroyUser}>
+                <DangerButton className="ml-2" onClick={destroyRole}>
                     Delete
                 </DangerButton>
             </DestroyModal>
@@ -244,7 +244,7 @@ export default function Index(props) {
                                                     </div>
                                                 </th>
 
-                                                <th
+                                                {/* <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
@@ -268,7 +268,7 @@ export default function Index(props) {
                                                                 <DownIcon />
                                                             )}
                                                     </div>
-                                                </th>
+                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
@@ -279,15 +279,15 @@ export default function Index(props) {
                                                         //     sort("roles")
                                                         // }
                                                     >
-                                                        Roles
+                                                        Permissions
                                                         {params.field ==
-                                                            "roles" &&
+                                                            "permissions" &&
                                                             params.direction ==
                                                                 "asc" && (
                                                                 <UpIcon />
                                                             )}
                                                         {params.field ==
-                                                            "roles" &&
+                                                            "permissions" &&
                                                             params.direction ==
                                                                 "desc" && (
                                                                 <DownIcon />
@@ -311,32 +311,32 @@ export default function Index(props) {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {people.map((person, index) => (
-                                                <tr key={person.email}>
+                                            {roles.map((role, index) => (
+                                                <tr key={index}>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {meta.from + index}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {person.name}
+                                                    <td className="px-6 py-4 uppercase whitespace-nowrap">
+                                                        {role.name}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {person.email}
-                                                    </td>
+                                                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                                                        {role.email}
+                                                    </td> */}
                                                     <td>
-                                                        {person.roles.map(
-                                                            (role, index) => (
+                                                        {role.permissions.map(
+                                                            (permission, index) => (
                                                                 <span
                                                                     key={index}
                                                                     className="px-2 py-1 mx-1 text-xs text-blue-500 uppercase rounded-full bg-blue-50"
                                                                 >
-                                                                    {role.name}
+                                                                    {permission.name}
                                                                 </span>
                                                             )
                                                         )}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        {person.joined}
-                                                    </td>
+                                                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                                                        {role.joined}
+                                                    </td> */}
                                                     <td>
                                                         <Dropdown>
                                                             <Dropdown.Trigger>
@@ -356,7 +356,7 @@ export default function Index(props) {
                                                                     className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                                     onClick={() =>
                                                                         openEditDialog(
-                                                                            person
+                                                                            role
                                                                         )
                                                                     }
                                                                 >
@@ -366,7 +366,7 @@ export default function Index(props) {
                                                                     className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                                     onClick={() =>
                                                                         openDestroyDialog(
-                                                                            person
+                                                                            role
                                                                         )
                                                                     }
                                                                 >
