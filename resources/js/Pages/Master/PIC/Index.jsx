@@ -223,7 +223,7 @@ export default function Index(props) {
                                                             sort("name")
                                                         }
                                                     >
-                                                        Name
+                                                        Nama
                                                         {params.field ==
                                                             "name" &&
                                                             params.direction ==
@@ -248,7 +248,7 @@ export default function Index(props) {
                                                             sort("location_id")
                                                         }
                                                     >
-                                                        Keterangan
+                                                        Lokasi
                                                         {params.field ==
                                                             "location_id" &&
                                                             params.direction ==

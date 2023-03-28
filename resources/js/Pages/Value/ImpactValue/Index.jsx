@@ -257,7 +257,7 @@ export default function Index(props) {
                                                             sort("name")
                                                         }
                                                     >
-                                                        Name
+                                                        Keterangan
                                                         {params.field ==
                                                             "name" &&
                                                             params.direction ==

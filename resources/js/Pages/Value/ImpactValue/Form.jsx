@@ -43,7 +43,7 @@ export default function Form({
                         <InputError message={errors.value} className="mt-2" />
                     </div>
                     <div className="col-span-12">
-                        <InputLabel for="name" value="Nama" />
+                        <InputLabel for="name" value="Keterangan" />
                         <TextInput
                             id="name"
                             value={data.name}

@@ -376,6 +376,26 @@ export default function Form({
                                 className="mt-2"
                             />
                         </div>
+                        <div className="col-span-12 my-6">
+                            <InputLabel
+                                for="osd_inherent"
+                                value="OSD Inherent"
+                            />
+                            <TextInput
+                            id="osd_inherent"
+                            value={data.osd_inherent}
+                            handleChange={(e) =>
+                                setData("osd_inherent", e.target.value)
+                            }
+                            readOnly={true}
+                            type="number"
+                            className="block w-full mt-1"
+                        />
+                            <InputError
+                                message={errors.osd_inherent}
+                                className="mt-2"
+                            />
+                        </div>
                     </div>
                     <div className="col-span-6 p-2 my-2 border rounded-lg">
                         <label htmlFor="" className="block mb-4 text-lg font-bold text-gray-700">OSD 2</label>
@@ -431,6 +451,26 @@ export default function Form({
                             />
                             <InputError
                                 message={errors.osd2_controllability}
+                                className="mt-2"
+                            />
+                        </div>
+                        <div className="col-span-12 my-6">
+                            <InputLabel
+                                for="osd_residual"
+                                value="OSD Residual"
+                            />
+                            <TextInput
+                            id="osd_residual"
+                            value={data.osd_residual}
+                            handleChange={(e) =>
+                                setData("osd_residual", e.target.value)
+                            }
+                            readOnly={true}
+                            type="number"
+                            className="block w-full mt-1"
+                        />
+                            <InputError
+                                message={errors.osd_residual}
                                 className="mt-2"
                             />
                         </div>

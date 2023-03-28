@@ -38,7 +38,7 @@ export default function ListBoxPage({ ShouldMap, selected, onChange, name }) {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <Listbox.Options className="absolute z-10 w-full h-auto py-1 mt-1 overflow-hidden overflow-y-auto text-base bg-white rounded-md shadow-lg max-h-max ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                <Listbox.Options className="absolute z-10 w-full h-auto py-1 mt-1 overflow-hidden overflow-y-auto text-base bg-white rounded-md shadow-lg max-h-64 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                     {ShouldMap.map((item) => (
                         <Listbox.Option
                             key={item.id}
