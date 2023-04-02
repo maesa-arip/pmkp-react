@@ -102,12 +102,26 @@ export default function Form({
         }
         return defaultValue[0];
     });
+    const [selectedIndikatorFitur04, setSelectedIndikatorFitur04] = useState(() => {
+        if (model) {
+            return ShouldMap.indikatorFitur04s.find(x => x.id === model.indikator_fitur04_id);
+        }
+        return defaultValue[0];
+    });
     const [selectedPengawasan, setSelectedPengawasan] = useState(() => {
         if (model) {
             return ShouldMap.pengawasan.find(x => x.id === model.pengawasan_id);
         }
         return defaultValue[0];
     });
+    useEffect(() => {
+        setData({
+            ...data,
+            ["pernyataan_risiko"]: 'Karena ' + data.sebab + ' Kemungkinan ' + data.resiko + ' Sehingga ' + data.dampak,
+        });
+        // const setPernyataanResiko = 'Karena ' + data.sebab + 'Kemungkinan ' + data.resiko + 'Sehingga ' + data.dampak;
+    }, [data.sebab,data.resiko,data.dampak])
+    
     
     const [tglRegister, setTglRegister] = useState((null));
     const [tglSelesai, setTglSelesai] = useState((null));
@@ -115,7 +129,26 @@ export default function Form({
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-4">
+                <div className="col-span-12">
+                        <InputLabel
+                            for="Indikator Fitur 4"
+                            value="Indikator Fitur 4"
+                        />
+                        <ListBoxPage
+                            ShouldMap={ShouldMap.indikatorFitur04s}
+                            selected={selectedIndikatorFitur04}
+                            onChange={(e) => {
+                                setData({ ...data, ["indikator_fitur04_id"]: e.id });
+                                setSelectedIndikatorFitur04(e);
+                            }}
+                        />
+                        <InputError
+                            message={errors.indikator_fitur04_id}
+                            className="mt-2"
+                        />
+                    </div>
+
+                    {/* <div className="col-span-4">
                         <InputLabel for="Proses" value="Proses" />
                         <ListBoxPage
                             ShouldMap={ShouldMap.proses}
@@ -130,7 +163,7 @@ export default function Form({
                             message={errors.proses_id}
                             className="mt-2"
                         />
-                    </div>
+                    </div> */}
                     <div className="col-span-4">
                         <InputLabel
                             for="TanggalRegister"
@@ -211,7 +244,7 @@ export default function Form({
                             className="mt-2"
                         />
                     </div>
-                    <div className="col-span-4">
+                    {/* <div className="col-span-4">
                         <InputLabel for="Lokasi" value="Lokasi" />
                         <ListBoxPage
                             ShouldMap={ShouldMap.locations}
@@ -225,31 +258,11 @@ export default function Form({
                             message={errors.location_id}
                             className="mt-2"
                         />
-                    </div>
-                    <div className="col-span-12">
-                        <InputLabel
-                            for="pernyataan risiko"
-                            value="Pernyataan Risiko"
-                        />
-                        <TextAreaInput
-                            id="pernyataan_risiko"
-                            value={data.pernyataan_risiko}
-                            handleChange={(e) =>
-                                setData("pernyataan_risiko", e.target.value)
-                            }
-                            // onChange={onChange}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError
-                            message={errors.pernyataan_risiko}
-                            className="mt-2"
-                        />
-                    </div>
+                    </div> */}
                     <div className="col-span-12">
                         <InputLabel
                             for="sebab"
-                            value="Sebab Insiden / Kejadian"
+                            value="Sebab"
                         />
                         <TextAreaInput
                             id="sebab"
@@ -266,6 +279,68 @@ export default function Form({
                             className="mt-2"
                         />
                     </div>
+                    <div className="col-span-12">
+                        <InputLabel
+                            for="resiko"
+                            value="Resiko"
+                        />
+                        <TextAreaInput
+                            id="resiko"
+                            value={data.resiko}
+                            handleChange={(e) =>
+                                setData("resiko", e.target.value)
+                            }
+                            // onChange={onChange}
+                            type="text"
+                            className="block w-full mt-1"
+                        />
+                        <InputError
+                            message={errors.resiko}
+                            className="mt-2"
+                        />
+                    </div>
+                    <div className="col-span-12">
+                        <InputLabel
+                            for="dampak"
+                            value="Dampak"
+                        />
+                        <TextAreaInput
+                            id="dampak"
+                            value={data.dampak}
+                            handleChange={(e) =>
+                                setData("dampak", e.target.value)
+                            }
+                            // onChange={onChange}
+                            type="text"
+                            className="block w-full mt-1"
+                        />
+                        <InputError
+                            message={errors.dampak}
+                            className="mt-2"
+                        />
+                    </div>
+                    <div className="col-span-12">
+                        <InputLabel
+                            for="pernyataan risiko"
+                            value="Pernyataan Risiko"
+                        />
+                        <TextAreaInput
+                            id="pernyataan_risiko"
+                            readOnly={true}
+                            value={data.pernyataan_risiko ?? ''}
+                            handleChange={(e) =>
+                                setData("pernyataan_risiko", e.target.value)
+                            }
+                            // onChange={onChange}
+                            type="text"
+                            className="block w-full mt-1"
+                        />
+                        <InputError
+                            message={errors.pernyataan_risiko}
+                            className="mt-2"
+                        />
+                    </div>
+                    
                     <div className="col-span-6">
                         <InputLabel
                             for="Jenis Insiden"
@@ -302,23 +377,7 @@ export default function Form({
                             className="mt-2"
                         />
                     </div>
-                    <div className="col-span-12">
-                        <InputLabel for="efek" value="Efek / Dampak" />
-                        <TextAreaInput
-                            id="efek"
-                            value={data.efek}
-                            handleChange={(e) =>
-                                setData("efek", e.target.value)
-                            }
-                            // onChange={onChange}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError
-                            message={errors.efek}
-                            className="mt-2"
-                        />
-                    </div>
+                  
                     <div className="col-span-6 p-2 my-2 border rounded-lg">
                         <label htmlFor="" className="block mb-4 text-lg font-bold text-gray-700">OSD 1</label>
 
@@ -479,16 +538,16 @@ export default function Form({
                         <label htmlFor="" className="block mb-4 text-lg font-bold text-gray-700">Grading Matrix</label>
                         <div className="col-span-12">
                         <TextInput
-                            id="grading"
-                            value={data.grading}
+                            id="grading1"
+                            value={data.grading1}
                             handleChange={(e) =>
-                                setData("grading", e.target.value)
+                                setData("grading1", e.target.value)
                             }
                             readOnly={false}
                             type="number"
                             className="block w-full mt-1"
                         />
-                        <InputError message={errors.grading} className="mt-2" />
+                        <InputError message={errors.grading1} className="mt-2" />
                     </div>
                     </div>
 
@@ -530,7 +589,23 @@ export default function Form({
                             className="mt-2"
                         />
                     </div>
-                    <div className="col-span-6">
+                    <div className="col-span-12 p-2 border rounded-lg">
+                        <label htmlFor="" className="block mb-4 text-lg font-bold text-gray-700">Target Waktu</label>
+                        <div className="col-span-12">
+                        <TextInput
+                            id="target_waktu"
+                            value={data.target_waktu}
+                            handleChange={(e) =>
+                                setData("target_waktu", e.target.value)
+                            }
+                            readOnly={false}
+                            type="text"
+                            className="block w-full mt-1"
+                        />
+                        <InputError message={errors.target_waktu} className="mt-2" />
+                    </div>
+                    </div>
+                    {/* <div className="col-span-6">
                         <InputLabel
                             for="Sumber Identifikasi"
                             value="Pengawasan"
@@ -547,7 +622,7 @@ export default function Form({
                             message={errors.pengawasan_id}
                             className="mt-2"
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

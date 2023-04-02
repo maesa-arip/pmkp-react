@@ -7,6 +7,7 @@ use App\Models\ControlValue;
 use App\Models\IdentificationSource;
 use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
+use App\Models\IndikatorFitur04;
 use App\Models\Location;
 use App\Models\Pic;
 use App\Models\ProbabilityValue;
@@ -30,7 +31,7 @@ class RiskRegisterKlinisController extends Controller
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 1)
             ->with('risk_category')
             ->with('identification_source')
-            ->with('location')
+            // ->with('location')
             ->with('risk_variety')
             ->with('risk_type')
             ->with('pic')
@@ -65,7 +66,8 @@ class RiskRegisterKlinisController extends Controller
         $impactValues = ImpactValue::get();
         $probabilityValues = ProbabilityValue::get();
         $controlValues = ControlValue::get();
-        return inertia('RiskRegister/Klinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,]);
+        $indikatorFitur04s = IndikatorFitur04::get();
+        return inertia('RiskRegister/Klinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur04s' => $indikatorFitur04s]);
     }
 
     /**
@@ -87,31 +89,36 @@ class RiskRegisterKlinisController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'proses_id' => 'required',
+            // 'proses_id' => 'required',
             'tgl_register' => 'required',
             'tgl_selesai' => 'required',
             'risk_category_id' => 'required',
             'identification_source_id' => 'required',
-            'location_id' => 'required',
+            'indikator_fitur04_id' => 'required',
+            // 'location_id' => 'required',
             'pernyataan_risiko' => 'required',
             'sebab' => 'required',
+            'resiko' => 'required',
+            'dampak' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
-            'efek' => 'required',
+            // 'efek' => 'required',
             'osd1_dampak' => 'required',
             'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
             'osd2_dampak' => 'required',
             'osd2_probabilitas' => 'required',
             'osd2_controllability' => 'required',
-            'grading' => 'required|numeric',
+            'grading1' => 'required|numeric',
             'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
-            'pengawasan_id' => 'required',
+            'target_waktu' => 'required',
+            // 'pengawasan_id' => 'required',
         ]);
         $request->merge([
             'user_id' => auth()->user()->id,
             'tipe_id' => 1,
+            'grading2' => 1,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
             'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
@@ -156,12 +163,13 @@ class RiskRegisterKlinisController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'proses_id' => 'required',
+            // 'proses_id' => 'required',
             'tgl_register' => 'required',
             'tgl_selesai' => 'required',
             'risk_category_id' => 'required',
             'identification_source_id' => 'required',
-            'location_id' => 'required',
+            'indikator_fitur04_id' => 'required',
+            // 'location_id' => 'required',
             'pernyataan_risiko' => 'required',
             'sebab' => 'required',
             'risk_variety_id' => 'required',
@@ -173,10 +181,11 @@ class RiskRegisterKlinisController extends Controller
             'osd2_dampak' => 'required',
             'osd2_probabilitas' => 'required',
             'osd2_controllability' => 'required',
-            'grading' => 'required',
+            'grading1' => 'required',
             'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
-            'pengawasan_id' => 'required',
+            // 'pengawasan_id' => 'required',
+            'target_waktu' => 'required',
         ]);
         $request->merge([
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,

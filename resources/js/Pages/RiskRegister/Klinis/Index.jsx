@@ -58,6 +58,7 @@ export default function Index(props) {
         impactValues: props.impactValues,
         probabilityValues: props.probabilityValues,
         controlValues: props.controlValues,
+        indikatorFitur04s: props.indikatorFitur04s,
         proses: [
             { id: 1, name: "Mulai" },
             { id: 2, name: "Dalam Proses" },
@@ -73,6 +74,7 @@ export default function Index(props) {
             { id: 2, name: "Belum dilaksanakan" },
         ],
     };
+
 
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
@@ -1019,7 +1021,7 @@ export default function Index(props) {
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1
-                                                                    .grading
+                                                                    .grading1
                                                             }
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">

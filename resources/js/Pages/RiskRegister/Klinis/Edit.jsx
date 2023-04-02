@@ -24,6 +24,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         osd2_probabilitas: model.osd2_probabilitas,
         osd2_controllability: model.osd2_controllability,
         pic_id: model.pic_id,
+        indikator_fituro4_id: model.indikator_fituro4_id,
         pengawasan_id: model.pengawasan_id,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
@@ -59,6 +60,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         osd2_probabilitas: model.osd2_probabilitas,
         osd2_controllability: model.osd2_controllability,
         pic_id: model.pic_id,
+        indikator_fituro4_id: model.indikator_fituro4_id,
         pengawasan_id: model.pengawasan_id,
         });
     }, [model]);

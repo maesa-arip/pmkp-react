@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CasemixController;
 use App\Http\Controllers\ControlValueController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\IdentificationSourceController;
@@ -44,6 +45,7 @@ Route::get('/dashboard ', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::Resource('users', UserController::class);
+// Route::Resource('casemix', CasemixController::class);
 Route::apiResource('roles', RoleController::class);
 Route::apiResource('permissions', PermissionController::class);
 Route::Resource('riskCategories', RiskCategoryController::class);

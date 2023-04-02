@@ -29,6 +29,12 @@ export default function Navbar() {
                                 Dashboard
                             </NavLink>
                             {/* <NavLink
+                                href={route("casemix.index")}
+                                active={route().current("casemix.index")}
+                            >
+                                Casemix
+                            </NavLink> */}
+                            {/* <NavLink
                                 href={route("users.index")}
                                 active={route().current("users.index")}
                             >
