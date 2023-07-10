@@ -25,8 +25,6 @@ class FormatLARSDHPExport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            // new Sheet1(),
-            // new Sheet2(),
             new Sheet3(),
             new Sheet4(),
             new Sheet5(),
@@ -35,187 +33,6 @@ class FormatLARSDHPExport implements WithMultipleSheets
             new Sheet8(),
             new Sheet9(),
             new Sheet10(),
-        ];
-    }
-}
-class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
-{
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    protected $data;
-    public function query()
-    {
-        $query = IndikatorFitur1::query()
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur1s.sasaran_strategis_id')
-            ->select('indikator_fitur1s.id as Nomor', 'sasaran_strategis.name as Sasaran_Strategis', 'indikator_fitur1s.name as Indikator', 'indikator_fitur1s.tujuan');
-
-        $this->data = $query->get();
-        return $query;
-    }
-    public function title(): string
-    {
-        return 'FITUR 1 DIREKTUR';
-    }
-    public function headings(): array
-    {
-        return [
-            ['No', 'Sasaran Strategis', 'Indikator', 'Tujuan'],
-        ];
-    }
-    public function columnWidths(): array
-    {
-        return [
-            'A' => 4,
-            'B' => 65,
-            'C' => 65,
-            'D' => 65,
-        ];
-    }
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(20);
-                $highestRow = $event->sheet->getHighestRow();
-                $highestColumn = $event->sheet->getHighestColumn();
-                $range = 'A1:' . $highestColumn . $highestRow;
-                $rangeA = 'A1:' . 'A' . $highestRow;
-                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
-                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000'],
-                        ],
-                    ],
-                    'alignment' => [
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-                $styleHeader = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => 'FFFFFFFF',
-                        ],
-                        'endColor' => [
-                            'argb' => 'FFFFFFFF',
-                        ],
-                    ],
-                ];
-                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_LEFT,
-                    ],
-                ]);
-                $event->sheet->getDelegate()->getStyle('A1:D1')->applyFromArray($styleHeader);
-            },
-        ];
-    }
-}
-class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
-{
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    protected $data;
-    public function query()
-    {
-        $query = IndikatorFitur2::query()
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur2s.sasaran_strategis_id')
-            ->select('indikator_fitur2s.id as Nomor', 'sasaran_strategis.name as Sasaran_Strategis', 'indikator_fitur2s.name as Indikator', 'indikator_fitur2s.tujuan');
-
-        $this->data = $query->get();
-        return $query;
-    }
-    public function title(): string
-    {
-        return 'FITUR 2 WADIR DAN KOMITE';
-    }
-    public function headings(): array
-    {
-        return [
-            ['No', 'Sasaran Strategis', 'Indikator', 'Tujuan'],
-        ];
-    }
-    public function columnWidths(): array
-    {
-        return [
-            'A' => 4,
-            'B' => 65,
-            'C' => 65,
-            'D' => 65,
-        ];
-    }
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
-                $highestRow = $event->sheet->getHighestRow();
-                $highestColumn = $event->sheet->getHighestColumn();
-                $range = 'A1:' . $highestColumn . $highestRow;
-                $rangeA = 'A1:' . 'A' . $highestRow;
-                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
-                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000'],
-                        ],
-                    ],
-                    'alignment' => [
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-                $styleHeader = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => 'FFFFFFFF',
-                        ],
-                        'endColor' => [
-                            'argb' => 'FFFFFFFF',
-                        ],
-                    ],
-                ];
-
-                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    ],
-                ]);
-                $event->sheet->getDelegate()->getStyle('A1:D1')->applyFromArray($styleHeader);
-            },
         ];
     }
 }
@@ -230,18 +47,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
+            ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id') 
             ->join('pics', 'pics.id', 'risk_registers.pic_id')
             ->join('users', 'users.id', 'risk_registers.user_id')
             ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan', 'pics.name as pic_name', 'risk_categories.name as kategori_risiko')
@@ -981,25 +787,6 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-            ->join('pics', 'pics.id', 'risk_registers.pic_id')
-            ->join('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->leftjoin('risk_gradings AS grading2', 'grading2.kode', 'risk_registers.concatdp2')
-            ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
-            ->leftjoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
             ->select(
                 DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
                 'risk_registers.osd1_dampak',
@@ -1095,24 +882,6 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-            ->join('pics', 'pics.id', 'risk_registers.pic_id')
-            ->join('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->leftjoin('risk_gradings AS grading2', 'grading2.kode', 'risk_registers.concatdp2')
-            ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
-            ->leftjoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Nomor`'),
                 'risk_categories.name as kategori',
@@ -1123,8 +892,6 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd1_controllability',
                 DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability AS `Skor`'),
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat1`'),
-
-                
             )
             ->groupBy(
                 'risk_registers.pernyataan_risiko',
@@ -1502,18 +1269,6 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-            ->join('pics', 'pics.id', 'risk_registers.pic_id')
             ->join('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
             ->leftjoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
@@ -1730,19 +1485,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
             ->join('pics', 'pics.id', 'risk_registers.pic_id')
-            ->join('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'pics.name as pic_name')
             // ->where('tipe_id', 1)
@@ -1950,22 +1693,6 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-            ->join('pics', 'pics.id', 'risk_registers.pic_id')
-            ->join('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('waktu_implementasis','waktu_implementasis.id','risk_registers.waktu_implementasi_id')
             ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum',DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num',DB::raw("'' AS 'Jumlah'"),'risk_registers.target_waktu' )
             ->where($whosLogin);
         $this->data = $query->get();
@@ -2061,17 +1788,6 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
         $query = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-            ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->join('locations', 'locations.id', 'indikator_fitur04s.location_id')
-            ->join('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-            ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
             ->join('pics', 'pics.id', 'risk_registers.pic_id')
             ->join('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
