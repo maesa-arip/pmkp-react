@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\RiskRegister;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -30,6 +31,9 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $notifications = $request->user() ? RiskRegister::query()
+            ->where('pic_id',auth()->user()->pic_id)->where('currently_id',1)->count() : '';
+            $permissionNames = $request->user() ? $request->user()->getAllPermissions() : null;
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
@@ -43,6 +47,8 @@ class HandleInertiaRequests extends Middleware
                 'type' => $request->session()->get('type'),
                 'message' => $request->session()->get('message'),
             ],
+            'notifications' => $notifications,
+            'permissionNames' => $permissionNames,
         ]);
     }
 }

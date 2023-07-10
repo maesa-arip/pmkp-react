@@ -29,6 +29,14 @@ class RiskRegister extends Model
     {
         return $this->belongsTo(RiskType::class);
     }
+    public function opsi_pengendalian()
+    {
+        return $this->belongsTo(OpsiPengendalian::class);
+    }
+    public function pembiayaan_risiko()
+    {
+        return $this->belongsTo(PembiayaanRisiko::class);
+    }
     public function pic()
     {
         return $this->belongsTo(Pic::class);
@@ -40,5 +48,9 @@ class RiskRegister extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function risk_register_histories()
+    {
+        return $this->hasMany(RiskRegisterHistory::class);
     }
 }

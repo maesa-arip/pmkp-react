@@ -6,7 +6,7 @@ import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
 import ThirdButton from "@/Components/ThirdButton";
 import App from "@/Layouts/App";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
@@ -48,12 +48,19 @@ export default function Index(props) {
         filtered,
         attributes,
     } = props.riskRegisterKlinis;
+    const { auth } = usePage().props;
     let ShouldMap = {
         riskCategories: props.riskCategories,
         identificationSources: props.identificationSources,
         locations: props.locations,
         riskVarieties: props.riskVarieties,
         riskTypes: props.riskTypes,
+        opsiPengendalian: props.opsiPengendalian,
+        pembiayaanRisiko: props.pembiayaanRisiko,
+        efektif: props.efektif,
+        jenisPengendalian: props.jenisPengendalian,
+        waktuPengendalian: props.waktuPengendalian,
+        waktuImplementasi: props.waktuImplementasi,
         pics: props.pics,
         impactValues: props.impactValues,
         probabilityValues: props.probabilityValues,
@@ -69,12 +76,23 @@ export default function Index(props) {
             { id: 1, name: "Klinis" },
             { id: 2, name: "Non Klinis" },
         ],
+        currently: [
+            { id: 1, name: "Sedang Terjadi" },
+            { id: 2, name: "Tidak Sedang Terjadi" },
+        ],
         pengawasan: [
             { id: 1, name: "Sudah dilaksanakan" },
             { id: 2, name: "Belum dilaksanakan" },
         ],
+        perluPenanganan: [
+            { id: 1, name: "Ya" },
+            { id: 2, name: "Tidak" },
+        ],
+        realisasi: [
+            { id: 1, name: "Sudah Tercapai" },
+            { id: 2, name: "Belum Tercapai" },
+        ],
     };
-
 
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
@@ -144,7 +162,7 @@ export default function Index(props) {
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
                 size="max-w-4xl"
-                title="Tambah Risk Register Klinis"
+                title={`Tambah Risk Register Klinis ` + auth.user.name}
             >
                 <Create
                     ShouldMap={ShouldMap}
@@ -179,8 +197,10 @@ export default function Index(props) {
                     Delete
                 </DangerButton>
             </DestroyModal>
+
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
+                    <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">RISK REGISTER KLINIS</p>
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-1/2">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
@@ -249,7 +269,7 @@ export default function Index(props) {
                                                         #
                                                     </div>
                                                 </th>
-                                                <th
+                                                {/* <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
@@ -273,585 +293,7 @@ export default function Index(props) {
                                                                 <DownIcon />
                                                             )}
                                                     </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Keterangan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                
-                                                
-
+                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
@@ -862,7 +304,7 @@ export default function Index(props) {
                                                             sort("created_at")
                                                         }
                                                     >
-                                                        Dibuat
+                                                        Opsi
                                                         {params.field ==
                                                             "created_at" &&
                                                             params.direction ==
@@ -877,6 +319,604 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("tgl_register")
+                                                        }
+                                                    >
+                                                        Tanggal Register
+                                                        {params.field ==
+                                                            "tgl_register" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "tgl_register" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("tgl_selesai")
+                                                        }
+                                                    >
+                                                        Tanggal Selesai
+                                                        {params.field ==
+                                                            "tgl_selesai" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "tgl_selesai" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "risk_category_id"
+                                                            )
+                                                        }
+                                                    >
+                                                        Kategori
+                                                        {params.field ==
+                                                            "risk_category_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "risk_category_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "identification_source_id"
+                                                            )
+                                                        }
+                                                    >
+                                                        Sumber
+                                                        {params.field ==
+                                                            "identification_source_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "identification_source_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "pernyataan_risiko"
+                                                            )
+                                                        }
+                                                    >
+                                                        Pernyataan Risiko
+                                                        {params.field ==
+                                                            "pernyataan_risiko" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "pernyataan_risiko" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("sebab")
+                                                        }
+                                                    >
+                                                        Sebab
+                                                        {params.field ==
+                                                            "sebab" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "sebab" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                {/* <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("location_id")
+                                                        }
+                                                    >
+                                                        Tanggal
+                                                        {params.field ==
+                                                            "location_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "location_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th> */}
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("risk_type_id")
+                                                        }
+                                                    >
+                                                        Jenis
+                                                        {params.field ==
+                                                            "risk_type_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "risk_type_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "risk_variety_id"
+                                                            )
+                                                        }
+                                                    >
+                                                        Tipe
+                                                        {params.field ==
+                                                            "risk_variety_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "risk_variety_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("dampak")
+                                                        }
+                                                    >
+                                                        Efek
+                                                        {params.field ==
+                                                            "dampak" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "dampak" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("osd1_dampak")
+                                                        }
+                                                    >
+                                                        OSD1 Dampak
+                                                        {params.field ==
+                                                            "osd1_dampak" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd1_dampak" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "osd1_probabilitas"
+                                                            )
+                                                        }
+                                                    >
+                                                        OSD1 Probabilitas
+                                                        {params.field ==
+                                                            "osd1_probabilitas" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd1_probabilitas" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "osd1_controllability"
+                                                            )
+                                                        }
+                                                    >
+                                                        OSD1 Controllability
+                                                        {params.field ==
+                                                            "osd1_controllability" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd1_controllability" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "osd1_inherent"
+                                                            )
+                                                        }
+                                                    >
+                                                        OSD1 Inherent
+                                                        {params.field ==
+                                                            "osd1_inherent" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd1_inherent" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("osd2_dampak")
+                                                        }
+                                                    >
+                                                        OSD2 Dampak
+                                                        {params.field ==
+                                                            "osd2_dampak" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd2_dampak" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "osd2_probabilitas"
+                                                            )
+                                                        }
+                                                    >
+                                                        OSD2 Probabilitas
+                                                        {params.field ==
+                                                            "osd2_probabilitas" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd2_probabilitas" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "osd2_controllability"
+                                                            )
+                                                        }
+                                                    >
+                                                        OSD2 Controllability
+                                                        {params.field ==
+                                                            "osd2_controllability" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd2_controllability" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "osd2_inherent"
+                                                            )
+                                                        }
+                                                    >
+                                                        OSD2 Residu
+                                                        {params.field ==
+                                                            "osd2_inherent" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "osd2_inherent" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                {/* <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("location_id")
+                                                        }
+                                                    >
+                                                        Grading
+                                                        {params.field ==
+                                                            "location_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "location_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th> */}
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort(
+                                                                "pengendalian_risiko"
+                                                            )
+                                                        }
+                                                    >
+                                                        Pengendalian Risiko
+                                                        {params.field ==
+                                                            "pengendalian_risiko" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "pengendalian_risiko" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("pic_id")
+                                                        }
+                                                    >
+                                                        PIC
+                                                        {params.field ==
+                                                            "pic_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "pic_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("user_id")
+                                                        }
+                                                    >
+                                                        Pemilik Risiko
+                                                        {params.field ==
+                                                            "user_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "user_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th>
+                                                {/* <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("location_id")
+                                                        }
+                                                    >
+                                                        Pengawasan
+                                                        {params.field ==
+                                                            "location_id" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "location_id" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th> */}
+
                                                 <th
                                                     scope="col"
                                                     className="relative px-6 py-3"
@@ -897,158 +937,12 @@ export default function Index(props) {
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {meta.from + index}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1.proses_id
                                                             }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.tgl_register
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.tgl_selesai
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .location
-                                                                    .name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_category
-                                                                    .name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .identification_source
-                                                                    .name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pernyataan_risiko
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .sebab
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.joined
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_variety
-                                                                    .name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_type
-                                                                    .name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .efek
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd1_dampak
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd1_probabilitas
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd1_controllability
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd1_inherent
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd2_dampak
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd2_probabilitas
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd2_controllability
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .osd2_inherent
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .grading1
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pengendalian_risiko
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pic.name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .user.name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pengawasan_id
-                                                            }
-                                                        </td>
-                                                        <td>
+                                                        </td> */}
+                                                        <td className="text-center">
                                                             <Dropdown>
                                                                 <Dropdown.Trigger>
                                                                     <button>
@@ -1062,7 +956,10 @@ export default function Index(props) {
                                                                         </svg>
                                                                     </button>
                                                                 </Dropdown.Trigger>
-                                                                <Dropdown.Content>
+                                                                <Dropdown.Content
+                                                                    align="right"
+                                                                    width="24"
+                                                                >
                                                                     <button
                                                                         className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                                         onClick={() =>
@@ -1086,6 +983,134 @@ export default function Index(props) {
                                                                 </Dropdown.Content>
                                                             </Dropdown>
                                                         </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.tgl_register
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.tgl_selesai
+                                                            }
+                                                        </td>
+
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .risk_category
+                                                                    .name
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .identification_source
+                                                                    .name
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.pernyataan_risiko
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.sebab
+                                                            }
+                                                        </td>
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.joined
+                                                            }
+                                                        </td> */}
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .risk_variety
+                                                                    .name
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .risk_type
+                                                                    .name
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.dampak
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd1_dampak
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd1_probabilitas
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd1_controllability
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd1_inherent
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd2_dampak
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd2_probabilitas
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd2_controllability
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.osd2_inherent
+                                                            }
+                                                        </td>
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .grading1
+                                                            }
+                                                        </td> */}
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1.pengendalian_risiko
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .pic.name
+                                                            }
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .user.name
+                                                            }
+                                                        </td>
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
+                                                            {
+                                                                riskregisterklinis1
+                                                                    .pengawasan_id
+                                                            }
+                                                        </td> */}
                                                     </tr>
                                                 )
                                             )}

@@ -6,10 +6,13 @@ import { Link, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 
 export default function Navbar() {
-    const { auth } = usePage().props;
+    const { auth,permissionNames } = usePage().props;
     const [isOpenMenuModal, setIsOpenMenuModal] = useState(false);
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+        const permission_name = permissionNames
+        ? permissionNames.map((permission) => permission.name)
+        : "null";
     return (
         <nav className="my-4 bg-white border rounded-xl">
             <div className="px-4 mx-auto bg-white">
@@ -40,6 +43,7 @@ export default function Navbar() {
                             >
                                 Users
                             </NavLink> */}
+                             {permission_name.indexOf("atur hak akses") > -1 && (
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -85,7 +89,8 @@ export default function Navbar() {
                                     </Dropdown>
                                 </div>
                             </div>
-
+                             )}
+                             {permission_name.indexOf("edit data master manajemen risiko") > -1 && (
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -159,6 +164,8 @@ export default function Navbar() {
                                     </Dropdown>
                                 </div>
                             </div>
+                             )}
+                             {permission_name.indexOf("atur data nilai") > -1 && (
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -211,6 +218,8 @@ export default function Navbar() {
                                     </Dropdown>
                                 </div>
                             </div>
+                             )}
+                             {permission_name.indexOf("lihat data risk register sesuai lokasi") > -1 && (
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -247,22 +256,23 @@ export default function Navbar() {
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "identificationSources.index"
+                                                    "riskRegisterNonKlinis.index"
                                                 )}
                                             >
                                                 Risk Register Non Klinis
                                             </Dropdown.Link>
-                                            <Dropdown.Link
+                                            {/* <Dropdown.Link
                                                 href={route(
                                                     "locations.index"
                                                 )}
                                             >
                                                 Budaya Keselamatan
-                                            </Dropdown.Link>
+                                            </Dropdown.Link> */}
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
                             </div>
+                             )}
                         </div>
                     </div>
 

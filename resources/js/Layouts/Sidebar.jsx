@@ -1,7 +1,11 @@
-import { Link } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 import React from 'react'
 
 export default function Sidebar() {
+    const {
+        auth,
+        notifications,
+    } = usePage().props;
   return (
     <div className="hidden min-h-screen col-span-2 col-start-1 p-4 antialiased text-gray-800 md:block">
                 <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
@@ -15,7 +19,7 @@ export default function Sidebar() {
                                 </div>
                             </li>
                             <li>
-                                <a
+                                <span
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
@@ -35,12 +39,12 @@ export default function Sidebar() {
                                             />
                                         </svg>
                                     </span>
-                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                    <Link href={route("dashboard")} className="ml-2 text-sm tracking-wide truncate">
                                         Dashboard
-                                    </span>
-                                </a>
+                                    </Link>
+                                </span>
                             </li>
-                            <li>
+                            {/* <li>
                                 <Link
                                     href={route("users.index")}
                                     // active={route().current("users.index")}
@@ -69,7 +73,7 @@ export default function Sidebar() {
                                         15
                                     </span>
                                 </Link>
-                            </li>
+                            </li> */}
                             {/* <li>
                                 <a
                                     href="#"
@@ -99,7 +103,7 @@ export default function Sidebar() {
                                     </span>
                                 </a>
                             </li> */}
-                            <li>
+                            {/* <li>
                                 <a
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
@@ -124,10 +128,10 @@ export default function Sidebar() {
                                         Messages
                                     </span>
                                 </a>
-                            </li>
+                            </li> */}
                             <li>
-                                <a
-                                    href="#"
+                                <Link
+                                    href={route("dashboard")}
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
@@ -149,10 +153,13 @@ export default function Sidebar() {
                                     <span className="ml-2 text-sm tracking-wide truncate">
                                         Notifications
                                     </span>
-                                    <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">
-                                        1.2k
-                                    </span>
-                                </a>
+                                    {notifications ? <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">
+                                        {notifications}
+                                    </span> : <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-green-500 bg-green-50 rounded-full">
+                                        0
+                                    </span>}
+                                    
+                                </Link>
                             </li>
                             <li className="px-5">
                                 <div className="flex flex-row items-center h-8">
@@ -162,6 +169,112 @@ export default function Sidebar() {
                                 </div>
                             </li>
                             <li>
+                                <a
+                                    href={route('export.riskregisterklinislarsdhp') } 
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                >
+                                    <span className="inline-flex items-center justify-center ml-4">
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                            />
+                                        </svg>
+                                    </span>
+                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                        Format LARS DHP
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href={route('export.riskregisterklinisfitur4') } 
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                >
+                                    <span className="inline-flex items-center justify-center ml-4">
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                            />
+                                        </svg>
+                                    </span>
+                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                        Format Fitur 4
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    // href="/export/riskregisterklinispdf?download=pdf"
+                                    href={route('export.riskregisterklinisbpkp') } 
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                >
+                                    <span className="inline-flex items-center justify-center ml-4">
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                            />
+                                        </svg>
+                                    </span>
+                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                        Format BPKP KLINIS
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    // href="/export/riskregisterklinispdf?download=pdf"
+                                    href={route('export.riskregisternonklinisbpkp') } 
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                >
+                                    <span className="inline-flex items-center justify-center ml-4">
+                                        <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                            />
+                                        </svg>
+                                    </span>
+                                    <span className="ml-2 text-sm tracking-tighter truncate">
+                                        Format BPKP NON KLINIS
+                                    </span>
+                                </a>
+                            </li>
+                            {/* <li>
                                 <a
                                     href={route('export.riskregisterklinis') } 
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
@@ -183,12 +296,19 @@ export default function Sidebar() {
                                         </svg>
                                     </span>
                                     <span className="ml-2 text-sm tracking-wide truncate">
-                                        Risk Register Klinis
+                                        Laporan Komite Mutu
                                     </span>
                                 </a>
+                            </li> */}
+                            <li className="px-5">
+                                <div className="flex flex-row items-center h-8">
+                                    <div className="text-sm font-light tracking-wide text-gray-500">
+                                        Data Risiko
+                                    </div>
+                                </div>
                             </li>
                             <li>
-                                {/* <a
+                                <span
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
@@ -204,19 +324,18 @@ export default function Sidebar() {
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth={2}
-                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                                             />
                                         </svg>
                                     </span>
-                                    <span className="ml-2 text-sm tracking-wide truncate">
-                                        Clients
-                                    </span>
-                                    <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-green-500 bg-green-50 rounded-full">
-                                        15
-                                    </span>
-                                </a> */}
-                                <a target="_blank"
-                                    href="/export/riskregisterklinispdf?download=pdf"
+                                    <Link href={route("riskRegisterKlinis.index")} className="ml-2 text-sm tracking-wide truncate">
+                                        Risk Register Klinis
+                                    </Link>
+                                </span>
+                            </li>
+                            <li>
+                                <span
+                                    href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
@@ -231,14 +350,14 @@ export default function Sidebar() {
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth={2}
-                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                                             />
                                         </svg>
                                     </span>
-                                    <span className="ml-2 text-sm tracking-wide truncate">
-                                        Risk Register Klinis PDF
-                                    </span>
-                                </a>
+                                    <Link href={route("riskRegisterNonKlinis.index")} className="ml-2 text-sm tracking-wide truncate">
+                                        Risk Register Non Klinis
+                                    </Link>
+                                </span>
                             </li>
                             <li className="px-5">
                                 <div className="flex flex-row items-center h-8">
@@ -248,7 +367,7 @@ export default function Sidebar() {
                                 </div>
                             </li>
                             <li>
-                                <a
+                                <span
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
@@ -268,12 +387,12 @@ export default function Sidebar() {
                                             />
                                         </svg>
                                     </span>
-                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                    <Link href={route("profile.edit")} className="ml-2 text-sm tracking-wide truncate">
                                         Profile
-                                    </span>
-                                </a>
+                                    </Link>
+                                </span>
                             </li>
-                            <li>
+                            {/* <li>
                                 <a
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
@@ -304,9 +423,9 @@ export default function Sidebar() {
                                         Settings
                                     </span>
                                 </a>
-                            </li>
+                            </li> */}
                             <li>
-                                <a
+                                <span
                                     href="#"
                                     className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
                                 >
@@ -326,10 +445,12 @@ export default function Sidebar() {
                                             />
                                         </svg>
                                     </span>
-                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                    <Link href={route("logout")}
+                                        method="post"
+                                        as="button" className="ml-2 text-sm tracking-wide truncate">
                                         Logout
-                                    </span>
-                                </a>
+                                    </Link>
+                                </span>
                             </li>
                         </ul>
                     </div>
