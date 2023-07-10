@@ -55,6 +55,12 @@ export default function Index(props) {
         locations: props.locations,
         riskVarieties: props.riskVarieties,
         riskTypes: props.riskTypes,
+        opsiPengendalian: props.opsiPengendalian,
+        pembiayaanRisiko: props.pembiayaanRisiko,
+        efektif: props.efektif,
+        jenisPengendalian: props.jenisPengendalian,
+        waktuPengendalian: props.waktuPengendalian,
+        waktuImplementasi: props.waktuImplementasi,
         pics: props.pics,
         impactValues: props.impactValues,
         probabilityValues: props.probabilityValues,
@@ -77,6 +83,14 @@ export default function Index(props) {
         pengawasan: [
             { id: 1, name: "Sudah dilaksanakan" },
             { id: 2, name: "Belum dilaksanakan" },
+        ],
+        perluPenanganan: [
+            { id: 1, name: "Ya" },
+            { id: 2, name: "Tidak" },
+        ],
+        realisasi: [
+            { id: 1, name: "Sudah Tercapai" },
+            { id: 2, name: "Belum Tercapai" },
         ],
     };
 

@@ -14,7 +14,7 @@ export default function Navbar() {
         ? permissionNames.map((permission) => permission.name)
         : "null";
     return (
-        <nav className="my-4 bg-white border rounded-xl">
+        <nav className="hidden my-4 bg-white border md:block rounded-xl">
             <div className="px-4 mx-auto bg-white">
                 <div className="flex justify-between h-16">
                     <div className="flex">

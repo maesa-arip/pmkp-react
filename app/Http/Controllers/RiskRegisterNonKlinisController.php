@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
+use App\Models\Efektif;
 use App\Models\IdentificationSource;
 use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
 use App\Models\IndikatorFitur04;
+use App\Models\JenisPengendalian;
 use App\Models\Location;
+use App\Models\OpsiPengendalian;
+use App\Models\PembiayaanRisiko;
 use App\Models\Pic;
 use App\Models\ProbabilityValue;
 use App\Models\RiskCategory;
@@ -17,6 +21,8 @@ use App\Models\RiskRegisterHistory;
 use App\Models\RiskType;
 use App\Models\RiskVariety;
 use App\Models\User;
+use App\Models\WaktuImplementasi;
+use App\Models\WaktuPengendalian;
 use App\Notifications\RiskRegisterEditNotification;
 use App\Notifications\RiskRegisterNewNotification;
 use Carbon\Carbon;
@@ -32,6 +38,8 @@ class RiskRegisterNonKlinisController extends Controller
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 2)
             ->with('risk_category')
             ->with('identification_source')
+            ->with('opsi_pengendalian')
+            ->with('pembiayaan_risiko')
             // ->with('location')
             ->with('risk_variety')
             ->with('risk_type')
@@ -66,13 +74,19 @@ class RiskRegisterNonKlinisController extends Controller
         $locations = Location::get();
         $riskVarieties = RiskVariety::get();
         $riskTypes = RiskType::get();
+        $opsiPengendalian = OpsiPengendalian::get();
+        $efektif = Efektif::get();
+        $jenisPengendalian = JenisPengendalian::get();
+        $waktuPengendalian = WaktuPengendalian::get();
+        $pembiayaanRisiko = PembiayaanRisiko::get();
+        $waktuImplementasi = WaktuImplementasi::get();
         $pics = Pic::get();
         $impactValues = ImpactValue::get();
         $probabilityValues = ProbabilityValue::get();
         $controlValues = ControlValue::get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->get();
         $indikatorFitur04s = IndikatorFitur04::where('location_id',$location_login[0]->location_id)->orderBy('name','DESC')->get();
-        return inertia('RiskRegister/NonKlinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur04s' => $indikatorFitur04s]);
+        return inertia('RiskRegister/NonKlinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur04s' => $indikatorFitur04s,'opsiPengendalian' => $opsiPengendalian,'pembiayaanRisiko' => $pembiayaanRisiko,'efektif' => $efektif,'jenisPengendalian' => $jenisPengendalian,'waktuPengendalian' => $waktuPengendalian,'waktuImplementasi' => $waktuImplementasi]);
     }
 
     /**
@@ -119,6 +133,9 @@ class RiskRegisterNonKlinisController extends Controller
             // 'grading1' => 'required|numeric',
             'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
+            'perlu_penanganan_id' => 'required',
+            'opsi_pengendalian_id' => 'required',
+            'pembiayaan_risiko_id' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
             // 'pengawasan_id' => 'required',
         ]);
@@ -207,6 +224,9 @@ class RiskRegisterNonKlinisController extends Controller
             // 'grading1' => 'required|numeric',
             'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
+            'perlu_penanganan_id' => 'required|numeric|min:1|not_in:0',
+            'opsi_pengendalian_id' => 'required|numeric|min:1|not_in:0',
+            'pembiayaan_risiko_id' => 'required|numeric|min:1|not_in:0',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
             // 'pengawasan_id' => 'required',
         ]);

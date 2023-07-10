@@ -27,6 +27,20 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         pic_id: model.pic_id,
         indikator_fituro4_id: model.indikator_fituro4_id,
         pengawasan_id: model.pengawasan_id,
+        perlu_penanganan_id: model.perlu_penanganan_id,
+        opsi_pengendalian_id: model.opsi_pengendalian_id,
+        pembiayaan_risiko_id: model.pembiayaan_risiko_id,
+        efektif_id: model.efektif_id,
+        jenis_pengendalian_id: model.jenis_pengendalian_id,
+        waktu_pengendalian_id: model.waktu_pengendalian_id,
+        belum_tertangani: model.belum_tertangani,
+        usulan_perbaikan: model.usulan_perbaikan,
+        denum: model.denum,
+        num: model.num,
+        waktudenumnum: model.waktudenumnum,
+        output: model.output,
+        waktu_implementasi_id: model.waktu_implementasi_id,
+        realisasi_id: model.realisasi_id,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -67,6 +81,20 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             pic_id: model.pic_id,
             indikator_fituro4_id: model.indikator_fituro4_id,
             pengawasan_id: model.pengawasan_id,
+            perlu_penanganan_id: model.perlu_penanganan_id,
+            opsi_pengendalian_id: model.opsi_pengendalian_id,
+            pembiayaan_risiko_id: model.pembiayaan_risiko_id,
+            efektif_id: model.efektif_id,
+            jenis_pengendalian_id: model.jenis_pengendalian_id,
+            waktu_pengendalian_id: model.waktu_pengendalian_id,
+            belum_tertangani: model.belum_tertangani,
+            usulan_perbaikan: model.usulan_perbaikan,
+            denum: model.denum,
+            num: model.num,
+            waktudenumnum: model.waktudenumnum,
+            output: model.output,
+            waktu_implementasi_id: model.waktu_implementasi_id,
+            realisasi_id: model.realisasi_id,
         });
     }, [model]);
     return (
