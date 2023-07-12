@@ -93,9 +93,9 @@ export default function Index(props) {
             { id: 2, name: "Belum Tercapai" },
         ],
     };
+
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
-    const [isInitialRender, setIsInitialRender] = useState(true);
     const reload = useCallback(
         debounce((query) => {
             router.get(
@@ -107,16 +107,11 @@ export default function Index(props) {
                     preserveScroll: true,
                 }
             );
-        }, 500),
+        }, 150),
         []
     );
-    useEffect(() => {
-        if (!isInitialRender) {
-            reload(params);
-        } else {
-            setIsInitialRender(false);
-        }
-    }, [params]);
+
+    useEffect(() => reload(params), [params]);
     useEffect(() => {
         let numbers = [];
         for (
@@ -128,16 +123,8 @@ export default function Index(props) {
         }
         setPageNumber(numbers);
     }, []);
-    const onChange = (event) => {
-        const updatedParams = {
-            ...params,
-            [event.target.name]: event.target.value,
-            page: 1, // Set page number to 1
-        };
-        setParams(updatedParams);
-    };
-    // const onChange = (event) =>
-    //     setParams({ ...params, [event.target.name]: event.target.value });
+    const onChange = (event) =>
+        setParams({ ...params, [event.target.name]: event.target.value });
     const sort = (item) => {
         setParams({
             ...params,
@@ -214,9 +201,7 @@ export default function Index(props) {
 
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
-                    <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
-                        RISK REGISTER KLINIS
-                    </p>
+                    <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">RISK REGISTER KLINIS</p>
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-1/2">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
@@ -285,6 +270,31 @@ export default function Index(props) {
                                                         #
                                                     </div>
                                                 </th>
+                                                {/* <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                >
+                                                    <div
+                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        onClick={() =>
+                                                            sort("proses")
+                                                        }
+                                                    >
+                                                        Proses
+                                                        {params.field ==
+                                                            "proses" &&
+                                                            params.direction ==
+                                                                "asc" && (
+                                                                <UpIcon />
+                                                            )}
+                                                        {params.field ==
+                                                            "proses" &&
+                                                            params.direction ==
+                                                                "desc" && (
+                                                                <DownIcon />
+                                                            )}
+                                                    </div>
+                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"

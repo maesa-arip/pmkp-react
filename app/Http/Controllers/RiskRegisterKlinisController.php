@@ -28,6 +28,7 @@ use App\Notifications\RiskRegisterNewNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Inertia;
 
 class RiskRegisterKlinisController extends Controller
 {
@@ -52,7 +53,7 @@ class RiskRegisterKlinisController extends Controller
             ->with('user')
             ->where($whosLogin);
         if ($request->q) {
-            $riskRegisterKlinis->where('tipe_id', 'like', '%' . $request->q . '%');
+            $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
         }
         if ($request->has(['field', 'direction'])) {
             $riskRegisterKlinis->orderBy($request->field, $request->direction);
@@ -72,7 +73,6 @@ class RiskRegisterKlinisController extends Controller
 
             ]
         ]);
-       
         // $permissionNames = auth()->user()->getPermissionNames();
         $riskCategories = RiskCategory::get();
         $identificationSources = IdentificationSource::get();
@@ -91,7 +91,25 @@ class RiskRegisterKlinisController extends Controller
         $controlValues = ControlValue::get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->get();
         $indikatorFitur04s = IndikatorFitur04::where('location_id',$location_login[0]->location_id)->orderBy('name','DESC')->get();
-        return inertia('RiskRegister/Klinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur04s' => $indikatorFitur04s,'opsiPengendalian' => $opsiPengendalian,'pembiayaanRisiko' => $pembiayaanRisiko,'efektif' => $efektif,'jenisPengendalian' => $jenisPengendalian,'waktuPengendalian' => $waktuPengendalian,'waktuImplementasi' => $waktuImplementasi]);
+        return Inertia::render('RiskRegister/Klinis/Index', [
+            'riskRegisterKlinis' => $riskRegisterKlinis,
+            'riskCategories' => $riskCategories,
+            'identificationSources' => $identificationSources,
+            'locations' => $locations,
+            'riskVarieties' => $riskVarieties,
+            'riskTypes' => $riskTypes,
+            'pics' => $pics,
+            'impactValues' => $impactValues,
+            'probabilityValues' => $probabilityValues,
+            'controlValues' => $controlValues,
+            'indikatorFitur04s' => $indikatorFitur04s,
+            'opsiPengendalian' => $opsiPengendalian,
+            'pembiayaanRisiko' => $pembiayaanRisiko,
+            'efektif' => $efektif,
+            'jenisPengendalian' => $jenisPengendalian,
+            'waktuPengendalian' => $waktuPengendalian,
+            'waktuImplementasi' => $waktuImplementasi,
+        ]);
     }
 
     /**

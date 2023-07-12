@@ -96,21 +96,28 @@ export default function Index(props) {
 
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
+    const [isInitialRender, setIsInitialRender] = useState(true);
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                route("riskRegisterNonKlinis.index"),
+                route(route().current()),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,
                     preserveScroll: true,
                 }
             );
-        }, 150),
+        }, 500),
         []
     );
 
-    useEffect(() => reload(params), [params]);
+    useEffect(() => {
+        if (!isInitialRender) {
+            reload(params);
+        } else {
+            setIsInitialRender(false);
+        }
+    }, [params]);
     useEffect(() => {
         let numbers = [];
         for (
@@ -122,8 +129,14 @@ export default function Index(props) {
         }
         setPageNumber(numbers);
     }, []);
-    const onChange = (event) =>
-        setParams({ ...params, [event.target.name]: event.target.value });
+    const onChange = (event) => {
+        const updatedParams = {
+            ...params,
+            [event.target.name]: event.target.value,
+            page: 1, // Set page number to 1
+        };
+        setParams(updatedParams);
+    };
     const sort = (item) => {
         setParams({
             ...params,

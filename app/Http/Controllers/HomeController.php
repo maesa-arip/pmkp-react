@@ -41,6 +41,7 @@ class HomeController extends Controller
             ->with('pic')
             ->with('risk_register_histories')
             ->with('user')
+            // ->where('risk_registers.pic_id',auth()->user()->id)
             ->where($whosLogin)
             ->orderBy('currently_id','ASC');
         if ($request->q) {

@@ -297,7 +297,7 @@ export default function Sidebar() {
                                                                     </button>
                                                                 )}
                                                             </Link>
-                                                            <Link
+                                                            <a
                                                                 href="#"
                                                                 onClick={
                                                                     handleExportBPKPKlinis
@@ -345,8 +345,8 @@ export default function Sidebar() {
                                                                         KLINIS
                                                                     </button>
                                                                 )}
-                                                            </Link>
-                                                            <Link
+                                                            </a>
+                                                            <a
                                                                 href="#"
                                                                 onClick={
                                                                     handleExportBPKPNonKlinis
@@ -394,7 +394,7 @@ export default function Sidebar() {
                                                                         KLINIS
                                                                     </button>
                                                                 )}
-                                                            </Link>
+                                                            </a>
                                                         </div>
                                                     </Disclosure.Panel>
                                                 </>
@@ -780,7 +780,7 @@ export default function Sidebar() {
                                                             </button>
                                                         )}
                                                     </Link>
-                                                    <Link
+                                                    <a
                                                         href="#"
                                                         onClick={
                                                             handleExportBPKPKlinis
@@ -823,8 +823,8 @@ export default function Sidebar() {
                                                                 KLINIS
                                                             </button>
                                                         )}
-                                                    </Link>
-                                                    <Link
+                                                    </a>
+                                                    <a
                                                         href="#"
                                                         onClick={
                                                             handleExportBPKPNonKlinis
@@ -867,7 +867,7 @@ export default function Sidebar() {
                                                                 KLINIS
                                                             </button>
                                                         )}
-                                                    </Link>
+                                                    </a>
                                                 </div>
                                             </Disclosure.Panel>
                                         </>
