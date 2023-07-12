@@ -12,6 +12,9 @@ import {
 } from "@heroicons/react/20/solid";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import axios from "axios";
+import ExportModal from "@/Components/Modal/ExportModal";
+import LarsDHP from "@/Pages/Export/LarsDHP";
+import ThirdButton from "@/Components/ThirdButton";
 
 export default function Sidebar() {
     const { auth, notifications } = usePage().props;
@@ -95,9 +98,23 @@ export default function Sidebar() {
                 setLoadingNonKlinis(false);
             });
     };
+
+    const [isOpenExportDialog, setIsOpenExportDialog] = useState(false);
+    const openExportDialog = () => {
+        setIsOpenExportDialog(true);
+    };
+
     return (
         <div className="col-span-12 col-start-1 py-4 antialiased text-gray-800 md:px-4 md:pb-0 md:pt-4 md:col-span-2 md:block">
             <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialog}
+                    setIsOpenExportDialog={setIsOpenExportDialog}
+                    size="max-w-4xl"
+                    title={`Pilihan Export Register Klinis ` + auth.user.name}
+                >
+                    <LarsDHP setIsOpenAddDialog={setIsOpenExportDialog} />
+                </ExportModal>
                 <Transition.Root show={mobileFiltersOpen} as={Fragment}>
                     <Dialog
                         as="div"
@@ -297,7 +314,7 @@ export default function Sidebar() {
                                                                     </button>
                                                                 )}
                                                             </Link>
-                                                            <a
+                                                            <Link
                                                                 href="#"
                                                                 onClick={
                                                                     handleExportBPKPKlinis
@@ -345,8 +362,8 @@ export default function Sidebar() {
                                                                         KLINIS
                                                                     </button>
                                                                 )}
-                                                            </a>
-                                                            <a
+                                                            </Link>
+                                                            <Link
                                                                 href="#"
                                                                 onClick={
                                                                     handleExportBPKPNonKlinis
@@ -394,7 +411,7 @@ export default function Sidebar() {
                                                                         KLINIS
                                                                     </button>
                                                                 )}
-                                                            </a>
+                                                            </Link>
                                                         </div>
                                                     </Disclosure.Panel>
                                                 </>
@@ -737,10 +754,11 @@ export default function Sidebar() {
                                             </h3>
                                             <Disclosure.Panel className="pt-6">
                                                 <div className="space-y-4">
-                                                    <Link
-                                                        href="#"
+                                                    <button
+                                                        type="button"
+
                                                         onClick={
-                                                            handleExportLARSDHP
+                                                            openExportDialog
                                                         }
                                                         className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                     >
@@ -768,19 +786,19 @@ export default function Sidebar() {
                                                             </svg>
                                                         </span>
                                                         {loadingLars ? (
-                                                            <button
+                                                            <div
                                                                 className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
                                                                 disabled={true}
                                                             >
                                                                 Exporting...
-                                                            </button>
+                                                            </div>
                                                         ) : (
-                                                            <button className="ml-2 text-sm tracking-wide truncate">
-                                                                Format LARS DHP
-                                                            </button>
+                                                            <div className="ml-2 text-sm tracking-wide truncate">
+                                                                Format LARS DHP1
+                                                            </div>
                                                         )}
-                                                    </Link>
-                                                    <a
+                                                    </button>
+                                                    <Link
                                                         href="#"
                                                         onClick={
                                                             handleExportBPKPKlinis
@@ -823,8 +841,8 @@ export default function Sidebar() {
                                                                 KLINIS
                                                             </button>
                                                         )}
-                                                    </a>
-                                                    <a
+                                                    </Link>
+                                                    <Link
                                                         href="#"
                                                         onClick={
                                                             handleExportBPKPNonKlinis
@@ -867,7 +885,7 @@ export default function Sidebar() {
                                                                 KLINIS
                                                             </button>
                                                         )}
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                             </Disclosure.Panel>
                                         </>

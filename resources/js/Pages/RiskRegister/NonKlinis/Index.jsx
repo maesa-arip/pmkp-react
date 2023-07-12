@@ -107,7 +107,7 @@ export default function Index(props) {
                     preserveScroll: true,
                 }
             );
-        }, 500),
+        }, 150),
         []
     );
 

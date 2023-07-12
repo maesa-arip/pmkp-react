@@ -6,6 +6,7 @@ import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Edit from "./Edit";
+import axios from 'axios';
 
 const UpIcon = () => (
     <svg
@@ -88,7 +89,7 @@ export default function Index(props) {
                     preserveScroll: true,
                 }
             );
-        }, 500),
+        }, 150),
         []
     );
 
@@ -149,6 +150,7 @@ export default function Index(props) {
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [state, setState] = useState([]);
+  
     return (
         <>
             <Head title="Dashboard_History" />
@@ -164,8 +166,7 @@ export default function Index(props) {
                     isOpenEditDialog={isOpenEditDialog}
                     setIsOpenEditDialog={setIsOpenEditDialog}
                 />
-            </EditModal>
-
+            </EditModal> 
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
                 <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">HISTORY RISK REGISTER</p>

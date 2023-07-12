@@ -22,11 +22,19 @@ use Illuminate\Support\Collection;
 
 class FormatLARSDHPExport implements WithMultipleSheets
 {
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function sheets(): array
     {
         return [
-            new Sheet3(),
-            new Sheet4(),
+            new Sheet3($this->startDate, $this->endDate),
+            new Sheet4($this->startDate, $this->endDate),
             new Sheet5(),
             new Sheet6(),
             new Sheet7(),
@@ -42,6 +50,14 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -52,6 +68,10 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->join('users', 'users.id', 'risk_registers.user_id')
             ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan', 'pics.name as pic_name', 'risk_categories.name as kategori_risiko')
             ->where($whosLogin);
+            if (!empty($this->startDate) && !empty($this->endDate)) {
+                $query->where('risk_registers.created_at','>=', $this->startDate)
+                      ->where('risk_registers.created_at','<=', $this->endDate);
+            }
         $this->data = $query->get();
         return $query;
     }
@@ -138,6 +158,14 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -197,6 +225,10 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             )
             // ->where('tipe_id', 1)
             ->where($whosLogin);
+            if (!empty($this->startDate) && !empty($this->endDate)) {
+                $query->where('risk_registers.created_at','>=', $this->startDate)
+                      ->where('risk_registers.created_at','<=', $this->endDate);
+            }
 
 
 

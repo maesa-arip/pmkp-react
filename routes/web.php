@@ -73,6 +73,9 @@ Route::middleware('auth')->group(function () {
     Route::get('export/riskregisterklinisfitur4', [ExportController::class, 'riskregisterklinisfitur4'])->name('export.riskregisterklinisfitur4');
     Route::get('export/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp'])->name('export.riskregisterklinislarsdhp');
     Route::get('export/riskregisterklinispdf', [ExportController::class, 'exportpdf'])->name('export.riskregisterklinispdf');
+
+    // Route::post('/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
+    Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
 });
 
 require __DIR__.'/auth.php';

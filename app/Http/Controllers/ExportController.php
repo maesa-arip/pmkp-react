@@ -277,328 +277,6 @@ class ExportController extends Controller
         // // SimpleExcelWriter::streamDownload('RiskRegisterKlinis.csv')
         // //     ->addRows($rows, $style);
     }
-    // public function riskregisterklinisbpkp()
-    // {
-    //     $stream = SimpleExcelWriter::streamDownload('RiskRegisterBPKP.xlsx');
-    //     $writer = $stream->getWriter();
-    //     $rows = [];
-    //     IndikatorFitur04::query()
-    //         ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
-    //         ->select(DB::raw("(SELECT COUNT(*) FROM indikator_fitur04s r WHERE r.id <= indikator_fitur04s.id) AS Nomor"), 'indikator_fitur4s.name as NamaKonteks(ProsesBisnis)', 'indikator_fitur04s.tujuan as Indikator')->orderBy('Nomor', 'ASC')
-    //         ->chunk(2000, function ($fitur1) use (&$rows) {
-    //             foreach ($fitur1->toArray() as $fitur1) {
-    //                 $rows[] = $fitur1;
-    //             }
-    //         });
-
-    //     // Set the name of the current sheet to Names
-    //     $nameSheet = $writer->getCurrentSheet();
-    //     $nameSheet->setName('Penetapan Konteks');
-    //     $stream->addRows($rows);
-        
-
-
-    //     $addressSheet = $writer->addNewSheetAndMakeItCurrent();
-    //     $addressSheet->setName('Indentifikasi Risiko');
-    //     $stream->addRow(['Nomor', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Sebab', 'UC/C', 'Dampak (Pihak yang Terkena)']);
-    //     $rows2 = [];
-    //     IndikatorFitur04::query()
-    //         ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
-    //         ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
-    //         ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //         ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //         ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //         ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //         ->select(
-    //             DB::raw("(SELECT COUNT(*) FROM risk_registers r WHERE r.id <= risk_registers.id) AS row_number"),
-    //             'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
-    //             'indikator_fitur04s.tujuan as Indikator',
-    //             DB::raw("'xxx' AS 'Kode Risiko'"),
-    //             'risk_categories.name as Kategori Risiko',
-    //             'risk_registers.pernyataan_risiko as Penyataan Risiko',
-    //             'risk_registers.sebab as Sebab',
-    //             DB::raw("'C' AS 'UC/C'"),
-    //             'pics.name as Dampak (Pihak yang Terkena)'
-    //         )
-    //         ->orderBy('row_number', 'ASC')
-
-    //         ->chunk(2000, function ($fitur2) use (&$rows2) {
-    //             foreach ($fitur2->toArray() as $fitur2) {
-    //                 $rows2[] = $fitur2;
-    //             }
-    //         });
-    //     $stream->addRows($rows2);
-
-    //     $addressSheet = $writer->addNewSheetAndMakeItCurrent();
-    //     $addressSheet->setName('Analisis Risiko');
-    //     $stream->addRow(['Nomor', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Sebab', 'UC/C', 'Dampak','OSD1 Dampak','OSD1 Probabilitas','Tingkat Risiko','Peringkat Risiko','Pemilik Risiko']);
-    //     $rows3 = [];
-    //     IndikatorFitur04::query()
-    //     ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
-    //     ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
-    //     ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //     ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //     ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //     ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //     ->join('users', 'users.id', 'risk_registers.user_id')
-    //     ->select(
-    //         DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor Urutan`'),
-    //         'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
-    //         'indikator_fitur04s.tujuan as Indikator',
-    //         DB::raw("'xxx' AS 'Kode Risiko'"),
-    //         'risk_categories.name as Kategori Risiko',
-    //         'risk_registers.pernyataan_risiko as Penyataan Risiko',
-    //         'risk_registers.sebab as Sebab',
-    //         DB::raw("'C' AS 'UC/C'"),
-    //         'risk_registers.dampak',
-    //         'risk_registers.osd1_dampak',
-    //         'risk_registers.osd1_probabilitas',
-    //         DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
-    //         DB::raw('
-    //             CASE
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 14 THEN "SANGAT TINGGI"
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 9 THEN "TINGGI"
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 4 THEN "SEDANG"
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 2 THEN "RENDAH"
-    //                 ELSE "SANGAT RENDAH"
-    //             END AS `Peringkat Risiko`'
-    //         ),
-    //         'users.name'
-    //     )
-    //     ->orderBy('Tingkat risiko', 'DESC')
-    //         ->chunk(2000, function ($fitur3) use (&$rows3) {
-    //             foreach ($fitur3->toArray() as $fitur3) {
-    //                 $rows3[] = $fitur3;
-    //             }
-    //         });
-    //     $stream->addRows($rows3);
-
-    //     $addressSheet = $writer->addNewSheetAndMakeItCurrent();
-    //     $addressSheet->setName('Evaluasi Risiko');
-    //     $stream->addRow(['Nomor', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'OSD1 Dampak','OSD1 Probabilitas','Tingkat Risiko','Peringkat Risiko','Uraian','Desain','Efektifitas','OSD2 Dampak','OSD2 Probabilitas','Tingkat Risiko','Peringkat Risiko','Strategi','Uraian','Indikator Keluaran','Jadwal','Penanggung Jawab','Probability','Dampak','Tingkat','Peringkat Risiko']);
-    //     $rows4 = [];
-    //     IndikatorFitur04::query()
-    //     ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
-    //     ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
-    //     ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //     ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //     ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //     ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //     ->join('users', 'users.id', 'risk_registers.user_id')
-    //     ->select(
-    //         DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor Urutan`'),
-    //         'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
-    //         'indikator_fitur04s.tujuan as Indikator',
-    //         DB::raw("'xxx' AS 'Kode Risiko'"),
-    //         'risk_categories.name as Kategori Risiko',
-    //         'risk_registers.pernyataan_risiko as Penyataan Risiko',
-    //         'risk_registers.sebab as Sebab',
-    //         DB::raw("'C' AS 'UC/C'"),
-    //         'risk_registers.osd1_dampak',
-    //         'risk_registers.osd1_probabilitas',
-    //         DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
-    //         DB::raw('
-    //             CASE
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 14 THEN "SANGAT TINGGI"
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 9 THEN "TINGGI"
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 4 THEN "SEDANG"
-    //                 WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 2 THEN "RENDAH"
-    //                 ELSE "SANGAT RENDAH"
-    //             END AS `Peringkat Risiko`'
-    //         ),
-    //         'risk_registers.pengendalian_risiko',
-    //         DB::raw("'Ada' AS 'Desain'"),
-    //         DB::raw("'Efektif' AS 'Efektifitas'"),
-    //         'risk_registers.osd2_dampak',
-    //         'risk_registers.osd2_probabilitas',
-    //         DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko2`'),
-    //         DB::raw('
-    //             CASE
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 14 THEN "SANGAT TINGGI"
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 9 THEN "TINGGI"
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 4 THEN "SEDANG"
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 2 THEN "RENDAH"
-    //                 ELSE "SANGAT RENDAH"
-    //             END AS `Peringkat Risiko2`'
-    //         ),
-    //         DB::raw("'-' AS 'Strategi'"),
-    //         DB::raw("'-' AS 'Uraian'"),
-    //         DB::raw("'-' AS 'Indikator Keluaran'"),
-    //         DB::raw("'-' AS 'Jadwal'"),
-    //         'users.name',
-    //         'risk_registers.osd2_dampak as dampak3',
-    //         'risk_registers.osd2_probabilitas as probabilitas3',
-    //         DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko3`'),
-    //         DB::raw('
-    //             CASE
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 14 THEN "SANGAT TINGGI"
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 9 THEN "TINGGI"
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 4 THEN "SEDANG"
-    //                 WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 2 THEN "RENDAH"
-    //                 ELSE "SANGAT RENDAH"
-    //             END AS `Peringkat Risiko3`'
-    //         ),
-    //     )
-    //     ->orderBy('Tingkat risiko', 'DESC')
-
-    //         ->chunk(2000, function ($users) use (&$rows4) {
-    //             foreach ($users->toArray() as $user) {
-    //                 $rows4[] = $user;
-    //             }
-    //         });
-    //     $stream->addRows($rows4);
-
-    //     $addressSheet = $writer->addNewSheetAndMakeItCurrent();
-    //     $addressSheet->setName('Profil Risiko');
-    //     $stream->addRow(['Nomor', 'Pernyataan Risiko', 'Kategori Risiko','Penyebab Risiko', 'Probabilitas', 'Dampak', 'Controlability','Skor','Peringkat']);
-    //     $rows5 = [];
-    //     IndikatorFitur04::query()
-    //     ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
-    //     ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
-    //     ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //     ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //     ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //     ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //     ->join('users', 'users.id', 'risk_registers.user_id')
-    //     ->select(
-    //         DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `No Urut`'),
-    //         'risk_registers.pernyataan_risiko as Penyataan Risiko',
-    //         'risk_categories.name as Kategori Risiko',
-    //         'risk_registers.sebab as Sebab',
-    //         'risk_registers.osd2_dampak',
-    //         'risk_registers.osd2_probabilitas',
-    //         'risk_registers.osd2_controllability',
-    //         DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability AS `Skor`'),
-    //         DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `Peringkat2`'),
-    //     )
-    //     ->groupBy(
-    //         'risk_registers.pernyataan_risiko',
-    //         'risk_categories.name',
-    //         'risk_registers.sebab',
-    //         'risk_registers.osd2_dampak',
-    //         'risk_registers.osd2_probabilitas',
-    //         'risk_registers.osd2_controllability'
-    //     )
-    //     ->orderBy('Skor', 'DESC')
-
-    //         ->chunk(2000, function ($users) use (&$rows5) {
-    //             foreach ($users->toArray() as $user) {
-    //                 $rows5[] = $user;
-    //             }
-    //         });
-    //     $stream->addRows($rows5);
-
-    //     $addressSheet = $writer->addNewSheetAndMakeItCurrent();
-    //     $addressSheet->setName('Pemantauan Pengendalian Risiko');
-    //     $stream->addRow(['Nomor', 'Risiko Prioritas', 'Tujuan Kegiatan', 'Pemilik Risiko', 'Kategori Risiko']);
-    //     $rows6 = [];
-    //     RiskRegister::query()
-    //         ->select('risk_registers.id', 'indikator_fitur04s.name as nama_kegiatan', 'indikator_fitur04s.tujuan', 'pics.name as nama_pic', 'risk_categories.name as nama_kategori')
-    //         ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //         ->leftjoin('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-    //         ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-    //         ->leftjoin('locations', 'locations.id', 'indikator_fitur04s.location_id')
-    //         ->leftjoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-    //         ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //         ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //         ->leftjoin('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-    //         ->leftjoin('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-    //         ->leftjoin('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-    //         ->leftjoin('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-    //         ->leftjoin('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-    //         ->leftjoin('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-    //         ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-    //         ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-    //         ->where('tipe_id', 1)
-
-    //         ->chunk(2000, function ($users) use (&$rows6) {
-    //             foreach ($users->toArray() as $user) {
-    //                 $rows6[] = $user;
-    //             }
-    //         });
-    //     $stream->addRows($rows6);
-    //     $addressSheet = $writer->addNewSheetAndMakeItCurrent();
-    //     $addressSheet->setName('Pelaporan');
-    //     $stream->addRow(['Nomor', 'Nama Kegiatan', 'Tujuan Kegiatan', 'Pemilik Risiko', 'Kategori Risiko']);
-    //     $rows7 = [];
-    //     RiskRegister::query()
-    //         ->select('risk_registers.id', 'indikator_fitur04s.name as nama_kegiatan', 'indikator_fitur04s.tujuan', 'pics.name as nama_pic', 'risk_categories.name as nama_kategori')
-    //         ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //         ->leftjoin('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-    //         ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-    //         ->leftjoin('locations', 'locations.id', 'indikator_fitur04s.location_id')
-    //         ->leftjoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-    //         ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //         ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //         ->leftjoin('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-    //         ->leftjoin('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-    //         ->leftjoin('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-    //         ->leftjoin('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-    //         ->leftjoin('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-    //         ->leftjoin('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-    //         ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-    //         ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-    //         ->where('tipe_id', 1)
-
-    //         ->chunk(2000, function ($users) use (&$rows7) {
-    //             foreach ($users->toArray() as $user) {
-    //                 $rows7[] = $user;
-    //             }
-    //         });
-    //     $stream->addRows($rows7);
-        
-
-
-    //     return $stream->toBrowser();
-
-    //     // $rows = [];
-
-    //     // // RiskRegister::query()
-    //     // //     ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //     // //     ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-    //     // //     ->join('locations', 'locations.id', 'risk_registers.location_id')
-    //     // //     ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-    //     // //     ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-    //     // //     ->join('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-    //     // //     ->join('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-    //     // //     ->join('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-    //     // //     ->join('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-    //     // //     ->join('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-    //     // //     ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-    //     // //     ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //     // //     ->join('users', 'users.id', 'risk_registers.user_id')
-    //     // //     ->where('tipe_id', 1)
-    //     // //     ->select('risk_registers.tgl_register', 'risk_registers.tgl_selesai', 'risk_categories.name')
-    //     // //     ->chunk(2000, function ($users) use (&$rows) {
-    //     // //         foreach ($users->toArray() as $user) {
-    //     // //             $rows[] = $user;
-    //     // //         }
-    //     // //     });
-    //     // RiskRegister::query()->lazyById(2000, 'id')
-    //     //     ->each(function ($user) use (&$rows) {
-    //     //         $rows[] = $user->toArray();
-    //     //     });
-    //     // SimpleExcelWriter::streamDownload('RiskRegisterKlinis.csv')
-    //     //     ->addRows($rows);
-
-    //     // // $border = new Border(
-    //     // //     new BorderPart(Border::BOTTOM, Color::LIGHT_BLUE, Border::WIDTH_THIN, Border::STYLE_SOLID),
-    //     // //     new BorderPart(Border::LEFT, Color::LIGHT_BLUE, Border::WIDTH_THIN, Border::STYLE_SOLID),
-    //     // //     new BorderPart(Border::RIGHT, Color::LIGHT_BLUE, Border::WIDTH_THIN, Border::STYLE_SOLID),
-    //     // //     new BorderPart(Border::TOP, Color::LIGHT_BLUE, Border::WIDTH_THIN, Border::STYLE_SOLID)
-    //     // // );
-
-    //     // // $style = (new Style())
-    //     // //     ->setFontBold()
-    //     // //     ->setFontSize(17)
-    //     // //     ->setFontColor(Color::BLUE)
-    //     // //     ->setShouldWrapText()
-    //     // //     ->setBackgroundColor(Color::YELLOW)
-    //     // //     ->setBorder($border);
-
-    //     // // SimpleExcelWriter::streamDownload('RiskRegisterKlinis.csv')
-    //     // //     ->addRows($rows, $style);
-    // }
     public function riskregisterklinisbpkp()
     {
         return Excel::download(new FormatBPKPExport, 'Proses Manajemen Risiko RSBM.xlsx');
@@ -614,11 +292,43 @@ class ExportController extends Controller
         return Excel::download(new FormatFitur4Export, 'Form Manajemen Risiko Fitur 4.xlsx');
         // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
     }
-    public function riskregisterklinislarsdhp()
+
+    public function riskregisterklinislarsdhp(Request $request)
     {
-        return Excel::download(new FormatLARSDHPExport, 'Form Manajemen Risiko LARS DHP.xlsx');
-        // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
     }
+    // public function riskregisterklinislarsdhp(Request $request)
+    // {
+    //     $startDate = $request->input('startDate');
+    //     $endDate = $request->input('endDate');
+    //     // Enable query logging
+    //     DB::enableQueryLog();
+
+    //     $query = DB::table('risk_registers')
+    //         ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+    //         ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id') 
+    //         ->join('pics', 'pics.id', 'risk_registers.pic_id')
+    //         ->join('users', 'users.id', 'risk_registers.user_id')
+    //         ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan', 'pics.name as pic_name', 'risk_categories.name as kategori_risiko');
+
+    //     $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+    //     $query->where($whosLogin);
+
+    //     if (!empty($startDate) && !empty($endDate)) {
+    //         $query->where('risk_registers.created_at', '>=', $startDate)
+    //               ->where('risk_registers.created_at', '<=', $endDate);
+    //     }
+
+    //     // Get the executed SQL query
+    //     $sql = $query->toSql();
+    //     $bindings = $query->getBindings();
+    //     $fullSql = vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
+
+    //     dd($fullSql); // Output the SQL query for debugging
+    //     return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
+    // }
     public function exportpdf(Request $request)
     {
         $users = User::get();
