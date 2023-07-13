@@ -33,18 +33,18 @@ class FormatLARSDHPExport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
+            new Sheet1($this->startDate, $this->endDate),
+            new Sheet2($this->startDate, $this->endDate),
             new Sheet3($this->startDate, $this->endDate),
             new Sheet4($this->startDate, $this->endDate),
-            new Sheet5(),
-            new Sheet6(),
-            new Sheet7(),
-            new Sheet8(),
-            new Sheet9(),
-            new Sheet10(),
+            new Sheet5($this->startDate, $this->endDate),
+            new Sheet6($this->startDate, $this->endDate),
+            new Sheet7($this->startDate, $this->endDate),
+            new Sheet8($this->startDate, $this->endDate),
         ];
     }
 }
-class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -60,18 +60,38 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     }
     public function query()
     {
-        $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id') 
-            ->join('pics', 'pics.id', 'risk_registers.pic_id')
-            ->join('users', 'users.id', 'risk_registers.user_id')
-            ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan', 'pics.name as pic_name', 'risk_categories.name as kategori_risiko')
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $subquery = RiskRegister::query()
+            ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftJoin('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
+            ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
+            ->leftJoin('users', 'users.id', 'risk_registers.user_id')
+            ->selectRaw(
+                'indikator_fitur04s.name, ' .
+                    'indikator_fitur04s.tujuan, ' .
+                    'pics.name as pic_name, ' .
+                    'risk_categories.name as kategori_risiko, ' .
+                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
+            )
+            ->groupBy(
+                'indikator_fitur04s.name',
+                'indikator_fitur04s.tujuan',
+                'pics.name',
+                'risk_categories.name',
+                'risk_registers.osd1_dampak',
+                'risk_registers.osd1_probabilitas',
+                'risk_registers.osd1_controllability'
+            )
             ->where($whosLogin);
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at','>=', $this->startDate)
-                      ->where('risk_registers.created_at','<=', $this->endDate);
-            }
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
+        $query = DB::query()
+            ->select('Peringkat', 'name', 'tujuan', 'pic_name', 'kategori_risiko')
+            ->fromSub($subquery, 'sub')
+            ->orderBy('sub.Peringkat', 'ASC');
+
         $this->data = $query->get();
         return $query;
     }
@@ -152,7 +172,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -169,7 +189,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
+        $subquery = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
             ->join('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
@@ -185,53 +205,102 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->join('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
             ->join('pics', 'pics.id', 'risk_registers.pic_id')
             ->join('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->leftjoin('risk_gradings AS grading2', 'grading2.kode', 'risk_registers.concatdp2')
-            ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
-            ->leftjoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
-            ->select(
+            ->leftJoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftJoin('risk_gradings AS grading2', 'grading2.kode', 'risk_registers.concatdp2')
+            ->leftJoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
+            ->leftJoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
+            ->selectRaw('
+            risk_registers.id,
+        row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`,
+        indikator_fitur04s.name,
+        indikator_fitur04s.tujuan,
+        locations.name as location_name,
+        risk_registers.sebab,
+        CONCAT("R.", risk_registers.id) AS Kode,
+        risk_registers.resiko,
+        risk_registers.dampak,
+        risk_registers.pernyataan_risiko,
+        risk_registers.pengendalian_risiko,
+        risk_registers.osd1_dampak,
+        risk_registers.osd1_probabilitas,
+        CONCAT(risk_registers.osd1_dampak, risk_registers.osd1_probabilitas) AS concatdp,
+        risk_registers.osd1_inherent,
+        risk_gradings.name as grading_name,
+        CASE
+            WHEN risk_registers.perlu_penanganan_id = 1 THEN "Ya"
+            WHEN risk_registers.perlu_penanganan_id = 2 THEN "Tidak"
+            ELSE ""
+        END AS `PerluPenanganan`,
+        opsi_pengendalians.name as opsi,
+        risk_registers.pengendalian_risiko as uraian,
+        pembiayaan_risikos.name as pembiayaan,
+        risk_registers.osd2_probabilitas,
+        osd2_controllability,
+        risk_registers.osd2_inherent,
+        grading2.name as grading2_name,
+        pics.name as pic_name,
+        CONCAT(risk_registers.target_waktu, " Hari") AS target_waktu
+    ')
+            ->groupBy(
                 'risk_registers.id',
                 'indikator_fitur04s.name',
                 'indikator_fitur04s.tujuan',
-                'locations.name as location_name',
+                'locations.name',
                 'risk_registers.sebab',
-                DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
                 'risk_registers.resiko',
                 'risk_registers.dampak',
                 'risk_registers.pernyataan_risiko',
                 'risk_registers.pengendalian_risiko',
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
-                DB::raw("CONCAT(risk_registers.osd1_dampak,risk_registers.osd1_probabilitas) AS concatdp"),
                 'risk_registers.osd1_inherent',
-                'risk_gradings.name as grading_name',
-                DB::raw(
-                    '
-                    CASE
-                        WHEN risk_registers.perlu_penanganan_id = 1 THEN "Ya"
-                        WHEN risk_registers.perlu_penanganan_id = 2 THEN "Tidak"
-                        ELSE ""
-                    END AS `PerluPenanganan`'
-                ),
-                'opsi_pengendalians.name as opsi',
-                'risk_registers.pengendalian_risiko as uraian',
-               'pembiayaan_risikos.name as pembiayaan',
+                'risk_gradings.name',
+                'risk_registers.perlu_penanganan_id',
+                'opsi_pengendalians.name',
+                'risk_registers.pengendalian_risiko',
+                'pembiayaan_risikos.name',
                 'risk_registers.osd2_probabilitas',
                 'osd2_controllability',
                 'risk_registers.osd2_inherent',
-                'grading2.name as grading2_name',
-                'pics.name as pic_name',
-                DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu")
+                'grading2.name',
+                'pics.name',
+                'risk_registers.target_waktu'
+            )->where($whosLogin);
+
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
+        $query = DB::query()
+            ->select(
+                'Peringkat',
+                'name',
+                'tujuan',
+                'location_name',
+                'sebab',
+                'Kode',
+                'resiko',
+                'dampak',
+                'pernyataan_risiko',
+                'pengendalian_risiko',
+                'osd1_dampak',
+                'osd1_probabilitas',
+                'concatdp',
+                'osd1_inherent',
+                'grading_name',
+                'PerluPenanganan',
+                'opsi',
+                'uraian',
+                'pembiayaan',
+                'osd2_probabilitas',
+                'osd2_controllability',
+                'osd2_inherent',
+                'grading2_name',
+                'pic_name',
+                'target_waktu'
             )
-            // ->where('tipe_id', 1)
-            ->where($whosLogin);
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at','>=', $this->startDate)
-                      ->where('risk_registers.created_at','<=', $this->endDate);
-            }
-
-
-
+            ->fromSub($subquery, 'sub')
+            ->orderBy('sub.Peringkat', 'ASC');
         $this->data = $query->get();
         return $query;
     }
@@ -809,12 +878,21 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
+
     public function query()
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -825,6 +903,11 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd1_probabilitas',
             )
             ->where($whosLogin);
+
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
         $this->data = $query->get();
         return $query;
     }
@@ -903,12 +986,20 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -935,6 +1026,11 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             )
             ->where($whosLogin)
             ->orderBy('Skor', 'DESC');
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
+
 
 
 
@@ -978,7 +1074,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $range = 'A1:' . $highestColumn . $highestRow;
                 $rangeA = 'A3:' . 'A' . $highestRow;
                 $rangeEI = 'E3:' . 'I' . $highestRow;
-               
+
                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
                 $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
                     'borders' => [
@@ -1159,7 +1255,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ];
                 // KOLOM K
-                
+
 
 
 
@@ -1175,130 +1271,28 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-
             },
         ];
     }
 }
-// class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
-// {
-//     /**
-//      * @return \Illuminate\Support\Collection
-//      */
-//     protected $data;
-//     public function query()
-//     {
-//         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-//         $query = RiskRegister::query()
-//             ->select('risk_registers.id', 'indikator_fitur04s.name as nama_kegiatan', 'indikator_fitur04s.tujuan', 'pics.name as nama_pic', 'risk_categories.name as nama_kategori')
-//             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-//             ->leftjoin('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
-//             ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-//             ->leftjoin('locations', 'locations.id', 'indikator_fitur04s.location_id')
-//             ->leftjoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
-//             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-//             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-//             ->leftjoin('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-//             ->leftjoin('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-//             ->leftjoin('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-//             ->leftjoin('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-//             ->leftjoin('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-//             ->leftjoin('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-//             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-//             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-//             // ->where('tipe_id', 1)
-//             ->where($whosLogin);
-
-//         $this->data = $query->get();
-//         return $query;
-//     }
-//     public function title(): string
-//     {
-//         return 'TABEL BANTU KEGIATAN & SASARAN ';
-//     }
-//     public function headings(): array
-//     {
-//         return [
-//             ['No', 'Nama Kegiatan', 'Tujuan Kegiatan', 'Pemilik Risiko', 'Kategori Risiko'],
-//         ];
-//     }
-//     public function columnWidths(): array
-//     {
-//         return [
-//             'A' => 4,
-//             'B' => 65,
-//             'C' => 65,
-//             'D' => 20,
-//             'E' => 20,
-//         ];
-//     }
-//     public function registerEvents(): array
-//     {
-//         return [
-//             AfterSheet::class => function (AfterSheet $event) {
-//                 $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
-//                 $highestRow = $event->sheet->getHighestRow();
-//                 $highestColumn = $event->sheet->getHighestColumn();
-//                 $range = 'A1:' . $highestColumn . $highestRow;
-//                 $rangeA = 'A1:' . 'A' . $highestRow;
-//                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
-//                 $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
-//                     'borders' => [
-//                         'allBorders' => [
-//                             'borderStyle' => Border::BORDER_THIN,
-//                             'color' => ['rgb' => '000000'],
-//                         ],
-//                     ],
-//                     'alignment' => [
-//                         'vertical' => Alignment::VERTICAL_CENTER,
-//                     ],
-//                 ]);
-//                 $styleHeader = [
-//                     'font' => [
-//                         'bold' => true,
-//                         'size' => 11,
-//                     ],
-//                     'alignment' => [
-//                         'horizontal' => Alignment::HORIZONTAL_CENTER,
-//                         'vertical' => Alignment::VERTICAL_CENTER,
-//                     ],
-//                     'borders' => [
-//                         'outline' => [
-//                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-//                         ],
-//                     ],
-//                     'fill' => [
-//                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-//                         'rotation' => 90,
-//                         'startColor' => [
-//                             'argb' => 'FFFF00',
-//                         ],
-//                         'endColor' => [
-//                             'argb' => 'FFFF00',
-//                         ],
-//                     ],
-//                 ];
-
-//                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
-//                     'alignment' => [
-//                         'horizontal' => Alignment::HORIZONTAL_CENTER,
-//                     ],
-//                 ]);
-//                 $event->sheet->getDelegate()->getStyle('A1:E1')->applyFromArray($styleHeader);
-//             },
-//         ];
-//     }
-// }
-class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
+        $subquery = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
             ->join('users', 'users.id', 'risk_registers.user_id')
@@ -1306,9 +1300,61 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->leftjoin('jenis_pengendalians', 'jenis_pengendalians.id', 'risk_registers.jenis_pengendalian_id')
-            ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan',  'risk_registers.pernyataan_risiko', 'opsi_pengendalians.name as opsi', 'risk_registers.pengendalian_risiko as uraian', 'risk_registers.pengendalian_risiko', 'efektifs.name as efektif', 'risk_registers.pengendalian_risiko as harusada', 'risk_registers.pengendalian_risiko as kegiatan', 'waktu_pengendalians.name as waktu', 'jenis_pengendalians.name as jenis_pengendalian', 'users.name as pemilik')
-            // ->where('tipe_id', 1)
+            ->selectRaw(
+                    'indikator_fitur04s.name, ' .
+                    'indikator_fitur04s.tujuan, ' .
+                    'risk_registers.pernyataan_risiko, ' .
+                    'opsi_pengendalians.name as opsi, ' .
+                    'risk_registers.pengendalian_risiko as uraian, ' .
+                    'risk_registers.pengendalian_risiko, ' .
+                    'efektifs.name as efektif, ' .
+                    'risk_registers.pengendalian_risiko as harusada, ' .
+                    'risk_registers.pengendalian_risiko as kegiatan, ' .
+                    'waktu_pengendalians.name as waktu, ' .
+                    'jenis_pengendalians.name as jenis_pengendalian, ' .
+                    'users.name as pemilik, ' .
+                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
+            )
+            ->groupBy(
+                'indikator_fitur04s.name',
+                'indikator_fitur04s.tujuan',
+                'risk_registers.pernyataan_risiko',
+                'opsi_pengendalians.name',
+                'risk_registers.pengendalian_risiko',
+                'risk_registers.pengendalian_risiko',
+                'efektifs.name',
+                'risk_registers.pengendalian_risiko',
+                'risk_registers.pengendalian_risiko',
+                'waktu_pengendalians.name',
+                'jenis_pengendalians.name',
+                'users.name',
+                'risk_registers.osd1_dampak',
+                'risk_registers.osd1_probabilitas',
+                'risk_registers.osd1_controllability'
+            )
             ->where($whosLogin);
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
+        $query = DB::query()
+            ->select(
+                'Peringkat',
+                'name',
+                'tujuan',
+                'pernyataan_risiko',
+                'opsi',
+                'uraian',
+                'pengendalian_risiko',
+                'efektif',
+                'harusada',
+                'kegiatan',
+                'waktu',
+                'jenis_pengendalian',
+                'pemilik'
+            )
+            ->fromSub($subquery, 'sub')
+            ->orderBy('sub.Peringkat', 'ASC');
 
 
 
@@ -1500,17 +1546,24 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
                 $event->sheet->getDelegate()->mergeCells('M1:M2');
                 $event->sheet->getDelegate()->getStyle('M1:M2')->applyFromArray($styleHeader);
-
             },
         ];
     }
 }
-class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -1520,8 +1573,11 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->join('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'pics.name as pic_name')
-            // ->where('tipe_id', 1)
             ->where($whosLogin);
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
 
 
 
@@ -1715,18 +1771,30 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum',DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num',DB::raw("'' AS 'Jumlah'"),'risk_registers.target_waktu' )
+            ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num', DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
             ->where($whosLogin);
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
         $this->data = $query->get();
         return $query;
     }
@@ -1737,7 +1805,7 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['Month', 'Denum', 'NUM', '%', 'Jumlah','Waktu'],
+            ['Month', 'Denum', 'NUM', '%', 'Jumlah', 'Waktu'],
         ];
     }
     public function columnWidths(): array
@@ -1808,12 +1876,20 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
      */
     protected $data;
+    protected $startDate;
+    protected $endDate;
+
+    public function __construct($startDate, $endDate)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -1834,6 +1910,10 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
             ), 'waktu_implementasis.name as waktu_implementasi', 'pics.name as pic_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name as grading')
             // ->where('tipe_id', 1)
             ->where($whosLogin);
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
 
 
 

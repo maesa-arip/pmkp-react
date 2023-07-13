@@ -11,6 +11,35 @@
     "file": "assets/react-datepicker-fe9d2487.css",
     "src": "react-datepicker.css"
   },
+  "_PrimaryButton-0f0abcd4.js": {
+    "file": "assets/PrimaryButton-0f0abcd4.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Auth/VerifyEmail.jsx": {
+    "file": "assets/VerifyEmail-bd7b20d8.js",
+    "src": "resources/js/Pages/Auth/VerifyEmail.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_GuestLayout-be1437dc.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_ApplicationLogo-15c7a745.js"
+    ]
+  },
+  "_SecondaryButton-04f7f3c9.js": {
+    "file": "assets/SecondaryButton-04f7f3c9.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Checkbox-ddb9ba7d.js": {
+    "file": "assets/Checkbox-ddb9ba7d.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
   "_GuestLayout-be1437dc.js": {
     "file": "assets/GuestLayout-be1437dc.js",
     "imports": [
@@ -18,13 +47,10 @@
       "_ApplicationLogo-15c7a745.js"
     ]
   },
-  "_ApplicationLogo-15c7a745.js": {
-    "file": "assets/ApplicationLogo-15c7a745.js",
+  "_InputLabel-36bde3cd.js": {
+    "file": "assets/InputLabel-36bde3cd.js",
     "imports": [
       "resources/js/app.jsx"
-    ],
-    "assets": [
-      "assets/rsbm-594da1b9.png"
     ]
   },
   "resources/js/Pages/Casemix/Edit.jsx": {
@@ -42,94 +68,8 @@
       "_TextInputCheckbox-b378817e.js"
     ]
   },
-  "_SecondaryButton-04f7f3c9.js": {
-    "file": "assets/SecondaryButton-04f7f3c9.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Casemix/Create.jsx": {
-    "file": "assets/Create-a8a3092d.js",
-    "src": "resources/js/Pages/Casemix/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Casemix/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Auth/ResetPassword.jsx": {
-    "file": "assets/ResetPassword-141ad9b2.js",
-    "src": "resources/js/Pages/Auth/ResetPassword.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_GuestLayout-be1437dc.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_TextInput-4ecdfa12.js",
-      "_ApplicationLogo-15c7a745.js"
-    ]
-  },
-  "resources/js/Pages/Auth/ForgotPassword.jsx": {
-    "file": "assets/ForgotPassword-055cea0e.js",
-    "src": "resources/js/Pages/Auth/ForgotPassword.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_GuestLayout-be1437dc.js",
-      "_InputError-478072b5.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_TextInput-4ecdfa12.js",
-      "_ApplicationLogo-15c7a745.js"
-    ]
-  },
-  "_Checkbox-ddb9ba7d.js": {
-    "file": "assets/Checkbox-ddb9ba7d.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "_InputLabel-36bde3cd.js": {
-    "file": "assets/InputLabel-36bde3cd.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Auth/Register.jsx": {
-    "file": "assets/Register-44a7d9d4.js",
-    "src": "resources/js/Pages/Auth/Register.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_GuestLayout-be1437dc.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_TextInput-4ecdfa12.js",
-      "_ApplicationLogo-15c7a745.js"
-    ]
-  },
-  "_DangerButton-a2fab5b6.js": {
-    "file": "assets/DangerButton-a2fab5b6.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "_TextInput-4ecdfa12.js": {
-    "file": "assets/TextInput-4ecdfa12.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "_PrimaryButton-0f0abcd4.js": {
-    "file": "assets/PrimaryButton-0f0abcd4.js",
+  "_TextInputCheckbox-b378817e.js": {
+    "file": "assets/TextInputCheckbox-b378817e.js",
     "imports": [
       "resources/js/app.jsx"
     ]
@@ -142,23 +82,16 @@
       "_dialog-d8fafaca.js"
     ]
   },
-  "_description-64ef4ce4.js": {
-    "file": "assets/description-64ef4ce4.js",
+  "_InputError-478072b5.js": {
+    "file": "assets/InputError-478072b5.js",
     "imports": [
-      "resources/js/app.jsx",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js"
+      "resources/js/app.jsx"
     ]
   },
-  "resources/js/Pages/Auth/VerifyEmail.jsx": {
-    "file": "assets/VerifyEmail-bd7b20d8.js",
-    "src": "resources/js/Pages/Auth/VerifyEmail.jsx",
-    "isDynamicEntry": true,
+  "_TextInput-4ecdfa12.js": {
+    "file": "assets/TextInput-4ecdfa12.js",
     "imports": [
-      "resources/js/app.jsx",
-      "_GuestLayout-be1437dc.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_ApplicationLogo-15c7a745.js"
+      "resources/js/app.jsx"
     ]
   },
   "resources/js/Pages/Auth/Login.jsx": {
@@ -176,6 +109,44 @@
       "_ApplicationLogo-15c7a745.js"
     ]
   },
+  "resources/js/Pages/Casemix/Create.jsx": {
+    "file": "assets/Create-a8a3092d.js",
+    "src": "resources/js/Pages/Casemix/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Casemix/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "_DangerButton-a2fab5b6.js": {
+    "file": "assets/DangerButton-a2fab5b6.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_ApplicationLogo-15c7a745.js": {
+    "file": "assets/ApplicationLogo-15c7a745.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "assets": [
+      "assets/rsbm-594da1b9.png"
+    ]
+  },
+  "_ThirdButton-0aec832e.js": {
+    "file": "assets/ThirdButton-0aec832e.js",
+    "imports": [
+      "resources/js/app.jsx",
+      "_dialog-d8fafaca.js",
+      "_transition-9b0aa617.js"
+    ]
+  },
   "resources/js/Pages/Auth/ConfirmPassword.jsx": {
     "file": "assets/ConfirmPassword-48bda74f.js",
     "src": "resources/js/Pages/Auth/ConfirmPassword.jsx",
@@ -188,113 +159,6 @@
       "_PrimaryButton-0f0abcd4.js",
       "_TextInput-4ecdfa12.js",
       "_ApplicationLogo-15c7a745.js"
-    ]
-  },
-  "resources/js/Pages/Casemix/Form.jsx": {
-    "file": "assets/Form-3c6d63bb.js",
-    "src": "resources/js/Pages/Casemix/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "_InputError-478072b5.js": {
-    "file": "assets/InputError-478072b5.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Export/LarsDHP.jsx": {
-    "file": "assets/LarsDHP-421326c4.js",
-    "src": "resources/js/Pages/Export/LarsDHP.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js"
-    ]
-  },
-  "_TextInputCheckbox-b378817e.js": {
-    "file": "assets/TextInputCheckbox-b378817e.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Casemix/Index.jsx": {
-    "file": "assets/Index-b3b10387.js",
-    "src": "resources/js/Pages/Casemix/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Casemix/Create.jsx",
-      "resources/js/Pages/Casemix/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Casemix/Form.jsx",
-      "_InputError-478072b5.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "_keyboard-8e5d6cce.js": {
-    "file": "assets/keyboard-8e5d6cce.js",
-    "imports": [
-      "resources/js/app.jsx",
-      "_transition-9b0aa617.js"
-    ]
-  },
-  "_ThirdButton-0aec832e.js": {
-    "file": "assets/ThirdButton-0aec832e.js",
-    "imports": [
-      "resources/js/app.jsx",
-      "_dialog-d8fafaca.js",
-      "_transition-9b0aa617.js"
-    ]
-  },
-  "_dialog-d8fafaca.js": {
-    "file": "assets/dialog-d8fafaca.js",
-    "imports": [
-      "resources/js/app.jsx",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js"
-    ]
-  },
-  "resources/js/Pages/Roles/Create.jsx": {
-    "file": "assets/Create-93ad789b.js",
-    "src": "resources/js/Pages/Roles/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Roles/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
     ]
   },
   "resources/js/Pages/Master/RiskCategory/Edit.jsx": {
@@ -311,37 +175,48 @@
       "_TextInput-4ecdfa12.js"
     ]
   },
-  "resources/js/Pages/Value/ImpactValue/Create.jsx": {
-    "file": "assets/Create-8f1db5d2.js",
-    "src": "resources/js/Pages/Value/ImpactValue/Create.jsx",
+  "resources/js/Pages/Master/RiskVariety/Create.jsx": {
+    "file": "assets/Create-4dcbfe7d.js",
+    "src": "resources/js/Pages/Master/RiskVariety/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "resources/js/Pages/Value/ImpactValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskVariety/Form.jsx": {
-    "file": "assets/Form-ee5961d1.js",
-    "src": "resources/js/Pages/Master/RiskVariety/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
+      "resources/js/Pages/Master/RiskVariety/Form.jsx",
       "_InputError-478072b5.js",
       "_InputLabel-36bde3cd.js",
       "_PrimaryButton-0f0abcd4.js",
       "_SecondaryButton-04f7f3c9.js",
       "_TextAreaInput-bf6794ab.js",
       "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Casemix/Form.jsx": {
+    "file": "assets/Form-3c6d63bb.js",
+    "src": "resources/js/Pages/Casemix/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Permissions/Create.jsx": {
+    "file": "assets/Create-e219963e.js",
+    "src": "resources/js/Pages/Permissions/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Permissions/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
     ]
   },
   "resources/js/Pages/RiskRegister/History/Form.jsx": {
@@ -358,9 +233,94 @@
       "assets/react-datepicker-fe9d2487.css"
     ]
   },
-  "resources/js/Pages/Roles/Form.jsx": {
-    "file": "assets/Form-dfd6a777.js",
-    "src": "resources/js/Pages/Roles/Form.jsx",
+  "resources/js/Pages/Auth/ResetPassword.jsx": {
+    "file": "assets/ResetPassword-141ad9b2.js",
+    "src": "resources/js/Pages/Auth/ResetPassword.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_GuestLayout-be1437dc.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_TextInput-4ecdfa12.js",
+      "_ApplicationLogo-15c7a745.js"
+    ]
+  },
+  "resources/js/Pages/Master/RiskVariety/Index.jsx": {
+    "file": "assets/Index-00582650.js",
+    "src": "resources/js/Pages/Master/RiskVariety/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Master/RiskVariety/Create.jsx",
+      "resources/js/Pages/Master/RiskVariety/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Master/RiskVariety/Form.jsx",
+      "_InputError-478072b5.js",
+      "_TextAreaInput-bf6794ab.js"
+    ]
+  },
+  "_use-tracked-pointer-957f2733.js": {
+    "file": "assets/use-tracked-pointer-957f2733.js",
+    "imports": [
+      "resources/js/app.jsx",
+      "_transition-9b0aa617.js"
+    ]
+  },
+  "_TextAreaInput-bf6794ab.js": {
+    "file": "assets/TextAreaInput-bf6794ab.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Permissions/Index.jsx": {
+    "file": "assets/Index-33dd75de.js",
+    "src": "resources/js/Pages/Permissions/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Permissions/Create.jsx",
+      "resources/js/Pages/Permissions/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Permissions/Form.jsx",
+      "_InputError-478072b5.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Master/RiskVariety/Form.jsx": {
+    "file": "assets/Form-ee5961d1.js",
+    "src": "resources/js/Pages/Master/RiskVariety/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
@@ -368,8 +328,37 @@
       "_InputLabel-36bde3cd.js",
       "_PrimaryButton-0f0abcd4.js",
       "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Master/IdentificationSource/Create.jsx": {
+    "file": "assets/Create-e11a9b7c.js",
+    "src": "resources/js/Pages/Master/IdentificationSource/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/IdentificationSource/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Welcome.jsx": {
+    "file": "assets/Welcome-cef196dc.js",
+    "src": "resources/js/Pages/Welcome.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_Checkbox-ddb9ba7d.js",
+      "_GuestLayout-be1437dc.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
       "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
+      "_ApplicationLogo-15c7a745.js"
     ]
   },
   "resources/js/Pages/Value/ImpactValue/Edit.jsx": {
@@ -391,6 +380,188 @@
       "_TextInput-4ecdfa12.js"
     ]
   },
+  "resources/js/Pages/Auth/ForgotPassword.jsx": {
+    "file": "assets/ForgotPassword-055cea0e.js",
+    "src": "resources/js/Pages/Auth/ForgotPassword.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_GuestLayout-be1437dc.js",
+      "_InputError-478072b5.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_TextInput-4ecdfa12.js",
+      "_ApplicationLogo-15c7a745.js"
+    ]
+  },
+  "resources/js/Pages/Master/RiskVariety/Edit.jsx": {
+    "file": "assets/Edit-e95bdbd9.js",
+    "src": "resources/js/Pages/Master/RiskVariety/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/RiskVariety/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Master/PIC/Form.jsx": {
+    "file": "assets/Form-bcac170f.js",
+    "src": "resources/js/Pages/Master/PIC/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/History/Edit.jsx": {
+    "file": "assets/Edit-2d2c3d38.js",
+    "src": "resources/js/Pages/RiskRegister/History/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/RiskRegister/History/Form.jsx",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
+  "resources/js/Pages/Master/RiskType/Edit.jsx": {
+    "file": "assets/Edit-e3c38f45.js",
+    "src": "resources/js/Pages/Master/RiskType/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/RiskType/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Value/ImpactValue/Form.jsx": {
+    "file": "assets/Form-2b48bd9e.js",
+    "src": "resources/js/Pages/Value/ImpactValue/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js"
+    ]
+  },
+  "resources/js/Pages/Master/Location/Create.jsx": {
+    "file": "assets/Create-1f6222bb.js",
+    "src": "resources/js/Pages/Master/Location/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/Location/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Profile/Partials/DeleteUserForm.jsx": {
+    "file": "assets/DeleteUserForm-75d5813e.js",
+    "src": "resources/js/Pages/Profile/Partials/DeleteUserForm.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js"
+    ]
+  },
+  "resources/js/Pages/Value/ImpactValue/Create.jsx": {
+    "file": "assets/Create-8f1db5d2.js",
+    "src": "resources/js/Pages/Value/ImpactValue/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Value/ImpactValue/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Roles/Form.jsx": {
+    "file": "assets/Form-dfd6a777.js",
+    "src": "resources/js/Pages/Roles/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/Klinis/Edit.jsx": {
+    "file": "assets/Edit-60b2d7e4.js",
+    "src": "resources/js/Pages/RiskRegister/Klinis/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/RiskRegister/Klinis/Form.jsx",
+      "_RadioCard-99b6ab94.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_description-64ef4ce4.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
   "resources/js/Pages/Master/Location/Edit.jsx": {
     "file": "assets/Edit-cc6dbc52.js",
     "src": "resources/js/Pages/Master/Location/Edit.jsx",
@@ -405,6 +576,59 @@
       "_TextInput-4ecdfa12.js"
     ]
   },
+  "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx": {
+    "file": "assets/UpdateProfileInformationForm-2974cbe7.js",
+    "src": "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_TextInput-4ecdfa12.js",
+      "_transition-9b0aa617.js"
+    ]
+  },
+  "resources/js/Pages/Master/IdentificationSource/Form.jsx": {
+    "file": "assets/Form-b9d5f1f1.js",
+    "src": "resources/js/Pages/Master/IdentificationSource/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "_description-64ef4ce4.js": {
+    "file": "assets/description-64ef4ce4.js",
+    "imports": [
+      "resources/js/app.jsx",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js"
+    ]
+  },
+  "_transition-9b0aa617.js": {
+    "file": "assets/transition-9b0aa617.js",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Master/RiskType/Form.jsx": {
+    "file": "assets/Form-c4c7c60a.js",
+    "src": "resources/js/Pages/Master/RiskType/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
   "_use-resolve-button-type-ef54f68e.js": {
     "file": "assets/use-resolve-button-type-ef54f68e.js",
     "imports": [
@@ -412,18 +636,52 @@
       "_transition-9b0aa617.js"
     ]
   },
-  "resources/js/Pages/Master/RiskVariety/Create.jsx": {
-    "file": "assets/Create-4dcbfe7d.js",
-    "src": "resources/js/Pages/Master/RiskVariety/Create.jsx",
+  "resources/js/Pages/Master/RiskCategory/Index.jsx": {
+    "file": "assets/Index-75fb6dcc.js",
+    "src": "resources/js/Pages/Master/RiskCategory/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "resources/js/Pages/Master/RiskVariety/Form.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Master/RiskCategory/Create.jsx",
+      "resources/js/Pages/Master/RiskCategory/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Master/RiskCategory/Form.jsx",
+      "_InputError-478072b5.js"
+    ]
+  },
+  "resources/js/Pages/Welcome copy.jsx": {
+    "file": "assets/Welcome copy-539a9e11.js",
+    "src": "resources/js/Pages/Welcome copy.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Master/Location/Form.jsx": {
+    "file": "assets/Form-446b056b.js",
+    "src": "resources/js/Pages/Master/Location/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
       "_InputError-478072b5.js",
       "_InputLabel-36bde3cd.js",
       "_PrimaryButton-0f0abcd4.js",
       "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
       "_TextInput-4ecdfa12.js"
     ]
   },
@@ -455,6 +713,651 @@
       "_InputError-478072b5.js",
       "_ListBoxPage-94af130b.js",
       "_use-tracked-pointer-957f2733.js"
+    ]
+  },
+  "resources/js/Pages/Master/RiskType/Create.jsx": {
+    "file": "assets/Create-23adc1f4.js",
+    "src": "resources/js/Pages/Master/RiskType/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/RiskType/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/History/Create.jsx": {
+    "file": "assets/Create-b33cab03.js",
+    "src": "resources/js/Pages/RiskRegister/History/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/RiskRegister/History/Form.jsx",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
+  "resources/js/Pages/Master/PIC/Edit.jsx": {
+    "file": "assets/Edit-9baf8440.js",
+    "src": "resources/js/Pages/Master/PIC/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/PIC/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Users/Create.jsx": {
+    "file": "assets/Create-21f1bf33.js",
+    "src": "resources/js/Pages/Users/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Users/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Master/RiskCategory/Create.jsx": {
+    "file": "assets/Create-30b35e77.js",
+    "src": "resources/js/Pages/Master/RiskCategory/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/RiskCategory/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Roles/Edit.jsx": {
+    "file": "assets/Edit-e6d6a43b.js",
+    "src": "resources/js/Pages/Roles/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Roles/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Permissions/Form.jsx": {
+    "file": "assets/Form-84b88c1c.js",
+    "src": "resources/js/Pages/Permissions/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Master/PIC/Index.jsx": {
+    "file": "assets/Index-86ebb0be.js",
+    "src": "resources/js/Pages/Master/PIC/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Master/PIC/Create.jsx",
+      "resources/js/Pages/Master/PIC/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Master/PIC/Form.jsx",
+      "_InputError-478072b5.js",
+      "_ListBoxPage-94af130b.js",
+      "_use-tracked-pointer-957f2733.js"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/NonKlinis/Create.jsx": {
+    "file": "assets/Create-2baeff63.js",
+    "src": "resources/js/Pages/RiskRegister/NonKlinis/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/RiskRegister/NonKlinis/Form.jsx",
+      "_RadioCard-99b6ab94.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_description-64ef4ce4.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
+  "_keyboard-8e5d6cce.js": {
+    "file": "assets/keyboard-8e5d6cce.js",
+    "imports": [
+      "resources/js/app.jsx",
+      "_transition-9b0aa617.js"
+    ]
+  },
+  "resources/js/Pages/Auth/Register.jsx": {
+    "file": "assets/Register-44a7d9d4.js",
+    "src": "resources/js/Pages/Auth/Register.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_GuestLayout-be1437dc.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_TextInput-4ecdfa12.js",
+      "_ApplicationLogo-15c7a745.js"
+    ]
+  },
+  "resources/js/Pages/Value/ControlValue/Create.jsx": {
+    "file": "assets/Create-91b33e3e.js",
+    "src": "resources/js/Pages/Value/ControlValue/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Value/ControlValue/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Export/LarsDHP.jsx": {
+    "file": "assets/LarsDHP-421326c4.js",
+    "src": "resources/js/Pages/Export/LarsDHP.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js"
+    ]
+  },
+  "resources/js/Pages/Master/Location/Index.jsx": {
+    "file": "assets/Index-68754e97.js",
+    "src": "resources/js/Pages/Master/Location/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Master/Location/Create.jsx",
+      "resources/js/Pages/Master/Location/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Master/Location/Form.jsx",
+      "_InputError-478072b5.js"
+    ]
+  },
+  "resources/js/Pages/Roles/Create.jsx": {
+    "file": "assets/Create-93ad789b.js",
+    "src": "resources/js/Pages/Roles/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Roles/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Users/Edit.jsx": {
+    "file": "assets/Edit-90c5259b.js",
+    "src": "resources/js/Pages/Users/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Users/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Value/ProbabilityValue/Create.jsx": {
+    "file": "assets/Create-002951ce.js",
+    "src": "resources/js/Pages/Value/ProbabilityValue/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Value/ProbabilityValue/Form.jsx": {
+    "file": "assets/Form-4cb5fa9c.js",
+    "src": "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js"
+    ]
+  },
+  "resources/js/Pages/Users/Form.jsx": {
+    "file": "assets/Form-e872042e.js",
+    "src": "resources/js/Pages/Users/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/Master/RiskCategory/Form.jsx": {
+    "file": "assets/Form-06e814b9.js",
+    "src": "resources/js/Pages/Master/RiskCategory/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Value/ProbabilityValue/Edit.jsx": {
+    "file": "assets/Edit-33979560.js",
+    "src": "resources/js/Pages/Value/ProbabilityValue/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Value/ControlValue/Edit.jsx": {
+    "file": "assets/Edit-edd7ddf5.js",
+    "src": "resources/js/Pages/Value/ControlValue/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Value/ControlValue/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Casemix/Index.jsx": {
+    "file": "assets/Index-b3b10387.js",
+    "src": "resources/js/Pages/Casemix/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Casemix/Create.jsx",
+      "resources/js/Pages/Casemix/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Casemix/Form.jsx",
+      "_InputError-478072b5.js",
+      "_TextInputCheckbox-b378817e.js"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/History/Index.jsx": {
+    "file": "assets/Index-736117f5.js",
+    "src": "resources/js/Pages/RiskRegister/History/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_App-66aa3e34.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/RiskRegister/History/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/RiskRegister/History/Form.jsx",
+      "_TextAreaInput-bf6794ab.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
+  "resources/js/Pages/Master/IdentificationSource/Edit.jsx": {
+    "file": "assets/Edit-9de1948b.js",
+    "src": "resources/js/Pages/Master/IdentificationSource/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/Master/IdentificationSource/Form.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "resources/js/Pages/Profile/Edit.jsx": {
+    "file": "assets/Edit-d30d139e.js",
+    "src": "resources/js/Pages/Profile/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_App-66aa3e34.js",
+      "_TextInput-4ecdfa12.js",
+      "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx",
+      "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_InputError-478072b5.js"
+    ]
+  },
+  "resources/js/Pages/Master/IdentificationSource/Index.jsx": {
+    "file": "assets/Index-8507b15c.js",
+    "src": "resources/js/Pages/Master/IdentificationSource/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Master/IdentificationSource/Create.jsx",
+      "resources/js/Pages/Master/IdentificationSource/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Master/IdentificationSource/Form.jsx",
+      "_InputError-478072b5.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard.jsx": {
+    "file": "assets/Dashboard-94bd4ef9.js",
+    "src": "resources/js/Pages/Dashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_App-66aa3e34.js",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/NonKlinis/Edit.jsx": {
+    "file": "assets/Edit-25773f6c.js",
+    "src": "resources/js/Pages/RiskRegister/NonKlinis/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/RiskRegister/NonKlinis/Form.jsx",
+      "_RadioCard-99b6ab94.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_description-64ef4ce4.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
+  "resources/js/Pages/RiskRegister/Klinis/Create.jsx": {
+    "file": "assets/Create-b0c10d69.js",
+    "src": "resources/js/Pages/RiskRegister/Klinis/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "resources/js/Pages/RiskRegister/Klinis/Form.jsx",
+      "_RadioCard-99b6ab94.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_description-64ef4ce4.js",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
+    ]
+  },
+  "resources/js/Pages/Value/ControlValue/Index.jsx": {
+    "file": "assets/Index-af7347db.js",
+    "src": "resources/js/Pages/Value/ControlValue/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Value/ControlValue/Create.jsx",
+      "resources/js/Pages/Value/ControlValue/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Value/ControlValue/Form.jsx",
+      "_InputError-478072b5.js",
+      "_ListBoxPage-94af130b.js",
+      "_use-tracked-pointer-957f2733.js"
+    ]
+  },
+  "resources/js/Pages/Value/ControlValue/Form.jsx": {
+    "file": "assets/Form-215c52bc.js",
+    "src": "resources/js/Pages/Value/ControlValue/Form.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_InputError-478072b5.js",
+      "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js"
+    ]
+  },
+  "resources/js/Pages/Roles/Index.jsx": {
+    "file": "assets/Index-a78b2be5.js",
+    "src": "resources/js/Pages/Roles/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
+      "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/Roles/Create.jsx",
+      "resources/js/Pages/Roles/Edit.jsx",
+      "_ApplicationLogo-15c7a745.js",
+      "_transition-9b0aa617.js",
+      "_dialog-d8fafaca.js",
+      "_keyboard-8e5d6cce.js",
+      "_description-64ef4ce4.js",
+      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputLabel-36bde3cd.js",
+      "_PrimaryButton-0f0abcd4.js",
+      "_SecondaryButton-04f7f3c9.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "resources/js/Pages/Roles/Form.jsx",
+      "_InputError-478072b5.js",
+      "_TextInputCheckbox-b378817e.js"
     ]
   },
   "resources/js/Pages/RiskRegister/Klinis/Index.jsx": {
@@ -491,156 +1394,17 @@
       "assets/react-datepicker-fe9d2487.css"
     ]
   },
-  "resources/js/Pages/Master/PIC/Index.jsx": {
-    "file": "assets/Index-86ebb0be.js",
-    "src": "resources/js/Pages/Master/PIC/Index.jsx",
+  "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx": {
+    "file": "assets/UpdatePasswordForm-54477f21.js",
+    "src": "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Master/PIC/Create.jsx",
-      "resources/js/Pages/Master/PIC/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
+      "_InputError-478072b5.js",
       "_InputLabel-36bde3cd.js",
       "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
       "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Master/PIC/Form.jsx",
-      "_InputError-478072b5.js",
-      "_ListBoxPage-94af130b.js",
-      "_use-tracked-pointer-957f2733.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/History/Create.jsx": {
-    "file": "assets/Create-b33cab03.js",
-    "src": "resources/js/Pages/RiskRegister/History/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/RiskRegister/History/Form.jsx",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Permissions/Form.jsx": {
-    "file": "assets/Form-84b88c1c.js",
-    "src": "resources/js/Pages/Permissions/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Master/IdentificationSource/Form.jsx": {
-    "file": "assets/Form-b9d5f1f1.js",
-    "src": "resources/js/Pages/Master/IdentificationSource/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Users/Create.jsx": {
-    "file": "assets/Create-21f1bf33.js",
-    "src": "resources/js/Pages/Users/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Users/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Master/PIC/Edit.jsx": {
-    "file": "assets/Edit-9baf8440.js",
-    "src": "resources/js/Pages/Master/PIC/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/PIC/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Value/ControlValue/Form.jsx": {
-    "file": "assets/Form-215c52bc.js",
-    "src": "resources/js/Pages/Value/ControlValue/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js"
-    ]
-  },
-  "resources/js/Pages/Master/IdentificationSource/Index.jsx": {
-    "file": "assets/Index-8507b15c.js",
-    "src": "resources/js/Pages/Master/IdentificationSource/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Master/IdentificationSource/Create.jsx",
-      "resources/js/Pages/Master/IdentificationSource/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Master/IdentificationSource/Form.jsx",
-      "_InputError-478072b5.js"
+      "_transition-9b0aa617.js"
     ]
   },
   "resources/js/Pages/Permissions/Edit.jsx": {
@@ -658,18 +1422,34 @@
       "_TextInputCheckbox-b378817e.js"
     ]
   },
-  "resources/js/Pages/Master/IdentificationSource/Create.jsx": {
-    "file": "assets/Create-e11a9b7c.js",
-    "src": "resources/js/Pages/Master/IdentificationSource/Create.jsx",
+  "resources/js/Pages/Master/PIC/Create.jsx": {
+    "file": "assets/Create-b826c8f8.js",
+    "src": "resources/js/Pages/Master/PIC/Create.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "resources/js/Pages/Master/IdentificationSource/Form.jsx",
+      "resources/js/Pages/Master/PIC/Form.jsx",
       "_InputError-478072b5.js",
       "_InputLabel-36bde3cd.js",
+      "_ListBoxPage-94af130b.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_use-resolve-button-type-ef54f68e.js",
       "_PrimaryButton-0f0abcd4.js",
       "_SecondaryButton-04f7f3c9.js",
       "_TextInput-4ecdfa12.js"
+    ]
+  },
+  "_RadioCard-99b6ab94.js": {
+    "file": "assets/RadioCard-99b6ab94.js",
+    "imports": [
+      "resources/js/app.jsx",
+      "_use-tracked-pointer-957f2733.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_description-64ef4ce4.js"
     ]
   },
   "resources/js/Pages/RiskRegister/NonKlinis/Form.jsx": {
@@ -696,89 +1476,18 @@
       "assets/react-datepicker-fe9d2487.css"
     ]
   },
-  "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx": {
-    "file": "assets/UpdatePasswordForm-54477f21.js",
-    "src": "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx",
-    "isDynamicEntry": true,
+  "_dialog-d8fafaca.js": {
+    "file": "assets/dialog-d8fafaca.js",
     "imports": [
       "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_TextInput-4ecdfa12.js",
-      "_transition-9b0aa617.js"
-    ]
-  },
-  "resources/js/Pages/Roles/Edit.jsx": {
-    "file": "assets/Edit-e6d6a43b.js",
-    "src": "resources/js/Pages/Roles/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Roles/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskType/Form.jsx": {
-    "file": "assets/Form-c4c7c60a.js",
-    "src": "resources/js/Pages/Master/RiskType/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "_transition-9b0aa617.js": {
-    "file": "assets/transition-9b0aa617.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Master/PIC/Create.jsx": {
-    "file": "assets/Create-b826c8f8.js",
-    "src": "resources/js/Pages/Master/PIC/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/PIC/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
       "_transition-9b0aa617.js",
       "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
+      "_description-64ef4ce4.js"
     ]
   },
-  "resources/js/Pages/Master/IdentificationSource/Edit.jsx": {
-    "file": "assets/Edit-9de1948b.js",
-    "src": "resources/js/Pages/Master/IdentificationSource/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/IdentificationSource/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskCategory/Index.jsx": {
-    "file": "assets/Index-75fb6dcc.js",
-    "src": "resources/js/Pages/Master/RiskCategory/Index.jsx",
+  "resources/js/Pages/Users/Index.jsx": {
+    "file": "assets/Index-b5a8f8d0.js",
+    "src": "resources/js/Pages/Users/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
@@ -786,8 +1495,8 @@
       "_App-66aa3e34.js",
       "_ThirdButton-0aec832e.js",
       "_EditModal-90d2924b.js",
-      "resources/js/Pages/Master/RiskCategory/Create.jsx",
-      "resources/js/Pages/Master/RiskCategory/Edit.jsx",
+      "resources/js/Pages/Users/Create.jsx",
+      "resources/js/Pages/Users/Edit.jsx",
       "_ApplicationLogo-15c7a745.js",
       "_transition-9b0aa617.js",
       "_dialog-d8fafaca.js",
@@ -800,145 +1509,9 @@
       "_TextInput-4ecdfa12.js",
       "_index-7aa54555.js",
       "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Master/RiskCategory/Form.jsx",
-      "_InputError-478072b5.js"
-    ]
-  },
-  "resources/js/Pages/Value/ControlValue/Create.jsx": {
-    "file": "assets/Create-91b33e3e.js",
-    "src": "resources/js/Pages/Value/ControlValue/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Value/ControlValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskType/Edit.jsx": {
-    "file": "assets/Edit-e3c38f45.js",
-    "src": "resources/js/Pages/Master/RiskType/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/RiskType/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Users/Form.jsx": {
-    "file": "assets/Form-e872042e.js",
-    "src": "resources/js/Pages/Users/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/History/Edit.jsx": {
-    "file": "assets/Edit-2d2c3d38.js",
-    "src": "resources/js/Pages/RiskRegister/History/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/RiskRegister/History/Form.jsx",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Master/Location/Index.jsx": {
-    "file": "assets/Index-68754e97.js",
-    "src": "resources/js/Pages/Master/Location/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Master/Location/Create.jsx",
-      "resources/js/Pages/Master/Location/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Master/Location/Form.jsx",
-      "_InputError-478072b5.js"
-    ]
-  },
-  "resources/js/Pages/Roles/Index.jsx": {
-    "file": "assets/Index-a78b2be5.js",
-    "src": "resources/js/Pages/Roles/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Roles/Create.jsx",
-      "resources/js/Pages/Roles/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Roles/Form.jsx",
+      "resources/js/Pages/Users/Form.jsx",
       "_InputError-478072b5.js",
       "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Master/PIC/Form.jsx": {
-    "file": "assets/Form-bcac170f.js",
-    "src": "resources/js/Pages/Master/PIC/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js"
     ]
   },
   "resources/js/Pages/Master/RiskType/Index.jsx": {
@@ -969,9 +1542,9 @@
       "_InputError-478072b5.js"
     ]
   },
-  "resources/js/Pages/Permissions/Index.jsx": {
-    "file": "assets/Index-33dd75de.js",
-    "src": "resources/js/Pages/Permissions/Index.jsx",
+  "resources/js/Pages/Value/ProbabilityValue/Index.jsx": {
+    "file": "assets/Index-5c6f8189.js",
+    "src": "resources/js/Pages/Value/ProbabilityValue/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
@@ -979,8 +1552,8 @@
       "_App-66aa3e34.js",
       "_ThirdButton-0aec832e.js",
       "_EditModal-90d2924b.js",
-      "resources/js/Pages/Permissions/Create.jsx",
-      "resources/js/Pages/Permissions/Edit.jsx",
+      "resources/js/Pages/Value/ProbabilityValue/Create.jsx",
+      "resources/js/Pages/Value/ProbabilityValue/Edit.jsx",
       "_ApplicationLogo-15c7a745.js",
       "_transition-9b0aa617.js",
       "_dialog-d8fafaca.js",
@@ -993,22 +1566,34 @@
       "_TextInput-4ecdfa12.js",
       "_index-7aa54555.js",
       "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Permissions/Form.jsx",
+      "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
       "_InputError-478072b5.js",
-      "_TextInputCheckbox-b378817e.js"
+      "_ListBoxPage-94af130b.js",
+      "_use-tracked-pointer-957f2733.js"
     ]
   },
-  "resources/js/Pages/Master/Location/Form.jsx": {
-    "file": "assets/Form-446b056b.js",
-    "src": "resources/js/Pages/Master/Location/Form.jsx",
+  "resources/js/Pages/RiskRegister/Klinis/Form.jsx": {
+    "file": "assets/Form-507d8a80.js",
+    "src": "resources/js/Pages/RiskRegister/Klinis/Form.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
+      "_RadioCard-99b6ab94.js",
       "_InputError-478072b5.js",
       "_InputLabel-36bde3cd.js",
       "_PrimaryButton-0f0abcd4.js",
       "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
+      "_TextAreaInput-bf6794ab.js",
+      "_TextInput-4ecdfa12.js",
+      "_index-7aa54555.js",
+      "_use-tracked-pointer-957f2733.js",
+      "_transition-9b0aa617.js",
+      "_keyboard-8e5d6cce.js",
+      "_use-resolve-button-type-ef54f68e.js",
+      "_description-64ef4ce4.js"
+    ],
+    "css": [
+      "assets/react-datepicker-fe9d2487.css"
     ]
   },
   "_ListBoxPage-94af130b.js": {
@@ -1019,182 +1604,6 @@
       "_keyboard-8e5d6cce.js",
       "_use-tracked-pointer-957f2733.js",
       "_use-resolve-button-type-ef54f68e.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskType/Create.jsx": {
-    "file": "assets/Create-23adc1f4.js",
-    "src": "resources/js/Pages/Master/RiskType/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/RiskType/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/Klinis/Create.jsx": {
-    "file": "assets/Create-b0c10d69.js",
-    "src": "resources/js/Pages/RiskRegister/Klinis/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/RiskRegister/Klinis/Form.jsx",
-      "_RadioCard-99b6ab94.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_description-64ef4ce4.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Users/Edit.jsx": {
-    "file": "assets/Edit-90c5259b.js",
-    "src": "resources/js/Pages/Users/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Users/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskVariety/Index.jsx": {
-    "file": "assets/Index-00582650.js",
-    "src": "resources/js/Pages/Master/RiskVariety/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Master/RiskVariety/Create.jsx",
-      "resources/js/Pages/Master/RiskVariety/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Master/RiskVariety/Form.jsx",
-      "_InputError-478072b5.js",
-      "_TextAreaInput-bf6794ab.js"
-    ]
-  },
-  "resources/js/Pages/Welcome.jsx": {
-    "file": "assets/Welcome-cef196dc.js",
-    "src": "resources/js/Pages/Welcome.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_Checkbox-ddb9ba7d.js",
-      "_GuestLayout-be1437dc.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_TextInput-4ecdfa12.js",
-      "_ApplicationLogo-15c7a745.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/NonKlinis/Create.jsx": {
-    "file": "assets/Create-2baeff63.js",
-    "src": "resources/js/Pages/RiskRegister/NonKlinis/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/RiskRegister/NonKlinis/Form.jsx",
-      "_RadioCard-99b6ab94.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_description-64ef4ce4.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Value/ProbabilityValue/Create.jsx": {
-    "file": "assets/Create-002951ce.js",
-    "src": "resources/js/Pages/Value/ProbabilityValue/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/NonKlinis/Index.jsx": {
-    "file": "assets/Index-956f45a1.js",
-    "src": "resources/js/Pages/RiskRegister/NonKlinis/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/RiskRegister/NonKlinis/Create.jsx",
-      "resources/js/Pages/RiskRegister/NonKlinis/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/RiskRegister/NonKlinis/Form.jsx",
-      "_RadioCard-99b6ab94.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_InputError-478072b5.js",
-      "_TextAreaInput-bf6794ab.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
     ]
   },
   "resources/js/Pages/RiskRegister/Klinis/Index copy.jsx": {
@@ -1231,38 +1640,18 @@
       "assets/react-datepicker-fe9d2487.css"
     ]
   },
-  "resources/js/Pages/RiskRegister/Klinis/Edit.jsx": {
-    "file": "assets/Edit-60b2d7e4.js",
-    "src": "resources/js/Pages/RiskRegister/Klinis/Edit.jsx",
+  "resources/js/Pages/RiskRegister/NonKlinis/Index.jsx": {
+    "file": "assets/Index-956f45a1.js",
+    "src": "resources/js/Pages/RiskRegister/NonKlinis/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "resources/js/Pages/RiskRegister/Klinis/Form.jsx",
-      "_RadioCard-99b6ab94.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_description-64ef4ce4.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Dashboard.jsx": {
-    "file": "assets/Dashboard-94bd4ef9.js",
-    "src": "resources/js/Pages/Dashboard.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
+      "_DangerButton-a2fab5b6.js",
       "_App-66aa3e34.js",
+      "_ThirdButton-0aec832e.js",
+      "_EditModal-90d2924b.js",
+      "resources/js/Pages/RiskRegister/NonKlinis/Create.jsx",
+      "resources/js/Pages/RiskRegister/NonKlinis/Edit.jsx",
       "_ApplicationLogo-15c7a745.js",
       "_transition-9b0aa617.js",
       "_dialog-d8fafaca.js",
@@ -1274,389 +1663,11 @@
       "_SecondaryButton-04f7f3c9.js",
       "_TextInput-4ecdfa12.js",
       "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js"
-    ]
-  },
-  "resources/js/Pages/Value/ProbabilityValue/Edit.jsx": {
-    "file": "assets/Edit-33979560.js",
-    "src": "resources/js/Pages/Value/ProbabilityValue/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
       "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Permissions/Create.jsx": {
-    "file": "assets/Create-e219963e.js",
-    "src": "resources/js/Pages/Permissions/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Permissions/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Profile/Edit.jsx": {
-    "file": "assets/Edit-d30d139e.js",
-    "src": "resources/js/Pages/Profile/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_App-66aa3e34.js",
-      "_TextInput-4ecdfa12.js",
-      "resources/js/Pages/Profile/Partials/UpdatePasswordForm.jsx",
-      "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_InputError-478072b5.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/NonKlinis/Edit.jsx": {
-    "file": "assets/Edit-25773f6c.js",
-    "src": "resources/js/Pages/RiskRegister/NonKlinis/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
       "resources/js/Pages/RiskRegister/NonKlinis/Form.jsx",
       "_RadioCard-99b6ab94.js",
       "_use-tracked-pointer-957f2733.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_description-64ef4ce4.js",
       "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Master/Location/Create.jsx": {
-    "file": "assets/Create-1f6222bb.js",
-    "src": "resources/js/Pages/Master/Location/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/Location/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "_TextAreaInput-bf6794ab.js": {
-    "file": "assets/TextAreaInput-bf6794ab.js",
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Master/RiskCategory/Create.jsx": {
-    "file": "assets/Create-30b35e77.js",
-    "src": "resources/js/Pages/Master/RiskCategory/Create.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/RiskCategory/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Welcome copy.jsx": {
-    "file": "assets/Welcome copy-539a9e11.js",
-    "src": "resources/js/Pages/Welcome copy.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx"
-    ]
-  },
-  "resources/js/Pages/Value/ProbabilityValue/Index.jsx": {
-    "file": "assets/Index-5c6f8189.js",
-    "src": "resources/js/Pages/Value/ProbabilityValue/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Value/ProbabilityValue/Create.jsx",
-      "resources/js/Pages/Value/ProbabilityValue/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_ListBoxPage-94af130b.js",
-      "_use-tracked-pointer-957f2733.js"
-    ]
-  },
-  "resources/js/Pages/Master/RiskVariety/Edit.jsx": {
-    "file": "assets/Edit-e95bdbd9.js",
-    "src": "resources/js/Pages/Master/RiskVariety/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Master/RiskVariety/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Value/ControlValue/Edit.jsx": {
-    "file": "assets/Edit-edd7ddf5.js",
-    "src": "resources/js/Pages/Value/ControlValue/Edit.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "resources/js/Pages/Value/ControlValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx": {
-    "file": "assets/UpdateProfileInformationForm-2974cbe7.js",
-    "src": "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_TextInput-4ecdfa12.js",
-      "_transition-9b0aa617.js"
-    ]
-  },
-  "resources/js/Pages/Users/Index.jsx": {
-    "file": "assets/Index-b5a8f8d0.js",
-    "src": "resources/js/Pages/Users/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Users/Create.jsx",
-      "resources/js/Pages/Users/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Users/Form.jsx",
-      "_InputError-478072b5.js",
-      "_TextInputCheckbox-b378817e.js"
-    ]
-  },
-  "resources/js/Pages/Value/ControlValue/Index.jsx": {
-    "file": "assets/Index-af7347db.js",
-    "src": "resources/js/Pages/Value/ControlValue/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_App-66aa3e34.js",
-      "_ThirdButton-0aec832e.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/Value/ControlValue/Create.jsx",
-      "resources/js/Pages/Value/ControlValue/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/Value/ControlValue/Form.jsx",
-      "_InputError-478072b5.js",
-      "_ListBoxPage-94af130b.js",
-      "_use-tracked-pointer-957f2733.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/Klinis/Form.jsx": {
-    "file": "assets/Form-507d8a80.js",
-    "src": "resources/js/Pages/RiskRegister/Klinis/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_RadioCard-99b6ab94.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextAreaInput-bf6794ab.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_description-64ef4ce4.js"
-    ],
-    "css": [
-      "assets/react-datepicker-fe9d2487.css"
-    ]
-  },
-  "resources/js/Pages/Master/RiskCategory/Form.jsx": {
-    "file": "assets/Form-06e814b9.js",
-    "src": "resources/js/Pages/Master/RiskCategory/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js"
-    ]
-  },
-  "resources/js/Pages/Value/ProbabilityValue/Form.jsx": {
-    "file": "assets/Form-4cb5fa9c.js",
-    "src": "resources/js/Pages/Value/ProbabilityValue/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js"
-    ]
-  },
-  "resources/js/Pages/Value/ImpactValue/Form.jsx": {
-    "file": "assets/Form-2b48bd9e.js",
-    "src": "resources/js/Pages/Value/ImpactValue/Form.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_ListBoxPage-94af130b.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-tracked-pointer-957f2733.js",
-      "_use-resolve-button-type-ef54f68e.js"
-    ]
-  },
-  "resources/js/Pages/Profile/Partials/DeleteUserForm.jsx": {
-    "file": "assets/DeleteUserForm-75d5813e.js",
-    "src": "resources/js/Pages/Profile/Partials/DeleteUserForm.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_DangerButton-a2fab5b6.js",
-      "_InputError-478072b5.js",
-      "_InputLabel-36bde3cd.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js"
-    ]
-  },
-  "_use-tracked-pointer-957f2733.js": {
-    "file": "assets/use-tracked-pointer-957f2733.js",
-    "imports": [
-      "resources/js/app.jsx",
-      "_transition-9b0aa617.js"
-    ]
-  },
-  "resources/js/Pages/RiskRegister/History/Index.jsx": {
-    "file": "assets/Index-736117f5.js",
-    "src": "resources/js/Pages/RiskRegister/History/Index.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "resources/js/app.jsx",
-      "_App-66aa3e34.js",
-      "_EditModal-90d2924b.js",
-      "resources/js/Pages/RiskRegister/History/Edit.jsx",
-      "_ApplicationLogo-15c7a745.js",
-      "_transition-9b0aa617.js",
-      "_dialog-d8fafaca.js",
-      "_keyboard-8e5d6cce.js",
-      "_description-64ef4ce4.js",
-      "resources/js/Pages/Export/LarsDHP.jsx",
-      "_InputLabel-36bde3cd.js",
-      "_PrimaryButton-0f0abcd4.js",
-      "_SecondaryButton-04f7f3c9.js",
-      "_TextInput-4ecdfa12.js",
-      "_index-7aa54555.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "resources/js/Pages/RiskRegister/History/Form.jsx",
       "_TextAreaInput-bf6794ab.js"
     ],
     "css": [
@@ -1673,17 +1684,6 @@
       "resources/js/Pages/Export/LarsDHP.jsx",
       "_keyboard-8e5d6cce.js",
       "_use-resolve-button-type-ef54f68e.js"
-    ]
-  },
-  "_RadioCard-99b6ab94.js": {
-    "file": "assets/RadioCard-99b6ab94.js",
-    "imports": [
-      "resources/js/app.jsx",
-      "_use-tracked-pointer-957f2733.js",
-      "_transition-9b0aa617.js",
-      "_keyboard-8e5d6cce.js",
-      "_use-resolve-button-type-ef54f68e.js",
-      "_description-64ef4ce4.js"
     ]
   },
   "_index-7aa54555.js": {
