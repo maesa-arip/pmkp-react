@@ -17,8 +17,6 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Illuminate\Support\Collection;
 
 class FormatLARSDHPExport implements WithMultipleSheets
 {
@@ -1301,7 +1299,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->leftjoin('jenis_pengendalians', 'jenis_pengendalians.id', 'risk_registers.jenis_pengendalian_id')
             ->selectRaw(
-                    'indikator_fitur04s.name, ' .
+                'indikator_fitur04s.name, ' .
                     'indikator_fitur04s.tujuan, ' .
                     'risk_registers.pernyataan_risiko, ' .
                     'opsi_pengendalians.name as opsi, ' .
@@ -1818,7 +1816,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'E' => 30,
             'F' => 30,
         ];
-    }
+    }  
     public function registerEvents(): array
     {
         return [

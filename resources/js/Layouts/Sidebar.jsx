@@ -753,10 +753,11 @@ export default function Sidebar() {
                                                 </Disclosure.Button>
                                             </h3>
                                             <Disclosure.Panel className="pt-6">
+                                                <a href="/export/riskregisterklinislarsdhp">Export DHP</a>
+                                                <a href="/export/exampleexport">Example Export</a>
                                                 <div className="space-y-4">
                                                     <button
                                                         type="button"
-
                                                         onClick={
                                                             openExportDialog
                                                         }
@@ -794,12 +795,11 @@ export default function Sidebar() {
                                                             </div>
                                                         ) : (
                                                             <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format LARS DHP1
+                                                                Format. LARS DHP
                                                             </div>
                                                         )}
                                                     </button>
                                                     <Link
-                                                        href="#"
                                                         onClick={
                                                             handleExportBPKPKlinis
                                                         }
@@ -837,13 +837,12 @@ export default function Sidebar() {
                                                             </button>
                                                         ) : (
                                                             <button className="ml-2 text-sm tracking-wide truncate">
-                                                                Format BPKP
+                                                                Format. BPKP
                                                                 KLINIS
                                                             </button>
                                                         )}
                                                     </Link>
                                                     <Link
-                                                        href="#"
                                                         onClick={
                                                             handleExportBPKPNonKlinis
                                                         }
@@ -881,7 +880,7 @@ export default function Sidebar() {
                                                             </button>
                                                         ) : (
                                                             <button className="ml-2 text-sm tracking-wide truncate">
-                                                                Format BPKP NON
+                                                                Format. BPKP NON
                                                                 KLINIS
                                                             </button>
                                                         )}

@@ -19,6 +19,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use PDF;
 
+
+use App\Exports\ExampleExport;
+
 use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\CellAlignment;
 use OpenSpout\Common\Entity\Style\Style;
@@ -299,6 +302,13 @@ class ExportController extends Controller
         $endDate = $request->input('endDate');
         return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
     }
+
+    public function exampleexport()
+    {
+    	$sheet = new ExampleExport;
+		return $sheet->download('example.xlsx');
+    }
+    
     // public function riskregisterklinislarsdhp(Request $request)
     // {
     //     $startDate = $request->input('startDate');

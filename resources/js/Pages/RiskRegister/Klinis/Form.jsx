@@ -6,6 +6,7 @@ import RadioCard from "@/Components/RadioCard";
 import SecondaryButton from "@/Components/SecondaryButton";
 import TextAreaInput from "@/Components/TextAreaInput";
 import TextInput from "@/Components/TextInput";
+import TextInputWithError from "@/Components/TextInputWithError";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -211,16 +212,12 @@ export default function Form({
         }
     );
 
-    const [selectedRealisasi, setSelectedRealisasi] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.realisasi.find(
-                    (x) => x.id === model.realisasi_id
-                );
-            }
-            return defaultValue[0];
+    const [selectedRealisasi, setSelectedRealisasi] = useState(() => {
+        if (model) {
+            return ShouldMap.realisasi.find((x) => x.id === model.realisasi_id);
         }
-    );
+        return defaultValue[0];
+    });
 
     useEffect(() => {
         setData({
@@ -326,40 +323,16 @@ export default function Form({
                         />
                     </div>
                     <div className="col-span-6">
-                        <InputLabel
-                            for="TargetWaktu"
-                            value="Target Waktu (Hari)"
-                        />
-                        {/* <DatePicker/> */}
-                        {/* <DatePicker 
-                        dateFormat="dd-MM-yyyy"
-                        value={data.tgl_selesai}
-                        selected={tglSelesai} id="tgl_selesai" autoComplete="off" name="tgl_selesai" className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
-                        onChange={(date) => {
-                            setTglSelesai(date);
-                            const d = new Date(date).toLocaleDateString('en-CA');
-                            // console.log(d);
-                            
-                            setData("tgl_selesai", d);
-                        }} /> */}
-
-                        {/* <InputError
-                            message={errors.tgl_selesai}
-                            className="mt-2"
-                        /> */}
-                        <TextInput
+                        <TextInputWithError
+                            label= "Target Waktu (Hari)"
+                            type="number"
                             id="target_waktu"
+                            name="target_waktu"
                             value={data.target_waktu}
                             handleChange={(e) =>
                                 setData("target_waktu", e.target.value)
                             }
-                            readOnly={false}
-                            type="number"
-                            className="block w-full mt-1"
-                        />
-                        <InputError
                             message={errors.target_waktu}
-                            className="mt-2"
                         />
                     </div>
 
@@ -918,10 +891,7 @@ export default function Form({
                         />
                     </div>
                     <div className="col-span-6">
-                        <InputLabel
-                            for="Denum"
-                            value="Denum"
-                        />
+                        <InputLabel for="Denum" value="Denum" />
                         <TextInput
                             id="denum"
                             value={data.denum}
@@ -932,30 +902,19 @@ export default function Form({
                             type="number"
                             className="block w-full mt-1"
                         />
-                        <InputError
-                            message={errors.denum}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.denum} className="mt-2" />
                     </div>
                     <div className="col-span-6">
-                        <InputLabel
-                            for="NUM"
-                            value="NUM"
-                        />
+                        <InputLabel for="NUM" value="NUM" />
                         <TextInput
                             id="num"
                             value={data.num}
-                            handleChange={(e) =>
-                                setData("num", e.target.value)
-                            }
+                            handleChange={(e) => setData("num", e.target.value)}
                             readOnly={false}
                             type="number"
                             className="block w-full mt-1"
                         />
-                        <InputError
-                            message={errors.num}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.num} className="mt-2" />
                     </div>
                     <div className="col-span-8">
                         <InputLabel
@@ -1001,10 +960,7 @@ export default function Form({
                     </div>
 
                     <div className="col-span-6 my-6">
-                        <InputLabel
-                            for="Realisasi"
-                            value="Realisasi"
-                        />
+                        <InputLabel for="Realisasi" value="Realisasi" />
                         <ComboboxPage
                             ShouldMap={ShouldMap.realisasi}
                             selected={selectedRealisasi}
@@ -1022,10 +978,7 @@ export default function Form({
                         />
                     </div>
                     <div className="col-span-12">
-                        <InputLabel
-                            for="Output"
-                            value="Output"
-                        />
+                        <InputLabel for="Output" value="Output" />
                         <TextAreaInput
                             id="output"
                             value={data.output}
@@ -1036,10 +989,7 @@ export default function Form({
                             type="text"
                             className="block w-full mt-1"
                         />
-                        <InputError
-                            message={errors.output}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.output} className="mt-2" />
                     </div>
 
                     {/* <div className="col-span-4">
