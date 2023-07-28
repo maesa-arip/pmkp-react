@@ -18,27 +18,41 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Legend as ChartLegend;
+use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
+use PhpOffice\PhpSpreadsheet\Chart\Properties;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Settings;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+
 class FormatLARSDHPExport implements WithMultipleSheets
 {
     protected $startDate;
     protected $endDate;
+    protected $chartData;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $chartData)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->chartData = $chartData;
     }
     public function sheets(): array
     {
         return [
-            new Sheet1($this->startDate, $this->endDate),
-            new Sheet2($this->startDate, $this->endDate),
-            new Sheet3($this->startDate, $this->endDate),
-            new Sheet4($this->startDate, $this->endDate),
-            new Sheet5($this->startDate, $this->endDate),
-            new Sheet6($this->startDate, $this->endDate),
-            new Sheet7($this->startDate, $this->endDate),
-            new Sheet8($this->startDate, $this->endDate),
+            new Sheet1($this->startDate, $this->endDate, $this->chartData),
+            new Sheet2($this->startDate, $this->endDate, $this->chartData),
+            new Sheet3($this->startDate, $this->endDate, $this->chartData),
+            new Sheet4($this->startDate, $this->endDate, $this->chartData),
+            new Sheet5($this->startDate, $this->endDate, $this->chartData),
+            new Sheet6($this->startDate, $this->endDate, $this->chartData),
+            new Sheet7($this->startDate, $this->endDate, $this->chartData),
+            new Sheet8($this->startDate, $this->endDate, $this->chartData),
         ];
     }
 }
@@ -875,6 +889,10 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             },
         ];
     }
+    public function createChart()
+    {
+        
+    }
 }
 class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
@@ -884,13 +902,14 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $chartData;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $chartData)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->chartData = $chartData;
     }
-
     public function query()
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -982,6 +1001,175 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('A1:C1')->applyFromArray($styleHeader);
             },
         ];
+    }
+    public function createChart()
+    {
+        $spreadsheet = new Spreadsheet();
+        $worksheet = $spreadsheet->getActiveSheet();
+        $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $query = RiskRegister::query()
+            ->select(
+                DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
+                'risk_registers.osd1_dampak',
+                'risk_registers.osd1_probabilitas',
+            )
+            ->where('risk_registers.osd1_dampak', '>', 0)
+            ->where('risk_registers.osd1_probabilitas', '>', 0)
+            ->where($whosLogin)->take(10);
+
+
+        $data = $query->get();
+
+        // Build the data for the chart
+        $dataGraph = [['', 'Dampak', 'Probabilitas']];
+
+        foreach ($data as $row) {
+            $dataGraph[] = [
+                $row->Kode,
+                $row->osd1_dampak,
+                $row->osd1_probabilitas,
+            ];
+        }
+
+        $totalData = count($dataGraph);
+
+        $worksheet->fromArray($dataGraph);
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'Worksheet!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+
+        // Set the line width for each data series
+        foreach ($dataSeriesValues as $dataSeriesValue) {
+            $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+        }
+
+
+        // ... (rest of the code remains unchanged)
+        // Set the Labels for each data series we want to plot
+        //     Datatype
+        //     Cell reference for data
+        //     Format Code
+        //     Number of datapoints in series
+        //     Data values
+        //     Data Marker
+        // Build the dataseries
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'Worksheet!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+
+        // Set the line width for each data series
+        foreach ($dataSeriesValues as $dataSeriesValue) {
+            $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+        }
+
+        $dataSeriesLabels = [];
+        //B:66
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesLabels[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_STRING,
+                'Worksheet!$' . $posTitle . '$1',
+                null,
+                1
+            );
+        }
+
+        $dataSeriesLabels[0]->setFillColor('FF0000');
+        // Set the X-Axis Labels
+        //     Datatype
+        //     Cell reference for data
+        //     Format Code
+        //     Number of datapoints in series
+        //     Data values
+        //     Data Marker
+        $xAxisTickValues = [
+            new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_STRING,
+                'Worksheet!$A$2:$A$' . $totalData,
+                null,
+                4
+            ), // Q1 to Q(last)
+        ];
+        // Set the Data values for each data series we want to plot
+        //     Datatype
+        //     Cell reference for data
+        //     Format Code
+        //     Number of datapoints in series
+        //     Data values
+        //     Data Marker
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'Worksheet!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+
+        // $dataSeriesValues[2]->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+
+        // Build the dataseries
+        $series = new DataSeries(
+            DataSeries::TYPE_LINECHART, // plotType
+            null, // plotGrouping, was DataSeries::GROUPING_STACKED, not a usual choice for line chart
+            range(0, count($dataSeriesValues) - 1), // plotOrder
+            $dataSeriesLabels, // plotLabel
+            $xAxisTickValues, // plotCategory
+            $dataSeriesValues        // plotValues
+        );
+
+        // Set the series in the plot area
+        $plotArea = new PlotArea(null, [$series]);
+        // Set the chart legend
+        $legend = new ChartLegend(ChartLegend::POSITION_TOPRIGHT, null, false);
+
+        $title = new Title('Test Line Chart');
+        $yAxisLabel = new Title('Value ($k)');
+
+        // Create the chart
+        $chart = new Chart(
+            'chart1', // name
+            $title, // title
+            $legend, // legend
+            $plotArea, // plotArea
+            true, // plotVisibleOnly
+            'gap',  // displayBlanksAs
+            null, // xAxisLabel
+            $yAxisLabel  // yAxisLabel
+        );
+
+
+        // Set the position where the chart should appear in the worksheet
+        // $chart->setTopLeftPosition('A'.($totalData + 3) );
+        // $chart->setBottomRightPosition('M'.($totalData+15) );
+        $chart->setTopLeftPosition('G1');
+        $chart->setBottomRightPosition('S12');
+
+        // Add the chart to the worksheet
+        $worksheet->addChart($chart);
+
+        // Return the spreadsheet object
+        return $spreadsheet;
     }
 }
 class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
@@ -1798,7 +1986,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     }
     public function title(): string
     {
-        return 'TREND';
+        return 'Sheet7';
     }
     public function headings(): array
     {
@@ -1816,60 +2004,64 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'E' => 30,
             'F' => 30,
         ];
-    }  
+    }
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
-                $highestRow = $event->sheet->getHighestRow();
-                $highestColumn = $event->sheet->getHighestColumn();
-                $range = 'A1:' . $highestColumn . $highestRow;
-                $rangeA = 'A1:' . 'A' . $highestRow;
-                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
-                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000'],
+                if ($this->data && count($this->data) > 0) {
+                    $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
+                    $highestRow = $event->sheet->getHighestRow();
+                    $highestColumn = $event->sheet->getHighestColumn();
+                    $range = 'A1:' . $highestColumn . $highestRow;
+                    $rangeA = 'A1:' . 'A' . $highestRow;
+                    $rangeB = 'B1:' . 'B' . $highestRow;
+                    $rangeC = 'C1:' . 'C' . $highestRow;
+                    $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
+                    $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => Border::BORDER_THIN,
+                                'color' => ['rgb' => '000000'],
+                            ],
                         ],
-                    ],
-                    'alignment' => [
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-                $styleHeader = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'alignment' => [
+                            'vertical' => Alignment::VERTICAL_CENTER,
                         ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => 'FFFFFFFF',
+                    ]);
+                    $styleHeader = [
+                        'font' => [
+                            'bold' => true,
+                            'size' => 11,
                         ],
-                        'endColor' => [
-                            'argb' => 'FFFFFFFF',
+                        'alignment' => [
+                            'horizontal' => Alignment::HORIZONTAL_CENTER,
+                            'vertical' => Alignment::VERTICAL_CENTER,
                         ],
-                    ],
-                ];
+                        'borders' => [
+                            'outline' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            ],
+                        ],
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                            'rotation' => 90,
+                            'startColor' => [
+                                'argb' => 'FFFFFFFF',
+                            ],
+                            'endColor' => [
+                                'argb' => 'FFFFFFFF',
+                            ],
+                        ],
+                    ];
 
-                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    ],
-                ]);
-                $event->sheet->getDelegate()->getStyle('A1:F1')->applyFromArray($styleHeader);
+                    $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
+                        'alignment' => [
+                            'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        ],
+                    ]);
+                    $event->sheet->getDelegate()->getStyle('A1:F1')->applyFromArray($styleHeader);
+                }
             },
         ];
     }
