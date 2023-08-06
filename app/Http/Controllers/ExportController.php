@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ChartExport;
 use App\Exports\FormatBPKPExport;
 use App\Exports\FormatBPKPNonKlinisExport;
 use App\Exports\FormatFitur4Export;
@@ -21,6 +22,7 @@ use PDF;
 
 
 use App\Exports\ExampleExport;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\CellAlignment;
@@ -302,43 +304,29 @@ class ExportController extends Controller
         $endDate = $request->input('endDate');
         return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
     }
+    public function riskregisterklinislarsdhpwithchart(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $export = new FormatLARSDHPExport($startDate, $endDate);
+        $spreadsheet = $export->sheets()[2]->createChart();
+        $exportFile = public_path('Form Manajemen Risiko LARS DHP2.xlsx');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->setIncludeCharts(true);
+        $writer->save($exportFile);
+        return response()->download($exportFile, 'Form Manajemen Risiko LARS DHP2.xlsx')->deleteFileAfterSend();
+    }
 
     public function exampleexport()
     {
-    	$sheet = new ExampleExport;
-		return $sheet->download('example.xlsx');
+        $sheet = new ExampleExport;
+        return $sheet->download('example.xlsx');
     }
-    
-    // public function riskregisterklinislarsdhp(Request $request)
-    // {
-    //     $startDate = $request->input('startDate');
-    //     $endDate = $request->input('endDate');
-    //     // Enable query logging
-    //     DB::enableQueryLog();
+    public function exportChart()
+    {
+        return Excel::download(new ChartExport(), 'chart.xlsx');
+    }
 
-    //     $query = DB::table('risk_registers')
-    //         ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //         ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id') 
-    //         ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //         ->join('users', 'users.id', 'risk_registers.user_id')
-    //         ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan', 'pics.name as pic_name', 'risk_categories.name as kategori_risiko');
-
-    //     $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-    //     $query->where($whosLogin);
-
-    //     if (!empty($startDate) && !empty($endDate)) {
-    //         $query->where('risk_registers.created_at', '>=', $startDate)
-    //               ->where('risk_registers.created_at', '<=', $endDate);
-    //     }
-
-    //     // Get the executed SQL query
-    //     $sql = $query->toSql();
-    //     $bindings = $query->getBindings();
-    //     $fullSql = vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
-
-    //     dd($fullSql); // Output the SQL query for debugging
-    //     return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
-    // }
     public function exportpdf(Request $request)
     {
         $users = User::get();

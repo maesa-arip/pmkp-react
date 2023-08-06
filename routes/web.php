@@ -1,12 +1,14 @@
 <?php
 
-use App\Http\Controllers\CasemixController;
+
 use App\Http\Controllers\ControlValueController;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IdentificationSourceController;
 use App\Http\Controllers\ImpactValueController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\OpsiPengendalianController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PicController;
 use App\Http\Controllers\ProbabilityValueController;
@@ -56,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
     Route::Resource('riskCategories', RiskCategoryController::class);
+    Route::Resource('opsiPengendalians', OpsiPengendalianController::class);
     Route::Resource('identificationSources', IdentificationSourceController::class);
     Route::apiResource('locations', LocationController::class);
     Route::apiResource('riskVarieties', RiskVarietyController::class);
@@ -72,9 +75,14 @@ Route::middleware('auth')->group(function () {
     Route::get('export/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp'])->name('export.riskregisternonklinisbpkp');
     Route::get('export/riskregisterklinisfitur4', [ExportController::class, 'riskregisterklinisfitur4'])->name('export.riskregisterklinisfitur4');
     Route::get('export/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp'])->name('export.riskregisterklinislarsdhp');
+    Route::get('export/riskregisterklinislarsdhpwithchart', [ExportController::class, 'riskregisterklinislarsdhpwithchart'])->name('export.riskregisterklinislarsdhpwithchart');
     Route::get('export/exampleexport', [ExportController::class, 'exampleexport'])->name('export.exampleexport');
-    Route::get('export/exportWithChart', [ExportController::class, 'exportWithChart'])->name('export.exportWithChart');
+    Route::get('export/export', [ExportController::class, 'export'])->name('export.export');
+    Route::get('export/exportChart', [ExportController::class, 'exportChart'])->name('export.exportChart');
     Route::get('export/riskregisterklinispdf', [ExportController::class, 'exportpdf'])->name('export.riskregisterklinispdf');
+
+    Route::get('/export-excel', [ExcelController::class, 'exportXls'])->name('export.excel');
+
 
     // Route::post('/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);

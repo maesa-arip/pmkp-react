@@ -753,8 +753,6 @@ export default function Sidebar() {
                                                 </Disclosure.Button>
                                             </h3>
                                             <Disclosure.Panel className="pt-6">
-                                                <a href="/export/riskregisterklinislarsdhp">Export DHP</a>
-                                                <a href="/export/exampleexport">Example Export</a>
                                                 <div className="space-y-4">
                                                     <button
                                                         type="button"

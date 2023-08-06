@@ -9,6 +9,7 @@ use App\Models\IndikatorFitur3;
 use App\Models\RiskRegister;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithCharts;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,6 +18,25 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Legend;
+use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
+// use PhpOffice\PhpSpreadsheet\Worksheet\Chart;
+
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Chart\Legend as ChartLegend;
+
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
+
+use PhpOffice\PhpSpreadsheet\Chart\Properties;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Settings;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 class FormatLARSDHPExport implements WithMultipleSheets
 {
@@ -42,6 +62,7 @@ class FormatLARSDHPExport implements WithMultipleSheets
         ];
     }
 }
+
 class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
 {
     /**
@@ -876,7 +897,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithCharts, WithTitle
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -911,7 +932,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     }
     public function title(): string
     {
-        return 'PETA PANAS';
+        return 'PETA_PANAS';
     }
     public function headings(): array
     {
@@ -919,6 +940,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ['No Risiko', 'Dampak', 'Probabilitas'],
         ];
     }
+
     public function columnWidths(): array
     {
         return [
@@ -927,17 +949,163 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'C' => 15,
         ];
     }
+    public function charts()
+    {
+        $spreadsheet = new Spreadsheet();
+        $worksheet = $spreadsheet->getActiveSheet();
+        $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $query = RiskRegister::query()
+            ->select(
+                DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
+                'risk_registers.osd1_dampak',
+                'risk_registers.osd1_probabilitas',
+            )
+            ->where($whosLogin);
+
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
+
+        $data = $query->get();
+        $dataGraph = [['', 'Dampak', 'Probabilitas']];
+        foreach ($data as $row) {
+            $dataGraph[] = [
+                $row->Kode,
+                $row->osd1_dampak,
+                $row->osd1_probabilitas,
+            ];
+        }
+        $totalData = count($dataGraph);
+        $worksheet->fromArray($dataGraph);
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'PETA_PANAS!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+        // foreach ($dataSeriesValues as $dataSeriesValue) {
+        //     $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+        // }
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'PETA_PANAS!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+        // foreach ($dataSeriesValues as $dataSeriesValue) {
+        //     $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+        // }
+
+        $dataSeriesLabels = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesLabels[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_STRING,
+                'PETA_PANAS!$' . $posTitle . '$1',
+                null,
+                1
+            );
+        }
+        $dataSeriesLabels[0]->setFillColor('FF0000');
+        $xAxisTickValues = [
+            new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_STRING,
+                'PETA_PANAS!$A$2:$A$' . $totalData,
+                null,
+                4
+            ), // Q1 to Q(last)
+        ];
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'PETA_PANAS!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+        // $series = new DataSeries(
+        //     DataSeries::TYPE_LINECHART, // plotType
+        //     null, // plotGrouping, was DataSeries::GROUPING_STACKED, not a usual choice for line chart
+        //     range(0, count($dataSeriesValues) - 1), // plotOrder
+        //     $dataSeriesLabels, // plotLabel
+        //     $xAxisTickValues, // plotCategory
+        //     $dataSeriesValues        // plotValues
+        // );
+        // $series = new DataSeries(
+        //     DataSeries::TYPE_SCATTERCHART, // plotType
+        //     null, // plotGrouping (Scatter charts don't have any grouping)
+        //     range(0, count($dataSeriesValues) - 1), // plotOrder
+        //     $dataSeriesLabels, // plotLabel
+        //     $xAxisTickValues, // plotCategory
+        //     $dataSeriesValues, // plotValues
+        //     null, // plotDirection
+        //     null, // smooth line
+        //     DataSeries::STYLE_LINEMARKER // plotStyle
+        //     );
+            $series = new DataSeries(
+                DataSeries::TYPE_SCATTERCHART, // plotType
+                null, // plotGrouping
+                range(0, count($dataSeriesValues) - 1), // plotOrder
+                $dataSeriesLabels, // plotLabel
+                $xAxisTickValues, // plotCategory
+                $dataSeriesValues        // plotValues
+            );
+            
+            
+
+        // Set the series in the plot area
+        $plotArea = new PlotArea(null, [$series]);
+        // Set the chart legend
+        $legend = new ChartLegend(ChartLegend::POSITION_TOPRIGHT, null, false);
+
+        $title = new Title('RISK ASSESSMENT HEATMAP');
+        $yAxisLabel = new Title('Probabilitas');
+        $xAxisLabel = new Title('Dampak');
+
+        // Create the chart
+        $chart = new Chart(
+            'chart1', // name
+            $title, // title
+            $legend, // legend
+            $plotArea, // plotArea
+            true, // plotVisibleOnly
+            'gap',  // displayBlanksAs
+            $xAxisLabel, // xAxisLabel
+            $yAxisLabel  // yAxisLabel
+        );
+        $chart->setTopLeftPosition('G1');
+        $chart->setBottomRightPosition('S12');
+        $worksheet->addChart($chart);
+
+        return $chart;
+    }
+
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(20);
+                $event->sheet->getRowDimension(1)->setRowHeight(20);
                 $highestRow = $event->sheet->getHighestRow();
                 $highestColumn = $event->sheet->getHighestColumn();
                 $range = 'A1:' . $highestColumn . $highestRow;
                 $rangeA = 'A1:' . 'A' . $highestRow;
-                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
-                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
+                $event->sheet->getStyle($range)->getAlignment()->setWrapText(true);
+                $event->sheet->getStyle($range)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -959,11 +1127,11 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                     'borders' => [
                         'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'borderStyle' => Border::BORDER_THIN,
                         ],
                     ],
                     'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'fillType' => Fill::FILL_GRADIENT_LINEAR,
                         'rotation' => 90,
                         'startColor' => [
                             'argb' => 'F4B084',
@@ -974,12 +1142,15 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ];
 
-                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
+                $event->sheet->getStyle($range)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle('A1:C1')->applyFromArray($styleHeader);
+                $event->sheet->getStyle('A1:C1')->applyFromArray($styleHeader);
+
+                $chart = $this->charts();
+                $event->sheet->getDelegate()->addChart($chart);                
             },
         ];
     }
@@ -1769,7 +1940,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         ];
     }
 }
-class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle, WithCharts
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -1816,7 +1987,125 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'E' => 30,
             'F' => 30,
         ];
-    }  
+    }
+    public function charts()
+    {
+        $spreadsheet = new Spreadsheet();
+        $worksheet = $spreadsheet->getActiveSheet();
+        $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $query = RiskRegister::query()
+            ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num', DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
+            ->where($whosLogin);
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
+
+        $data = $query->get();
+        $dataGraph = [['', 'Dampak', 'Probabilitas']];
+        foreach ($data as $row) {
+            $dataGraph[] = [
+                $row->Kode,
+                $row->osd1_dampak,
+                $row->osd1_probabilitas,
+            ];
+        }
+        $totalData = count($dataGraph);
+        $worksheet->fromArray($dataGraph);
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'TREND!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+        foreach ($dataSeriesValues as $dataSeriesValue) {
+            $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+        }
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'TREND!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+        foreach ($dataSeriesValues as $dataSeriesValue) {
+            $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
+        }
+
+        $dataSeriesLabels = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesLabels[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_STRING,
+                'TREND!$' . $posTitle . '$1',
+                null,
+                1
+            );
+        }
+        $dataSeriesLabels[0]->setFillColor('FF0000');
+        $xAxisTickValues = [
+            new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_STRING,
+                'TREND!$A$2:$A$' . $totalData,
+                null,
+                4
+            ), // Q1 to Q(last)
+        ];
+        $dataSeriesValues = [];
+        for ($i = 1; $i < count($dataGraph[0]); $i++) {
+            $pos = $i + 65;
+            $posTitle = chr($pos);
+            $dataSeriesValues[] = new DataSeriesValues(
+                DataSeriesValues::DATASERIES_TYPE_NUMBER,
+                'TREND!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
+                null,
+                4
+            );
+        }
+        $series = new DataSeries(
+            DataSeries::TYPE_LINECHART, // plotType
+            null, // plotGrouping, was DataSeries::GROUPING_STACKED, not a usual choice for line chart
+            range(0, count($dataSeriesValues) - 1), // plotOrder
+            $dataSeriesLabels, // plotLabel
+            $xAxisTickValues, // plotCategory
+            $dataSeriesValues        // plotValues
+        );
+
+        // Set the series in the plot area
+        $plotArea = new PlotArea(null, [$series]);
+        // Set the chart legend
+        $legend = new ChartLegend(ChartLegend::POSITION_TOPRIGHT, null, false);
+
+        $title = new Title('Persentase .................');
+        $yAxisLabel = new Title('percent');
+
+        // Create the chart
+        $chart = new Chart(
+            'chart1', // name
+            $title, // title
+            $legend, // legend
+            $plotArea, // plotArea
+            true, // plotVisibleOnly
+            'gap',  // displayBlanksAs
+            null, // xAxisLabel
+            $yAxisLabel  // yAxisLabel
+        );
+        $chart->setTopLeftPosition('G1');
+        $chart->setBottomRightPosition('S12');
+        $worksheet->addChart($chart);
+
+        return $chart;
+    }
     public function registerEvents(): array
     {
         return [
@@ -1870,6 +2159,8 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ]);
                 $event->sheet->getDelegate()->getStyle('A1:F1')->applyFromArray($styleHeader);
+                $chart = $this->charts();
+                $event->sheet->getDelegate()->addChart($chart); 
             },
         ];
     }

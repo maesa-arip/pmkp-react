@@ -118,6 +118,13 @@ export default function Navbar() {
                                         </Dropdown.Trigger>
 
                                         <Dropdown.Content>
+                                        <Dropdown.Link
+                                                href={route(
+                                                    "opsiPengendalians.index"
+                                                )}
+                                            >
+                                                Opsi Pengendalian
+                                            </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
                                                     "riskCategories.index"
@@ -161,6 +168,7 @@ export default function Navbar() {
                                                 Penangung Jawab/PIC
                                             </Dropdown.Link>
                                         </Dropdown.Content>
+                                        
                                     </Dropdown>
                                 </div>
                             </div>
