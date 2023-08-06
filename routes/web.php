@@ -76,17 +76,22 @@ Route::middleware('auth')->group(function () {
     Route::get('export/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp'])->name('export.riskregisternonklinisbpkp');
     Route::get('export/riskregisterklinisfitur4', [ExportController::class, 'riskregisterklinisfitur4'])->name('export.riskregisterklinisfitur4');
     Route::get('export/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp'])->name('export.riskregisterklinislarsdhp');
-    Route::get('export/riskregisterklinislarsdhpasli', [ExportController::class, 'riskregisterklinislarsdhpasli'])->name('export.riskregisterklinislarsdhpasli');
-    Route::get('export/riskregisterklinislarsdhpcombine', [ExportController::class, 'riskregisterklinislarsdhpcombine'])->name('export.riskregisterklinislarsdhpcombine');
+
+    // Route::get('export/riskregisterklinislarsdhpasli', [ExportController::class, 'riskregisterklinislarsdhpasli'])->name('export.riskregisterklinislarsdhpasli');
+    // Route::get('export/riskregisterklinislarsdhpcombine', [ExportController::class, 'riskregisterklinislarsdhpcombine'])->name('export.riskregisterklinislarsdhpcombine');
+    // Route::get('export/riskregisterklinislarsdhpwithchart', [ExportController::class, 'riskregisterklinislarsdhpwithchart'])->name('export.riskregisterklinislarsdhpwithchart');
     Route::get('export/exampleexport', [ExportController::class, 'exampleexport'])->name('export.exampleexport');
-    Route::get('export/exportWithChart', [ExportController::class, 'exportWithChart'])->name('export.exportWithChart');
+    Route::get('export/export', [ExportController::class, 'export'])->name('export.export');
+    Route::get('export/exportChart', [ExportController::class, 'exportChart'])->name('export.exportChart');
     Route::get('export/riskregisterklinispdf', [ExportController::class, 'exportpdf'])->name('export.riskregisterklinispdf');
 
     Route::get('/export-excel', [ExcelController::class, 'exportXls'])->name('export.excel');
-    Route::get('/excel-riskregisterklinislarsdhp', [ExcelController::class, 'riskregisterklinislarsdhp'])->name('excel.riskregisterklinislarsdhp');
+    // Route::get('/excel-riskregisterklinislarsdhp', [ExcelController::class, 'riskregisterklinislarsdhp'])->name('excel.riskregisterklinislarsdhp');
+
 
     // Route::post('/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
+    Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
 });
 
 require __DIR__.'/auth.php';

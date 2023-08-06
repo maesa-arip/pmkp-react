@@ -125,11 +125,11 @@ export default function Form({
         }
         return defaultValue[0];
     });
-    const [selectedIndikatorFitur04, setSelectedIndikatorFitur04] = useState(
+    const [selectedIndikatorFitur4, setSelectedIndikatorFitur4] = useState(
         () => {
             if (model) {
-                return ShouldMap.indikatorFitur04s.find(
-                    (x) => x.id === model.indikator_fitur04_id
+                return ShouldMap.indikatorFitur4s.find(
+                    (x) => x.id === model.indikator_fitur4_id
                 );
             }
             return defaultValue[0];
@@ -245,18 +245,18 @@ export default function Form({
                     <div className="col-span-12">
                         <InputLabel for="Indikator" value="Indikator" />
                         <ComboboxPage
-                            ShouldMap={ShouldMap.indikatorFitur04s}
-                            selected={selectedIndikatorFitur04}
+                            ShouldMap={ShouldMap.indikatorFitur4s}
+                            selected={selectedIndikatorFitur4}
                             onChange={(e) => {
                                 setData({
                                     ...data,
-                                    ["indikator_fitur04_id"]: e.id,
+                                    ["indikator_fitur4_id"]: e.id,
                                 });
-                                setSelectedIndikatorFitur04(e);
+                                setSelectedIndikatorFitur4(e);
                             }}
                         />
                         <InputError
-                            message={errors.indikator_fitur04_id}
+                            message={errors.indikator_fitur4_id}
                             className="mt-2"
                         />
                     </div>

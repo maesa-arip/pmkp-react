@@ -15,6 +15,7 @@ import axios from "axios";
 import ExportModal from "@/Components/Modal/ExportModal";
 import LarsDHP from "@/Pages/Export/LarsDHP";
 import ThirdButton from "@/Components/ThirdButton";
+import BPKPKlinis from "@/Pages/Export/BPKPKlinis";
 
 export default function Sidebar() {
     const { auth, notifications } = usePage().props;
@@ -104,6 +105,11 @@ export default function Sidebar() {
         setIsOpenExportDialog(true);
     };
 
+    const [isOpenExportDialog2, setIsOpenExportDialog2] = useState(false);
+    const openExportDialog2 = () => {
+        setIsOpenExportDialog2(true);
+    };
+
     return (
         <div className="col-span-12 col-start-1 py-4 antialiased text-gray-800 md:px-4 md:pb-0 md:pt-4 md:col-span-2 md:block">
             <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
@@ -111,9 +117,18 @@ export default function Sidebar() {
                     isOpenExportDialog={isOpenExportDialog}
                     setIsOpenExportDialog={setIsOpenExportDialog}
                     size="max-w-4xl"
-                    title={`Pilihan Export Register Klinis ` + auth.user.name}
+                    title={`Pilihan Export LARS DHP Register ` + auth.user.name}
                 >
                     <LarsDHP setIsOpenAddDialog={setIsOpenExportDialog} />
+                </ExportModal>
+
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialog2}
+                    setIsOpenExportDialog={setIsOpenExportDialog2}
+                    size="max-w-4xl"
+                    title={`Pilihan Export BPKP Register Klinis ` + auth.user.name}
+                >
+                    <BPKPKlinis setIsOpenAddDialog={setIsOpenExportDialog2} />
                 </ExportModal>
                 <Transition.Root show={mobileFiltersOpen} as={Fragment}>
                     <Dialog
@@ -753,8 +768,6 @@ export default function Sidebar() {
                                                 </Disclosure.Button>
                                             </h3>
                                             <Disclosure.Panel className="pt-6">
-                                                <a href="/export/riskregisterklinislarsdhp">Export DHP</a>
-                                                <a href="/export/exampleexport">Example Export</a>
                                                 <div className="space-y-4">
                                                     <button
                                                         type="button"
@@ -799,7 +812,50 @@ export default function Sidebar() {
                                                             </div>
                                                         )}
                                                     </button>
-                                                    <Link
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialog2
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="ml-2 text-sm tracking-wide truncate">
+                                                                Format. BPKP KLINIS
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    {/* <Link
                                                         onClick={
                                                             handleExportBPKPKlinis
                                                         }
@@ -884,7 +940,7 @@ export default function Sidebar() {
                                                                 KLINIS
                                                             </button>
                                                         )}
-                                                    </Link>
+                                                    </Link> */}
                                                 </div>
                                             </Disclosure.Panel>
                                         </>

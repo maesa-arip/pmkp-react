@@ -65,7 +65,7 @@ export default function Index(props) {
         impactValues: props.impactValues,
         probabilityValues: props.probabilityValues,
         controlValues: props.controlValues,
-        indikatorFitur04s: props.indikatorFitur04s,
+        indikatorFitur4s: props.indikatorFitur4s,
         proses: [
             { id: 1, name: "Mulai" },
             { id: 2, name: "Dalam Proses" },

@@ -8,7 +8,7 @@ use App\Models\Efektif;
 use App\Models\IdentificationSource;
 use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
-use App\Models\IndikatorFitur04;
+use App\Models\IndikatorFitur4;
 use App\Models\JenisPengendalian;
 use App\Models\Location;
 use App\Models\OpsiPengendalian;
@@ -73,6 +73,10 @@ class RiskRegisterKlinisController extends Controller
 
             ]
         ]);
+
+        
+
+        
         // $permissionNames = auth()->user()->getPermissionNames();
         $riskCategories = RiskCategory::get();
         $identificationSources = IdentificationSource::get();
@@ -86,11 +90,13 @@ class RiskRegisterKlinisController extends Controller
         $pembiayaanRisiko = PembiayaanRisiko::get();
         $waktuImplementasi = WaktuImplementasi::get();
         $pics = Pic::get();
-        $impactValues = ImpactValue::get();
-        $probabilityValues = ProbabilityValue::get();
-        $controlValues = ControlValue::get();
-        $location_login = Pic::where('id',auth()->user()->pic_id)->get();
-        $indikatorFitur04s = IndikatorFitur04::where('location_id',$location_login[0]->location_id)->orderBy('name','DESC')->get();
+        $impactValues = ImpactValue::where('type',1)->get();
+        $probabilityValues = ProbabilityValue::where('type',1)->get();
+        $controlValues = ControlValue::where('type',1)->get();
+        $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
+        // dd($location_login[0]);
+        $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        // dd($indikatorFitur4s);
         return Inertia::render('RiskRegister/Klinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskCategories' => $riskCategories,
@@ -102,7 +108,7 @@ class RiskRegisterKlinisController extends Controller
             'impactValues' => $impactValues,
             'probabilityValues' => $probabilityValues,
             'controlValues' => $controlValues,
-            'indikatorFitur04s' => $indikatorFitur04s,
+            'indikatorFitur4s' => $indikatorFitur4s,
             'opsiPengendalian' => $opsiPengendalian,
             'pembiayaanRisiko' => $pembiayaanRisiko,
             'efektif' => $efektif,
@@ -137,7 +143,7 @@ class RiskRegisterKlinisController extends Controller
             // 'tgl_selesai' => 'required',
             'risk_category_id' => 'required',
             'identification_source_id' => 'required',
-            'indikator_fitur04_id' => 'required',
+            'indikator_fitur4_id' => 'required',
             // 'location_id' => 'required',
             'pernyataan_risiko' => 'required',
             'sebab' => 'required',
@@ -181,10 +187,10 @@ class RiskRegisterKlinisController extends Controller
         // dd($risk->id);
 
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$risk->id, 'currently_id'=>$request->currently_id]);
-        $user = User::whereHas('roles', function ($query) {
-            $query->where('name', 'super admin');
-        })->get();
-        Notification::send($user, new RiskRegisterNewNotification($risk));
+        // $user = User::whereHas('roles', function ($query) {
+        //     $query->where('name', 'super admin');
+        // })->get();
+        // Notification::send($user, new RiskRegisterNewNotification($risk));
         return back()->with([
             'type' => 'success',
             'message' => 'Data Risk Register Klinis berhasil disimpan',
@@ -228,7 +234,7 @@ class RiskRegisterKlinisController extends Controller
             // 'tgl_selesai' => 'required',
             'risk_category_id' => 'required',
             'identification_source_id' => 'required',
-            'indikator_fitur04_id' => 'required',
+            'indikator_fitur4_id' => 'required',
             // 'location_id' => 'required',
             'pernyataan_risiko' => 'required',
             'sebab' => 'required',
@@ -263,10 +269,10 @@ class RiskRegisterKlinisController extends Controller
 
         $riskRegisterKlinis->update($request->except('home'));
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$id, 'currently_id'=>$riskRegisterKlinis->currently_id]);
-        $user = User::whereHas('roles', function ($query) {
-            $query->where('name', 'super admin');
-        })->get();
-        Notification::send($user, new RiskRegisterEditNotification($riskRegisterKlinis));
+        // $user = User::whereHas('roles', function ($query) {
+        //     $query->where('name', 'super admin');
+        // })->get();
+        // Notification::send($user, new RiskRegisterEditNotification($riskRegisterKlinis));
         return back()->with([
             'type' => 'success',
             'message' => 'Data Risk Register Klinis berhasil diubah',

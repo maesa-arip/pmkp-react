@@ -31,7 +31,8 @@ class HomeController extends Controller
     public $loadDefault = 10;
     public function __invoke(Request $request)
     {
-        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['pic_id', '<>', 0]] : [['pic_id', auth()->user()->pic_id]];
         $riskRegisterKlinis = RiskRegister::query()
             ->with('risk_category')
             ->with('identification_source')
@@ -39,9 +40,12 @@ class HomeController extends Controller
             ->with('risk_variety')
             ->with('risk_type')
             ->with('pic')
+            // ->with(['risk_register_histories' => function ($query) {
+            //     $query->orderBy('created_at', 'asc');
+            // }])
             ->with('risk_register_histories')
             ->with('user')
-            // ->where('risk_registers.pic_id',auth()->user()->id)
+            // ->where('currently_id',1)
             ->where($whosLogin)
             ->orderBy('currently_id', 'ASC');
         if ($request->q) {

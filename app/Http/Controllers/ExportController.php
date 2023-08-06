@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ChartExport;
 use App\Exports\FormatBPKPExport;
 use App\Exports\FormatBPKPNonKlinisExport;
 use App\Exports\FormatFitur4Export;
@@ -21,21 +22,18 @@ use PDF;
 
 
 use App\Exports\ExampleExport;
-
-use PhpOffice\PhpSpreadsheet\Chart\Chart;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
-use PhpOffice\PhpSpreadsheet\Chart\Legend as ChartLegend;
-use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
-use PhpOffice\PhpSpreadsheet\Chart\Properties;
-use PhpOffice\PhpSpreadsheet\Chart\Title;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Settings;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
+use App\Exports\FormatBPKPKlinisExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
+use OpenSpout\Common\Entity\Cell;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Writer\XLSX\Writer;
+use OpenSpout\Writer\XLSX\Options;
 
 class ExportController extends Controller
 {
@@ -285,11 +283,17 @@ class ExportController extends Controller
         // // SimpleExcelWriter::streamDownload('RiskRegisterKlinis.csv')
         // //     ->addRows($rows, $style);
     }
-    public function riskregisterklinisbpkp()
+    public function riskregisterklinisbpkp(Request $request)
     {
-        return Excel::download(new FormatBPKPExport, 'Proses Manajemen Risiko RSBM.xlsx');
-        // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        return Excel::download(new FormatBPKPKlinisExport($startDate, $endDate), 'Form Manajemen Risiko RSBM.xlsx');
     }
+    // public function riskregisterklinisbpkp()
+    // {
+    //     return Excel::download(new FormatBPKPExport, 'Proses Manajemen Risiko RSBM.xlsx');
+    //     // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
+    // }
     public function riskregisternonklinisbpkp()
     {
         return Excel::download(new FormatBPKPNonKlinisExport, 'Proses Manajemen Risiko RSBM.xlsx');
@@ -301,19 +305,17 @@ class ExportController extends Controller
         // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
     }
 
-    public function riskregisterklinislarsdhpasli(Request $request)
-    {
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
-        $export = new FormatLARSDHPExport($startDate, $endDate, null);
-        return Excel::download($export, 'Form Manajemen Risiko LARS DHP1.xlsx');
-    }
     public function riskregisterklinislarsdhp(Request $request)
     {
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-        $chartData = $this->generateChartData($startDate, $endDate);
-        $export = new FormatLARSDHPExport($startDate, $endDate, $chartData);
+        return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
+    }
+    public function riskregisterklinislarsdhpwithchart(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $export = new FormatLARSDHPExport($startDate, $endDate);
         $spreadsheet = $export->sheets()[2]->createChart();
         $exportFile = public_path('Form Manajemen Risiko LARS DHP2.xlsx');
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -321,113 +323,17 @@ class ExportController extends Controller
         $writer->save($exportFile);
         return response()->download($exportFile, 'Form Manajemen Risiko LARS DHP2.xlsx')->deleteFileAfterSend();
     }
-    public function riskregisterklinislarsdhpcombine(Request $request)
-    {
-        // Call the first function and get the first export file
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
-        $export1 = new FormatLARSDHPExport($startDate, $endDate, null);
-        $sheets1 = $export1->sheets();
-        $spreadsheet1 = new Spreadsheet();
-        foreach ($sheets1 as $sheet) {
-            $spreadsheet1->addSheet($sheet);
-        }
 
-        // Call the second function and get the second export file
-        $chartData = $this->generateChartData($startDate, $endDate);
-        $export2 = new FormatLARSDHPExport($startDate, $endDate, $chartData);
-        $sheets2 = $export2->sheets();
-        $spreadsheet2 = new Spreadsheet();
-        foreach ($sheets2 as $sheet) {
-            $spreadsheet2->addSheet($sheet);
-        }
-
-        // Create a new merged spreadsheet
-        $mergedSpreadsheet = new Spreadsheet();
-
-        // Copy the content of the first export file
-        $sheet1 = $spreadsheet1->getSheetByName('Sheet1'); // Replace 'Sheet1' with the correct sheet name from $export1
-        $clonedSheet1 = clone $sheet1;
-        $clonedSheet1->setTitle('Sheet1'); // Rename the sheet to avoid name conflicts
-        $mergedSpreadsheet->addSheet($clonedSheet1);
-        $mergedSpreadsheet->setActiveSheetIndex(0);
-
-        // Copy the content of the second export file
-        $sheet2 = $spreadsheet2->getSheetByName('Sheet1'); // Replace 'Sheet1' with the correct sheet name from $export2
-        $clonedSheet2 = clone $sheet2;
-        $clonedSheet2->setTitle('Sheet2'); // Rename the sheet to avoid name conflicts
-        $mergedSpreadsheet->addSheet($clonedSheet2);
-        $mergedSpreadsheet->setActiveSheetIndex(1);
-
-        // Save the merged spreadsheet to a new file
-        $mergedExportFile = tempnam(sys_get_temp_dir(), 'Merged_Form_Manajemen_Risiko_LARS_DHP') . '.xlsx';
-        $writer = IOFactory::createWriter($mergedSpreadsheet, 'Xlsx');
-        $writer->setIncludeCharts(true);
-        $writer->save($mergedExportFile);
-
-        // Provide the merged export file for download
-        return response()->download($mergedExportFile, 'Merged_Form_Manajemen_Risiko_LARS_DHP.xlsx')
-            ->deleteFileAfterSend();
-    }
-
-    private function generateChartData($startDate, $endDate)
-    {
-        $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->select(
-                DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-            )
-            ->where('risk_registers.osd1_dampak', '>', 0)
-            ->where('risk_registers.osd1_probabilitas', '>', 0)
-            ->where($whosLogin)
-            ->take(10);
-
-        if (!empty($startDate) && !empty($endDate)) {
-            $query->where('risk_registers.created_at', '>=', $startDate)
-                ->where('risk_registers.created_at', '<=', $endDate);
-        }
-
-        $chartData = $query->get();
-        return $chartData->toArray();
-    }
     public function exampleexport()
     {
         $sheet = new ExampleExport;
         return $sheet->download('example.xlsx');
     }
+    public function exportChart()
+    {
+        return Excel::download(new ChartExport(), 'chart.xlsx');
+    }
 
-    // public function riskregisterklinislarsdhp(Request $request)
-    // {
-    //     $startDate = $request->input('startDate');
-    //     $endDate = $request->input('endDate');
-    //     // Enable query logging
-    //     DB::enableQueryLog();
-
-    //     $query = DB::table('risk_registers')
-    //         ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-    //         ->join('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id') 
-    //         ->join('pics', 'pics.id', 'risk_registers.pic_id')
-    //         ->join('users', 'users.id', 'risk_registers.user_id')
-    //         ->select('risk_registers.id', 'indikator_fitur04s.name', 'indikator_fitur04s.tujuan', 'pics.name as pic_name', 'risk_categories.name as kategori_risiko');
-
-    //     $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-    //     $query->where($whosLogin);
-
-    //     if (!empty($startDate) && !empty($endDate)) {
-    //         $query->where('risk_registers.created_at', '>=', $startDate)
-    //               ->where('risk_registers.created_at', '<=', $endDate);
-    //     }
-
-    //     // Get the executed SQL query
-    //     $sql = $query->toSql();
-    //     $bindings = $query->getBindings();
-    //     $fullSql = vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
-
-    //     dd($fullSql); // Output the SQL query for debugging
-    //     return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
-    // }
     public function exportpdf(Request $request)
     {
         $users = User::get();

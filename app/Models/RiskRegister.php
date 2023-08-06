@@ -41,9 +41,9 @@ class RiskRegister extends Model
     {
         return $this->belongsTo(Pic::class);
     }
-    public function indikator_fitur04()
+    public function indikator_fitur4()
     {
-        return $this->belongsTo(IndikatorFitur04::class);
+        return $this->belongsTo(IndikatorFitur4::class);
     }
     public function user()
     {

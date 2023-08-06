@@ -65,7 +65,7 @@ export default function Index(props) {
         impactValues: props.impactValues,
         probabilityValues: props.probabilityValues,
         controlValues: props.controlValues,
-        indikatorFitur04s: props.indikatorFitur04s,
+        indikatorFitur4s: props.indikatorFitur4s,
         proses: [
             { id: 1, name: "Mulai" },
             { id: 2, name: "Dalam Proses" },
@@ -175,7 +175,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="max-w-4xl"
+                size="max-w-6xl"
                 title={`Tambah Risk Register Klinis ` + auth.user.name}
             >
                 <Create
@@ -187,7 +187,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="max-w-4xl"
+                size="max-w-6xl"
                 title="Edit Risk Register Klinis"
             >
                 <Edit

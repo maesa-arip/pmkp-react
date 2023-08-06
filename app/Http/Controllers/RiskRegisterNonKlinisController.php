@@ -9,6 +9,7 @@ use App\Models\IdentificationSource;
 use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
 use App\Models\IndikatorFitur04;
+use App\Models\IndikatorFitur4;
 use App\Models\JenisPengendalian;
 use App\Models\Location;
 use App\Models\OpsiPengendalian;
@@ -81,12 +82,12 @@ class RiskRegisterNonKlinisController extends Controller
         $pembiayaanRisiko = PembiayaanRisiko::get();
         $waktuImplementasi = WaktuImplementasi::get();
         $pics = Pic::get();
-        $impactValues = ImpactValue::get();
-        $probabilityValues = ProbabilityValue::get();
-        $controlValues = ControlValue::get();
-        $location_login = Pic::where('id',auth()->user()->pic_id)->get();
-        $indikatorFitur04s = IndikatorFitur04::where('location_id',$location_login[0]->location_id)->orderBy('name','DESC')->get();
-        return inertia('RiskRegister/NonKlinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur04s' => $indikatorFitur04s,'opsiPengendalian' => $opsiPengendalian,'pembiayaanRisiko' => $pembiayaanRisiko,'efektif' => $efektif,'jenisPengendalian' => $jenisPengendalian,'waktuPengendalian' => $waktuPengendalian,'waktuImplementasi' => $waktuImplementasi]);
+        $impactValues = ImpactValue::where('type',2)->get();
+        $probabilityValues = ProbabilityValue::where('type',2)->get();
+        $controlValues = ControlValue::where('type',2)->get();
+        $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
+        $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        return inertia('RiskRegister/NonKlinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur4s' => $indikatorFitur4s,'opsiPengendalian' => $opsiPengendalian,'pembiayaanRisiko' => $pembiayaanRisiko,'efektif' => $efektif,'jenisPengendalian' => $jenisPengendalian,'waktuPengendalian' => $waktuPengendalian,'waktuImplementasi' => $waktuImplementasi]);
     }
 
     /**
