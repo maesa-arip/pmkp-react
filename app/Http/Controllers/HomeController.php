@@ -45,7 +45,7 @@ class HomeController extends Controller
             // }])
             ->with('risk_register_histories')
             ->with('user')
-            // ->where('currently_id',1)
+            ->where('currently_id',1)
             ->where($whosLogin)
             ->orderBy('currently_id', 'ASC');
         if ($request->q) {
@@ -78,7 +78,8 @@ class HomeController extends Controller
         $impactValues = ImpactValue::get();
         $probabilityValues = ProbabilityValue::get();
         $controlValues = ControlValue::get();
-        $location_login = Pic::where('id', auth()->user()->pic_id)->get();
+        
+        $location_login = auth()->user() ? Pic::where('id', auth()->user()->pic_id)->get() : Pic::where('id', 41)->get();
         $indikatorFitur04s = IndikatorFitur04::where('location_id', $location_login[0]->location_id)->orderBy('name', 'DESC')->get();
         // dd($indikatorFitur04s);
         return inertia('RiskRegister/History/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues, 'indikatorFitur04s' => $indikatorFitur04s]);

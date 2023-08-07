@@ -31,8 +31,9 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $notifications = $request->user() ? RiskRegister::query()
-            ->where('pic_id',auth()->user()->pic_id)->where('currently_id',1)->count() : '';
+            $whosLogin = $request->user() ? (auth()->user()->can('lihat data semua risk register') ? [['pic_id', '<>', 0]] : [['pic_id', auth()->user()->pic_id]]) : '';
+            $notifications = $request->user() ? RiskRegister::query()
+            ->where($whosLogin)->where('currently_id',1)->count() : '';
             $permissionNames = $request->user() ? $request->user()->getAllPermissions() : null;
         return array_merge(parent::share($request), [
             'auth' => [
