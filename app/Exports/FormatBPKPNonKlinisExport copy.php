@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\IndikatorFitur04;
 use App\Models\RiskRegister;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -17,28 +18,20 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class FormatBPKPNonKlinisExport implements WithMultipleSheets
 {
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function sheets(): array
     {
         return [
-            new Sheet1($this->startDate, $this->endDate),
-            new Sheet2($this->startDate, $this->endDate),
-            new Sheet3($this->startDate, $this->endDate),
-            new Sheet4($this->startDate, $this->endDate),
-            new Sheet5($this->startDate, $this->endDate),
-            new Sheet6($this->startDate, $this->endDate),
-            new Sheet7($this->startDate, $this->endDate),
-            new Sheet8($this->startDate, $this->endDate),
-            new Sheet9($this->startDate, $this->endDate),
-            new Sheet10($this->startDate, $this->endDate),
-            new Sheet11($this->startDate, $this->endDate),
+            new Sheet1(),
+            new Sheet2(),
+            new Sheet3(),
+            new Sheet4(),
+            new Sheet5(),
+            new Sheet6(),
+            new Sheet7(),
+            new Sheet8(),
+            new Sheet9(),
+            new Sheet10(),
+            new Sheet11(),
         ];
     }
 }
@@ -49,52 +42,19 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
-
+    
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $subquery = RiskRegister::query()
-            ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftJoin('users', 'users.id', 'risk_registers.user_id')
-            ->selectRaw(
-                'indikator_fitur4s.name, ' .
-                    'indikator_fitur4s.tujuan, ' .
-                    'pics.name as pic_name, ' .
-                    'risk_categories.name as kategori_risiko, ' .
-                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
-            )
-            ->groupBy(
-                'indikator_fitur4s.name',
-                'indikator_fitur4s.tujuan',
-                'pics.name',
-                'risk_categories.name',
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                'risk_registers.osd1_controllability'
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin);
-        if (!empty($this->startDate) && !empty($this->endDate)) {
-            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
-        }
-        $query = DB::query()
-            ->select('Peringkat', 'name', 'tujuan')
-            ->fromSub($subquery, 'sub')
-            ->orderBy('sub.Peringkat', 'ASC');
+        $this->data = IndikatorFitur04::query()
+            ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+            ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+            ->select(DB::raw("(SELECT COUNT(*) FROM indikator_fitur04s r WHERE r.id <= indikator_fitur04s.id) AS Nomor"), 'indikator_fitur4s.name as NamaKonteks(ProsesBisnis)', 'indikator_fitur04s.tujuan as Indikator')->orderBy('Nomor', 'ASC')->where($whosLogin)->get();
 
-        $this->data = $query->get();
-        return $query;
+        return IndikatorFitur04::query()
+            ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+            ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+            ->select(DB::raw("(SELECT COUNT(*) FROM indikator_fitur04s r WHERE r.id <= indikator_fitur04s.id) AS Nomor"), 'indikator_fitur4s.name as NamaKonteks(ProsesBisnis)', 'indikator_fitur04s.tujuan as Indikator')->where($whosLogin)->orderBy('Nomor', 'ASC');
     }
     public function title(): string
     {
@@ -178,59 +138,30 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $subquery = RiskRegister::query()
-            ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftJoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftJoin('locations', 'locations.id', 'pics.location_id')
-            ->select(DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"), DB::raw("'C' AS 'UC/C'"))
-            ->selectRaw(
-                'indikator_fitur4s.name, ' .
-                    'risk_registers.pernyataan_risiko,' .
-                    'risk_registers.sebab,' .
-                    'indikator_fitur4s.tujuan, ' .
-                    'pics.name as pic_name, ' .
-                    'risk_categories.name as kategori_risiko, ' .
-                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
-            )
-            ->groupBy(
-                'indikator_fitur4s.name',
-                'indikator_fitur4s.tujuan',
-                'pics.name',
-                'locations.kode',
-                'risk_categories.kode',
-                'locations.id',
-                'risk_registers.id',
-                'risk_categories.id',
-                'risk_categories.name',
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                'risk_registers.osd1_controllability'
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin);
-        if (!empty($this->startDate) && !empty($this->endDate)) {
-            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
-        }
-        $query = DB::query()
-            ->select('Peringkat', 'name', 'tujuan', 'kode', 'kategori_risiko', 'pernyataan_risiko', 'sebab', 'UC/C', 'pic_name')
-            ->fromSub($subquery, 'sub')
-            ->orderBy('sub.Peringkat', 'ASC');
-
-
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('locations', 'locations.id', 'pics.location_id')
+        ->select(
+            DB::raw("(SELECT COUNT(*) FROM risk_registers r WHERE r.id <= risk_registers.id) AS row_number"),
+            'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
+            'indikator_fitur04s.tujuan as Indikator',
+            DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
+            'risk_categories.name as Kategori Risiko',
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            'risk_registers.sebab as Sebab',
+            DB::raw("'C' AS 'UC/C'"),
+            'pics.name as Dampak (Pihak yang Terkena)'
+        )
+        ->where($whosLogin)
+        ->orderBy('row_number', 'ASC');
 
         $this->data = $query->get();
         return $query;
@@ -349,41 +280,34 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
 
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('locations', 'locations.id', 'pics.location_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
-                'indikator_fitur4s.tujuan as Indikator',
-                DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
-                'risk_categories.name as Kategori Risiko',
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                'risk_registers.sebab as Sebab',
-                DB::raw("'C' AS 'UC/C'"),
-                'risk_registers.dampak',
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
-                DB::raw(
-                    '
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('users', 'users.id', 'risk_registers.user_id')
+        ->join('locations', 'locations.id', 'pics.location_id')
+        ->select(
+            DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor Urutan`'),
+            'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
+            'indikator_fitur04s.tujuan as Indikator',
+            DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
+            'risk_categories.name as Kategori Risiko',
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            'risk_registers.sebab as Sebab',
+            DB::raw("'C' AS 'UC/C'"),
+            'risk_registers.dampak',
+            'risk_registers.osd1_dampak',
+            'risk_registers.osd1_probabilitas',
+            DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
+            DB::raw(
+                '
                 CASE
                     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 14 THEN "SANGAT TINGGI"
                     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 9 THEN "TINGGI"
@@ -391,16 +315,10 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 2 THEN "RENDAH"
                     ELSE "SANGAT RENDAH"
                 END AS `Peringkat Risiko`'
-                ),
-                'users.name'
-            )->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('Tingkat risiko', 'DESC');
-
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+            ),
+            'users.name'
+        )->where($whosLogin)
+        ->orderBy('Tingkat risiko', 'DESC');
 
 
         $this->data = $query->get();
@@ -662,39 +580,31 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('locations', 'locations.id', 'pics.location_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
-                'indikator_fitur4s.tujuan as Indikator',
-                DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
-                'risk_categories.name as Kategori Risiko',
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                'risk_registers.sebab as Sebab',
-                DB::raw("'C' AS 'UC/C'"),
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
-                DB::raw(
-                    '
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('users', 'users.id', 'risk_registers.user_id')
+        ->join('locations', 'locations.id', 'pics.location_id')
+        ->select(
+            DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor Urutan`'),
+            'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
+            'indikator_fitur04s.tujuan as Indikator',
+            DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
+            'risk_categories.name as Kategori Risiko',
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            'risk_registers.sebab as Sebab',
+            DB::raw("'C' AS 'UC/C'"),
+            'risk_registers.osd1_dampak',
+            'risk_registers.osd1_probabilitas',
+            DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
+            DB::raw('
                 CASE
                     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 14 THEN "SANGAT TINGGI"
                     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 9 THEN "TINGGI"
@@ -702,15 +612,14 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 2 THEN "RENDAH"
                     ELSE "SANGAT RENDAH"
                 END AS `Peringkat Risiko`'
-                ),
-                'risk_registers.pengendalian_risiko',
-                DB::raw("'Ada' AS 'Desain'"),
-                DB::raw("'Efektif' AS 'Efektifitas'"),
-                'risk_registers.osd2_dampak',
-                'risk_registers.osd2_probabilitas',
-                DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko2`'),
-                DB::raw(
-                    '
+            ),
+            'risk_registers.pengendalian_risiko',
+            DB::raw("'Ada' AS 'Desain'"),
+            DB::raw("'Efektif' AS 'Efektifitas'"),
+            'risk_registers.osd2_dampak',
+            'risk_registers.osd2_probabilitas',
+            DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko2`'),
+            DB::raw('
                 CASE
                     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 14 THEN "SANGAT TINGGI"
                     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 9 THEN "TINGGI"
@@ -718,17 +627,16 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 2 THEN "RENDAH"
                     ELSE "SANGAT RENDAH"
                 END AS `Peringkat Risiko2`'
-                ),
-                DB::raw("'-' AS 'Strategi'"),
-                DB::raw("'-' AS 'Uraian'"),
-                DB::raw("'-' AS 'Indikator Keluaran'"),
-                DB::raw("'-' AS 'Jadwal'"),
-                'users.name',
-                'risk_registers.osd2_dampak as dampak3',
-                'risk_registers.osd2_probabilitas as probabilitas3',
-                DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko3`'),
-                DB::raw(
-                    '
+            ),
+            DB::raw("'-' AS 'Strategi'"),
+            DB::raw("'-' AS 'Uraian'"),
+            DB::raw("'-' AS 'Indikator Keluaran'"),
+            DB::raw("'-' AS 'Jadwal'"),
+            'users.name',
+            'risk_registers.osd2_dampak as dampak3',
+            'risk_registers.osd2_probabilitas as probabilitas3',
+            DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko3`'),
+            DB::raw('
                 CASE
                     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 14 THEN "SANGAT TINGGI"
                     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 9 THEN "TINGGI"
@@ -736,15 +644,10 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 2 THEN "RENDAH"
                     ELSE "SANGAT RENDAH"
                 END AS `Peringkat Risiko3`'
-                ),
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('Tingkat risiko', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+            ),
+        )
+        ->where($whosLogin)
+        ->orderBy('Tingkat risiko', 'DESC');
 
         $this->data = $query->get();
         return $query;
@@ -756,11 +659,11 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Risidual Risk', 'Risidual Risk', 'Risidual Risk', 'Risidual Risk', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Treated Risk', 'Treated Risk', 'Treated Risk', 'Treated Risk'],
+            ['No', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada','Risidual Risk','Risidual Risk','Risidual Risk','Risidual Risk','Rencana Pengendalian (Untuk skor risk residual > selera risiko)','Rencana Pengendalian (Untuk skor risk residual > selera risiko)','Rencana Pengendalian (Untuk skor risk residual > selera risiko)','Rencana Pengendalian (Untuk skor risk residual > selera risiko)','Rencana Pengendalian (Untuk skor risk residual > selera risiko)','Treated Risk','Treated Risk','Treated Risk','Treated Risk'],
 
-            ['No', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Probability', 'Dampak', 'Tingkat Risiko', 'Peringkat Risiko', 'Uraian', 'Desain', 'Efektifitas', 'Probability', 'Dampak', 'Tingkat Risiko', 'Peringkat Risiko', 'Strategi', 'Uraian', 'Indikator Keluaran', 'Jadwal', 'Penanggungjawab', 'Probability', 'Dampak', 'Tingkat Risiko', 'Peringkat Risiko'],
+            ['No', 'Sasaran Strategis/Program/Kegiatan', 'Indikator/Tujuan dari Sasaran Strategis/Program/Kegiatan', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Probability', 'Dampak', 'Tingkat Risiko', 'Peringkat Risiko', 'Uraian', 'Desain', 'Efektifitas','Probability', 'Dampak', 'Tingkat Risiko', 'Peringkat Risiko','Strategi','Uraian','Indikator Keluaran','Jadwal','Penanggungjawab','Probability', 'Dampak', 'Tingkat Risiko', 'Peringkat Risiko'],
 
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15','16','17','18','19','20','21','22','23','24','25','26','27','28'],
         ];
     }
     public function columnWidths(): array
@@ -1165,6 +1068,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->mergeCells('Y1:AB1');
                 $event->sheet->getDelegate()->getStyle('Y1:AB1')->applyFromArray($styleHeader4);
                 $event->sheet->getDelegate()->getStyle('Y2:AB2')->applyFromArray($styleHeader4);
+
+
+                
             },
         ];
     }
@@ -1175,50 +1081,38 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `No Urut`'),
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                'risk_categories.name as Kategori Risiko',
-                'risk_registers.sebab as Sebab',
-                'risk_registers.osd2_dampak',
-                'risk_registers.osd2_probabilitas',
-                'risk_registers.osd2_controllability',
-                DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability AS `Skor`'),
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `Peringkat2`'),
-            )
-            ->groupBy(
-                'risk_registers.pernyataan_risiko',
-                'risk_categories.name',
-                'risk_registers.sebab',
-                'risk_registers.osd2_dampak',
-                'risk_registers.osd2_probabilitas',
-                'risk_registers.osd2_controllability'
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('Skor', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('users', 'users.id', 'risk_registers.user_id')
+        ->select(
+            DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `No Urut`'),
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            'risk_categories.name as Kategori Risiko',
+            'risk_registers.sebab as Sebab',
+            'risk_registers.osd2_dampak',
+            'risk_registers.osd2_probabilitas',
+            'risk_registers.osd2_controllability',
+            DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability AS `Skor`'),
+            DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `Peringkat2`'),
+        )
+        ->groupBy(
+            'risk_registers.pernyataan_risiko',
+            'risk_categories.name',
+            'risk_registers.sebab',
+            'risk_registers.osd2_dampak',
+            'risk_registers.osd2_probabilitas',
+            'risk_registers.osd2_controllability'
+        )
+        ->where($whosLogin)
+        ->orderBy('Skor', 'DESC');
 
         $this->data = $query->get();
         return $query;
@@ -1363,39 +1257,28 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'), 'indikator_fitur4s.name as nama_kegiatan', 'indikator_fitur4s.tujuan', 'pics.name as nama_pic', 'risk_categories.name as nama_kategori')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
-            ->leftjoin('locations', 'locations.id', 'indikator_fitur4s.location_id')
-            ->leftjoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
-            ->leftjoin('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
-            ->leftjoin('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
-            ->leftjoin('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
-            ->leftjoin('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
-            ->leftjoin('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->where('tipe_id', 2)->where($whosLogin);
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+                ->select('risk_registers.id', 'indikator_fitur04s.name as nama_kegiatan', 'indikator_fitur04s.tujuan', 'pics.name as nama_pic', 'risk_categories.name as nama_kategori')
+                ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+                ->leftjoin('indikator_fitur04s', 'indikator_fitur04s.id', 'risk_registers.indikator_fitur04_id')
+                ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
+                ->leftjoin('locations', 'locations.id', 'indikator_fitur04s.location_id')
+                ->leftjoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur04s.sasaran_strategis_id')
+                ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+                ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+                ->leftjoin('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
+                ->leftjoin('probability_values', 'probability_values.id', 'risk_registers.osd1_probabilitas')
+                ->leftjoin('control_values', 'control_values.id', 'risk_registers.osd1_controllability')
+                ->leftjoin('impact_values as sa1', 'sa1.id', 'risk_registers.osd2_dampak')
+                ->leftjoin('probability_values as sa2', 'sa2.id', 'risk_registers.osd2_probabilitas')
+                ->leftjoin('control_values as sa3', 'sa3.id', 'risk_registers.osd2_controllability')
+                ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
+                ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+                ->where('tipe_id', 2)->where($whosLogin);
+
         $this->data = $query->get();
         return $query;
     }
@@ -1406,11 +1289,11 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Risiko Prioritas', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko'],
+            ['No', 'Risiko Prioritas', 'Pemantauan RTP','Pemantauan RTP','Pemantauan RTP','Pemantauan RTP','Pemantauan RTP','Pemantauan RTP', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko'],
 
-            ['No', 'Risiko Prioritas', 'Uraian Tindak Pengendalian', 'Uraian Tindak Pengendalian', 'Waktu Tindak Pengendalian', 'Waktu Tindak Pengendalian', 'Penanggungjawab', 'Dokumen Pendukung', 'Kendala', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian'],
+            ['No', 'Risiko Prioritas', 'Uraian Tindak Pengendalian','Uraian Tindak Pengendalian','Waktu Tindak Pengendalian','Waktu Tindak Pengendalian','Penanggungjawab','Dokumen Pendukung', 'Kendala', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian'],
 
-            ['No', 'Risiko Prioritas', 'Rencana', 'Realisasi', 'Rencana', 'Realisasi', 'Penanggungjawab', 'Dokumen Pendukung', 'Kendala', 'Triwulan I', 'Triwulan II', 'Triwulan III', 'Triwulan IV', 'Total'],
+            ['No', 'Risiko Prioritas', 'Rencana','Realisasi','Rencana','Realisasi','Penanggungjawab','Dokumen Pendukung', 'Kendala', 'Triwulan I', 'Triwulan II', 'Triwulan III', 'Triwulan IV', 'Total'],
 
             ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
         ];
@@ -1572,40 +1455,28 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                DB::raw("'-' AS 'Why1'"),
-                DB::raw("'-' AS 'Why2'"),
-                DB::raw("'-' AS 'Why3'"),
-                DB::raw("'-' AS 'Why4'"),
-                DB::raw("'-' AS 'Why5'"),
-                'risk_registers.sebab as Sebab',
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('row_number', 'ASC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->select(
+            DB::raw("(SELECT COUNT(*) FROM risk_registers r WHERE r.id <= risk_registers.id) AS row_number"),
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            DB::raw("'-' AS 'Why1'"),
+            DB::raw("'-' AS 'Why2'"),
+            DB::raw("'-' AS 'Why3'"),
+            DB::raw("'-' AS 'Why4'"),
+            DB::raw("'-' AS 'Why5'"),
+            'risk_registers.sebab as Sebab',
+        )
+        ->where($whosLogin)
+        ->orderBy('row_number', 'ASC');
         $this->data = $query->get();
 
         return $query;
@@ -1723,49 +1594,37 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('row_number', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('users', 'users.id', 'risk_registers.user_id')
+        ->select(
+            DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor`'),
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+        )
+        ->where($whosLogin)
+        ->orderBy('Nomor', 'DESC');
 
         $this->data = $query->get();
         return $query;
@@ -1777,8 +1636,8 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
-            ['No', 'Pernyataan Risiko', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Dampak', 'Probabilitas'],
+            ['No', 'Pernyataan Risiko', 'Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
+            ['No', 'Pernyataan Risiko', 'Responden 1','Responden 2','Responden 3','Responden 4','Responden 5','Responden 6', 'Responden 1','Responden 2','Responden 3','Responden 4','Responden 5','Responden 6', 'Dampak', 'Probabilitas'],
         ];
     }
     public function columnWidths(): array
@@ -1953,53 +1812,41 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                DB::raw("'-' AS 'Dampak'"),
-                DB::raw("'-' AS 'Probabilitas'"),
-                'risk_registers.pengendalian_risiko',
-                DB::raw("'Efektif' AS 'Efektifitas'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('row_number', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('users', 'users.id', 'risk_registers.user_id')
+        ->select(
+            DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor`'),
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            DB::raw("'-' AS 'Dampak'"),
+            DB::raw("'-' AS 'Probabilitas'"),
+            'risk_registers.pengendalian_risiko',
+            DB::raw("'Efektif' AS 'Efektifitas'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+        )
+        ->where($whosLogin)
+        ->orderBy('Nomor', 'DESC');
 
         $this->data = $query->get();
         return $query;
@@ -2011,8 +1858,8 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Skor Inherent Risk', 'Skor Inherent Risk', 'Pengendalian yang Ada', 'Pengendalian yang Ada',  'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
-            ['No', 'Pernyataan Risiko', 'Dampak', 'Probabilitas', 'Uraian', 'Efektivitas', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Dampak', 'Probabilitas'],
+            ['No', 'Pernyataan Risiko','Skor Inherent Risk','Skor Inherent Risk', 'Pengendalian yang Ada', 'Pengendalian yang Ada',  'Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
+            ['No', 'Pernyataan Risiko', 'Dampak','Probabilitas','Uraian','Efektivitas','Responden 1','Responden 2','Responden 3','Responden 4','Responden 5','Responden 6', 'Responden 1','Responden 2','Responden 3','Responden 4','Responden 5','Responden 6', 'Dampak', 'Probabilitas'],
         ];
     }
     public function columnWidths(): array
@@ -2198,53 +2045,41 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
-            ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                DB::raw("'-' AS 'Dampak'"),
-                DB::raw("'-' AS 'Probabilitas'"),
-                'risk_registers.pengendalian_risiko',
-                DB::raw("'Efektif' AS 'Efektifitas'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('row_number', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+        ->join('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+        ->join('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+        ->join('pics', 'pics.id', 'risk_registers.pic_id')
+        ->join('users', 'users.id', 'risk_registers.user_id')
+        ->select(
+            DB::raw('(SELECT COUNT(*) FROM risk_registers r WHERE r.osd1_dampak * r.osd1_probabilitas >= risk_registers.osd1_dampak * risk_registers.osd1_probabilitas) AS `Nomor`'),
+            'risk_registers.pernyataan_risiko as Penyataan Risiko',
+            DB::raw("'-' AS 'Dampak'"),
+            DB::raw("'-' AS 'Probabilitas'"),
+            'risk_registers.pengendalian_risiko',
+            DB::raw("'Efektif' AS 'Efektifitas'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+            DB::raw("'-' AS 'Responden'"),
+        )
+        ->where($whosLogin)
+        ->orderBy('Nomor', 'DESC');
 
         $this->data = $query->get();
         return $query;
@@ -2256,8 +2091,8 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Skor Residual Risk', 'Skor Residual Risk', 'RTP', 'RTP',  'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
-            ['No', 'Pernyataan Risiko', 'Dampak', 'Probabilitas', 'Strategi', 'Uraian', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Dampak', 'Probabilitas'],
+            ['No', 'Pernyataan Risiko','Skor Residual Risk','Skor Residual Risk', 'RTP', 'RTP',  'Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak','Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
+            ['No', 'Pernyataan Risiko', 'Dampak','Probabilitas','Strategi','Uraian','Responden 1','Responden 2','Responden 3','Responden 4','Responden 5','Responden 6', 'Responden 1','Responden 2','Responden 3','Responden 4','Responden 5','Responden 6', 'Dampak', 'Probabilitas'],
         ];
     }
     public function columnWidths(): array
@@ -2443,33 +2278,17 @@ class Sheet11 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
      * @return \Illuminate\Support\Collection
      */
     protected $data;
-    protected $startDate;
-    protected $endDate;
-
-    public function __construct($startDate, $endDate)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-    }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'indikator_fitur4s.name as NamaKonteks(ProsesBisnis)',
-                'indikator_fitur4s.tujuan as Indikator',
-                DB::raw("'-' AS 'Dampak'"),
-                DB::raw("'-' AS 'Dampak1'")
-            )
-            ->where('tipe_id', 2)
-            ->where($whosLogin)
-            ->orderBy('row_number', 'ASC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        $query = IndikatorFitur04::query()
+        ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'indikator_fitur04s.indikator_fitur4_id')
+        ->join('risk_registers', 'risk_registers.indikator_fitur04_id', 'indikator_fitur04s.id')
+        ->select(DB::raw("(SELECT COUNT(*) FROM indikator_fitur04s r WHERE r.id <= indikator_fitur04s.id) AS Nomor"),
+         'indikator_fitur4s.name as NamaKonteks(ProsesBisnis)', 
+         'indikator_fitur04s.tujuan as Indikator', DB::raw("'-' AS 'Dampak'"),DB::raw("'-' AS 'Dampak1'"))
+         ->where($whosLogin)
+        ->orderBy('Nomor', 'ASC');
         $this->data = $query->get();
         return $query;
     }
@@ -2480,7 +2299,7 @@ class Sheet11 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
     public function headings(): array
     {
         return [
-            ['No', 'Dokumen', 'Uraian', 'Periode Pelaporan', 'Link'],
+            ['No', 'Dokumen', 'Uraian', 'Periode Pelaporan','Link'],
         ];
     }
     public function columnWidths(): array

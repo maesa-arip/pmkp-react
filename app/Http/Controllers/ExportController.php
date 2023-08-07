@@ -289,16 +289,22 @@ class ExportController extends Controller
         $endDate = $request->input('endDate');
         return Excel::download(new FormatBPKPKlinisExport($startDate, $endDate), 'Form Manajemen Risiko RSBM.xlsx');
     }
+    public function riskregisternonklinisbpkp(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        return Excel::download(new FormatBPKPNonKlinisExport($startDate, $endDate), 'Form Manajemen Risiko RSBM.xlsx');
+    }
     // public function riskregisterklinisbpkp()
     // {
     //     return Excel::download(new FormatBPKPExport, 'Proses Manajemen Risiko RSBM.xlsx');
     //     // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
     // }
-    public function riskregisternonklinisbpkp()
-    {
-        return Excel::download(new FormatBPKPNonKlinisExport, 'Proses Manajemen Risiko RSBM.xlsx');
-        // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
-    }
+    // public function riskregisternonklinisbpkp()
+    // {
+    //     return Excel::download(new FormatBPKPNonKlinisExport, 'Proses Manajemen Risiko RSBM.xlsx');
+    //     // return (new IndikatorFitur04sExport)->download('invoices.xlsx');
+    // }
     public function riskregisterklinisfitur4()
     {
         return Excel::download(new FormatFitur4Export, 'Form Manajemen Risiko Fitur 4.xlsx');
