@@ -11,6 +11,7 @@ import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
+import ThirdButtonLink from "@/Components/ThirdButtonLink";
 
 const UpIcon = () => (
     <svg
@@ -49,6 +50,10 @@ export default function Index(props) {
         attributes,
     } = props.riskRegisterKlinis;
     const { auth } = usePage().props;
+    const riskRegisterCount = props.riskRegisterCount;
+    const riskRegisterPengendalianCount = props.riskRegisterPengendalianCount;
+    const OpsiPengendalianCount = props.OpsiPengendalianCount;
+    const riskRegisterOsd2Count = props.riskRegisterOsd2Count;
     let ShouldMap = {
         riskCategories: props.riskCategories,
         identificationSources: props.identificationSources,
@@ -215,20 +220,40 @@ export default function Index(props) {
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
-                        RISK REGISTER KLINIS
+                        RISK REGISTER KLINIS ({riskRegisterCount})
                     </p>
                     <div className="flex items-center justify-between mb-2">
-                        <div className="w-1/2">
+                        <div className="w-2/3">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
                                 <ThirdButton
                                     type="button"
                                     onClick={openAddDialog}
                                 >
-                                    Tambah
+                                    Tambah Risiko
                                 </ThirdButton>
+                                <ThirdButtonLink
+                                color="teal"
+                                href={route("riskRegisterKlinisPengendalian.index")}
+                                >
+                                    Pengendalian Yang Sudah Ada ({riskRegisterPengendalianCount})
+                                </ThirdButtonLink>
+
+                                <ThirdButtonLink
+                                color="cyan"
+                                href={route("klinisOpsiPengendalian.index")}
+                                >
+                                    Opsi Pengendalian ({OpsiPengendalianCount})
+                                </ThirdButtonLink>
+
+                                <ThirdButtonLink
+                                color="red"
+                                href={route("riskRegisterKlinisOsd2.index")}
+                                >
+                                    OSD Residual ({riskRegisterOsd2Count})
+                                </ThirdButtonLink>
                             </div>
                         </div>
-                        <div className="w-1/2">
+                        <div className="w-1/3">
                             <div className="flex items-center justify-end mt-2 mb-0 gap-x-1">
                                 <select
                                     name="load"

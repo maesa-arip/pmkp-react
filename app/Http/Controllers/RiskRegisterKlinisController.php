@@ -46,12 +46,15 @@ class RiskRegisterKlinisController extends Controller
             ->with('identification_source')
             ->with('opsi_pengendalian')
             ->with('pembiayaan_risiko')
-            // ->with('location')
             ->with('risk_variety')
             ->with('risk_type')
             ->with('pic')
             ->with('user')
             ->where($whosLogin);
+        $riskRegisterCount = $riskRegisterKlinis->count();
+        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id','=',0)->count();
+        $riskRegisterOpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id','=',0)->count();
+        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('osd2_dampak','=',0)->count();
         if ($request->q) {
             $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
         }
@@ -73,11 +76,6 @@ class RiskRegisterKlinisController extends Controller
 
             ]
         ]);
-
-        
-
-        
-        // $permissionNames = auth()->user()->getPermissionNames();
         $riskCategories = RiskCategory::get();
         $identificationSources = IdentificationSource::get();
         $locations = Location::get();
@@ -94,11 +92,13 @@ class RiskRegisterKlinisController extends Controller
         $probabilityValues = ProbabilityValue::where('type',1)->get();
         $controlValues = ControlValue::where('type',1)->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
-        // dd($location_login[0]);
         $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
-        // dd($indikatorFitur4s);
         return Inertia::render('RiskRegister/Klinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
+            'riskRegisterCount' => $riskRegisterCount,
+            'riskRegisterPengendalianCount' => $riskRegisterPengendalianCount,
+            'riskRegisterOpsiPengendalianCount' => $riskRegisterOpsiPengendalianCount,
+            'riskRegisterOsd2Count' => $riskRegisterOsd2Count,
             'riskCategories' => $riskCategories,
             'identificationSources' => $identificationSources,
             'locations' => $locations,
@@ -152,19 +152,21 @@ class RiskRegisterKlinisController extends Controller
             'dampak' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
+            'num' => 'required',
+            'denum' => 'required',
             // 'efek' => 'required',
             'osd1_dampak' => 'required',
             'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
-            'osd2_dampak' => 'required',
-            'osd2_probabilitas' => 'required',
-            'osd2_controllability' => 'required',
+            // 'osd2_dampak' => 'required',
+            // 'osd2_probabilitas' => 'required',
+            // 'osd2_controllability' => 'required',
             // 'grading1' => 'required|numeric',
-            'pengendalian_risiko' => 'required',
+            // 'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
             'perlu_penanganan_id' => 'required',
-            'opsi_pengendalian_id' => 'required',
-            'pembiayaan_risiko_id' => 'required',
+            // 'opsi_pengendalian_id' => 'required',
+            // 'pembiayaan_risiko_id' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
             // 'pengawasan_id' => 'required',
         ]);
@@ -254,7 +256,7 @@ class RiskRegisterKlinisController extends Controller
             'pengendalian_risiko' => 'required',
             'pic_id' => 'required',
             'perlu_penanganan_id' => 'required|numeric|min:1|not_in:0',
-            'opsi_pengendalian_id' => 'required|numeric|min:1|not_in:0',
+            // 'opsi_pengendalian_id' => 'required|numeric|min:1|not_in:0',
             'pembiayaan_risiko_id' => 'required|numeric|min:1|not_in:0',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
             // 'pengawasan_id' => 'required',

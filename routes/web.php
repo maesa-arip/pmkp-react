@@ -16,6 +16,9 @@ use App\Http\Controllers\ProbabilityValueController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiskCategoryController;
 use App\Http\Controllers\RiskRegisterKlinisController;
+use App\Http\Controllers\RiskRegisterKlinisOpsiPengendalianController;
+use App\Http\Controllers\RiskRegisterKlinisOsd2Controller;
+use App\Http\Controllers\RiskRegisterKlinisPengendalianController;
 use App\Http\Controllers\RiskRegisterNonKlinisController;
 use App\Http\Controllers\RiskTypeController;
 use App\Http\Controllers\RiskVarietyController;
@@ -68,7 +71,12 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('impactValues', ImpactValueController::class);
     Route::apiResource('probabilityValues', ProbabilityValueController::class);
     Route::apiResource('controlValues', ControlValueController::class);
+
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
+    Route::apiResource('riskRegisterKlinisPengendalian', RiskRegisterKlinisPengendalianController::class);
+    Route::apiResource('klinisOpsiPengendalian', RiskRegisterKlinisOpsiPengendalianController::class);
+    Route::apiResource('riskRegisterKlinisOsd2', RiskRegisterKlinisOsd2Controller::class);
+
     Route::apiResource('riskRegisterNonKlinis', RiskRegisterNonKlinisController::class);
     
     Route::get('export/riskregisterklinis', [ExportController::class, 'riskregisterklinis'])->name('export.riskregisterklinis');

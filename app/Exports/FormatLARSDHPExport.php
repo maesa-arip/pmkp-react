@@ -1471,7 +1471,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->leftjoin('jenis_pengendalians', 'jenis_pengendalians.id', 'risk_registers.jenis_pengendalian_id')
             ->selectRaw(
-                'indikator_fitur4s.name, ' .
+                    'indikator_fitur4s.name, ' .
                     'indikator_fitur4s.tujuan, ' .
                     'risk_registers.pernyataan_risiko, ' .
                     'opsi_pengendalians.name as opsi, ' .
