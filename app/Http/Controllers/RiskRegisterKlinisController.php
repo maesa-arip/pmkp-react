@@ -53,7 +53,7 @@ class RiskRegisterKlinisController extends Controller
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id','=',0)->count();
-        $riskRegisterOpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id','=',0)->count();
+        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id','=',0)->count();
         $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('osd2_dampak','=',0)->count();
         if ($request->q) {
             $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
@@ -97,7 +97,7 @@ class RiskRegisterKlinisController extends Controller
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,
             'riskRegisterPengendalianCount' => $riskRegisterPengendalianCount,
-            'riskRegisterOpsiPengendalianCount' => $riskRegisterOpsiPengendalianCount,
+            'OpsiPengendalianCount' => $OpsiPengendalianCount,
             'riskRegisterOsd2Count' => $riskRegisterOsd2Count,
             'riskCategories' => $riskCategories,
             'identificationSources' => $identificationSources,
