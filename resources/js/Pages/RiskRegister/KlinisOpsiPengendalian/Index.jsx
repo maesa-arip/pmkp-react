@@ -193,7 +193,7 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="max-w-6xl"
-                title="Edit Risk Register Klinis"
+                title="Edit Opsi Pengendalian Risk Register Klinis"
             >
                 <Edit
                     model={state}

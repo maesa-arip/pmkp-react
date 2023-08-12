@@ -859,9 +859,7 @@ export default function Form({
                             </div>
                         </div>
                     </div>
-                    
-
-                    <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
+                    {/* <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
                         <label
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700"
@@ -1033,11 +1031,12 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            {/* <Tooltip message={"✨ Coming soon!"}>
+                            
+                        </div>
+                    </div> */}
+                    {/* <Tooltip message={"✨ Coming soon!"}>
                                 <button>Subscribe</button>
                             </Tooltip> */}
-                        </div>
-                    </div>
                 </div>
             </div>
 

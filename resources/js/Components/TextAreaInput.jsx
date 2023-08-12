@@ -12,6 +12,10 @@ export default forwardRef(function TextAreaInput(
         }
     }, []);
 
+    const focusClassName = readOnly
+        ? 'border-gray-200 focus:border-gray-200 focus:ring-gray-200'
+        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500';
+
     return (
         <div className="flex flex-col items-start">
             <textarea
@@ -20,10 +24,11 @@ export default forwardRef(function TextAreaInput(
                 rows={rows}
                 id={id}
                 value={value}
-                className={
-                    `border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm ` +
-                    className
-                }
+                className={`rounded-md shadow-sm ${focusClassName} ${className}`}
+                // className={
+                //     `border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm ` +
+                //     className
+                // }
                 ref={input}
                 autoComplete={autoComplete}
                 required={required}

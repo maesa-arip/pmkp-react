@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
 import ThirdButtonLink from "@/Components/ThirdButtonLink";
+import TextAreaInput from "@/Components/TextAreaInput";
 
 const UpIcon = () => (
     <svg
@@ -226,30 +227,80 @@ export default function Index(props) {
                         <div className="w-2/3">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
                                 <ThirdButton
+                                    color="sky"
                                     type="button"
                                     onClick={openAddDialog}
                                 >
+                                    {" "}
                                     Tambah Risiko
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-square-rounded-plus"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M9 12h6" />
+                                        <path d="M12 9v6" />
+                                        <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
+                                    </svg>
                                 </ThirdButton>
                                 <ThirdButtonLink
-                                color="teal"
-                                href={route("riskRegisterKlinisPengendalian.index")}
+                                    href={route("riskRegisterKlinis.index")}
                                 >
-                                    Pengendalian Yang Sudah Ada ({riskRegisterPengendalianCount})
+                                    Risk Register ({riskRegisterCount})
+                                </ThirdButtonLink>
+                                {/* <ThirdButtonLink
+                                    color="teal"
+                                    href={route(
+                                        "riskRegisterKlinisPengendalian.index"
+                                    )}
+                                >
+                                    Pengendalian Yang Sudah Ada (
+                                    {riskRegisterPengendalianCount})
                                 </ThirdButtonLink>
 
                                 <ThirdButtonLink
-                                color="cyan"
-                                href={route("klinisOpsiPengendalian.index")}
+                                    color="cyan"
+                                    href={route("klinisOpsiPengendalian.index")}
                                 >
                                     Opsi Pengendalian ({OpsiPengendalianCount})
+                                </ThirdButtonLink> */}
+
+                                <ThirdButtonLink
+                                    color="red"
+                                    href={route("riskRegisterKlinisOsd2.index")}
+                                >
+                                    OSD Residual ({riskRegisterOsd2Count})
+                                </ThirdButtonLink>
+                                <ThirdButtonLink
+                                    color="teal"
+                                    href={route(
+                                        "riskRegisterKlinisPengendalian.index"
+                                    )}
+                                >
+                                    FGD Inherent
                                 </ThirdButtonLink>
 
                                 <ThirdButtonLink
-                                color="red"
-                                href={route("riskRegisterKlinisOsd2.index")}
+                                    color="cyan"
+                                    href={route("klinisOpsiPengendalian.index")}
                                 >
-                                    OSD Residual ({riskRegisterOsd2Count})
+                                    FGD Residual
+                                </ThirdButtonLink>
+                                <ThirdButtonLink
+                                    color="yellow"
+                                    href={route("klinisOpsiPengendalian.index")}
+                                >
+                                    FGD Treated
                                 </ThirdButtonLink>
                             </div>
                         </div>
@@ -299,7 +350,7 @@ export default function Index(props) {
                         <div className="-my-2 overflow-x-auto rounded sm:-mx-6 lg:-mx-8">
                             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                                 <div className="border-b border-gray-200 shadow sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-200 table-auto">
                                         <thead className="bg-gray-50">
                                             <tr>
                                                 <th
@@ -360,7 +411,7 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                <th
+                                                {/* <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
@@ -438,13 +489,13 @@ export default function Index(props) {
                                                                 <DownIcon />
                                                             )}
                                                     </div>
-                                                </th>
+                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort(
                                                                 "pernyataan_risiko"
@@ -468,10 +519,10 @@ export default function Index(props) {
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase w-96"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort("sebab")
                                                         }
@@ -491,37 +542,13 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Tanggal
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
+
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort("risk_type_id")
                                                         }
@@ -546,7 +573,7 @@ export default function Index(props) {
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort(
                                                                 "risk_variety_id"
@@ -573,7 +600,7 @@ export default function Index(props) {
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort("dampak")
                                                         }
@@ -805,37 +832,13 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Grading
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
+
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort(
                                                                 "pengendalian_risiko"
@@ -907,31 +910,6 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Pengawasan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
 
                                                 <th
                                                     scope="col"
@@ -958,10 +936,32 @@ export default function Index(props) {
                                                                 riskregisterklinis1.proses_id
                                                             }
                                                         </td> */}
+
                                                         <td className="text-center">
                                                             <Dropdown>
                                                                 <Dropdown.Trigger>
-                                                                    <button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                                        id="menu-button"
+                                                                        aria-expanded="true"
+                                                                        aria-haspopup="true"
+                                                                    >
+                                                                        Options
+                                                                        <svg
+                                                                            className="w-5 h-5 -mr-1 text-gray-400"
+                                                                            viewBox="0 0 20 20"
+                                                                            fill="currentColor"
+                                                                            aria-hidden="true"
+                                                                        >
+                                                                            <path
+                                                                                fill-rule="evenodd"
+                                                                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                                                                clip-rule="evenodd"
+                                                                            />
+                                                                        </svg>
+                                                                    </button>
+                                                                    {/* <button>
                                                                         <svg
                                                                             xmlns="http://www.w3.org/2000/svg"
                                                                             className="w-4 h-4 text-gray-400"
@@ -970,10 +970,10 @@ export default function Index(props) {
                                                                         >
                                                                             <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                                                         </svg>
-                                                                    </button>
+                                                                    </button> */}
                                                                 </Dropdown.Trigger>
                                                                 <Dropdown.Content
-                                                                    align="right"
+                                                                    align="left"
                                                                     width="24"
                                                                 >
                                                                     <button
@@ -999,17 +999,19 @@ export default function Index(props) {
                                                                 </Dropdown.Content>
                                                             </Dropdown>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.tgl_register
-                                                            }
+                                                        <td className="p-2 whitespace-nowrap">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.tgl_register
+                                                                }
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
+
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1.tgl_selesai
                                                             }
                                                         </td>
-
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1
@@ -1023,41 +1025,47 @@ export default function Index(props) {
                                                                     .identification_source
                                                                     .name
                                                             }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.pernyataan_risiko
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.sebab
-                                                            }
-                                                        </td>
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.joined
-                                                            }
                                                         </td> */}
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_variety
-                                                                    .name
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.pernyataan_risiko
+                                                                }
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_type
-                                                                    .name
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-red-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.sebab
+                                                                }
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.dampak
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1
+                                                                        .risk_variety
+                                                                        .name
+                                                                }
+                                                            </div>
                                                         </td>
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1
+                                                                        .risk_type
+                                                                        .name
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.dampak
+                                                                }
+                                                            </div>
+                                                        </td>
+
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1.osd1_dampak
@@ -1104,11 +1112,14 @@ export default function Index(props) {
                                                                     .grading1
                                                             }
                                                         </td> */}
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.pengendalian_risiko
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.pengendalian_risiko
+                                                                }
+                                                            </div>
                                                         </td>
+
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1

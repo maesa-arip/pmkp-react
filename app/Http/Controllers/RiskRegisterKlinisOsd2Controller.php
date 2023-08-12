@@ -112,102 +112,19 @@ class RiskRegisterKlinisOsd2Controller extends Controller
             'waktuImplementasi' => $waktuImplementasi,
         ]);
     }
-    public function store(Request $request)
-    {
-        // dd($request->all());
-        $this->validate($request, [
-            // 'proses_id' => 'required',
-            'tgl_register' => 'required',
-            // 'tgl_selesai' => 'required',
-            'risk_category_id' => 'required',
-            'identification_source_id' => 'required',
-            'indikator_fitur4_id' => 'required',
-            // 'location_id' => 'required',
-            'pernyataan_risiko' => 'required',
-            'sebab' => 'required',
-            'currently_id' => 'required',
-            'resiko' => 'required',
-            'dampak' => 'required',
-            'risk_variety_id' => 'required',
-            'risk_type_id' => 'required',
-            'num' => 'required',
-            'denum' => 'required',
-            // 'efek' => 'required',
-            'osd1_dampak' => 'required',
-            'osd1_probabilitas' => 'required',
-            'osd1_controllability' => 'required',
-            // 'osd2_dampak' => 'required',
-            // 'osd2_probabilitas' => 'required',
-            // 'osd2_controllability' => 'required',
-            // 'grading1' => 'required|numeric',
-            // 'pengendalian_risiko' => 'required',
-            'pic_id' => 'required',
-            'perlu_penanganan_id' => 'required',
-            // 'opsi_pengendalian_id' => 'required',
-            // 'pembiayaan_risiko_id' => 'required',
-            'target_waktu' => 'required|numeric|min:1|not_in:0',
-            // 'pengawasan_id' => 'required',
-        ]);
-        $date = Carbon::parse($request->tgl_register);
-        $tgl_selesai = $date->addDays($request->target_waktu);
-        $request->merge([
-            'user_id' => auth()->user()->id,
-            'tipe_id' => 1,
-            'tgl_selesai' => $tgl_selesai,
-            'grading1' => 1,
-            'grading2' => 1,
-            'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
-            'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-        ]);
-        // dd($request->all());
 
-        $risk = RiskRegister::create($request->except('name'));
-        // dd($risk->id);
-
-        $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$risk->id, 'currently_id'=>$request->currently_id]);
-        // $user = User::whereHas('roles', function ($query) {
-        //     $query->where('name', 'super admin');
-        // })->get();
-        // Notification::send($user, new RiskRegisterNewNotification($risk));
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data Risk Register Klinis berhasil disimpan',
-        ]);
-    }
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            // 'proses_id' => 'required',
-            'tgl_register' => 'required',
-            // 'tgl_selesai' => 'required',
-            'risk_category_id' => 'required',
-            'identification_source_id' => 'required',
-            'indikator_fitur4_id' => 'required',
-            // 'location_id' => 'required',
-            'pernyataan_risiko' => 'required',
-            'sebab' => 'required',
-            'currently_id' => 'required',
-            'resiko' => 'required',
-            'dampak' => 'required',
-            'risk_variety_id' => 'required',
-            'risk_type_id' => 'required',
-            // 'efek' => 'required',
-            'osd1_dampak' => 'required|numeric|min:1|not_in:0',
-            'osd1_probabilitas' => 'required|numeric|min:1|not_in:0',
-            'osd1_controllability' => 'required|numeric|min:1|not_in:0',
             'osd2_dampak' => 'required|numeric|min:1|not_in:0',
             'osd2_probabilitas' => 'required|numeric|min:1|not_in:0',
             'osd2_controllability' => 'required|numeric|min:1|not_in:0',
-            // 'grading1' => 'required|numeric',
-            'pengendalian_risiko' => 'required',
-            'pic_id' => 'required',
-            'perlu_penanganan_id' => 'required|numeric|min:1|not_in:0',
-            // 'opsi_pengendalian_id' => 'required|numeric|min:1|not_in:0',
-            'pembiayaan_risiko_id' => 'required|numeric|min:1|not_in:0',
-            'target_waktu' => 'required|numeric|min:1|not_in:0',
-            // 'pengawasan_id' => 'required',
+            'belum_tertangani' => 'required',
+            'usulan_perbaikan' => 'required',
+            'waktu_implementasi_id' => 'required|numeric|min:1|not_in:0',
+            'realisasi_id' => 'required|numeric|min:1|not_in:0',
+            'output' => 'required',
+
         ]);
         $request->merge([
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,

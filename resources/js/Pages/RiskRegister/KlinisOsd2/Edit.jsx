@@ -45,7 +45,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("riskRegisterKlinis.update", model.id), {
+        put(route("riskRegisterKlinisOsd2.update", model.id), {
             data,
             onSuccess: () => {
                 reset(), setIsOpenEditDialog(false);

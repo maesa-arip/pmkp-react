@@ -4,7 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 
 
 
-export default function ComboboxPage({ShouldMap,selected, onChange, name}) {
+export default function ComboboxPage({ShouldMap,selected,tampilkanvalue = 'false', onChange, name}) {
   const [query, setQuery] = useState('')
 
   const filteredShouldMap =
@@ -66,7 +66,7 @@ export default function ComboboxPage({ShouldMap,selected, onChange, name}) {
                             selected ? 'font-medium' : 'font-normal'
                           }`}
                         >
-                          {item.name}
+                          {item.value} {item.name}
                         </span>
                         {selected ? (
                           <span

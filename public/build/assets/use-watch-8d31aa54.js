@@ -1,0 +1,1 @@
+import{r as o}from"./app-0da779d6.js";import{o as l}from"./transition-d3118cc9.js";function p(f,r){let e=o.useRef([]),t=l(f);o.useEffect(()=>{let n=[...e.current];for(let[u,c]of r.entries())if(e.current[u]!==c){let i=t(r,n);return e.current=r,i}},[t,...r])}export{p as m};

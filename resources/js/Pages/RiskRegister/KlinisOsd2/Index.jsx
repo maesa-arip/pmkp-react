@@ -193,7 +193,7 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="max-w-6xl"
-                title="Edit Risk Register Klinis"
+                title="Edit OSD Residual Risk Register Klinis"
             >
                 <Edit
                     model={state}
@@ -225,28 +225,56 @@ export default function Index(props) {
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-2/3">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">      
-                            <ThirdButtonLink
-                                href={route("riskRegisterKlinis.index")}
+                            {/* <ThirdButton
+                                    color="sky"
+                                    type="button"
+                                    onClick={openAddDialog}
+                                > Tambah Risiko 
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-square-rounded-plus"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M9 12h6" />
+                                        <path d="M12 9v6" />
+                                        <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
+                                    </svg>
+                                </ThirdButton> */}
+                                <ThirdButtonLink
+                                    href={route("riskRegisterKlinis.index")}
                                 >
                                     Risk Register ({riskRegisterCount})
-                                </ThirdButtonLink>                        
-                                <ThirdButtonLink
-                                color="teal"
-                                href={route("riskRegisterKlinisPengendalian.index")}
+                                </ThirdButtonLink>
+                                {/* <ThirdButtonLink
+                                    color="teal"
+                                    href={route(
+                                        "riskRegisterKlinisPengendalian.index"
+                                    )}
                                 >
-                                    Pengendalian Yang Sudah Ada ({riskRegisterPengendalianCount})
+                                    Pengendalian Yang Sudah Ada (
+                                    {riskRegisterPengendalianCount})
                                 </ThirdButtonLink>
 
                                 <ThirdButtonLink
-                                color="cyan"
-                                href={route("klinisOpsiPengendalian.index")}
+                                    color="cyan"
+                                    href={route("klinisOpsiPengendalian.index")}
                                 >
                                     Opsi Pengendalian ({OpsiPengendalianCount})
-                                </ThirdButtonLink>
+                                </ThirdButtonLink> */}
 
                                 <ThirdButtonLink
-                                color="red"
-                                href={route("riskRegisterKlinisOsd2.index")}
+                                    color="red"
+                                    href={route("riskRegisterKlinisOsd2.index")}
                                 >
                                     OSD Residual ({riskRegisterOsd2Count})
                                 </ThirdButtonLink>
