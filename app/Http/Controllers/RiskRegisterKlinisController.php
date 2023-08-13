@@ -92,7 +92,8 @@ class RiskRegisterKlinisController extends Controller
         $probabilityValues = ProbabilityValue::where('type',1)->get();
         $controlValues = ControlValue::where('type',1)->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
-        $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name','DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        // $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
         return Inertia::render('RiskRegister/Klinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,
@@ -138,37 +139,34 @@ class RiskRegisterKlinisController extends Controller
     {
         // dd($request->all());
         $this->validate($request, [
-            // 'proses_id' => 'required',
-            'tgl_register' => 'required',
-            // 'tgl_selesai' => 'required',
-            'risk_category_id' => 'required',
-            'identification_source_id' => 'required',
             'indikator_fitur4_id' => 'required',
-            // 'location_id' => 'required',
-            'pernyataan_risiko' => 'required',
+            'risk_category_id' => 'required',
+            'tgl_register' => 'required',
             'sebab' => 'required',
             'currently_id' => 'required',
+            'pic_id' => 'required',
+            'identification_source_id' => 'required',
             'resiko' => 'required',
             'dampak' => 'required',
+            'pernyataan_risiko' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
             'num' => 'required',
             'denum' => 'required',
-            // 'efek' => 'required',
+            'target_waktu' => 'required|numeric|min:1|not_in:0',
             'osd1_dampak' => 'required',
             'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
-            // 'osd2_dampak' => 'required',
-            // 'osd2_probabilitas' => 'required',
-            // 'osd2_controllability' => 'required',
-            // 'grading1' => 'required|numeric',
-            // 'pengendalian_risiko' => 'required',
-            'pic_id' => 'required',
             'perlu_penanganan_id' => 'required',
-            // 'opsi_pengendalian_id' => 'required',
-            // 'pembiayaan_risiko_id' => 'required',
-            'target_waktu' => 'required|numeric|min:1|not_in:0',
-            // 'pengawasan_id' => 'required',
+            'pengendalian_risiko' => 'required',
+            'efektif_id' => 'required',
+            'pengendalian_harus_ada' => 'required',
+            'opsi_pengendalian_id' => 'required',
+            'penanganan_risiko' => 'required',
+            'pembiayaan_risiko_id' => 'required',
+            'jenis_pengendalian_id' => 'required',
+            'waktu_pengendalian_id' => 'required',
+            'rencana_pengendalian' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
@@ -176,12 +174,13 @@ class RiskRegisterKlinisController extends Controller
             'user_id' => auth()->user()->id,
             'tipe_id' => 1,
             'tgl_selesai' => $tgl_selesai,
+            'waktudenumnum' => $request->target_waktu,
             'grading1' => 1,
             'grading2' => 1,
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
+            // 'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
+            // 'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
         // dd($request->all());
 

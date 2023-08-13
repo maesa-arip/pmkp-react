@@ -549,7 +549,6 @@ export default function Form({
                             </div>
                         </div>
                     </div>
-
                     <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
                         <label
                             htmlFor=""
@@ -641,7 +640,6 @@ export default function Form({
                             </div>
                         </div>
                     </div>
-
                     <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
                         <label
                             htmlFor=""
@@ -696,15 +694,15 @@ export default function Form({
                             </div>
                             <div className="col-span-12">
                                 <InputLabel
-                                    for="pengendalian_risiko"
+                                    for="pengendalian_harus_ada"
                                     value="Pengendalian yang Harus Ada"
                                 />
                                 <TextAreaInput
-                                    id="pengendalian_risiko"
-                                    value={data.pengendalian_risiko}
+                                    id="pengendalian_harus_ada"
+                                    value={data.pengendalian_harus_ada}
                                     handleChange={(e) =>
                                         setData(
-                                            "pengendalian_risiko",
+                                            "pengendalian_harus_ada",
                                             e.target.value
                                         )
                                     }
@@ -713,7 +711,7 @@ export default function Form({
                                     className="block w-full mt-1"
                                 />
                                 <InputError
-                                    message={errors.pengendalian_risiko}
+                                    message={errors.pengendalian_harus_ada}
                                     className="mt-2"
                                 />
                             </div>
@@ -750,15 +748,15 @@ export default function Form({
                             </div>
                             <div className="col-span-12">
                                 <InputLabel
-                                    for="pengendalian_risiko"
+                                    for="penanganan_risiko"
                                     value="Uraian Penanganan Risiko"
                                 />
                                 <TextAreaInput
-                                    id="pengendalian_risiko"
-                                    value={data.pengendalian_risiko}
+                                    id="penanganan_risiko"
+                                    value={data.penanganan_risiko}
                                     handleChange={(e) =>
                                         setData(
-                                            "pengendalian_risiko",
+                                            "penanganan_risiko",
                                             e.target.value
                                         )
                                     }
@@ -767,7 +765,7 @@ export default function Form({
                                     className="block w-full mt-1"
                                 />
                                 <InputError
-                                    message={errors.pengendalian_risiko}
+                                    message={errors.penanganan_risiko}
                                     className="mt-2"
                                 />
                             </div>
@@ -836,15 +834,15 @@ export default function Form({
                             </div>
                             <div className="col-span-12">
                                 <InputLabel
-                                    for="pengendalian_risiko"
+                                    for="rencana_pengendalian"
                                     value="Rencana Kegiatan Pengendalian"
                                 />
                                 <TextAreaInput
-                                    id="pengendalian_risiko"
-                                    value={data.pengendalian_risiko}
+                                    id="rencana_pengendalian"
+                                    value={data.rencana_pengendalian}
                                     handleChange={(e) =>
                                         setData(
-                                            "pengendalian_risiko",
+                                            "rencana_pengendalian",
                                             e.target.value
                                         )
                                     }
@@ -853,7 +851,7 @@ export default function Form({
                                     className="block w-full mt-1"
                                 />
                                 <InputError
-                                    message={errors.pengendalian_risiko}
+                                    message={errors.rencana_pengendalian}
                                     className="mt-2"
                                 />
                             </div>

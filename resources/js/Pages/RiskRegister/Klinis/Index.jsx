@@ -11,6 +11,7 @@ import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
+import EditOsd2 from "../KlinisOsd2/Edit";
 import ThirdButtonLink from "@/Components/ThirdButtonLink";
 import TextAreaInput from "@/Components/TextAreaInput";
 
@@ -106,7 +107,6 @@ export default function Index(props) {
         debounce((query) => {
             router.get(
                 route(route().current()),
-                // route("riskRegisterKlinis.index"),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,
@@ -142,8 +142,6 @@ export default function Index(props) {
         };
         setParams(updatedParams);
     };
-    // const onChange = (event) =>
-    //     setParams({ ...params, [event.target.name]: event.target.value });
     const sort = (item) => {
         setParams({
             ...params,
@@ -157,10 +155,6 @@ export default function Index(props) {
     const openAddDialog = () => {
         setIsOpenAddDialog(true);
     };
-    const openEditDialog = (riskregisterklinis1) => {
-        setState(riskregisterklinis1);
-        setIsOpenEditDialog(true);
-    };
     const openDestroyDialog = (riskregisterklinis1) => {
         setState(riskregisterklinis1);
         setIsOpenDestroyDialog(true);
@@ -171,8 +165,29 @@ export default function Index(props) {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [editingRow, setEditingRow] = useState(null); // Use this state to track the row being edited
+    const selectRow = (index) => {
+        if (selectedRow === index) {
+            setSelectedRow(null);
+        } else {
+            setSelectedRow(index);
+        }
+    };
+    const openEditDialog = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialog(true);
+    };
+    const openEditDialog2 = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialog2(true);
+    };
+
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
+    const [isOpenEditDialog2, setIsOpenEditDialog2] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [state, setState] = useState([]);
     return (
@@ -203,6 +218,19 @@ export default function Index(props) {
                     setIsOpenEditDialog={setIsOpenEditDialog}
                 />
             </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialog2}
+                setIsOpenEditDialog={setIsOpenEditDialog2}
+                size="max-w-6xl"
+                title="Edit OSD Residual Risk Register Klinis"
+            >
+                <EditOsd2
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialog2}
+                    setIsOpenEditDialog={setIsOpenEditDialog2}
+                />
+            </EditModal>
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
@@ -231,7 +259,6 @@ export default function Index(props) {
                                     type="button"
                                     onClick={openAddDialog}
                                 >
-                                    {" "}
                                     Tambah Risiko
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -253,55 +280,153 @@ export default function Index(props) {
                                         <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
                                     </svg>
                                 </ThirdButton>
-                                <ThirdButtonLink
-                                    href={route("riskRegisterKlinis.index")}
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "blue"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
                                 >
-                                    Risk Register ({riskRegisterCount})
-                                </ThirdButtonLink>
-                                {/* <ThirdButtonLink
-                                    color="teal"
-                                    href={route(
-                                        "riskRegisterKlinisPengendalian.index"
-                                    )}
-                                >
-                                    Pengendalian Yang Sudah Ada (
-                                    {riskRegisterPengendalianCount})
-                                </ThirdButtonLink>
+                                    Edit
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-edit"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                        <path d="M16 5l3 3" />
+                                    </svg>
+                                </ThirdButton>
 
-                                <ThirdButtonLink
-                                    color="cyan"
-                                    href={route("klinisOpsiPengendalian.index")}
-                                >
-                                    Opsi Pengendalian ({OpsiPengendalianCount})
-                                </ThirdButtonLink> */}
 
-                                <ThirdButtonLink
-                                    color="red"
-                                    href={route("riskRegisterKlinisOsd2.index")}
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "red"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
                                 >
                                     OSD Residual ({riskRegisterOsd2Count})
-                                </ThirdButtonLink>
-                                <ThirdButtonLink
-                                    color="teal"
-                                    href={route(
-                                        "riskRegisterKlinisPengendalian.index"
-                                    )}
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "yellow"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
                                 >
-                                    FGD Inherent
-                                </ThirdButtonLink>
-
-                                <ThirdButtonLink
-                                    color="cyan"
-                                    href={route("klinisOpsiPengendalian.index")}
+                                    Formulir RCA
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "teal"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Formulir Inherent
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "cyan"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
                                 >
                                     FGD Residual
-                                </ThirdButtonLink>
-                                <ThirdButtonLink
-                                    color="yellow"
-                                    href={route("klinisOpsiPengendalian.index")}
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "sky"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
                                 >
                                     FGD Treated
-                                </ThirdButtonLink>
+                                </ThirdButton>
                             </div>
                         </div>
                         <div className="w-1/3">
@@ -357,21 +482,13 @@ export default function Index(props) {
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
-                                                    <div className="flex items-center cursor-pointer gap-x-2">
-                                                        #
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
                                                     <div
                                                         className="flex items-center cursor-pointer gap-x-2"
                                                         onClick={() =>
                                                             sort("created_at")
                                                         }
                                                     >
-                                                        Opsi
+                                                        #
                                                         {params.field ==
                                                             "created_at" &&
                                                             params.direction ==
@@ -921,83 +1038,29 @@ export default function Index(props) {
                                                 </th>
                                             </tr>
                                         </thead>
+
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {riskRegisterKlinis.map(
                                                 (
                                                     riskregisterklinis1,
                                                     index
                                                 ) => (
-                                                    <tr key={index}>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {meta.from + index}
-                                                        </td>
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.proses_id
+                                                    <tr
+                                                        key={index}
+                                                        className={
+                                                            selectedRow ===
+                                                            index
+                                                                ? "bg-sky-100  cursor-pointer"
+                                                                : "cursor-pointer"
+                                                        }
+                                                    >
+                                                        <td
+                                                            className="px-6 py-4 whitespace-nowrap"
+                                                            onClick={() =>
+                                                                selectRow(index)
                                                             }
-                                                        </td> */}
-
-                                                        <td className="text-center">
-                                                            <Dropdown>
-                                                                <Dropdown.Trigger>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                                                        id="menu-button"
-                                                                        aria-expanded="true"
-                                                                        aria-haspopup="true"
-                                                                    >
-                                                                        Options
-                                                                        <svg
-                                                                            className="w-5 h-5 -mr-1 text-gray-400"
-                                                                            viewBox="0 0 20 20"
-                                                                            fill="currentColor"
-                                                                            aria-hidden="true"
-                                                                        >
-                                                                            <path
-                                                                                fill-rule="evenodd"
-                                                                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                                                                clip-rule="evenodd"
-                                                                            />
-                                                                        </svg>
-                                                                    </button>
-                                                                    {/* <button>
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            className="w-4 h-4 text-gray-400"
-                                                                            viewBox="0 0 20 20"
-                                                                            fill="currentColor"
-                                                                        >
-                                                                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                        </svg>
-                                                                    </button> */}
-                                                                </Dropdown.Trigger>
-                                                                <Dropdown.Content
-                                                                    align="left"
-                                                                    width="24"
-                                                                >
-                                                                    <button
-                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                        onClick={() =>
-                                                                            openEditDialog(
-                                                                                riskregisterklinis1
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Edit
-                                                                    </button>
-                                                                    <button
-                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                        onClick={() =>
-                                                                            openDestroyDialog(
-                                                                                riskregisterklinis1
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Hapus
-                                                                    </button>
-                                                                </Dropdown.Content>
-                                                            </Dropdown>
+                                                        >
+                                                            {meta.from + index}
                                                         </td>
                                                         <td className="p-2 whitespace-nowrap">
                                                             <div className="p-4 border border-gray-300 rounded-md shadow-sm">
@@ -1034,7 +1097,7 @@ export default function Index(props) {
                                                             </div>
                                                         </td>
                                                         <td className="p-2">
-                                                            <div className="p-4 border border-red-300 rounded-md shadow-sm">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
                                                                 {
                                                                     riskregisterklinis1.sebab
                                                                 }

@@ -124,13 +124,12 @@ class RiskRegisterKlinisOsd2Controller extends Controller
             'waktu_implementasi_id' => 'required|numeric|min:1|not_in:0',
             'realisasi_id' => 'required|numeric|min:1|not_in:0',
             'output' => 'required',
-
         ]);
         $request->merge([
-            'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
+            // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
             'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
-            'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
+            // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
+            'osd2_inherent' => $request->osd2_dampak * $request->osd2_probabilitas * $request->osd2_controllability,
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 

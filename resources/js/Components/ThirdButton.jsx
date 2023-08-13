@@ -9,6 +9,7 @@ export default function ThirdButton({ type = 'submit', className = '', processin
         cyan: 'bg-cyan-50 text-cyan-500 hover:bg-cyan-100 focus:bg-cyan-100 active:bg-cyan-100 focus:ring-cyan-100',
         sky: 'bg-sky-50 text-sky-500 hover:bg-sky-100 focus:bg-sky-100 active:bg-sky-100 focus:ring-sky-100',
         gray: 'bg-gray-50 text-gray-500 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 focus:ring-gray-100',
+        green: 'bg-green-50 text-green-500 hover:bg-green-100 focus:bg-green-100 active:bg-green-100 focus:ring-green-100',
       }
     return (
         <button
