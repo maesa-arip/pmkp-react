@@ -1,6 +1,4 @@
-import Container from "@/Components/Container";
 import DangerButton from "@/Components/DangerButton";
-import Dropdown from "@/Components/Dropdown";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
@@ -11,9 +9,11 @@ import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
-import EditOsd2 from "../KlinisOsd2/Edit";
-import ThirdButtonLink from "@/Components/ThirdButtonLink";
-import TextAreaInput from "@/Components/TextAreaInput";
+import EditOSDResidual from "../KlinisOsd2/Edit";
+import EditFormulirRCA from "../KlinisFormulirRCA/Edit";
+import EditFGDInherent from "../KlinisFGDInherent/Edit";
+import EditFGDResidual from "../KlinisFGDResidual/Edit";
+import EditFGDTreated from "../KlinisFGDTreated/Edit";
 
 const UpIcon = () => (
     <svg
@@ -179,15 +179,41 @@ export default function Index(props) {
         setEditingRow(row);
         setIsOpenEditDialog(true);
     };
-    const openEditDialog2 = (row) => {
+    const openEditDialogOSDResidual = (row) => {
         setState(row);
         setEditingRow(row);
-        setIsOpenEditDialog2(true);
+        setIsOpenEditDialogOSDResidual(true);
+    };
+
+    const openEditDialogFormulirRCA = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFormulirRCA(true);
+    };
+
+    const openEditDialogFGDInherent = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDInherent(true);
+    };
+    const openEditDialogFGDResidual = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDResidual(true);
+    };
+    const openEditDialogFGDTreated = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDTreated(true);
     };
 
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
-    const [isOpenEditDialog2, setIsOpenEditDialog2] = useState(false);
+    const [isOpenEditDialogOSDResidual, setIsOpenEditDialogOSDResidual] = useState(false);
+    const [isOpenEditDialogFormulirRCA, setIsOpenEditDialogFormulirRCA] = useState(false);
+    const [isOpenEditDialogFGDInherent, setIsOpenEditDialogFGDInherent] = useState(false);
+    const [isOpenEditDialogFGDResidual, setIsOpenEditDialogFGDResidual] = useState(false);
+    const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [state, setState] = useState([]);
     return (
@@ -219,16 +245,68 @@ export default function Index(props) {
                 />
             </EditModal>
             <EditModal
-                isOpenEditDialog={isOpenEditDialog2}
-                setIsOpenEditDialog={setIsOpenEditDialog2}
+                isOpenEditDialog={isOpenEditDialogOSDResidual}
+                setIsOpenEditDialog={setIsOpenEditDialogOSDResidual}
                 size="max-w-6xl"
                 title="Edit OSD Residual Risk Register Klinis"
             >
-                <EditOsd2
+                <EditOSDResidual
                     model={state}
                     ShouldMap={ShouldMap}
-                    isOpenEditDialog={isOpenEditDialog2}
-                    setIsOpenEditDialog={setIsOpenEditDialog2}
+                    isOpenEditDialog={isOpenEditDialogOSDResidual}
+                    setIsOpenEditDialog={setIsOpenEditDialogOSDResidual}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFormulirRCA}
+                setIsOpenEditDialog={setIsOpenEditDialogFormulirRCA}
+                size="max-w-6xl"
+                title="Edit Formulir RCA Risk Register Klinis"
+            >
+                <EditFormulirRCA
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFormulirRCA}
+                    setIsOpenEditDialog={setIsOpenEditDialogFormulirRCA}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDInherent}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDInherent}
+                size="max-w-6xl"
+                title="Edit FGD Inherent Risk Register Klinis"
+            >
+                <EditFGDInherent
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDInherent}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDInherent}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDResidual}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDResidual}
+                size="max-w-6xl"
+                title="Edit FGD Residual Risk Register Klinis"
+            >
+                <EditFGDResidual
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDResidual}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDResidual}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDTreated}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDTreated}
+                size="max-w-6xl"
+                title="Edit FGD Treated Risk Register Klinis"
+            >
+                <EditFGDTreated
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDTreated}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDTreated}
                 />
             </EditModal>
             <DestroyModal
@@ -252,7 +330,7 @@ export default function Index(props) {
                         RISK REGISTER KLINIS ({riskRegisterCount})
                     </p>
                     <div className="flex items-center justify-between mb-2">
-                        <div className="w-2/3">
+                        <div className="w-3/4">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
                                 <ThirdButton
                                     color="sky"
@@ -321,7 +399,6 @@ export default function Index(props) {
                                     </svg>
                                 </ThirdButton>
 
-
                                 <ThirdButton
                                     color={
                                         selectedRow === null ? "gray" : "red"
@@ -336,7 +413,7 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialog2(selectedRisk);
+                                            openEditDialogOSDResidual(selectedRisk);
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -357,7 +434,7 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialog2(selectedRisk);
+                                            openEditDialogFormulirRCA(selectedRisk);
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -378,7 +455,7 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialog2(selectedRisk);
+                                            openEditDialogFGDInherent(selectedRisk);
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -399,7 +476,7 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialog2(selectedRisk);
+                                            openEditDialogFGDResidual(selectedRisk);
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -420,16 +497,37 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialog2(selectedRisk);
+                                            openEditDialogFGDTreated(selectedRisk);
                                         }
                                     }}
                                     disabled={selectedRow === null}
                                 >
                                     FGD Treated
                                 </ThirdButton>
+                                {/* <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "amber"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Pelaporan
+                                </ThirdButton> */}
                             </div>
                         </div>
-                        <div className="w-1/3">
+                        <div className="w-1/4">
                             <div className="flex items-center justify-end mt-2 mb-0 gap-x-1">
                                 <select
                                     name="load"

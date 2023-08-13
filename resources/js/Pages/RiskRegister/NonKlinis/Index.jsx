@@ -1,6 +1,4 @@
-import Container from "@/Components/Container";
 import DangerButton from "@/Components/DangerButton";
-import Dropdown from "@/Components/Dropdown";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
@@ -11,6 +9,11 @@ import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
+import EditOSDResidual from "../KlinisOsd2/Edit";
+import EditFormulirRCA from "../KlinisFormulirRCA/Edit";
+import EditFGDInherent from "../KlinisFGDInherent/Edit";
+import EditFGDResidual from "../KlinisFGDResidual/Edit";
+import EditFGDTreated from "../KlinisFGDTreated/Edit";
 
 const UpIcon = () => (
     <svg
@@ -49,6 +52,10 @@ export default function Index(props) {
         attributes,
     } = props.riskRegisterKlinis;
     const { auth } = usePage().props;
+    const riskRegisterCount = props.riskRegisterCount;
+    const riskRegisterPengendalianCount = props.riskRegisterPengendalianCount;
+    const OpsiPengendalianCount = props.OpsiPengendalianCount;
+    const riskRegisterOsd2Count = props.riskRegisterOsd2Count;
     let ShouldMap = {
         riskCategories: props.riskCategories,
         identificationSources: props.identificationSources,
@@ -93,7 +100,6 @@ export default function Index(props) {
             { id: 2, name: "Belum Tercapai" },
         ],
     };
-
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
     const [isInitialRender, setIsInitialRender] = useState(true);
@@ -110,7 +116,6 @@ export default function Index(props) {
         }, 150),
         []
     );
-
     useEffect(() => {
         if (!isInitialRender) {
             reload(params);
@@ -150,22 +155,65 @@ export default function Index(props) {
     const openAddDialog = () => {
         setIsOpenAddDialog(true);
     };
-    const openEditDialog = (riskregisterklinis1) => {
-        setState(riskregisterklinis1);
-        setIsOpenEditDialog(true);
-    };
     const openDestroyDialog = (riskregisterklinis1) => {
         setState(riskregisterklinis1);
         setIsOpenDestroyDialog(true);
     };
 
     const destroyriskregisterklinis1 = () => {
-        router.delete(route("riskRegisterNonKlinis.destroy", state.id), {
+        router.delete(route("riskRegisterKlinis.destroy", state.id), {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [editingRow, setEditingRow] = useState(null); // Use this state to track the row being edited
+    const selectRow = (index) => {
+        if (selectedRow === index) {
+            setSelectedRow(null);
+        } else {
+            setSelectedRow(index);
+        }
+    };
+    const openEditDialog = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialog(true);
+    };
+    const openEditDialogOSDResidual = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogOSDResidual(true);
+    };
+
+    const openEditDialogFormulirRCA = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFormulirRCA(true);
+    };
+
+    const openEditDialogFGDInherent = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDInherent(true);
+    };
+    const openEditDialogFGDResidual = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDResidual(true);
+    };
+    const openEditDialogFGDTreated = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDTreated(true);
+    };
+
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
+    const [isOpenEditDialogOSDResidual, setIsOpenEditDialogOSDResidual] = useState(false);
+    const [isOpenEditDialogFormulirRCA, setIsOpenEditDialogFormulirRCA] = useState(false);
+    const [isOpenEditDialogFGDInherent, setIsOpenEditDialogFGDInherent] = useState(false);
+    const [isOpenEditDialogFGDResidual, setIsOpenEditDialogFGDResidual] = useState(false);
+    const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [state, setState] = useState([]);
     return (
@@ -174,7 +222,7 @@ export default function Index(props) {
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
-                size="max-w-4xl"
+                size="max-w-6xl"
                 title={`Tambah Risk Register Non Klinis ` + auth.user.name}
             >
                 <Create
@@ -186,7 +234,7 @@ export default function Index(props) {
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
-                size="max-w-4xl"
+                size="max-w-6xl"
                 title="Edit Risk Register Non Klinis"
             >
                 <Edit
@@ -196,11 +244,76 @@ export default function Index(props) {
                     setIsOpenEditDialog={setIsOpenEditDialog}
                 />
             </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogOSDResidual}
+                setIsOpenEditDialog={setIsOpenEditDialogOSDResidual}
+                size="max-w-6xl"
+                title="Edit OSD Residual Risk Register Non Klinis"
+            >
+                <EditOSDResidual
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogOSDResidual}
+                    setIsOpenEditDialog={setIsOpenEditDialogOSDResidual}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFormulirRCA}
+                setIsOpenEditDialog={setIsOpenEditDialogFormulirRCA}
+                size="max-w-6xl"
+                title="Edit Formulir RCA Risk Register Non Klinis"
+            >
+                <EditFormulirRCA
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFormulirRCA}
+                    setIsOpenEditDialog={setIsOpenEditDialogFormulirRCA}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDInherent}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDInherent}
+                size="max-w-6xl"
+                title="Edit FGD Inherent Risk Register Non Klinis"
+            >
+                <EditFGDInherent
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDInherent}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDInherent}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDResidual}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDResidual}
+                size="max-w-6xl"
+                title="Edit FGD Residual Risk Register Non Klinis"
+            >
+                <EditFGDResidual
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDResidual}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDResidual}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDTreated}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDTreated}
+                size="max-w-6xl"
+                title="Edit FGD Treated Risk Register Non Klinis"
+            >
+                <EditFGDTreated
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDTreated}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDTreated}
+                />
+            </EditModal>
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
                 size="max-w-2xl"
-                title="Delete Risk Register Non Klinis"
+                title="Delete Risk Register Klinis"
                 warning="Yakin hapus data ini ?"
             >
                 <DangerButton
@@ -213,19 +326,208 @@ export default function Index(props) {
 
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
-                    <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">RISK REGISTER NON KLINIS</p>
+                    <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
+                        RISK REGISTER NON KLINIS ({riskRegisterCount})
+                    </p>
                     <div className="flex items-center justify-between mb-2">
-                        <div className="w-1/2">
+                        <div className="w-3/4">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
                                 <ThirdButton
+                                    color="sky"
                                     type="button"
                                     onClick={openAddDialog}
                                 >
-                                    Tambah
+                                    Tambah Risiko
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-square-rounded-plus"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M9 12h6" />
+                                        <path d="M12 9v6" />
+                                        <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
+                                    </svg>
                                 </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "blue"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Edit
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-edit"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                        <path d="M16 5l3 3" />
+                                    </svg>
+                                </ThirdButton>
+
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "red"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogOSDResidual(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    OSD Residual ({riskRegisterOsd2Count})
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "yellow"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogFormulirRCA(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Formulir RCA
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "teal"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogFGDInherent(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Formulir Inherent
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "cyan"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogFGDResidual(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    FGD Residual
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "sky"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogFGDTreated(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    FGD Treated
+                                </ThirdButton>
+                                {/* <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "amber"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog2(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Pelaporan
+                                </ThirdButton> */}
                             </div>
                         </div>
-                        <div className="w-1/2">
+                        <div className="w-1/4">
                             <div className="flex items-center justify-end mt-2 mb-0 gap-x-1">
                                 <select
                                     name="load"
@@ -271,42 +573,9 @@ export default function Index(props) {
                         <div className="-my-2 overflow-x-auto rounded sm:-mx-6 lg:-mx-8">
                             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                                 <div className="border-b border-gray-200 shadow sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-200 table-auto">
                                         <thead className="bg-gray-50">
                                             <tr>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div className="flex items-center cursor-pointer gap-x-2">
-                                                        #
-                                                    </div>
-                                                </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("proses")
-                                                        }
-                                                    >
-                                                        Proses
-                                                        {params.field ==
-                                                            "proses" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "proses" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
@@ -317,7 +586,7 @@ export default function Index(props) {
                                                             sort("created_at")
                                                         }
                                                     >
-                                                        Opsi
+                                                        #
                                                         {params.field ==
                                                             "created_at" &&
                                                             params.direction ==
@@ -357,7 +626,7 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                <th
+                                                {/* <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
@@ -435,13 +704,13 @@ export default function Index(props) {
                                                                 <DownIcon />
                                                             )}
                                                     </div>
-                                                </th>
+                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort(
                                                                 "pernyataan_risiko"
@@ -465,10 +734,10 @@ export default function Index(props) {
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase w-96"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort("sebab")
                                                         }
@@ -488,37 +757,13 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Tanggal
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
+
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort("risk_type_id")
                                                         }
@@ -543,7 +788,7 @@ export default function Index(props) {
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort(
                                                                 "risk_variety_id"
@@ -570,7 +815,7 @@ export default function Index(props) {
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort("dampak")
                                                         }
@@ -802,37 +1047,13 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Grading
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
+
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
                                                     <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
+                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
                                                         onClick={() =>
                                                             sort(
                                                                 "pengendalian_risiko"
@@ -904,31 +1125,6 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("location_id")
-                                                        }
-                                                    >
-                                                        Pengawasan
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "location_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
 
                                                 <th
                                                     scope="col"
@@ -940,73 +1136,43 @@ export default function Index(props) {
                                                 </th>
                                             </tr>
                                         </thead>
+
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {riskRegisterKlinis.map(
                                                 (
                                                     riskregisterklinis1,
                                                     index
                                                 ) => (
-                                                    <tr key={index}>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                    <tr
+                                                        key={index}
+                                                        className={
+                                                            selectedRow ===
+                                                            index
+                                                                ? "bg-sky-100  cursor-pointer"
+                                                                : "cursor-pointer"
+                                                        }
+                                                    >
+                                                        <td
+                                                            className="px-6 py-4 whitespace-nowrap"
+                                                            onClick={() =>
+                                                                selectRow(index)
+                                                            }
+                                                        >
                                                             {meta.from + index}
                                                         </td>
+                                                        <td className="p-2 whitespace-nowrap">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.tgl_register
+                                                                }
+                                                            </div>
+                                                        </td>
+
                                                         {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.proses_id
-                                                            }
-                                                        </td> */}
-                                                        <td className="text-center">
-                                                            <Dropdown>
-                                                                <Dropdown.Trigger>
-                                                                    <button>
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            className="w-4 h-4 text-gray-400"
-                                                                            viewBox="0 0 20 20"
-                                                                            fill="currentColor"
-                                                                        >
-                                                                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                </Dropdown.Trigger>
-                                                                <Dropdown.Content
-                                                                    align="right"
-                                                                    width="24"
-                                                                >
-                                                                    <button
-                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                        onClick={() =>
-                                                                            openEditDialog(
-                                                                                riskregisterklinis1
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Edit
-                                                                    </button>
-                                                                    <button
-                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                        onClick={() =>
-                                                                            openDestroyDialog(
-                                                                                riskregisterklinis1
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Hapus
-                                                                    </button>
-                                                                </Dropdown.Content>
-                                                            </Dropdown>
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.tgl_register
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1.tgl_selesai
                                                             }
                                                         </td>
-
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1
@@ -1020,41 +1186,47 @@ export default function Index(props) {
                                                                     .identification_source
                                                                     .name
                                                             }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.pernyataan_risiko
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.sebab
-                                                            }
-                                                        </td>
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.joined
-                                                            }
                                                         </td> */}
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_variety
-                                                                    .name
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.pernyataan_risiko
+                                                                }
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_type
-                                                                    .name
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.sebab
+                                                                }
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.dampak
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1
+                                                                        .risk_variety
+                                                                        .name
+                                                                }
+                                                            </div>
                                                         </td>
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1
+                                                                        .risk_type
+                                                                        .name
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.dampak
+                                                                }
+                                                            </div>
+                                                        </td>
+
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1.osd1_dampak
@@ -1101,11 +1273,14 @@ export default function Index(props) {
                                                                     .grading1
                                                             }
                                                         </td> */}
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.pengendalian_risiko
-                                                            }
+                                                        <td className="p-2">
+                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
+                                                                {
+                                                                    riskregisterklinis1.pengendalian_risiko
+                                                                }
+                                                            </div>
                                                         </td>
+
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1
@@ -1138,6 +1313,7 @@ export default function Index(props) {
                                             disabled={
                                                 item.url == null ? true : false
                                             }
+                                            
                                             className={`${
                                                 item.url == null
                                                     ? "text-gray-500"

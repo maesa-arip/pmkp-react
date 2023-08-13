@@ -53,4 +53,21 @@ class RiskRegister extends Model
     {
         return $this->hasMany(RiskRegisterHistory::class);
     }
+    public function formulirrca()
+    {
+        return $this->hasOne(FormulirRca::class);
+        // return $this->belongsTo(FormulirRca::class);
+    }
+    public function fgdinherent()
+    {
+        return $this->hasOne(FgdInherent::class);
+    }
+    public function fgdresidual()
+    {
+        return $this->hasOne(FgdResidual::class);
+    }
+    public function fgdtreated()
+    {
+        return $this->hasOne(FgdTreated::class);
+    }
 }

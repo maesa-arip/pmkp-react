@@ -497,11 +497,11 @@ export default function Form({
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700"
                         >
-                            NUM DENUM (Wajib di Input)
+                            NUMERATOR & DENUMERATOR (Wajib di Input)
                         </label>
                         <div className="grid grid-cols-12 gap-6">
                             <div className="col-span-6">
-                                <InputLabel for="Denum" value="Denum" />
+                                <InputLabel for="Denum" value="Denumerator" />
                                 <TextInput
                                     id="denum"
                                     value={data.denum}
@@ -518,7 +518,7 @@ export default function Form({
                                 />
                             </div>
                             <div className="col-span-6">
-                                <InputLabel for="NUM" value="NUM" />
+                                <InputLabel for="NUM" value="Numerator" />
                                 <TextInput
                                     id="num"
                                     value={data.num}
@@ -645,7 +645,7 @@ export default function Form({
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700 "
                         >
-                            Pengendalian Yang Sudah Ada (Wajib di input setelah ada pengendalian)
+                            Pengendalian Yang Sudah Ada (Wajib di input)
                         </label>
                         <div className="grid grid-cols-12 gap-6">
                             <div className="col-span-12">
@@ -722,7 +722,7 @@ export default function Form({
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700"
                         >
-                            Opsi Pengendalian (Wajib di input setelah ada pengendalian)
+                            Opsi Pengendalian (Wajib di input)
                         </label>
                         <div className="grid grid-cols-12 gap-6">
                             <div className="col-span-6 my-6">

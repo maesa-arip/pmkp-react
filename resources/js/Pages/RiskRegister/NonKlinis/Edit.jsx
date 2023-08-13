@@ -41,6 +41,9 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         output: model.output,
         waktu_implementasi_id: model.waktu_implementasi_id,
         realisasi_id: model.realisasi_id,
+        pengendalian_harus_ada: model.pengendalian_harus_ada,
+        penanganan_risiko: model.penanganan_risiko,
+        rencana_pengendalian: model.rencana_pengendalian,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -95,6 +98,9 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             output: model.output,
             waktu_implementasi_id: model.waktu_implementasi_id,
             realisasi_id: model.realisasi_id,
+            pengendalian_harus_ada: model.pengendalian_harus_ada,
+            penanganan_risiko: model.penanganan_risiko,
+            rencana_pengendalian: model.rencana_pengendalian,
         });
     }, [model]);
     return (

@@ -73,6 +73,10 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('controlValues', ControlValueController::class);
 
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
+    Route::put('/formulirrca', [RiskRegisterKlinisController::class,'formulirrca'])->name('riskregister.formulirrca');
+    Route::put('/fgdinherent', [RiskRegisterKlinisController::class,'fgdinherent'])->name('riskregister.fgdinherent');
+    Route::put('/fgdresidual', [RiskRegisterKlinisController::class,'fgdresidual'])->name('riskregister.fgdresidual');
+    Route::put('/fgdtreated', [RiskRegisterKlinisController::class,'fgdtreated'])->name('riskregister.fgdtreated');
     Route::apiResource('riskRegisterKlinisPengendalian', RiskRegisterKlinisPengendalianController::class);
     Route::apiResource('klinisOpsiPengendalian', RiskRegisterKlinisOpsiPengendalianController::class);
     Route::apiResource('riskRegisterKlinisOsd2', RiskRegisterKlinisOsd2Controller::class);

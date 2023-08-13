@@ -252,7 +252,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ELSE ""
         END AS `PerluPenanganan`,
         opsi_pengendalians.name as opsi,
-        risk_registers.pengendalian_risiko as uraian,
+        risk_registers.penanganan_risiko as uraian,
         pembiayaan_risikos.name as pembiayaan,
         risk_registers.osd2_probabilitas,
         osd2_controllability,
@@ -271,6 +271,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.dampak',
                 'risk_registers.pernyataan_risiko',
                 'risk_registers.pengendalian_risiko',
+                'risk_registers.penanganan_risiko',
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
                 'risk_registers.osd1_inherent',
@@ -1475,11 +1476,11 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'indikator_fitur4s.tujuan, ' .
                     'risk_registers.pernyataan_risiko, ' .
                     'opsi_pengendalians.name as opsi, ' .
-                    'risk_registers.pengendalian_risiko as uraian, ' .
+                    'risk_registers.penanganan_risiko as uraian, ' .
                     'risk_registers.pengendalian_risiko, ' .
                     'efektifs.name as efektif, ' .
-                    'risk_registers.pengendalian_risiko as harusada, ' .
-                    'risk_registers.pengendalian_risiko as kegiatan, ' .
+                    'risk_registers.pengendalian_harus_ada as harusada, ' .
+                    'risk_registers.rencana_pengendalian as kegiatan, ' .
                     'waktu_pengendalians.name as waktu, ' .
                     'jenis_pengendalians.name as jenis_pengendalian, ' .
                     'users.name as pemilik, ' .
@@ -1491,10 +1492,10 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.pernyataan_risiko',
                 'opsi_pengendalians.name',
                 'risk_registers.pengendalian_risiko',
-                'risk_registers.pengendalian_risiko',
+                'risk_registers.penanganan_risiko',
                 'efektifs.name',
-                'risk_registers.pengendalian_risiko',
-                'risk_registers.pengendalian_risiko',
+                'risk_registers.pengendalian_harus_ada',
+                'risk_registers.rencana_pengendalian',
                 'waktu_pengendalians.name',
                 'jenis_pengendalians.name',
                 'users.name',
@@ -1742,7 +1743,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
-            ->select('risk_registers.id', 'indikator_fitur4s.name', 'indikator_fitur4s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'pics.name as pic_name')
+            ->select('risk_registers.id', 'indikator_fitur4s.name', 'indikator_fitur4s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'pics.name as pic_name')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.created_at', '>=', $this->startDate)

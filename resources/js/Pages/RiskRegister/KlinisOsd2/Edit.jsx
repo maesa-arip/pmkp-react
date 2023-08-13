@@ -105,7 +105,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
                 model={model}
                 ShouldMap={ShouldMap}
                 setData={setData}
-                submit={"Update"}
+                submit={"Simpan"}
                 closeButton={closeButton}
             />
         </form>

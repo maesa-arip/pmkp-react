@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
 use App\Models\Efektif;
+use App\Models\FgdInherent;
+use App\Models\FgdResidual;
+use App\Models\FgdTreated;
+use App\Models\FormulirRca;
 use App\Models\IdentificationSource;
 use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
-use App\Models\IndikatorFitur04;
 use App\Models\IndikatorFitur4;
 use App\Models\JenisPengendalian;
 use App\Models\Location;
@@ -29,6 +32,7 @@ use App\Notifications\RiskRegisterNewNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Inertia;
 
 class RiskRegisterNonKlinisController extends Controller
 {
@@ -41,19 +45,26 @@ class RiskRegisterNonKlinisController extends Controller
             ->with('identification_source')
             ->with('opsi_pengendalian')
             ->with('pembiayaan_risiko')
-            // ->with('location')
             ->with('risk_variety')
             ->with('risk_type')
             ->with('pic')
             ->with('user')
+            ->with('formulirrca')
+            ->with('fgdinherent')
+            ->with('fgdresidual')
+            ->with('fgdtreated')
             ->where($whosLogin);
+        $riskRegisterCount = $riskRegisterKlinis->count();
+        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('efektif_id','=',0)->count();
+        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('opsi_pengendalian_id','=',0)->count();
+        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('osd2_dampak','=',0)->count();
         if ($request->q) {
-            $riskRegisterKlinis->where('tipe_id', 'like', '%' . $request->q . '%');
+            $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
         }
         if ($request->has(['field', 'direction'])) {
             $riskRegisterKlinis->orderBy($request->field, $request->direction);
         }
-        $riskRegisterKlinis = (RiskRegisterResource::collection($riskRegisterKlinis->latest()->fastPaginate($request->load)->withQueryString())
+        $riskRegisterKlinis = (RiskRegisterResource::collection($riskRegisterKlinis->latest()->fastPaginate($request->load ?? $this->loadDefault)->withQueryString())
         )->additional([
             'attributes' => [
                 'total' => 1100,
@@ -68,8 +79,6 @@ class RiskRegisterNonKlinisController extends Controller
 
             ]
         ]);
-       
-        // $permissionNames = auth()->user()->getPermissionNames();
         $riskCategories = RiskCategory::get();
         $identificationSources = IdentificationSource::get();
         $locations = Location::get();
@@ -82,63 +91,67 @@ class RiskRegisterNonKlinisController extends Controller
         $pembiayaanRisiko = PembiayaanRisiko::get();
         $waktuImplementasi = WaktuImplementasi::get();
         $pics = Pic::get();
-        $impactValues = ImpactValue::where('type',2)->get();
-        $probabilityValues = ProbabilityValue::where('type',2)->get();
-        $controlValues = ControlValue::where('type',2)->get();
+        $impactValues = ImpactValue::where('type',1)->get();
+        $probabilityValues = ProbabilityValue::where('type',1)->get();
+        $controlValues = ControlValue::where('type',1)->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
-        $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
-        return inertia('RiskRegister/NonKlinis/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues,'indikatorFitur4s' => $indikatorFitur4s,'opsiPengendalian' => $opsiPengendalian,'pembiayaanRisiko' => $pembiayaanRisiko,'efektif' => $efektif,'jenisPengendalian' => $jenisPengendalian,'waktuPengendalian' => $waktuPengendalian,'waktuImplementasi' => $waktuImplementasi]);
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name','DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        return Inertia::render('RiskRegister/NonKlinis/Index', [
+            'riskRegisterKlinis' => $riskRegisterKlinis,
+            'riskRegisterCount' => $riskRegisterCount,
+            'riskRegisterPengendalianCount' => $riskRegisterPengendalianCount,
+            'OpsiPengendalianCount' => $OpsiPengendalianCount,
+            'riskRegisterOsd2Count' => $riskRegisterOsd2Count,
+            'riskCategories' => $riskCategories,
+            'identificationSources' => $identificationSources,
+            'locations' => $locations,
+            'riskVarieties' => $riskVarieties,
+            'riskTypes' => $riskTypes,
+            'pics' => $pics,
+            'impactValues' => $impactValues,
+            'probabilityValues' => $probabilityValues,
+            'controlValues' => $controlValues,
+            'indikatorFitur4s' => $indikatorFitur4s,
+            'opsiPengendalian' => $opsiPengendalian,
+            'pembiayaanRisiko' => $pembiayaanRisiko,
+            'efektif' => $efektif,
+            'jenisPengendalian' => $jenisPengendalian,
+            'waktuPengendalian' => $waktuPengendalian,
+            'waktuImplementasi' => $waktuImplementasi,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        // dd($request->all());
         $this->validate($request, [
-            // 'proses_id' => 'required',
-            'tgl_register' => 'required',
-            // 'tgl_selesai' => 'required',
+            'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
-            'identification_source_id' => 'required',
-            'indikator_fitur04_id' => 'required',
-            // 'location_id' => 'required',
-            'pernyataan_risiko' => 'required',
+            'tgl_register' => 'required',
             'sebab' => 'required',
             'currently_id' => 'required',
+            'pic_id' => 'required',
+            'identification_source_id' => 'required',
             'resiko' => 'required',
             'dampak' => 'required',
+            'pernyataan_risiko' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
-            // 'efek' => 'required',
+            'num' => 'required',
+            'denum' => 'required',
+            'target_waktu' => 'required|numeric|min:1|not_in:0',
             'osd1_dampak' => 'required',
             'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
-            'osd2_dampak' => 'required',
-            'osd2_probabilitas' => 'required',
-            'osd2_controllability' => 'required',
-            // 'grading1' => 'required|numeric',
-            'pengendalian_risiko' => 'required',
-            'pic_id' => 'required',
             'perlu_penanganan_id' => 'required',
-            // 'opsi_pengendalian_id' => 'required',
+            'pengendalian_risiko' => 'required',
+            'efektif_id' => 'required',
+            'pengendalian_harus_ada' => 'required',
+            'opsi_pengendalian_id' => 'required',
+            'penanganan_risiko' => 'required',
             'pembiayaan_risiko_id' => 'required',
-            'target_waktu' => 'required|numeric|min:1|not_in:0',
-            // 'pengawasan_id' => 'required',
+            'jenis_pengendalian_id' => 'required',
+            'waktu_pengendalian_id' => 'required',
+            'rencana_pengendalian' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
@@ -146,117 +159,83 @@ class RiskRegisterNonKlinisController extends Controller
             'user_id' => auth()->user()->id,
             'tipe_id' => 2,
             'tgl_selesai' => $tgl_selesai,
+            'waktudenumnum' => $request->target_waktu,
             'grading1' => 1,
             'grading2' => 1,
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
-        // dd($request->all());
 
         $risk = RiskRegister::create($request->except('name'));
-        // dd($risk->id);
 
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$risk->id, 'currently_id'=>$request->currently_id]);
-        $user = User::whereHas('roles', function ($query) {
-            $query->where('name', 'super admin');
-        })->get();
-        Notification::send($user, new RiskRegisterNewNotification($risk));
+        // $user = User::whereHas('roles', function ($query) {
+        //     $query->where('name', 'super admin');
+        // })->get();
+        // Notification::send($user, new RiskRegisterNewNotification($risk));
         return back()->with([
             'type' => 'success',
-            'message' => 'Data Risk Register Klinis berhasil disimpan',
+            'message' => 'Data Risk Register Non Klinis berhasil disimpan',
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            // 'proses_id' => 'required',
-            'tgl_register' => 'required',
-            // 'tgl_selesai' => 'required',
+            'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
-            'identification_source_id' => 'required',
-            'indikator_fitur04_id' => 'required',
-            // 'location_id' => 'required',
-            'pernyataan_risiko' => 'required',
+            'tgl_register' => 'required',
             'sebab' => 'required',
             'currently_id' => 'required',
+            'pic_id' => 'required',
+            'identification_source_id' => 'required',
             'resiko' => 'required',
             'dampak' => 'required',
+            'pernyataan_risiko' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
-            // 'efek' => 'required',
-            'osd1_dampak' => 'required|numeric|min:1|not_in:0',
-            'osd1_probabilitas' => 'required|numeric|min:1|not_in:0',
-            'osd1_controllability' => 'required|numeric|min:1|not_in:0',
-            'osd2_dampak' => 'required|numeric|min:1|not_in:0',
-            'osd2_probabilitas' => 'required|numeric|min:1|not_in:0',
-            'osd2_controllability' => 'required|numeric|min:1|not_in:0',
-            // 'grading1' => 'required|numeric',
-            'pengendalian_risiko' => 'required',
-            'pic_id' => 'required',
-            'perlu_penanganan_id' => 'required|numeric|min:1|not_in:0',
-            // 'opsi_pengendalian_id' => 'required|numeric|min:1|not_in:0',
-            'pembiayaan_risiko_id' => 'required|numeric|min:1|not_in:0',
+            'num' => 'required',
+            'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
-            // 'pengawasan_id' => 'required',
+            'osd1_dampak' => 'required',
+            'osd1_probabilitas' => 'required',
+            'osd1_controllability' => 'required',
+            'perlu_penanganan_id' => 'required',
+            'pengendalian_risiko' => 'required',
+            'efektif_id' => 'required',
+            'pengendalian_harus_ada' => 'required',
+            'opsi_pengendalian_id' => 'required',
+            'penanganan_risiko' => 'required',
+            'pembiayaan_risiko_id' => 'required',
+            'jenis_pengendalian_id' => 'required',
+            'waktu_pengendalian_id' => 'required',
+            'rencana_pengendalian' => 'required',
         ]);
+        $date = Carbon::parse($request->tgl_register);
+        $tgl_selesai = $date->addDays($request->target_waktu);
         $request->merge([
+            'tgl_selesai' => $tgl_selesai,
+            'waktudenumnum' => $request->target_waktu,
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 
         $riskRegisterKlinis->update($request->except('home'));
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$id, 'currently_id'=>$riskRegisterKlinis->currently_id]);
-        $user = User::whereHas('roles', function ($query) {
-            $query->where('name', 'super admin');
-        })->get();
-        Notification::send($user, new RiskRegisterEditNotification($riskRegisterKlinis));
+        // $user = User::whereHas('roles', function ($query) {
+        //     $query->where('name', 'super admin');
+        // })->get();
+        // Notification::send($user, new RiskRegisterEditNotification($riskRegisterKlinis));
         return back()->with([
             'type' => 'success',
-            'message' => 'Data Risk Register Klinis berhasil diubah',
+            'message' => 'Data Risk Register Non Klinis berhasil diubah',
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
+
+
     public function destroy($id)
     {
         //

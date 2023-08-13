@@ -22,6 +22,7 @@ export default function Form({
     model,
     closeButton,
 }) {
+    // console.log(data);
     const defaultValue = [{ name: "" }];
     const [selectedProses, setSelectedProses] = useState(() => {
         if (model) {
@@ -43,7 +44,6 @@ export default function Form({
         }
         return defaultValue[0];
     });
-    // console.log(data)
     const [selectedSource, setSelectedSource] = useState(() => {
         if (model) {
             return ShouldMap.identificationSources.find(
@@ -230,7 +230,6 @@ export default function Form({
                 " Sehingga " +
                 data.dampak,
         });
-        // const setPernyataanResiko = 'Karena ' + data.sebab + 'Kemungkinan ' + data.resiko + 'Sehingga ' + data.dampak;
     }, [data.sebab, data.resiko, data.dampak]);
 
     const [tglRegister, setTglRegister] = useState(null);
@@ -239,7 +238,7 @@ export default function Form({
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-12 gap-6">
-                <div className="col-span-12 p-6 my-6 border-4 border-gray-200 rounded-lg ">
+                    <div className="col-span-12 p-6 my-6 border-4 border-gray-200 rounded-lg ">
                         <label
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700 "
@@ -279,177 +278,108 @@ export default function Form({
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700"
                         >
-                            OSD Residual (Wajib di input setelah ada
-                            pengendalian)
+                            Formulir RCA
                         </label>
                         <div className="grid grid-cols-12 gap-6">
                             <div className="col-span-12">
-                                <InputLabel for="Dampak" value="Dampak" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.impactValues}
-                                    selected={selectedImpact2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_dampak"]: e.id,
-                                        });
-                                        setSelectedImpact2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_dampak}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Probabilitas"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.probabilityValues}
-                                    selected={selectedProbability2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_probabilitas"]: e.id,
-                                        });
-                                        setSelectedProbability2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_probabilitas}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Controllability"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.controlValues}
-                                    selected={selectedControl2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_controllability"]: e.id,
-                                        });
-                                        setSelectedControl2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_controllability}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Yang Belum Tertangani"
-                                    value="Yang Belum Tertangani"
-                                />
+                                <InputLabel for="why1" value="Why 1" />
                                 <TextAreaInput
-                                    id="belum_tertangani"
-                                    value={data.belum_tertangani}
+                                    id="why1"
+                                    value={data.why1}
                                     handleChange={(e) =>
-                                        setData(
-                                            "belum_tertangani",
-                                            e.target.value
-                                        )
+                                        setData("why1", e.target.value)
                                     }
-                                    // onChange={onChange}
                                     type="text"
                                     className="block w-full mt-1"
                                 />
                                 <InputError
-                                    message={errors.belum_tertangani}
+                                    message={errors.why1}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-12">
+                                <InputLabel for="why2" value="Why 2" />
+                                <TextAreaInput
+                                    id="why2"
+                                    value={data.why2}
+                                    handleChange={(e) =>
+                                        setData("why2", e.target.value)
+                                    }
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.why2}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-12">
+                                <InputLabel for="why3" value="Why 3" />
+                                <TextAreaInput
+                                    id="why3"
+                                    value={data.why3}
+                                    handleChange={(e) =>
+                                        setData("why3", e.target.value)
+                                    }
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.why3}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-12">
+                                <InputLabel for="why4" value="Why 4" />
+                                <TextAreaInput
+                                    id="why4"
+                                    value={data.why4}
+                                    handleChange={(e) =>
+                                        setData("why4", e.target.value)
+                                    }
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.why4}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-12">
+                                <InputLabel for="why5" value="Why 5" />
+                                <TextAreaInput
+                                    id="why5"
+                                    value={data.why5}
+                                    handleChange={(e) =>
+                                        setData("why5", e.target.value)
+                                    }
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.why5}
                                     className="mt-2"
                                 />
                             </div>
                             <div className="col-span-12">
                                 <InputLabel
-                                    for="Usulan Perbaikan"
-                                    value="Usulan Perbaikan"
+                                    for="akar_penyebab"
+                                    value="Akar Penyebab"
                                 />
                                 <TextAreaInput
-                                    id="usulan_perbaikan"
-                                    value={data.usulan_perbaikan}
+                                    id="akar_penyebab"
+                                    value={data.akar_penyebab}
                                     handleChange={(e) =>
-                                        setData(
-                                            "usulan_perbaikan",
-                                            e.target.value
-                                        )
+                                        setData("akar_penyebab", e.target.value)
                                     }
-                                    // onChange={onChange}
                                     type="text"
                                     className="block w-full mt-1"
                                 />
                                 <InputError
-                                    message={errors.usulan_perbaikan}
+                                    message={errors.akar_penyebab}
                                     className="mt-2"
                                 />
                             </div>
-
-                            <div className="col-span-6 my-6">
-                                <InputLabel
-                                    for="Waktu Implementasi"
-                                    value="Waktu Implementasi"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.waktuImplementasi}
-                                    selected={selectedWaktuImplementasi}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["waktu_implementasi_id"]: e.id,
-                                        });
-                                        setSelectedWaktuImplementasi(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.waktu_implementasi_id}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="col-span-6 my-6">
-                                <InputLabel for="Realisasi" value="Realisasi" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.realisasi}
-                                    selected={selectedRealisasi}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["realisasi_id"]: e.id,
-                                        });
-                                        setSelectedRealisasi(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.realisasi_id}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel for="Output" value="Output" />
-                                <TextAreaInput
-                                    id="output"
-                                    value={data.output}
-                                    handleChange={(e) =>
-                                        setData("output", e.target.value)
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.output}
-                                    className="mt-2"
-                                />
-                            </div>
-                            {/* <Tooltip message={"✨ Coming soon!"}>
-                                <button>Subscribe</button>
-                            </Tooltip> */}
                         </div>
                     </div>
                 </div>

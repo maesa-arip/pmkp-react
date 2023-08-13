@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
 use App\Models\Efektif;
+use App\Models\FgdInherent;
+use App\Models\FgdResidual;
+use App\Models\FgdTreated;
+use App\Models\FormulirRca;
 use App\Models\IdentificationSource;
 use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
@@ -32,11 +36,6 @@ use Inertia\Inertia;
 
 class RiskRegisterKlinisController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public $loadDefault = 10;
     public function index(Request $request)
     {
@@ -50,6 +49,10 @@ class RiskRegisterKlinisController extends Controller
             ->with('risk_type')
             ->with('pic')
             ->with('user')
+            ->with('formulirrca')
+            ->with('fgdinherent')
+            ->with('fgdresidual')
+            ->with('fgdtreated')
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id','=',0)->count();
@@ -61,7 +64,7 @@ class RiskRegisterKlinisController extends Controller
         if ($request->has(['field', 'direction'])) {
             $riskRegisterKlinis->orderBy($request->field, $request->direction);
         }
-        $riskRegisterKlinis = (RiskRegisterResource::collection($riskRegisterKlinis->latest()->fastPaginate($request->load)->withQueryString())
+        $riskRegisterKlinis = (RiskRegisterResource::collection($riskRegisterKlinis->latest()->fastPaginate($request->load ?? $this->loadDefault)->withQueryString())
         )->additional([
             'attributes' => [
                 'total' => 1100,
@@ -93,7 +96,6 @@ class RiskRegisterKlinisController extends Controller
         $controlValues = ControlValue::where('type',1)->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name','DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
-        // $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
         return Inertia::render('RiskRegister/Klinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,
@@ -119,25 +121,8 @@ class RiskRegisterKlinisController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        // dd($request->all());
         $this->validate($request, [
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
@@ -178,14 +163,10 @@ class RiskRegisterKlinisController extends Controller
             'grading1' => 1,
             'grading2' => 1,
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            // 'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            // 'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
-        // dd($request->all());
 
         $risk = RiskRegister::create($request->except('name'));
-        // dd($risk->id);
 
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$risk->id, 'currently_id'=>$request->currently_id]);
         // $user = User::whereHas('roles', function ($query) {
@@ -198,73 +179,45 @@ class RiskRegisterKlinisController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            // 'proses_id' => 'required',
-            'tgl_register' => 'required',
-            // 'tgl_selesai' => 'required',
-            'risk_category_id' => 'required',
-            'identification_source_id' => 'required',
             'indikator_fitur4_id' => 'required',
-            // 'location_id' => 'required',
-            'pernyataan_risiko' => 'required',
+            'risk_category_id' => 'required',
+            'tgl_register' => 'required',
             'sebab' => 'required',
             'currently_id' => 'required',
+            'pic_id' => 'required',
+            'identification_source_id' => 'required',
             'resiko' => 'required',
             'dampak' => 'required',
+            'pernyataan_risiko' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
-            // 'efek' => 'required',
-            'osd1_dampak' => 'required|numeric|min:1|not_in:0',
-            'osd1_probabilitas' => 'required|numeric|min:1|not_in:0',
-            'osd1_controllability' => 'required|numeric|min:1|not_in:0',
-            'osd2_dampak' => 'required|numeric|min:1|not_in:0',
-            'osd2_probabilitas' => 'required|numeric|min:1|not_in:0',
-            'osd2_controllability' => 'required|numeric|min:1|not_in:0',
-            // 'grading1' => 'required|numeric',
-            'pengendalian_risiko' => 'required',
-            'pic_id' => 'required',
-            'perlu_penanganan_id' => 'required|numeric|min:1|not_in:0',
-            // 'opsi_pengendalian_id' => 'required|numeric|min:1|not_in:0',
-            'pembiayaan_risiko_id' => 'required|numeric|min:1|not_in:0',
+            'num' => 'required',
+            'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
-            // 'pengawasan_id' => 'required',
+            'osd1_dampak' => 'required',
+            'osd1_probabilitas' => 'required',
+            'osd1_controllability' => 'required',
+            'perlu_penanganan_id' => 'required',
+            'pengendalian_risiko' => 'required',
+            'efektif_id' => 'required',
+            'pengendalian_harus_ada' => 'required',
+            'opsi_pengendalian_id' => 'required',
+            'penanganan_risiko' => 'required',
+            'pembiayaan_risiko_id' => 'required',
+            'jenis_pengendalian_id' => 'required',
+            'waktu_pengendalian_id' => 'required',
+            'rencana_pengendalian' => 'required',
         ]);
+        $date = Carbon::parse($request->tgl_register);
+        $tgl_selesai = $date->addDays($request->target_waktu);
         $request->merge([
+            'tgl_selesai' => $tgl_selesai,
+            'waktudenumnum' => $request->target_waktu,
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 
@@ -280,12 +233,161 @@ class RiskRegisterKlinisController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function formulirrca(Request $request)
+    {
+        $this->validate($request, [
+            'why1' => 'required',
+            'akar_penyebab' => 'required',
+        ]);
+        $atrributes = ([
+            'why1' => $request->why1,
+            'why2' => $request->why2,
+            'why3' => $request->why3,
+            'why4' => $request->why4,
+            'why5' => $request->why5,
+            'akar_penyebab' => $request->akar_penyebab,
+        ]);
+        FormulirRca::updateOrCreate(['risk_register_id'=>$request->id],$atrributes);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Data Formulir RCA berhasil disimpan',
+        ]);
+    }
+
+    public function fgdinherent(Request $request)
+    {
+        $this->validate($request, [
+            'dampak_responden1' => 'required|numeric|min:1|max:5',
+            'dampak_responden2' => 'required|numeric|min:1|max:5',
+            'dampak_responden3' => 'required|numeric|min:1|max:5',
+            'dampak_responden4' => 'required|numeric|min:1|max:5',
+            'dampak_responden5' => 'required|numeric|min:1|max:5',
+            'dampak_responden6' => 'required|numeric|min:1|max:5',
+
+
+            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
+
+        ]);
+        $atrributes = ([
+            'dampak_responden1' => $request->dampak_responden1,
+            'dampak_responden2' => $request->dampak_responden2,
+            'dampak_responden3' => $request->dampak_responden3,
+            'dampak_responden4' => $request->dampak_responden4,
+            'dampak_responden5' => $request->dampak_responden5,
+            'dampak_responden6' => $request->dampak_responden6,
+            'dampak_responden7' => $request->dampak_responden7,
+            'dampak_responden8' => $request->dampak_responden8,
+
+            'probabilitas_responden1' => $request->probabilitas_responden1,
+            'probabilitas_responden2' => $request->probabilitas_responden2,
+            'probabilitas_responden3' => $request->probabilitas_responden3,
+            'probabilitas_responden4' => $request->probabilitas_responden4,
+            'probabilitas_responden5' => $request->probabilitas_responden5,
+            'probabilitas_responden6' => $request->probabilitas_responden6,
+            'probabilitas_responden7' => $request->probabilitas_responden7,
+            'probabilitas_responden8' => $request->probabilitas_responden8,
+        ]);
+        FgdInherent::updateOrCreate(['risk_register_id'=>$request->id],$atrributes);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Data FGD Inherent berhasil disimpan',
+        ]);
+    }
+    public function fgdresidual(Request $request)
+    {
+        $this->validate($request, [
+            'dampak_responden1' => 'required|numeric|min:1|max:5',
+            'dampak_responden2' => 'required|numeric|min:1|max:5',
+            'dampak_responden3' => 'required|numeric|min:1|max:5',
+            'dampak_responden4' => 'required|numeric|min:1|max:5',
+            'dampak_responden5' => 'required|numeric|min:1|max:5',
+            'dampak_responden6' => 'required|numeric|min:1|max:5',
+
+
+            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
+
+        ]);
+        $atrributes = ([
+            'dampak_responden1' => $request->dampak_responden1,
+            'dampak_responden2' => $request->dampak_responden2,
+            'dampak_responden3' => $request->dampak_responden3,
+            'dampak_responden4' => $request->dampak_responden4,
+            'dampak_responden5' => $request->dampak_responden5,
+            'dampak_responden6' => $request->dampak_responden6,
+            'dampak_responden7' => $request->dampak_responden7,
+            'dampak_responden8' => $request->dampak_responden8,
+
+            'probabilitas_responden1' => $request->probabilitas_responden1,
+            'probabilitas_responden2' => $request->probabilitas_responden2,
+            'probabilitas_responden3' => $request->probabilitas_responden3,
+            'probabilitas_responden4' => $request->probabilitas_responden4,
+            'probabilitas_responden5' => $request->probabilitas_responden5,
+            'probabilitas_responden6' => $request->probabilitas_responden6,
+            'probabilitas_responden7' => $request->probabilitas_responden7,
+            'probabilitas_responden8' => $request->probabilitas_responden8,
+        ]);
+        FgdResidual::updateOrCreate(['risk_register_id'=>$request->id],$atrributes);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Data FGD Residual berhasil disimpan',
+        ]);
+    }
+    public function fgdtreated(Request $request)
+    {
+        $this->validate($request, [
+            'dampak_responden1' => 'required|numeric|min:1|max:5',
+            'dampak_responden2' => 'required|numeric|min:1|max:5',
+            'dampak_responden3' => 'required|numeric|min:1|max:5',
+            'dampak_responden4' => 'required|numeric|min:1|max:5',
+            'dampak_responden5' => 'required|numeric|min:1|max:5',
+            'dampak_responden6' => 'required|numeric|min:1|max:5',
+
+
+            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
+
+        ]);
+        $atrributes = ([
+            'dampak_responden1' => $request->dampak_responden1,
+            'dampak_responden2' => $request->dampak_responden2,
+            'dampak_responden3' => $request->dampak_responden3,
+            'dampak_responden4' => $request->dampak_responden4,
+            'dampak_responden5' => $request->dampak_responden5,
+            'dampak_responden6' => $request->dampak_responden6,
+            'dampak_responden7' => $request->dampak_responden7,
+            'dampak_responden8' => $request->dampak_responden8,
+
+            'probabilitas_responden1' => $request->probabilitas_responden1,
+            'probabilitas_responden2' => $request->probabilitas_responden2,
+            'probabilitas_responden3' => $request->probabilitas_responden3,
+            'probabilitas_responden4' => $request->probabilitas_responden4,
+            'probabilitas_responden5' => $request->probabilitas_responden5,
+            'probabilitas_responden6' => $request->probabilitas_responden6,
+            'probabilitas_responden7' => $request->probabilitas_responden7,
+            'probabilitas_responden8' => $request->probabilitas_responden8,
+        ]);
+        FgdTreated::updateOrCreate(['risk_register_id'=>$request->id],$atrributes);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Data FGD Treated berhasil disimpan',
+        ]);
+    }
+
+
     public function destroy($id)
     {
         //

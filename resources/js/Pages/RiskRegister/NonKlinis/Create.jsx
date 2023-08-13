@@ -9,7 +9,7 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
     const closeButton = (e) => setIsOpenAddDialog(false);
     const onSubmit = (e) => {
         e.preventDefault();
-        post(route("riskRegisterKlinis.store"), {
+        post(route("riskRegisterNonKlinis.store"), {
             data,
             onSuccess: () => {
                 reset(), setIsOpenAddDialog(false);

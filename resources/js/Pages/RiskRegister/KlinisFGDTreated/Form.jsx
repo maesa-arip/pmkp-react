@@ -23,7 +23,6 @@ export default function Form({
     closeButton,
 }) {
     const defaultValue = [{ name: "" }];
-    // console.log(ShouldMap);
     const [selectedProses, setSelectedProses] = useState(() => {
         if (model) {
             return ShouldMap.proses.find((x) => x.id === model.proses_id);
@@ -240,7 +239,7 @@ export default function Form({
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-12 gap-6">
-                <div className="col-span-12 p-6 my-6 border-4 border-gray-200 rounded-lg ">
+                    <div className="col-span-12 p-6 my-6 border-4 border-gray-200 rounded-lg ">
                         <label
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700 "
@@ -280,177 +279,291 @@ export default function Form({
                             htmlFor=""
                             className="block mb-4 text-lg font-bold text-gray-700"
                         >
-                            OSD Residual (Wajib di input setelah ada
-                            pengendalian)
+                            FGD Treated
                         </label>
                         <div className="grid grid-cols-12 gap-6">
-                            <div className="col-span-12">
-                                <InputLabel for="Dampak" value="Dampak" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.impactValues}
-                                    selected={selectedImpact2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_dampak"]: e.id,
-                                        });
-                                        setSelectedImpact2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_dampak}
-                                    className="mt-2"
-                                />
+                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
+                                <label
+                                    htmlFor=""
+                                    className="block mb-4 text-lg font-bold text-gray-700"
+                                >
+                                    Dampak
+                                </label>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="dampak_responden1" value="Responden 1" />
+                                    <TextInput
+                                        id="dampak_responden1"
+                                        value={data.dampak_responden1}
+                                        handleChange={(e) =>
+                                            setData("dampak_responden1", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.dampak_responden1}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="dampak_responden2" value="Responden 2" />
+                                    <TextInput
+                                        id="dampak_responden2"
+                                        value={data.dampak_responden2}
+                                        handleChange={(e) =>
+                                            setData("dampak_responden2", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.dampak_responden2}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <TextInputWithError
+                                        label="Responden 3"
+                                        type="number"
+                                        id="dampak_responden3"
+                                        name="dampak_responden3"
+                                        value={data.dampak_responden3}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "dampak_responden3",
+                                                e.target.value
+                                            )
+                                        }
+                                        message={errors.dampak_responden3}
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="dampak_responden4" value="Responden 4" />
+                                    <TextInput
+                                        id="dampak_responden4"
+                                        value={data.dampak_responden4}
+                                        handleChange={(e) =>
+                                            setData("dampak_responden4", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.dampak_responden4}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="dampak_responden5" value="Responden 5" />
+                                    <TextInput
+                                        id="dampak_responden5"
+                                        value={data.dampak_responden5}
+                                        handleChange={(e) =>
+                                            setData("dampak_responden5", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.dampak_responden5}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <TextInputWithError
+                                        label="Responden 6"
+                                        type="number"
+                                        id="dampak_responden6"
+                                        name="dampak_responden6"
+                                        value={data.dampak_responden6}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "dampak_responden6",
+                                                e.target.value
+                                            )
+                                        }
+                                        message={errors.dampak_responden6}
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="dampak_responden7" value="Responden 7" />
+                                    <TextInput
+                                        id="dampak_responden7"
+                                        value={data.dampak_responden7}
+                                        handleChange={(e) =>
+                                            setData("dampak_responden7", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.dampak_responden7}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <TextInputWithError
+                                        label="Responden 8"
+                                        type="number"
+                                        id="dampak_responden8"
+                                        name="dampak_responden8"
+                                        value={data.dampak_responden8}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "dampak_responden8",
+                                                e.target.value
+                                            )
+                                        }
+                                        message={errors.dampak_responden8}
+                                    />
+                                </div>
                             </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Probabilitas"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.probabilityValues}
-                                    selected={selectedProbability2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_probabilitas"]: e.id,
-                                        });
-                                        setSelectedProbability2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_probabilitas}
-                                    className="mt-2"
-                                />
+                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
+                                <label
+                                    htmlFor=""
+                                    className="block mb-4 text-lg font-bold text-gray-700"
+                                >
+                                    Probabilitas
+                                </label>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="probabilitas_responden1" value="Responden 1" />
+                                    <TextInput
+                                        id="probabilitas_responden1"
+                                        value={data.probabilitas_responden1}
+                                        handleChange={(e) =>
+                                            setData("probabilitas_responden1", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.probabilitas_responden1}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="probabilitas_responden2" value="Responden 2" />
+                                    <TextInput
+                                        id="probabilitas_responden2"
+                                        value={data.probabilitas_responden2}
+                                        handleChange={(e) =>
+                                            setData("probabilitas_responden2", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.probabilitas_responden2}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <TextInputWithError
+                                        label="Responden 3"
+                                        type="number"
+                                        id="probabilitas_responden3"
+                                        name="probabilitas_responden3"
+                                        value={data.probabilitas_responden3}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "probabilitas_responden3",
+                                                e.target.value
+                                            )
+                                        }
+                                        message={errors.probabilitas_responden3}
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="probabilitas_responden4" value="Responden 4" />
+                                    <TextInput
+                                        id="probabilitas_responden4"
+                                        value={data.probabilitas_responden4}
+                                        handleChange={(e) =>
+                                            setData("probabilitas_responden4", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.probabilitas_responden4}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="probabilitas_responden5" value="Responden 5" />
+                                    <TextInput
+                                        id="probabilitas_responden5"
+                                        value={data.probabilitas_responden5}
+                                        handleChange={(e) =>
+                                            setData("probabilitas_responden5", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.probabilitas_responden5}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <TextInputWithError
+                                        label="Responden 6"
+                                        type="number"
+                                        id="probabilitas_responden6"
+                                        name="probabilitas_responden6"
+                                        value={data.probabilitas_responden6}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "probabilitas_responden6",
+                                                e.target.value
+                                            )
+                                        }
+                                        message={errors.probabilitas_responden6}
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel for="probabilitas_responden7" value="Responden 7" />
+                                    <TextInput
+                                        id="probabilitas_responden7"
+                                        value={data.probabilitas_responden7}
+                                        handleChange={(e) =>
+                                            setData("probabilitas_responden7", e.target.value)
+                                        }
+                                        readOnly={false}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.probabilitas_responden7}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6 py-2">
+                                    <TextInputWithError
+                                        label="Responden 8"
+                                        type="number"
+                                        id="probabilitas_responden8"
+                                        name="probabilitas_responden8"
+                                        value={data.probabilitas_responden8}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "probabilitas_responden8",
+                                                e.target.value
+                                            )
+                                        }
+                                        message={errors.probabilitas_responden8}
+                                    />
+                                </div>
                             </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Controllability"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.controlValues}
-                                    selected={selectedControl2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_controllability"]: e.id,
-                                        });
-                                        setSelectedControl2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_controllability}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Yang Belum Tertangani"
-                                    value="Yang Belum Tertangani"
-                                />
-                                <TextAreaInput
-                                    id="belum_tertangani"
-                                    value={data.belum_tertangani}
-                                    handleChange={(e) =>
-                                        setData(
-                                            "belum_tertangani",
-                                            e.target.value
-                                        )
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.belum_tertangani}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Usulan Perbaikan"
-                                    value="Usulan Perbaikan"
-                                />
-                                <TextAreaInput
-                                    id="usulan_perbaikan"
-                                    value={data.usulan_perbaikan}
-                                    handleChange={(e) =>
-                                        setData(
-                                            "usulan_perbaikan",
-                                            e.target.value
-                                        )
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.usulan_perbaikan}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="col-span-6 my-6">
-                                <InputLabel
-                                    for="Waktu Implementasi"
-                                    value="Waktu Implementasi"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.waktuImplementasi}
-                                    selected={selectedWaktuImplementasi}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["waktu_implementasi_id"]: e.id,
-                                        });
-                                        setSelectedWaktuImplementasi(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.waktu_implementasi_id}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="col-span-6 my-6">
-                                <InputLabel for="Realisasi" value="Realisasi" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.realisasi}
-                                    selected={selectedRealisasi}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["realisasi_id"]: e.id,
-                                        });
-                                        setSelectedRealisasi(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.realisasi_id}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel for="Output" value="Output" />
-                                <TextAreaInput
-                                    id="output"
-                                    value={data.output}
-                                    handleChange={(e) =>
-                                        setData("output", e.target.value)
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.output}
-                                    className="mt-2"
-                                />
-                            </div>
-                            {/* <Tooltip message={"✨ Coming soon!"}>
-                                <button>Subscribe</button>
-                            </Tooltip> */}
                         </div>
                     </div>
                 </div>
