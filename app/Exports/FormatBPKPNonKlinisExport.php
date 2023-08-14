@@ -64,17 +64,21 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $subquery = RiskRegister::query()
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
+            ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
+            ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur1s.sasaran_strategis_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->selectRaw(
-                'indikator_fitur4s.name, ' .
+                'sasaran_strategis.name, ' .
                     'indikator_fitur4s.tujuan, ' .
                     'pics.name as pic_name, ' .
                     'risk_categories.name as kategori_risiko, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
-                'indikator_fitur4s.name',
+                'sasaran_strategis.name',
                 'indikator_fitur4s.tujuan',
                 'pics.name',
                 'risk_categories.name',
@@ -192,12 +196,13 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $subquery = RiskRegister::query()
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"), DB::raw("'C' AS 'UC/C'"))
             ->selectRaw(
-                'indikator_fitur4s.name, ' .
+                'sasaran_strategis.name, ' .
                     'risk_registers.pernyataan_risiko,' .
                     'risk_registers.sebab,' .
                     'indikator_fitur4s.tujuan, ' .
@@ -206,7 +211,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
-                'indikator_fitur4s.name',
+                'sasaran_strategis.name',
                 'indikator_fitur4s.tujuan',
                 'pics.name',
                 'locations.kode',
@@ -369,9 +374,10 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
+                'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
                 DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
                 'risk_categories.name as Kategori Risiko',
@@ -681,9 +687,10 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
-                'indikator_fitur4s.name as Nama Konteks(Proses Bisnis)',
+                'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
                 DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
                 'risk_categories.name as Kategori Risiko',
@@ -1588,16 +1595,17 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
+            ->leftjoin('formulir_rcas', 'formulir_rcas.risk_register_id', 'risk_registers.id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
-                DB::raw("'-' AS 'Why1'"),
-                DB::raw("'-' AS 'Why2'"),
-                DB::raw("'-' AS 'Why3'"),
-                DB::raw("'-' AS 'Why4'"),
-                DB::raw("'-' AS 'Why5'"),
-                'risk_registers.sebab as Sebab',
+                'formulir_rcas.why1',
+                'formulir_rcas.why2',
+                'formulir_rcas.why3',
+                'formulir_rcas.why4',
+                'formulir_rcas.why5',
+                'formulir_rcas.akar_penyebab',
             )
             ->where('tipe_id', 2)
             ->where($whosLogin)
@@ -1741,31 +1749,36 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('fgd_inherents', 'fgd_inherents.risk_register_id', 'risk_registers.id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
+                'fgd_inherents.dampak_responden1',
+                'fgd_inherents.dampak_responden2',
+                'fgd_inherents.dampak_responden3',
+                'fgd_inherents.dampak_responden4',
+                'fgd_inherents.dampak_responden5',
+                'fgd_inherents.dampak_responden6',
+                'fgd_inherents.dampak_responden7',
+                'fgd_inherents.dampak_responden8',
+                'fgd_inherents.probabilitas_responden1',
+                'fgd_inherents.probabilitas_responden2',
+                'fgd_inherents.probabilitas_responden3',
+                'fgd_inherents.probabilitas_responden4',
+                'fgd_inherents.probabilitas_responden5',
+                'fgd_inherents.probabilitas_responden6',
+                'fgd_inherents.probabilitas_responden7',
+                'fgd_inherents.probabilitas_responden8',
                 DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
+                DB::raw("'-' AS 'Responden1'"),
             )
             ->where('tipe_id', 2)
             ->where($whosLogin)
             ->orderBy('row_number', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
 
         $this->data = $query->get();
         return $query;
@@ -1777,8 +1790,8 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
-            ['No', 'Pernyataan Risiko', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Dampak', 'Probabilitas'],
+            ['No', 'Pernyataan Risiko', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
+            ['No', 'Pernyataan Risiko', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 7', 'Responden 8',  'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 7', 'Responden 8', 'Dampak', 'Probabilitas'],
         ];
     }
     public function columnWidths(): array
@@ -1800,6 +1813,10 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'N' => 15,
             'O' => 15,
             'P' => 15,
+            'Q' => 15,
+            'R' => 15,
+            'S' => 15,
+            'T' => 15,
         ];
     }
     public function registerEvents(): array
@@ -1930,19 +1947,31 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
                     ],
                 ]);
+                $worksheet = $event->sheet->getDelegate();
+                $startRow = 3; // Assuming your data starts from row 3
+                $endRow = $highestRow; // You need to determine the highest row based on your data
+                for ($row = $startRow; $row <= $endRow; $row++) {
+                    foreach (range($startRow, $endRow) as $row) {
+                        $formula = '=IFERROR(MODE.MULT(C' . $row . ':J' . $row . '), "")';
+                        $worksheet->getCell('S' . $row)->setValue($formula);
+                        $formula1 = '=IFERROR(MODE.MULT(K' . $row . ':R' . $row . '), "")';
+                        $worksheet->getCell('T' . $row)->setValue($formula1);
+                    }
+                }
+
                 $event->sheet->getDelegate()->mergeCells('A1:A2');
                 $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->mergeCells('B1:B2');
                 $event->sheet->getDelegate()->getStyle('B1:B2')->applyFromArray($styleHeader2);
-                $event->sheet->getDelegate()->mergeCells('C1:H1');
-                $event->sheet->getDelegate()->getStyle('C1:H1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('C2:H2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('I1:N1');
-                $event->sheet->getDelegate()->getStyle('I1:N1')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->getStyle('I2:N2')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->mergeCells('O1:P1');
-                $event->sheet->getDelegate()->getStyle('O1:P1')->applyFromArray($styleHeader4);
-                $event->sheet->getDelegate()->getStyle('O2:P2')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->mergeCells('C1:J1');
+                $event->sheet->getDelegate()->getStyle('C1:J1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('C2:J2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('K1:R1');
+                $event->sheet->getDelegate()->getStyle('K1:R1')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->getStyle('K2:R2')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->mergeCells('S1:T1');
+                $event->sheet->getDelegate()->getStyle('S1:T1')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->getStyle('S2:T2')->applyFromArray($styleHeader4);
             },
         ];
     }
@@ -1971,35 +2000,40 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('fgd_residuals', 'fgd_residuals.risk_register_id', 'risk_registers.id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
                 DB::raw("'-' AS 'Dampak'"),
                 DB::raw("'-' AS 'Probabilitas'"),
-                'risk_registers.pengendalian_risiko',
+                'risk_registers.penanganan_risiko',
                 DB::raw("'Efektif' AS 'Efektifitas'"),
+                'fgd_residuals.dampak_responden1',
+                'fgd_residuals.dampak_responden2',
+                'fgd_residuals.dampak_responden3',
+                'fgd_residuals.dampak_responden4',
+                'fgd_residuals.dampak_responden5',
+                'fgd_residuals.dampak_responden6',
+                'fgd_residuals.dampak_responden7',
+                'fgd_residuals.dampak_responden8',
+                'fgd_residuals.probabilitas_responden1',
+                'fgd_residuals.probabilitas_responden2',
+                'fgd_residuals.probabilitas_responden3',
+                'fgd_residuals.probabilitas_responden4',
+                'fgd_residuals.probabilitas_responden5',
+                'fgd_residuals.probabilitas_responden6',
+                'fgd_residuals.probabilitas_responden7',
+                'fgd_residuals.probabilitas_responden8',
                 DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
+                DB::raw("'-' AS 'Responden1'"),
             )
             ->where('tipe_id', 2)
             ->where($whosLogin)
             ->orderBy('row_number', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
 
         $this->data = $query->get();
         return $query;
@@ -2011,8 +2045,8 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Skor Inherent Risk', 'Skor Inherent Risk', 'Pengendalian yang Ada', 'Pengendalian yang Ada',  'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
-            ['No', 'Pernyataan Risiko', 'Dampak', 'Probabilitas', 'Uraian', 'Efektivitas', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Dampak', 'Probabilitas'],
+            ['No', 'Pernyataan Risiko', 'Skor Inherent Risk', 'Skor Inherent Risk', 'Pengendalian yang Ada', 'Pengendalian yang Ada',  'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
+            ['No', 'Pernyataan Risiko', 'Dampak', 'Probabilitas', 'Uraian', 'Efektivitas', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 7', 'Responden 8', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 7', 'Responden 8', 'Dampak', 'Probabilitas'],
         ];
     }
     public function columnWidths(): array
@@ -2038,6 +2072,10 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'R' => 15,
             'S' => 15,
             'T' => 15,
+            'U' => 15,
+            'V' => 15,
+            'W' => 15,
+            'X' => 15,
         ];
     }
     public function registerEvents(): array
@@ -2168,6 +2206,24 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
                     ],
                 ]);
+
+                $worksheet = $event->sheet->getDelegate();
+                $startRow = 3; // Assuming your data starts from row 3
+                $endRow = $highestRow; // You need to determine the highest row based on your data
+                for ($row = $startRow; $row <= $endRow; $row++) {
+                    foreach (range($startRow, $endRow) as $row) {
+                        $formula = '=IFERROR(MODE.MULT(G' . $row . ':N' . $row . '), "")';
+                        $worksheet->getCell('W' . $row)->setValue($formula);
+                        $formula1 = '=IFERROR(MODE.MULT(O' . $row . ':V' . $row . '), "")';
+                        $worksheet->getCell('X' . $row)->setValue($formula1);
+
+                        $formulaC = "='Formulir FGD Inherent'!S" . $row;
+                        $worksheet->getCell('C' . $row)->setValue($formulaC);
+                        $formulaD = "='Formulir FGD Inherent'!T" . $row;
+                        $worksheet->getCell('D' . $row)->setValue($formulaD);
+                    }
+                }
+
                 $event->sheet->getDelegate()->mergeCells('A1:A2');
                 $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->mergeCells('B1:B2');
@@ -2179,15 +2235,15 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('E1:F1')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->getStyle('E2:F2')->applyFromArray($styleHeader2);
 
-                $event->sheet->getDelegate()->mergeCells('G1:L1');
-                $event->sheet->getDelegate()->getStyle('G1:L1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('G2:L2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('M1:R1');
-                $event->sheet->getDelegate()->getStyle('M1:R1')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->getStyle('M2:R2')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->mergeCells('S1:T1');
-                $event->sheet->getDelegate()->getStyle('S1:T1')->applyFromArray($styleHeader4);
-                $event->sheet->getDelegate()->getStyle('S2:T2')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->mergeCells('G1:N1');
+                $event->sheet->getDelegate()->getStyle('G1:N1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('G2:N2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('O1:V1');
+                $event->sheet->getDelegate()->getStyle('O1:V1')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->getStyle('O2:V2')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->mergeCells('W1:X1');
+                $event->sheet->getDelegate()->getStyle('W1:X1')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->getStyle('W2:X2')->applyFromArray($styleHeader4);
             },
         ];
     }
@@ -2216,35 +2272,40 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('fgd_treateds', 'fgd_treateds.risk_register_id', 'risk_registers.id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
                 DB::raw("'-' AS 'Dampak'"),
                 DB::raw("'-' AS 'Probabilitas'"),
-                'risk_registers.pengendalian_risiko',
+                'risk_registers.rencana_pengendalian',
                 DB::raw("'Efektif' AS 'Efektifitas'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
-                DB::raw("'-' AS 'Responden'"),
+                'fgd_treateds.dampak_responden1',
+                'fgd_treateds.dampak_responden2',
+                'fgd_treateds.dampak_responden3',
+                'fgd_treateds.dampak_responden4',
+                'fgd_treateds.dampak_responden5',
+                'fgd_treateds.dampak_responden6',
+                'fgd_treateds.dampak_responden7',
+                'fgd_treateds.dampak_responden8',
+                'fgd_treateds.probabilitas_responden1',
+                'fgd_treateds.probabilitas_responden2',
+                'fgd_treateds.probabilitas_responden3',
+                'fgd_treateds.probabilitas_responden4',
+                'fgd_treateds.probabilitas_responden5',
+                'fgd_treateds.probabilitas_responden6',
+                'fgd_treateds.probabilitas_responden7',
+                'fgd_treateds.probabilitas_responden8',
                 DB::raw("'-' AS 'Responden'"),
                 DB::raw("'-' AS 'Responden'"),
             )
             ->where('tipe_id', 2)
             ->where($whosLogin)
             ->orderBy('row_number', 'DESC');
-            if (!empty($this->startDate) && !empty($this->endDate)) {
-                $query->where('risk_registers.created_at', '>=', $this->startDate)
-                    ->where('risk_registers.created_at', '<=', $this->endDate);
-            }
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.created_at', '>=', $this->startDate)
+                ->where('risk_registers.created_at', '<=', $this->endDate);
+        }
 
         $this->data = $query->get();
         return $query;
@@ -2256,8 +2317,8 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Skor Residual Risk', 'Skor Residual Risk', 'RTP', 'RTP',  'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
-            ['No', 'Pernyataan Risiko', 'Dampak', 'Probabilitas', 'Strategi', 'Uraian', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Dampak', 'Probabilitas'],
+            ['No', 'Pernyataan Risiko', 'Skor Residual Risk', 'Skor Residual Risk', 'RTP', 'RTP',  'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Dampak', 'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan',  'Skor Kemungkinan', 'Skor Kemungkinan',  'Skor Kemungkinan', 'Modus', 'Modus'],
+            ['No', 'Pernyataan Risiko', 'Dampak', 'Probabilitas', 'Strategi', 'Uraian', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 7', 'Responden 8', 'Responden 1', 'Responden 2', 'Responden 3', 'Responden 4', 'Responden 5', 'Responden 6', 'Responden 7', 'Responden 8', 'Dampak', 'Probabilitas'],
         ];
     }
     public function columnWidths(): array
@@ -2283,6 +2344,10 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
             'R' => 15,
             'S' => 15,
             'T' => 15,
+            'U' => 15,
+            'V' => 15,
+            'W' => 15,
+            'X' => 15,
         ];
     }
     public function registerEvents(): array
@@ -2413,6 +2478,22 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
                     ],
                 ]);
+                $worksheet = $event->sheet->getDelegate();
+                $startRow = 3; // Assuming your data starts from row 3
+                $endRow = $highestRow; // You need to determine the highest row based on your data
+                for ($row = $startRow; $row <= $endRow; $row++) {
+                    foreach (range($startRow, $endRow) as $row) {
+                        $formula = '=IFERROR(MODE.MULT(G' . $row . ':N' . $row . '), "")';
+                        $worksheet->getCell('W' . $row)->setValue($formula);
+                        $formula1 = '=IFERROR(MODE.MULT(O' . $row . ':V' . $row . '), "")';
+                        $worksheet->getCell('X' . $row)->setValue($formula1);
+
+                        $formulaC = "='Formulir FGD Residual'!W" . $row;
+                        $worksheet->getCell('C' . $row)->setValue($formulaC);
+                        $formulaD = "='Formulir FGD Residual'!X" . $row;
+                        $worksheet->getCell('D' . $row)->setValue($formulaD);
+                    }
+                }
                 $event->sheet->getDelegate()->mergeCells('A1:A2');
                 $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->mergeCells('B1:B2');
@@ -2424,15 +2505,15 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
                 $event->sheet->getDelegate()->getStyle('E1:F1')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->getStyle('E2:F2')->applyFromArray($styleHeader2);
 
-                $event->sheet->getDelegate()->mergeCells('G1:L1');
-                $event->sheet->getDelegate()->getStyle('G1:L1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('G2:L2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('M1:R1');
-                $event->sheet->getDelegate()->getStyle('M1:R1')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->getStyle('M2:R2')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->mergeCells('S1:T1');
-                $event->sheet->getDelegate()->getStyle('S1:T1')->applyFromArray($styleHeader4);
-                $event->sheet->getDelegate()->getStyle('S2:T2')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->mergeCells('G1:N1');
+                $event->sheet->getDelegate()->getStyle('G1:N1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('G2:N2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('O1:V1');
+                $event->sheet->getDelegate()->getStyle('O1:V1')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->getStyle('O2:V2')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->mergeCells('W1:X1');
+                $event->sheet->getDelegate()->getStyle('W1:X1')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->getStyle('W2:X2')->applyFromArray($styleHeader4);
             },
         ];
     }
