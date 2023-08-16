@@ -8,6 +8,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IdentificationSourceController;
 use App\Http\Controllers\ImpactValueController;
+use App\Http\Controllers\JenisSebabController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OpsiPengendalianController;
 use App\Http\Controllers\PermissionController;
@@ -71,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('impactValues', ImpactValueController::class);
     Route::apiResource('probabilityValues', ProbabilityValueController::class);
     Route::apiResource('controlValues', ControlValueController::class);
+    Route::apiResource('jenisSebabs', JenisSebabController::class);
 
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::put('/formulirrca', [RiskRegisterKlinisController::class,'formulirrca'])->name('riskregister.formulirrca');

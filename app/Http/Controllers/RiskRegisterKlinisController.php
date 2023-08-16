@@ -14,6 +14,7 @@ use App\Models\ImpactValue;
 use App\Models\IncidentVariety;
 use App\Models\IndikatorFitur4;
 use App\Models\JenisPengendalian;
+use App\Models\JenisSebab;
 use App\Models\Location;
 use App\Models\OpsiPengendalian;
 use App\Models\PembiayaanRisiko;
@@ -47,6 +48,7 @@ class RiskRegisterKlinisController extends Controller
             ->with('pembiayaan_risiko')
             ->with('risk_variety')
             ->with('risk_type')
+            ->with('jenis_sebab')
             ->with('pic')
             ->with('user')
             ->with('formulirrca')
@@ -84,6 +86,7 @@ class RiskRegisterKlinisController extends Controller
         $locations = Location::get();
         $riskVarieties = RiskVariety::get();
         $riskTypes = RiskType::get();
+        $jenisSebabs = JenisSebab::get();
         $opsiPengendalian = OpsiPengendalian::get();
         $efektif = Efektif::get();
         $jenisPengendalian = JenisPengendalian::get();
@@ -107,6 +110,7 @@ class RiskRegisterKlinisController extends Controller
             'locations' => $locations,
             'riskVarieties' => $riskVarieties,
             'riskTypes' => $riskTypes,
+            'jenisSebabs' => $jenisSebabs,
             'pics' => $pics,
             'impactValues' => $impactValues,
             'probabilityValues' => $probabilityValues,
@@ -136,6 +140,7 @@ class RiskRegisterKlinisController extends Controller
             'pernyataan_risiko' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
+            'jenis_sebab_id' => 'required',
             'num' => 'required',
             'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
@@ -194,6 +199,7 @@ class RiskRegisterKlinisController extends Controller
             'pernyataan_risiko' => 'required',
             'risk_variety_id' => 'required',
             'risk_type_id' => 'required',
+            'jenis_sebab_id' => 'required',
             'num' => 'required',
             'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',

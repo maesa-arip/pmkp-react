@@ -73,6 +73,12 @@ export default function Form({
         }
         return defaultValue[0];
     });
+    const [selectedJenisSebab, setSelectedJenisSebab] = useState(() => {
+        if (model) {
+            return ShouldMap.jenisSebabs.find((x) => x.id === model.jenis_sebab_id);
+        }
+        return defaultValue[0];
+    });
     const [selectedImpact1, setSelectedImpact1] = useState(() => {
         if (model) {
             return ShouldMap.impactValues.find(
@@ -287,6 +293,7 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
+                            
                             <div className="col-span-6">
                                 <InputLabel
                                     for="TanggalRegister"
@@ -311,6 +318,27 @@ export default function Form({
                                 />
                                 <InputError
                                     message={errors.tgl_register}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-7">
+                                <InputLabel
+                                    for="Jenis Sebab"
+                                    value="Jenis Sebab"
+                                />
+                                <ComboboxPage
+                                    ShouldMap={ShouldMap.jenisSebabs}
+                                    selected={selectedJenisSebab}
+                                    onChange={(e) => {
+                                        setData({
+                                            ...data,
+                                            ["jenis_sebab_id"]: e.id,
+                                        });
+                                        setSelectedJenisSebab(e);
+                                    }}
+                                />
+                                <InputError
+                                    message={errors.jenis_sebab_id}
                                     className="mt-2"
                                 />
                             </div>

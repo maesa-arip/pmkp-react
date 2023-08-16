@@ -29,6 +29,10 @@ class RiskRegister extends Model
     {
         return $this->belongsTo(RiskType::class);
     }
+    public function jenis_sebab()
+    {
+        return $this->belongsTo(JenisSebab::class);
+    }
     public function opsi_pengendalian()
     {
         return $this->belongsTo(OpsiPengendalian::class);

@@ -62,6 +62,7 @@ export default function Index(props) {
         locations: props.locations,
         riskVarieties: props.riskVarieties,
         riskTypes: props.riskTypes,
+        jenisSebabs: props.jenisSebabs,
         opsiPengendalian: props.opsiPengendalian,
         pembiayaanRisiko: props.pembiayaanRisiko,
         efektif: props.efektif,
