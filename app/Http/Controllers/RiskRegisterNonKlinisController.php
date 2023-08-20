@@ -94,9 +94,9 @@ class RiskRegisterNonKlinisController extends Controller
         $pembiayaanRisiko = PembiayaanRisiko::get();
         $waktuImplementasi = WaktuImplementasi::get();
         $pics = Pic::get();
-        $impactValues = ImpactValue::where('type',1)->get();
-        $probabilityValues = ProbabilityValue::where('type',1)->get();
-        $controlValues = ControlValue::where('type',1)->get();
+        $impactValues = ImpactValue::where('type',2)->orderBy('value','ASC')->get();
+        $probabilityValues = ProbabilityValue::where('type',2)->orderBy('value','ASC')->get();
+        $controlValues = ControlValue::where('type',2)->orderBy('value','ASC')->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name','DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
         return Inertia::render('RiskRegister/NonKlinis/Index', [

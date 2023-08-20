@@ -200,21 +200,23 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
-            ->select(DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"), DB::raw("'C' AS 'UC/C'"))
+            ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
+            ->select(DB::raw("CONCAT(loc2.kode, '.',loc2.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"), DB::raw("'C' AS 'UC/C'"))
             ->selectRaw(
                 'sasaran_strategis.name, ' .
                     'risk_registers.pernyataan_risiko,' .
                     'risk_registers.sebab,' .
                     'indikator_fitur4s.tujuan, ' .
-                    'pics.name as pic_name, ' .
+                    'users.name as pemilik_name, ' .
                     'risk_categories.name as kategori_risiko, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
                 'sasaran_strategis.name',
                 'indikator_fitur4s.tujuan',
-                'pics.name',
+                'users.name',
                 'locations.kode',
                 'risk_categories.kode',
                 'locations.id',
@@ -232,7 +234,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         $query = DB::query()
-            ->select('Peringkat', 'name', 'tujuan', 'kode', 'kategori_risiko', 'pernyataan_risiko', 'sebab', 'UC/C', 'pic_name')
+            ->select('Peringkat', 'name', 'tujuan', 'kode', 'kategori_risiko', 'pernyataan_risiko', 'sebab', 'UC/C', 'pemilik_name')
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
 
@@ -374,13 +376,15 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
+            ->leftJoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
                 'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
-                DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
+                DB::raw("CONCAT(loc2.kode, '.',loc2.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
                 'risk_categories.name as Kategori Risiko',
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
                 'risk_registers.sebab as Sebab',
@@ -687,13 +691,15 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
+            ->leftJoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
                 'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
-                DB::raw("CONCAT(locations.kode, '.',locations.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
+                DB::raw("CONCAT(loc2.kode, '.',loc2.id,'.',risk_categories.kode,'.',risk_categories.id,'.', risk_registers.id) AS Kode"),
                 'risk_categories.name as Kategori Risiko',
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
                 'risk_registers.sebab as Sebab',

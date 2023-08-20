@@ -89,14 +89,14 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->selectRaw(
                 'indikator_fitur4s.name, ' .
                     'indikator_fitur4s.tujuan, ' .
-                    'pics.name as pic_name, ' .
+                    'users.name as pemilik_name, ' .
                     'risk_categories.name as kategori_risiko, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
                 'indikator_fitur4s.name',
                 'indikator_fitur4s.tujuan',
-                'pics.name',
+                'users.name',
                 'risk_categories.name',
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
@@ -109,7 +109,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 
         }
         $query = DB::query()
-            ->select('Peringkat', 'name', 'tujuan', 'pic_name', 'kategori_risiko')
+            ->select('Peringkat', 'name', 'tujuan', 'pemilik_name', 'kategori_risiko')
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
 
@@ -260,7 +260,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         osd2_controllability,
         risk_registers.osd2_inherent,
         grading2.name as grading2_name,
-        pics.name as pic_name,
+        users.name as pemilik_name,
         CONCAT(risk_registers.target_waktu, " Hari") AS target_waktu
     ')
             ->groupBy(
@@ -286,7 +286,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'osd2_controllability',
                 'risk_registers.osd2_inherent',
                 'grading2.name',
-                'pics.name',
+                'users.name',
                 'risk_registers.target_waktu'
             )->where($whosLogin);
 
@@ -319,7 +319,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'osd2_controllability',
                 'osd2_inherent',
                 'grading2_name',
-                'pic_name',
+                'pemilik_name',
                 'target_waktu'
             )
             ->fromSub($subquery, 'sub')
@@ -1744,8 +1744,9 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
+            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
-            ->select('risk_registers.id', 'indikator_fitur4s.name', 'indikator_fitur4s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'pics.name as pic_name')
+            ->select('risk_registers.id', 'indikator_fitur4s.name', 'indikator_fitur4s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
@@ -2200,7 +2201,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     WHEN risk_registers.realisasi_id = 2 THEN "Sudah Tercapai"
                     ELSE ""
                 END AS `PerluPenanganan`'
-            ), 'waktu_implementasis.name as waktu_implementasi', 'pics.name as pic_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name as grading')
+            ), 'waktu_implementasis.name as waktu_implementasi', 'users.name as pemilik_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name as grading')
             // ->where('tipe_id', 1)
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
