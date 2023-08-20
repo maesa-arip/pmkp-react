@@ -461,7 +461,7 @@ export default function Index(props) {
                                     }}
                                     disabled={selectedRow === null}
                                 >
-                                    Formulir Inherent
+                                    FGD Inherent
                                 </ThirdButton>
                                 <ThirdButton
                                     color={

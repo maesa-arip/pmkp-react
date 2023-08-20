@@ -7,6 +7,7 @@ use App\Models\IndikatorFitur1;
 use App\Models\IndikatorFitur2;
 use App\Models\IndikatorFitur3;
 use App\Models\RiskRegister;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithCharts;
@@ -103,8 +104,9 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             )
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                
         }
         $query = DB::query()
             ->select('Peringkat', 'name', 'tujuan', 'pic_name', 'kategori_risiko')
@@ -289,8 +291,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             )->where($whosLogin);
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         $query = DB::query()
             ->select(
@@ -926,8 +928,8 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin);
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         $this->data = $query->get();
         return $query;
@@ -965,8 +967,8 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin);
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
 
         $data = $query->get();
@@ -1198,8 +1200,8 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin)
             ->orderBy('Skor', 'DESC');
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
 
 
@@ -1505,8 +1507,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             )
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $subquery->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         $query = DB::query()
             ->select(
@@ -1746,8 +1748,8 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select('risk_registers.id', 'indikator_fitur4s.name', 'indikator_fitur4s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'pics.name as pic_name')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
 
 
@@ -1963,8 +1965,8 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num', DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         $this->data = $query->get();
         return $query;
@@ -1999,8 +2001,8 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num', DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
 
         $data = $query->get();
@@ -2202,8 +2204,8 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             // ->where('tipe_id', 1)
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.created_at', '>=', $this->startDate)
-                ->where('risk_registers.created_at', '<=', $this->endDate);
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
 
 
