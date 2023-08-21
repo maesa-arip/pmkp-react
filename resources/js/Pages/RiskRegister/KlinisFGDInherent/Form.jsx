@@ -11,7 +11,6 @@ import Tooltip from "@/Components/Tooltip";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-// import DatePicker from "@/Components/DatePicker/DatePicker";
 
 export default function Form({
     errors,
@@ -22,219 +21,113 @@ export default function Form({
     model,
     closeButton,
 }) {
-    const defaultValue = [{ name: "" }];
-    const [selectedProses, setSelectedProses] = useState(() => {
-        if (model) {
-            return ShouldMap.proses.find((x) => x.id === model.proses_id);
-        }
-        return defaultValue[0];
-    });
-    const [selectedCurrently, setSelectedCurrently] = useState(() => {
-        if (model) {
-            return ShouldMap.currently.find((x) => x.id === model.currently_id);
-        }
-        return defaultValue[0];
-    });
-    const [selectedCategory, setSelectedCategory] = useState(() => {
-        if (model) {
-            return ShouldMap.riskCategories.find(
-                (x) => x.id === model.risk_category_id
-            );
-        }
-        return defaultValue[0];
-    });
-    // console.log(data)
-    const [selectedSource, setSelectedSource] = useState(() => {
-        if (model) {
-            return ShouldMap.identificationSources.find(
-                (x) => x.id === model.identification_source_id
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedLocation, setSelectedLocation] = useState(() => {
-        if (model) {
-            return ShouldMap.locations.find((x) => x.id === model.location_id);
-        }
-        return defaultValue[0];
-    });
-    const [selectedVariety, setSelectedVariety] = useState(() => {
-        if (model) {
-            return ShouldMap.riskVarieties.find(
-                (x) => x.id === model.risk_variety_id
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedType, setSelectedType] = useState(() => {
-        if (model) {
-            return ShouldMap.riskTypes.find((x) => x.id === model.risk_type_id);
-        }
-        return defaultValue[0];
-    });
-    const [selectedImpact1, setSelectedImpact1] = useState(() => {
-        if (model) {
-            return ShouldMap.impactValues.find(
-                (x) => x.id === model.osd1_dampak
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedProbability1, setSelectedProbability1] = useState(() => {
-        if (model) {
-            return ShouldMap.probabilityValues.find(
-                (x) => x.id === model.osd1_probabilitas
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedControl1, setSelectedControl1] = useState(() => {
-        if (model) {
-            return ShouldMap.controlValues.find(
-                (x) => x.id === model.osd1_controllability
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedImpact2, setSelectedImpact2] = useState(() => {
-        if (model) {
-            return ShouldMap.impactValues.find(
-                (x) => x.id === model.osd2_dampak
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedProbability2, setSelectedProbability2] = useState(() => {
-        if (model) {
-            return ShouldMap.probabilityValues.find(
-                (x) => x.id === model.osd2_probabilitas
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedControl2, setSelectedControl2] = useState(() => {
-        if (model) {
-            return ShouldMap.controlValues.find(
-                (x) => x.id === model.osd2_controllability
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedPic, setSelectedPic] = useState(() => {
-        if (model) {
-            return ShouldMap.pics.find((x) => x.id === model.pic_id);
-        }
-        return defaultValue[0];
-    });
-    const [selectedIndikatorFitur4, setSelectedIndikatorFitur4] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.indikatorFitur4s.find(
-                    (x) => x.id === model.indikator_fitur4_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-    const [selectedPengawasan, setSelectedPengawasan] = useState(() => {
-        if (model) {
-            return ShouldMap.pengawasan.find(
-                (x) => x.id === model.pengawasan_id
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedPerluPenanganan, setSelectedPerluPenanganan] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.perluPenanganan.find(
-                    (x) => x.id === model.perlu_penanganan_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-    const [selectedOpsiPengendalian, setSelectedOpsiPengendalian] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.opsiPengendalian.find(
-                    (x) => x.id === model.opsi_pengendalian_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-    const [selectedPembiayaanRisiko, setSelectedPembiayaanRisiko] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.pembiayaanRisiko.find(
-                    (x) => x.id === model.pembiayaan_risiko_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-    const [selectedEfektif, setSelectedEfektif] = useState(() => {
-        if (model) {
-            return ShouldMap.efektif.find((x) => x.id === model.efektif_id);
-        }
-        return defaultValue[0];
-    });
-    const [selectedJenisPengendalian, setSelectedJenisPengendalian] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.jenisPengendalian.find(
-                    (x) => x.id === model.jenis_pengendalian_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-    const [selectedWaktuPengendalian, setSelectedWaktuPengendalian] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.waktuPengendalian.find(
-                    (x) => x.id === model.waktu_pengendalian_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
+    const [dampakMode, setDampakMode] = useState("");
+    const [probabilitasMode, setProbabilitasMode] = useState("");
 
-    const [selectedWaktuImplementasi, setSelectedWaktuImplementasi] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.waktuImplementasi.find(
-                    (x) => x.id === model.waktu_implementasi_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-
-    const [selectedRealisasi, setSelectedRealisasi] = useState(() => {
-        if (model) {
-            return ShouldMap.realisasi.find((x) => x.id === model.realisasi_id);
-        }
-        return defaultValue[0];
-    });
-
+    // Watch for changes in dampak_responden values and compute the mode
     useEffect(() => {
         setData({
             ...data,
-            ["pernyataan_risiko"]:
-                "Karena " +
-                data.sebab +
-                " Kemungkinan " +
-                data.resiko +
-                " Sehingga " +
-                data.dampak,
+            ["osd1_dampak"]: data.osd1_dampak,
+            ["osd1_probabilitas"]: data.osd1_probabilitas
         });
-        // const setPernyataanResiko = 'Karena ' + data.sebab + 'Kemungkinan ' + data.resiko + 'Sehingga ' + data.dampak;
-    }, [data.sebab, data.resiko, data.dampak]);
+    }, [])
+    
+    useEffect(() => {
+        const dampakValues = [
+            data.dampak_responden1,
+            data.dampak_responden2,
+            data.dampak_responden3,
+            data.dampak_responden4,
+            data.dampak_responden5,
+            data.dampak_responden6,
+            data.dampak_responden7,
+            data.dampak_responden8,
+        ];
+        const nonEmptyDampakValues = dampakValues.filter(
+            (value) => value !== ""
+        );
+        const frequencyMap = {};
+        let maxFrequency = 0;
+        let modeValue = "";
 
-    const [tglRegister, setTglRegister] = useState(null);
-    const [tglSelesai, setTglSelesai] = useState(null);
+        nonEmptyDampakValues.forEach((value) => {
+            if (!isNaN(value)) {
+                if (!frequencyMap[value]) {
+                    frequencyMap[value] = 1;
+                } else {
+                    frequencyMap[value]++;
+                }
+
+                if (frequencyMap[value] > maxFrequency) {
+                    maxFrequency = frequencyMap[value];
+                    modeValue = value;
+                }
+            }
+        });
+        setDampakMode(modeValue);
+        setData({
+            ...data,
+            ["osd1_dampak"]: modeValue
+        });
+    }, [
+        data.dampak_responden1,
+        data.dampak_responden2,
+        data.dampak_responden3,
+        data.dampak_responden4,
+        data.dampak_responden5,
+        data.dampak_responden6,
+        data.dampak_responden7,
+        data.dampak_responden8,
+    ]);
+
+    // Watch for changes in probabilitas_responden values and compute the mode
+    useEffect(() => {
+        const probabilitasValues = [
+            data.probabilitas_responden1,
+            data.probabilitas_responden2,
+            data.probabilitas_responden3,
+            data.probabilitas_responden4,
+            data.probabilitas_responden5,
+            data.probabilitas_responden6,
+            data.probabilitas_responden7,
+            data.probabilitas_responden8,
+        ];
+        const nonEmptyProbabilitasValues = probabilitasValues.filter(
+            (value) => value !== ""
+        );
+        const frequencyMap = {};
+        let maxFrequency = 0;
+        let modeValue = "";
+
+        nonEmptyProbabilitasValues.forEach((value) => {
+            if (!isNaN(value)) {
+                if (!frequencyMap[value]) {
+                    frequencyMap[value] = 1;
+                } else {
+                    frequencyMap[value]++;
+                }
+                if (frequencyMap[value] > maxFrequency) {
+                    maxFrequency = frequencyMap[value];
+                    modeValue = value;
+                }
+            }
+        });
+        setProbabilitasMode(modeValue);
+        setData({
+            ...data,
+            ["osd1_probabilitas"]: modeValue
+        });
+    }, [
+        data.probabilitas_responden1,
+        data.probabilitas_responden2,
+        data.probabilitas_responden3,
+        data.probabilitas_responden4,
+        data.probabilitas_responden5,
+        data.probabilitas_responden6,
+        data.probabilitas_responden7,
+        data.probabilitas_responden8,
+    ]);
     return (
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
@@ -273,7 +166,6 @@ export default function Form({
                             </div>
                         </div>
                     </div>
-
                     <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
                         <label
                             htmlFor=""
@@ -281,6 +173,7 @@ export default function Form({
                         >
                             FGD Inherent
                         </label>
+                        
                         <div className="grid grid-cols-12 gap-6">
                             <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
                                 <label
@@ -290,12 +183,18 @@ export default function Form({
                                     Dampak
                                 </label>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden1" value="Responden 1" />
+                                    <InputLabel
+                                        for="dampak_responden1"
+                                        value="Responden 1"
+                                    />
                                     <TextInput
                                         id="dampak_responden1"
                                         value={data.dampak_responden1}
                                         handleChange={(e) =>
-                                            setData("dampak_responden1", e.target.value)
+                                            setData(
+                                                "dampak_responden1",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -307,12 +206,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden2" value="Responden 2" />
+                                    <InputLabel
+                                        for="dampak_responden2"
+                                        value="Responden 2"
+                                    />
                                     <TextInput
                                         id="dampak_responden2"
                                         value={data.dampak_responden2}
                                         handleChange={(e) =>
-                                            setData("dampak_responden2", e.target.value)
+                                            setData(
+                                                "dampak_responden2",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -340,12 +245,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden4" value="Responden 4" />
+                                    <InputLabel
+                                        for="dampak_responden4"
+                                        value="Responden 4"
+                                    />
                                     <TextInput
                                         id="dampak_responden4"
                                         value={data.dampak_responden4}
                                         handleChange={(e) =>
-                                            setData("dampak_responden4", e.target.value)
+                                            setData(
+                                                "dampak_responden4",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -357,12 +268,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden5" value="Responden 5" />
+                                    <InputLabel
+                                        for="dampak_responden5"
+                                        value="Responden 5"
+                                    />
                                     <TextInput
                                         id="dampak_responden5"
                                         value={data.dampak_responden5}
                                         handleChange={(e) =>
-                                            setData("dampak_responden5", e.target.value)
+                                            setData(
+                                                "dampak_responden5",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -390,12 +307,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden7" value="Responden 7" />
+                                    <InputLabel
+                                        for="dampak_responden7"
+                                        value="Responden 7"
+                                    />
                                     <TextInput
                                         id="dampak_responden7"
                                         value={data.dampak_responden7}
                                         handleChange={(e) =>
-                                            setData("dampak_responden7", e.target.value)
+                                            setData(
+                                                "dampak_responden7",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -423,6 +346,7 @@ export default function Form({
                                     />
                                 </div>
                             </div>
+                           
                             <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
                                 <label
                                     htmlFor=""
@@ -431,12 +355,18 @@ export default function Form({
                                     Probabilitas
                                 </label>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden1" value="Responden 1" />
+                                    <InputLabel
+                                        for="probabilitas_responden1"
+                                        value="Responden 1"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden1"
                                         value={data.probabilitas_responden1}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden1", e.target.value)
+                                            setData(
+                                                "probabilitas_responden1",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -448,12 +378,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden2" value="Responden 2" />
+                                    <InputLabel
+                                        for="probabilitas_responden2"
+                                        value="Responden 2"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden2"
                                         value={data.probabilitas_responden2}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden2", e.target.value)
+                                            setData(
+                                                "probabilitas_responden2",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -481,12 +417,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden4" value="Responden 4" />
+                                    <InputLabel
+                                        for="probabilitas_responden4"
+                                        value="Responden 4"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden4"
                                         value={data.probabilitas_responden4}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden4", e.target.value)
+                                            setData(
+                                                "probabilitas_responden4",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -498,12 +440,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden5" value="Responden 5" />
+                                    <InputLabel
+                                        for="probabilitas_responden5"
+                                        value="Responden 5"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden5"
                                         value={data.probabilitas_responden5}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden5", e.target.value)
+                                            setData(
+                                                "probabilitas_responden5",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -531,12 +479,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden7" value="Responden 7" />
+                                    <InputLabel
+                                        for="probabilitas_responden7"
+                                        value="Responden 7"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden7"
                                         value={data.probabilitas_responden7}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden7", e.target.value)
+                                            setData(
+                                                "probabilitas_responden7",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -561,6 +515,57 @@ export default function Form({
                                             )
                                         }
                                         message={errors.probabilitas_responden8}
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
+                                <label
+                                    htmlFor=""
+                                    className="block mb-4 text-lg font-bold text-gray-700"
+                                >
+                                    Modus Dampak
+                                </label>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel
+                                        for="osd1_dampak"
+                                        value="Modus Dampak"
+                                    />
+                                    <TextInput
+                                        id="osd1_dampak"
+                                        value={dampakMode}
+                                        
+                                        readOnly={true}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.osd1_dampak}
+                                        className="mt-2"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
+                                <label
+                                    htmlFor=""
+                                    className="block mb-4 text-lg font-bold text-gray-700"
+                                >
+                                    Modus Probabilitas
+                                </label>
+                                <div className="col-span-6 py-2">
+                                    <InputLabel
+                                        for="osd1_probabilitas"
+                                        value="Modus Probabilitas"
+                                    />
+                                    <TextInput
+                                        id="osd1_probabilitas"
+                                        value={probabilitasMode}
+                                        readOnly={true}
+                                        type="number"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.osd1_probabilitas}
+                                        className="mt-2"
                                     />
                                 </div>
                             </div>

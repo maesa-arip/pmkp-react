@@ -399,49 +399,6 @@ export default function Index(props) {
                                         <path d="M16 5l3 3" />
                                     </svg>
                                 </ThirdButton>
-
-                                <ThirdButton
-                                    color={
-                                        selectedRow === null ? "gray" : "red"
-                                    }
-                                    type="button"
-                                    className={`${
-                                        selectedRow === null
-                                            ? "cursor-not-allowed"
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        if (selectedRow !== null) {
-                                            const selectedRisk =
-                                                riskRegisterKlinis[selectedRow];
-                                            openEditDialogOSDResidual(selectedRisk);
-                                        }
-                                    }}
-                                    disabled={selectedRow === null}
-                                >
-                                    OSD Residual ({riskRegisterOsd2Count})
-                                </ThirdButton>
-                                <ThirdButton
-                                    color={
-                                        selectedRow === null ? "gray" : "yellow"
-                                    }
-                                    type="button"
-                                    className={`${
-                                        selectedRow === null
-                                            ? "cursor-not-allowed"
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        if (selectedRow !== null) {
-                                            const selectedRisk =
-                                                riskRegisterKlinis[selectedRow];
-                                            openEditDialogFormulirRCA(selectedRisk);
-                                        }
-                                    }}
-                                    disabled={selectedRow === null}
-                                >
-                                    Formulir RCA
-                                </ThirdButton>
                                 <ThirdButton
                                     color={
                                         selectedRow === null ? "gray" : "teal"
@@ -486,6 +443,27 @@ export default function Index(props) {
                                 </ThirdButton>
                                 <ThirdButton
                                     color={
+                                        selectedRow === null ? "gray" : "red"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogOSDResidual(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    OSD Residual ({riskRegisterOsd2Count})
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
                                         selectedRow === null ? "gray" : "sky"
                                     }
                                     type="button"
@@ -504,6 +482,27 @@ export default function Index(props) {
                                     disabled={selectedRow === null}
                                 >
                                     FGD Treated
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "yellow"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogFormulirRCA(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Formulir RCA
                                 </ThirdButton>
                                 {/* <ThirdButton
                                     color={

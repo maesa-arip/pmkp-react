@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
+    console.log(model)
     const { data, setData, put, reset, errors } = useForm({
         tgl_register: model.tgl_register,
         tgl_selesai: model.tgl_selesai,
@@ -41,6 +42,8 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         output: model.output,
         waktu_implementasi_id: model.waktu_implementasi_id,
         realisasi_id: model.realisasi_id,
+        impact_name: model.impact_name,
+        probability_name: model.probability_name,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -95,6 +98,8 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             output: model.output,
             waktu_implementasi_id: model.waktu_implementasi_id,
             realisasi_id: model.realisasi_id,
+            impact_name: model.impact_name,
+        probability_name: model.probability_name,
         });
     }, [model]);
     return (

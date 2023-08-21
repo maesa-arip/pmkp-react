@@ -1,4 +1,5 @@
 import ComboboxPage from "@/Components/ComboboxPage";
+import ComboboxPageReadonly from "@/Components/ComboboxPageReadonly";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -75,14 +76,16 @@ export default function Form({
     });
     const [selectedJenisSebab, setSelectedJenisSebab] = useState(() => {
         if (model) {
-            return ShouldMap.jenisSebabs.find((x) => x.id === model.jenis_sebab_id);
+            return ShouldMap.jenisSebabs.find(
+                (x) => x.id === model.jenis_sebab_id
+            );
         }
         return defaultValue[0];
     });
     const [selectedImpact1, setSelectedImpact1] = useState(() => {
         if (model) {
             return ShouldMap.impactValues.find(
-                (x) => x.id === model.osd1_dampak
+                (x) => x.value === model.osd1_dampak
             );
         }
         return defaultValue[0];
@@ -90,7 +93,7 @@ export default function Form({
     const [selectedProbability1, setSelectedProbability1] = useState(() => {
         if (model) {
             return ShouldMap.probabilityValues.find(
-                (x) => x.id === model.osd1_probabilitas
+                (x) => x.value === model.osd1_probabilitas
             );
         }
         return defaultValue[0];
@@ -98,7 +101,7 @@ export default function Form({
     const [selectedControl1, setSelectedControl1] = useState(() => {
         if (model) {
             return ShouldMap.controlValues.find(
-                (x) => x.id === model.osd1_controllability
+                (x) => x.value === model.osd1_controllability
             );
         }
         return defaultValue[0];
@@ -232,9 +235,9 @@ export default function Form({
             ["pernyataan_risiko"]:
                 "Karena " +
                 data.sebab +
-                " Kemungkinan " +
+                " kemungkinan " +
                 data.resiko +
-                " Sehingga " +
+                " sehingga " +
                 data.dampak,
         });
         // const setPernyataanResiko = 'Karena ' + data.sebab + 'Kemungkinan ' + data.resiko + 'Sehingga ' + data.dampak;
@@ -293,7 +296,7 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            
+
                             <div className="col-span-6">
                                 <InputLabel
                                     for="TanggalRegister"
@@ -564,7 +567,7 @@ export default function Form({
                             </div>
                             <div className="col-span-6">
                                 <TextInputWithError
-                                    label="Target Waktu Tindak Lanjut(Hari)"
+                                    label="Target Waktu Tindak Lanjut Monitoring(Hari)"
                                     type="number"
                                     id="target_waktu"
                                     name="target_waktu"
@@ -585,44 +588,60 @@ export default function Form({
                             OSD Inherent (Wajib di Input)
                         </label>
                         <div className="grid grid-cols-12 gap-6">
-                            <div className="col-span-12">
-                                <InputLabel for="Dampak" value="Dampak" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.impactValues}
-                                    selected={selectedImpact1}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd1_dampak"]: e.id,
-                                        });
-                                        setSelectedImpact1(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd1_dampak}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Probabilitas"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.probabilityValues}
-                                    selected={selectedProbability1}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd1_probabilitas"]: e.id,
-                                        });
-                                        setSelectedProbability1(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd1_probabilitas}
-                                    className="mt-2"
-                                />
+                        <div className="col-span-12 p-6 my-6 border-4 rounded-lg">
+                                <div className="grid grid-cols-12 gap-6">
+                                    <label
+                                        htmlFor=""
+                                        className="block col-span-12 mb-4 text-base font-bold text-gray-700 "
+                                    >
+                                        Dampak dan Probabilitas akan Otomatis
+                                        Terisi Setelah Melakukan FGD
+                                    </label>
+                                    <div className="col-span-12">
+                                        <InputLabel
+                                            for="Dampak"
+                                            value="Dampak"
+                                        />
+                                        <ComboboxPageReadonly
+                                            ShouldMap={ShouldMap.impactValues}
+                                            selected={selectedImpact1}
+                                            onChange={(e) => {
+                                                setData({
+                                                    ...data,
+                                                    ["osd1_dampak"]: e.id,
+                                                });
+                                                setSelectedImpact1(e);
+                                            }}
+                                        />
+                                        <InputError
+                                            message={errors.osd1_dampak}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="col-span-12 cursor-not-allowed">
+                                        <InputLabel
+                                            for="Kategori Risiko"
+                                            value="Probabilitas"
+                                        />
+                                        <ComboboxPageReadonly
+                                            ShouldMap={
+                                                ShouldMap.probabilityValues
+                                            }
+                                            selected={selectedProbability1}
+                                            onChange={(e) => {
+                                                setData({
+                                                    ...data,
+                                                    ["osd1_probabilitas"]: e.id,
+                                                });
+                                                setSelectedProbability1(e);
+                                            }}
+                                        />
+                                        <InputError
+                                            message={errors.osd1_probabilitas}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div className="col-span-12">
                                 <InputLabel

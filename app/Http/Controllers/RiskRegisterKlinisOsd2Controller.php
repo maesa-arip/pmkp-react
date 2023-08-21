@@ -125,11 +125,15 @@ class RiskRegisterKlinisOsd2Controller extends Controller
             'realisasi_id' => 'required|numeric|min:1|not_in:0',
             'output' => 'required',
         ]);
+        $osd2_dampak = ImpactValue::where('id',$request->osd2_dampak)->pluck('value');
+        $osd2_probabilitas = ProbabilityValue::where('id',$request->osd2_probabilitas)->pluck('value');
+        $osd2_controllability = ControlValue::where('id',$request->osd2_controllability)->pluck('value');
         $request->merge([
-            // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
-            // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-            'osd2_inherent' => $request->osd2_dampak * $request->osd2_probabilitas * $request->osd2_controllability,
+            'osd2_dampak' => $osd2_dampak[0],
+            'osd2_probabilitas' => $osd2_probabilitas[0],
+            'osd2_controllability' => $osd2_controllability[0],
+            'concatdp2' => $osd2_dampak[0] . $osd2_probabilitas[0],
+            'osd2_inherent' => $osd2_dampak[0] * $osd2_probabilitas[0] * $osd2_controllability[0],
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 

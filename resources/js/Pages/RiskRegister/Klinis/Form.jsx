@@ -1,4 +1,5 @@
 import ComboboxPage from "@/Components/ComboboxPage";
+import ComboboxPageReadonly from "@/Components/ComboboxPageReadonly";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -232,9 +233,9 @@ export default function Form({
             ["pernyataan_risiko"]:
                 "Karena " +
                 data.sebab +
-                " Kemungkinan " +
+                " kemungkinan " +
                 data.resiko +
-                " Sehingga " +
+                " sehingga " +
                 data.dampak,
         });
         // const setPernyataanResiko = 'Karena ' + data.sebab + 'Kemungkinan ' + data.resiko + 'Sehingga ' + data.dampak;
@@ -564,7 +565,7 @@ export default function Form({
                             </div>
                             <div className="col-span-6">
                                 <TextInputWithError
-                                    label="Target Waktu Tindak Lanjut(Hari)"
+                                    label="Target Waktu Tindak Lanjut Monitoring(Hari)"
                                     type="number"
                                     id="target_waktu"
                                     name="target_waktu"
@@ -585,9 +586,18 @@ export default function Form({
                             OSD Inherent (Wajib di Input)
                         </label>
                         <div className="grid grid-cols-12 gap-6">
+                        <div className="col-span-12 p-6 my-6 border-4 rounded-lg">
+                                <div className="grid grid-cols-12 gap-6">
+                                    <label
+                                        htmlFor=""
+                                        className="block col-span-12 mb-4 text-base font-bold text-gray-700 "
+                                    >
+                                        Dampak dan Probabilitas akan Otomatis
+                                        Terisi Setelah Melakukan FGD
+                                    </label>
                             <div className="col-span-12">
                                 <InputLabel for="Dampak" value="Dampak" />
-                                <ComboboxPage
+                                <ComboboxPageReadonly
                                     ShouldMap={ShouldMap.impactValues}
                                     selected={selectedImpact1}
                                     onChange={(e) => {
@@ -603,12 +613,12 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            <div className="col-span-12">
+                            <div className="col-span-12 cursor-not-allowed">
                                 <InputLabel
                                     for="Kategori Risiko"
                                     value="Probabilitas"
                                 />
-                                <ComboboxPage
+                                <ComboboxPageReadonly
                                     ShouldMap={ShouldMap.probabilityValues}
                                     selected={selectedProbability1}
                                     onChange={(e) => {
@@ -624,6 +634,8 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
+                            </div></div>
+                            
                             <div className="col-span-12">
                                 <InputLabel
                                     for="Kategori Risiko"

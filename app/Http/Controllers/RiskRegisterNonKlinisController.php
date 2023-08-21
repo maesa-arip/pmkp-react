@@ -127,6 +127,8 @@ class RiskRegisterNonKlinisController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+        
         $this->validate($request, [
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
@@ -144,8 +146,8 @@ class RiskRegisterNonKlinisController extends Controller
             'num' => 'required',
             'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
-            'osd1_dampak' => 'required',
-            'osd1_probabilitas' => 'required',
+            // 'osd1_dampak' => 'required',
+            // 'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
             'perlu_penanganan_id' => 'required',
             'pengendalian_risiko' => 'required',
@@ -160,6 +162,9 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
+        // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
+        // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
+        $osd1_controllability = ControlValue::where('id',$request->osd1_controllability)->pluck('value');
         $request->merge([
             'user_id' => auth()->user()->id,
             'tipe_id' => 2,
@@ -167,8 +172,11 @@ class RiskRegisterNonKlinisController extends Controller
             'waktudenumnum' => $request->target_waktu,
             'grading1' => 1,
             'grading2' => 1,
-            'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
+            // 'osd1_dampak' => $osd1_dampak[0],
+            // 'osd1_probabilitas' => $osd1_probabilitas[0],
+            'osd1_controllability' => $osd1_controllability[0],
+            // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
+            // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
 
         $risk = RiskRegister::create($request->except('name'));
@@ -203,8 +211,8 @@ class RiskRegisterNonKlinisController extends Controller
             'num' => 'required',
             'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0',
-            'osd1_dampak' => 'required',
-            'osd1_probabilitas' => 'required',
+            // 'osd1_dampak' => 'required',
+            // 'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
             'perlu_penanganan_id' => 'required',
             'pengendalian_risiko' => 'required',
@@ -219,11 +227,17 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
+        // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
+        // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
+        $osd1_controllability = ControlValue::where('id',$request->osd1_controllability)->pluck('value');
         $request->merge([
             'tgl_selesai' => $tgl_selesai,
             'waktudenumnum' => $request->target_waktu,
-            'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
+            // 'osd1_dampak' => $osd1_dampak[0],
+            // 'osd1_probabilitas' => $osd1_probabilitas[0],
+            'osd1_controllability' => $osd1_controllability[0],
+            // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
+            // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 
