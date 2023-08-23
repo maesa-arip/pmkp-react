@@ -117,7 +117,7 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="col-span-12 col-start-1 py-4 antialiased text-gray-800 md:px-4 md:pb-0 md:pt-4 md:col-span-2 md:block">
+        <div className="col-span-12 col-start-1 py-4 antialiased text-gray-800 lg:px-4 lg:pb-0 lg:pt-4 lg:col-span-2 lg:block">
             <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
                 <ExportModal
                     isOpenExportDialog={isOpenExportDialog}
@@ -252,7 +252,7 @@ export default function Sidebar() {
                                                             />
                                                         </svg>
                                                     </span>
-                                                    <span className="ml-2 text-sm tracking-wide truncate">
+                                                    <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
                                                         Notifications
                                                     </span>
                                                     {notifications ? (
@@ -334,8 +334,8 @@ export default function Sidebar() {
                                                                 Exporting...
                                                             </div>
                                                         ) : (
-                                                            <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. LARS DHP
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                LARS DHP
                                                             </div>
                                                         )}
                                                     </button>
@@ -378,7 +378,7 @@ export default function Sidebar() {
                                                             </div>
                                                         ) : (
                                                             <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. BPKP KLINIS
+                                                                BPKP KLINIS
                                                             </div>
                                                         )}
                                                     </button>
@@ -420,8 +420,8 @@ export default function Sidebar() {
                                                                 Exporting...
                                                             </div>
                                                         ) : (
-                                                            <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. BPKP NON KLINIS
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                BPKP NON KLINIS
                                                             </div>
                                                         )}
                                                     </button>
@@ -768,7 +768,7 @@ export default function Sidebar() {
                     </Dialog>
                 </Transition.Root>
 
-                <aside className="px-4 mx-4">
+                <aside className="px-2 mx-2">
                     <div className="flex items-center justify-between pt-4 pb-4 border-b border-gray-200 md:pt-6">
                         <div className="flex items-center md:hidden shrink-0">
                             <Link href="/">
@@ -869,7 +869,7 @@ export default function Sidebar() {
                                                     />
                                                 </svg>
                                             </span>
-                                            <span className="ml-2 text-sm tracking-wide truncate">
+                                            <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
                                                 Notifications
                                             </span>
                                             {notifications ? (
@@ -951,8 +951,8 @@ export default function Sidebar() {
                                                                 Exporting...
                                                             </div>
                                                         ) : (
-                                                            <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. LARS DHP
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                LARS DHP
                                                             </div>
                                                         )}
                                                     </button>
@@ -994,8 +994,8 @@ export default function Sidebar() {
                                                                 Exporting...
                                                             </div>
                                                         ) : (
-                                                            <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. BPKP KLINIS
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                BPKP KLINIS
                                                             </div>
                                                         )}
                                                     </button>
@@ -1037,8 +1037,8 @@ export default function Sidebar() {
                                                                 Exporting...
                                                             </div>
                                                         ) : (
-                                                            <div className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. BPKP NON KLINIS
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                BPKP NON KLINIS
                                                             </div>
                                                         )}
                                                     </button>
@@ -1080,7 +1080,7 @@ export default function Sidebar() {
                                                             </button>
                                                         ) : (
                                                             <button className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. BPKP
+                                                                BPKP
                                                                 KLINIS
                                                             </button>
                                                         )}
@@ -1123,7 +1123,7 @@ export default function Sidebar() {
                                                             </button>
                                                         ) : (
                                                             <button className="ml-2 text-sm tracking-wide truncate">
-                                                                Format. BPKP NON
+                                                                BPKP NON
                                                                 KLINIS
                                                             </button>
                                                         )}
@@ -1141,7 +1141,7 @@ export default function Sidebar() {
                                         <>
                                             <h3 className="flow-root -my-3">
                                                 <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
-                                                    <span className="font-medium text-gray-900">
+                                                    <span className="font-medium text-left text-gray-900">
                                                         Data Risiko
                                                     </span>
                                                     <span className="flex items-center ml-6">
@@ -1191,7 +1191,7 @@ export default function Sidebar() {
                                                                 <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
                                                             </svg>
                                                         </span>
-                                                        <span className="ml-2 text-sm tracking-wide truncate">
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
                                                             Risk Register Klinis
                                                         </span>
                                                     </Link>
@@ -1225,9 +1225,8 @@ export default function Sidebar() {
                                                                 <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
                                                             </svg>
                                                         </span>
-                                                        <span className="ml-2 text-sm tracking-wide truncate">
-                                                            Risk Register Non
-                                                            Klinis
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Risk Register Non Klinis
                                                         </span>
                                                     </Link>
                                                 </div>

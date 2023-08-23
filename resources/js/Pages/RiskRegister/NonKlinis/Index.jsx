@@ -332,7 +332,7 @@ export default function Index(props) {
                     </p>
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-3/4">
-                            <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
+                        <div className="flex items-center justify-start mt-2 mb-0 mr-4 overflow-auto whitespace-nowrap gap-x-1">
                                 <ThirdButton
                                     color="sky"
                                     type="button"
