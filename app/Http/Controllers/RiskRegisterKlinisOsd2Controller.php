@@ -118,7 +118,7 @@ class RiskRegisterKlinisOsd2Controller extends Controller
         $this->validate($request, [
             'osd2_dampak' => 'required|numeric|min:1|not_in:0',
             'osd2_probabilitas' => 'required|numeric|min:1|not_in:0',
-            'osd2_controllability' => 'required|numeric|min:1|not_in:0',
+            // 'osd2_controllability' => 'required|numeric|min:1|not_in:0',
             'belum_tertangani' => 'required',
             'usulan_perbaikan' => 'required',
             'waktu_implementasi_id' => 'required|numeric|min:1|not_in:0',
@@ -127,13 +127,13 @@ class RiskRegisterKlinisOsd2Controller extends Controller
         ]);
         $osd2_dampak = ImpactValue::where('id',$request->osd2_dampak)->pluck('value');
         $osd2_probabilitas = ProbabilityValue::where('id',$request->osd2_probabilitas)->pluck('value');
-        $osd2_controllability = ControlValue::where('id',$request->osd2_controllability)->pluck('value');
+        // $osd2_controllability = ControlValue::where('id',$request->osd2_controllability)->pluck('value');
         $request->merge([
             'osd2_dampak' => $osd2_dampak[0],
             'osd2_probabilitas' => $osd2_probabilitas[0],
-            'osd2_controllability' => $osd2_controllability[0],
+            // 'osd2_controllability' => $osd2_controllability[0],
             'concatdp2' => $osd2_dampak[0] . $osd2_probabilitas[0],
-            'osd2_inherent' => $osd2_dampak[0] * $osd2_probabilitas[0] * $osd2_controllability[0],
+            'osd2_inherent' => $osd2_dampak[0] * $osd2_probabilitas[0],
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 

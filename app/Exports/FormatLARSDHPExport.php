@@ -84,17 +84,18 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $subquery = RiskRegister::query()
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->selectRaw(
-                'indikator_fitur4s.name, ' .
+                    'indikator_fitur3s.name, ' .
                     'indikator_fitur4s.tujuan, ' .
                     'users.name as pemilik_name, ' .
                     'risk_categories.name as kategori_risiko, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
-                'indikator_fitur4s.name',
+                'indikator_fitur3s.name',
                 'indikator_fitur4s.tujuan',
                 'users.name',
                 'risk_categories.name',
@@ -213,6 +214,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $subquery = RiskRegister::query()
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
             ->leftJoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
             
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
@@ -233,12 +235,16 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
             ->selectRaw('
             risk_registers.id,
+            risk_registers.tipe_id,
         row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`,
-        indikator_fitur4s.name,
+        indikator_fitur3s.name,
         indikator_fitur4s.tujuan,
         locations.name as location_name,
         risk_registers.sebab,
-        CONCAT("R.", risk_registers.id) AS Kode,
+        CASE
+            WHEN risk_registers.tipe_id = 1 THEN CONCAT("RK.", risk_categories.kode,".",locations.id,".", RIGHT(YEAR(risk_registers.tgl_register), 2),".",risk_registers.id)
+            WHEN risk_registers.tipe_id = 2 THEN CONCAT("RNK.", risk_categories.kode,".",locations.id,".", RIGHT(YEAR(risk_registers.tgl_register), 2),".",risk_registers.id)
+        END AS Kode,
         risk_registers.resiko,
         risk_registers.dampak,
         risk_registers.pernyataan_risiko,
@@ -265,7 +271,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     ')
             ->groupBy(
                 'risk_registers.id',
-                'indikator_fitur4s.name',
+                'indikator_fitur3s.name',
                 'indikator_fitur4s.tujuan',
                 'locations.name',
                 'risk_registers.sebab',
@@ -569,6 +575,18 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         ],
                     ],
                 ];
+                $worksheet = $event->sheet->getDelegate();
+                $startRow = 3; // Assuming your data starts from row 3
+                $endRow = $highestRow; // You need to determine the highest row based on your data
+                for ($row = $startRow; $row <= $endRow; $row++) {
+                    foreach (range($startRow, $endRow) as $row) {
+                        $formula = '=(K' . $row . '*L' . $row . ')';
+                        $worksheet->getCell('N' . $row)->setValue($formula);
+                        $formula1 = '=(T' . $row . '*U' . $row . ')';
+                        $worksheet->getCell('V' . $row)->setValue($formula1);
+                    }
+                }
+
                 // KOLOM K
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
@@ -920,8 +938,15 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
+        ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
+            ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(
-                DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
+                DB::raw("
+                CASE
+                WHEN risk_registers.tipe_id = 1 THEN CONCAT('RK.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
+                WHEN risk_registers.tipe_id = 2 THEN CONCAT('RNK.','.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
+            END AS Kode"),
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
             )
@@ -1468,14 +1493,16 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $subquery = RiskRegister::query()
             ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur3s.sasaran_strategis_id')
             ->join('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
             ->leftjoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->leftjoin('jenis_pengendalians', 'jenis_pengendalians.id', 'risk_registers.jenis_pengendalian_id')
             ->selectRaw(
-                    'indikator_fitur4s.name, ' .
-                    'indikator_fitur4s.tujuan, ' .
+                    'indikator_fitur3s.name, ' .
+                    'sasaran_strategis.name as sasaran_name, ' .
                     'risk_registers.pernyataan_risiko, ' .
                     'opsi_pengendalians.name as opsi, ' .
                     'risk_registers.penanganan_risiko as uraian, ' .
@@ -1489,8 +1516,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
-                'indikator_fitur4s.name',
-                'indikator_fitur4s.tujuan',
+                'indikator_fitur3s.name',
+                'sasaran_strategis.name',
                 'risk_registers.pernyataan_risiko',
                 'opsi_pengendalians.name',
                 'risk_registers.pengendalian_risiko',
@@ -1514,7 +1541,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select(
                 'Peringkat',
                 'name',
-                'tujuan',
+                'sasaran_name',
                 'pernyataan_risiko',
                 'opsi',
                 'uraian',
@@ -1743,10 +1770,12 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = RiskRegister::query()
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur3s.sasaran_strategis_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
-            ->select('risk_registers.id', 'indikator_fitur4s.name', 'indikator_fitur4s.tujuan',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name')
+            ->select('risk_registers.id', 'indikator_fitur3s.name', 'sasaran_strategis.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
@@ -1963,7 +1992,14 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->select(DB::raw("CONCAT('R.', risk_registers.id) AS Kode"), 'risk_registers.denum', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num', DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
+        ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
+            ->leftJoin('locations', 'locations.id', 'pics.location_id')
+            ->select(DB::raw("
+            CASE
+            WHEN risk_registers.tipe_id = 1 THEN CONCAT('RK.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
+            WHEN risk_registers.tipe_id = 2 THEN CONCAT('RNK.','.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
+        END AS Kode"), 'risk_registers.denum', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), 'risk_registers.num', DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)

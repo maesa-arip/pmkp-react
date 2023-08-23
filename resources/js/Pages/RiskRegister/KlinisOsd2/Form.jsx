@@ -167,7 +167,7 @@ export default function Form({
                             </div>
                             </div></div>
 
-                            <div className="col-span-12">
+                            {/* <div className="col-span-12">
                                 <InputLabel
                                     for="Kategori Risiko"
                                     value="Controllability"
@@ -187,7 +187,7 @@ export default function Form({
                                     message={errors.osd2_controllability}
                                     className="mt-2"
                                 />
-                            </div>
+                            </div> */}
                             <div className="col-span-12">
                                 <InputLabel
                                     for="Yang Belum Tertangani"
