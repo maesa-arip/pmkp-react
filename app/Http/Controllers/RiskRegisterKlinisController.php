@@ -323,6 +323,7 @@ class RiskRegisterKlinisController extends Controller
             'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
             'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $riskRegisterKlinis->osd1_controllability,
         ]);
+        dd($request->all());
         $riskRegisterKlinis->update([
             'osd1_dampak' => $request->osd1_dampak,
             'osd1_probabilitas' => $request->osd1_probabilitas,
