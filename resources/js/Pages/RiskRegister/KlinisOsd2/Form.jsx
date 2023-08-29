@@ -292,6 +292,40 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
+                            <div className="col-span-12">
+                                <InputLabel for="Dokumen Pendukung" value="Dokumen Pendukung" />
+                                <TextAreaInput
+                                    id="dokumen_pendukung"
+                                    value={data.dokumen_pendukung}
+                                    handleChange={(e) =>
+                                        setData("dokumen_pendukung", e.target.value)
+                                    }
+                                    // onChange={onChange}
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.dokumen_pendukung}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-12">
+                                <InputLabel for="Kendala" value="Kendala" />
+                                <TextAreaInput
+                                    id="kendala"
+                                    value={data.kendala}
+                                    handleChange={(e) =>
+                                        setData("kendala", e.target.value)
+                                    }
+                                    // onChange={onChange}
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.kendala}
+                                    className="mt-2"
+                                />
+                            </div>
                             {/* <Tooltip message={"✨ Coming soon!"}>
                                 <button>Subscribe</button>
                             </Tooltip> */}

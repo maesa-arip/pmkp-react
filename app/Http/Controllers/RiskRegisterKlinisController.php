@@ -144,7 +144,7 @@ class RiskRegisterKlinisController extends Controller
             'jenis_sebab_id' => 'required',
             'num' => 'required',
             'denum' => 'required',
-            'target_waktu' => 'required|numeric|min:1|not_in:0',
+            'target_waktu' => 'required|numeric|min:1|not_in:0|in:90,180,365',
             // 'osd1_dampak' => 'required',
             // 'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
@@ -209,7 +209,7 @@ class RiskRegisterKlinisController extends Controller
             'jenis_sebab_id' => 'required',
             'num' => 'required',
             'denum' => 'required',
-            'target_waktu' => 'required|numeric|min:1|not_in:0',
+            'target_waktu' => 'required|numeric|min:1|not_in:0|in:90,180,365',
             // 'osd1_dampak' => 'required',
             // 'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
@@ -442,6 +442,22 @@ class RiskRegisterKlinisController extends Controller
 
     public function destroy($id)
     {
-        //
+        // dd($id);
+        $fgdInherent = FgdInherent::where('risk_register_id',$id);
+        $fgdResidual = FgdResidual::where('risk_register_id',$id);
+        $fgdTreated = FgdTreated::where('risk_register_id',$id);
+        $formulirRca = FormulirRca::where('risk_register_id',$id);
+        $history = RiskRegisterHistory::where('risk_register_id',$id);
+        $riskRegister = RiskRegister::find($id);
+
+        $fgdInherent->delete();
+        $fgdResidual->delete();
+        $fgdTreated->delete();
+        $history->delete();
+        $riskRegister->delete();
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Register risiko berhasil dihapus',
+        ]);
     }
 }

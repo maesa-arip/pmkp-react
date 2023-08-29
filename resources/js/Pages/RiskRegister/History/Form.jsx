@@ -21,7 +21,7 @@ export default function Form({
     closeButton,
 }) {
     const defaultValue = [{ name: "" }];
-    console.log(data)
+    // console.log(data)
     const [selectedProses, setSelectedProses] = useState(() => {
         if (model) {
             return ShouldMap.proses.find((x) => x.id === model.proses_id);

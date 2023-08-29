@@ -82,7 +82,7 @@ export default function Index(props) {
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                route(route().current()),
+                route('dashboard'),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,

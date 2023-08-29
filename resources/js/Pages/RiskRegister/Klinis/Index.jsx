@@ -156,10 +156,6 @@ export default function Index(props) {
     const openAddDialog = () => {
         setIsOpenAddDialog(true);
     };
-    const openDestroyDialog = (riskregisterklinis1) => {
-        setState(riskregisterklinis1);
-        setIsOpenDestroyDialog(true);
-    };
 
     const destroyriskregisterklinis1 = () => {
         router.delete(route("riskRegisterKlinis.destroy", state.id), {
@@ -174,6 +170,11 @@ export default function Index(props) {
         } else {
             setSelectedRow(index);
         }
+    };
+    const openDestroyDialog = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenDestroyDialog(true);
     };
     const openEditDialog = (row) => {
         setState(row);
@@ -210,11 +211,16 @@ export default function Index(props) {
 
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
-    const [isOpenEditDialogOSDResidual, setIsOpenEditDialogOSDResidual] = useState(false);
-    const [isOpenEditDialogFormulirRCA, setIsOpenEditDialogFormulirRCA] = useState(false);
-    const [isOpenEditDialogFGDInherent, setIsOpenEditDialogFGDInherent] = useState(false);
-    const [isOpenEditDialogFGDResidual, setIsOpenEditDialogFGDResidual] = useState(false);
-    const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] = useState(false);
+    const [isOpenEditDialogOSDResidual, setIsOpenEditDialogOSDResidual] =
+        useState(false);
+    const [isOpenEditDialogFormulirRCA, setIsOpenEditDialogFormulirRCA] =
+        useState(false);
+    const [isOpenEditDialogFGDInherent, setIsOpenEditDialogFGDInherent] =
+        useState(false);
+    const [isOpenEditDialogFGDResidual, setIsOpenEditDialogFGDResidual] =
+        useState(false);
+    const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] =
+        useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [state, setState] = useState([]);
     return (
@@ -401,6 +407,50 @@ export default function Index(props) {
                                 </ThirdButton>
                                 <ThirdButton
                                     color={
+                                        selectedRow === null ? "gray" : "red"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openDestroyDialog(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Delete
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-trash"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M4 7l16 0" />
+                                        <path d="M10 11l0 6" />
+                                        <path d="M14 11l0 6" />
+                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                    </svg>
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
                                         selectedRow === null ? "gray" : "teal"
                                     }
                                     type="button"
@@ -413,7 +463,9 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialogFGDInherent(selectedRisk);
+                                            openEditDialogFGDInherent(
+                                                selectedRisk
+                                            );
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -434,7 +486,9 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialogFGDResidual(selectedRisk);
+                                            openEditDialogFGDResidual(
+                                                selectedRisk
+                                            );
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -455,7 +509,9 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialogOSDResidual(selectedRisk);
+                                            openEditDialogOSDResidual(
+                                                selectedRisk
+                                            );
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -476,7 +532,9 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialogFGDTreated(selectedRisk);
+                                            openEditDialogFGDTreated(
+                                                selectedRisk
+                                            );
                                         }
                                     }}
                                     disabled={selectedRow === null}
@@ -497,7 +555,9 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openEditDialogFormulirRCA(selectedRisk);
+                                            openEditDialogFormulirRCA(
+                                                selectedRisk
+                                            );
                                         }
                                     }}
                                     disabled={selectedRow === null}

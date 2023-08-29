@@ -567,7 +567,7 @@ export default function Form({
                             </div>
                             <div className="col-span-6">
                                 <TextInputWithError
-                                    label="Target Waktu Tindak Lanjut Monitoring(Hari)"
+                                    label="Target Waktu Tindak Lanjut Monitoring (90/180/365)"
                                     type="number"
                                     id="target_waktu"
                                     name="target_waktu"

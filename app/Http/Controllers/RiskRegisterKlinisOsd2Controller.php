@@ -124,6 +124,8 @@ class RiskRegisterKlinisOsd2Controller extends Controller
             'waktu_implementasi_id' => 'required|numeric|min:1|not_in:0',
             'realisasi_id' => 'required|numeric|min:1|not_in:0',
             'output' => 'required',
+            'dokumen_pendukung' => 'required',
+            'kendala' => 'required',
         ]);
         $osd2_dampak = ImpactValue::where('id',$request->osd2_dampak)->pluck('value');
         $osd2_probabilitas = ProbabilityValue::where('id',$request->osd2_probabilitas)->pluck('value');
