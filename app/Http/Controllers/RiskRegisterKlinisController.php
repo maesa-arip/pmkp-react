@@ -32,6 +32,7 @@ use App\Notifications\RiskRegisterEditNotification;
 use App\Notifications\RiskRegisterNewNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 
@@ -41,6 +42,7 @@ class RiskRegisterKlinisController extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        // $riskRegisterKlinis = RiskRegister::query()->select('risk_registers.*','risk_registers.id as risk_register_id', DB::raw('JSON_UNQUOTE(JSON_EXTRACT(risk_registers.pic_id, "$[*]")) as pic_ids'))->where('tipe_id', 1)
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 1)
             ->with('risk_category')
             ->with('identification_source')
@@ -56,6 +58,7 @@ class RiskRegisterKlinisController extends Controller
             ->with('fgdresidual')
             ->with('fgdtreated')
             ->where($whosLogin);
+            // dd($riskRegisterKlinis);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id', '=', 0)->count();
         $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id', '=', 0)->count();
@@ -98,6 +101,22 @@ class RiskRegisterKlinisController extends Controller
         $probabilityValues = ProbabilityValue::where('type', 1)->orderBy('value', 'ASC')->get();
         $controlValues = ControlValue::where('type', 1)->orderBy('value', 'ASC')->get();
         $location_login = Pic::where('id', auth()->user()->pic_id)->pluck('location_id');
+        // if (auth()->user()->can('lihat data semua risk register')) {
+        //     return $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get();
+        // }
+        // if (auth()->user()->can('lihat data indikator wakil direktur')) {
+        //     return $indikatorFitur4s = IndikatorFitur4::leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
+        //     ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')->orderBy('indikator_fitur4s.name', 'DESC')->get();
+        // }
+        // if (auth()->user()->can('lihat indikator kabag/kabid')) {
+        //     return $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get();
+        // }
+        // if (auth()->user()->can('lihat indikator ketua tim kerja')) {
+        //     return $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get();
+        // }
+        // if (auth()->user()->can('lihat indikator unit')) {
+        //     $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name', 'DESC')->get();
+        // }
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name', 'DESC')->get();
         return Inertia::render('RiskRegister/Klinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
@@ -145,8 +164,6 @@ class RiskRegisterKlinisController extends Controller
             'num' => 'required',
             'denum' => 'required',
             'target_waktu' => 'required|numeric|min:1|not_in:0|in:90,180,365',
-            // 'osd1_dampak' => 'required',
-            // 'osd1_probabilitas' => 'required',
             'osd1_controllability' => 'required',
             'perlu_penanganan_id' => 'required',
             'pengendalian_risiko' => 'required',
@@ -160,23 +177,21 @@ class RiskRegisterKlinisController extends Controller
             'rencana_pengendalian' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
+        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
+        // dd($encodedPic);
         $tgl_selesai = $date->addDays($request->target_waktu);
-        // $osd1_dampak = ImpactValue::where('id', $request->osd1_dampak)->pluck('value');
-        // $osd1_probabilitas = ProbabilityValue::where('id', $request->osd1_probabilitas)->pluck('value');
         $osd1_controllability = ControlValue::where('id', $request->osd1_controllability)->pluck('value');
         $request->merge([
             'user_id' => auth()->user()->id,
             'tipe_id' => 1,
             'tgl_selesai' => $tgl_selesai,
+            'pic_id' => $encodedPic,
             'waktudenumnum' => $request->target_waktu,
             'grading1' => 1,
             'grading2' => 1,
-            // 'osd1_dampak' => $osd1_dampak[0],
-            // 'osd1_probabilitas' => $osd1_probabilitas[0],
             'osd1_controllability' => $osd1_controllability[0],
-            // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
+
 
         $risk = RiskRegister::create($request->except('name'));
 
@@ -226,12 +241,14 @@ class RiskRegisterKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
+        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
         // $osd1_dampak = ImpactValue::where('id', $request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id', $request->osd1_probabilitas)->pluck('value');
         $osd1_controllability = ControlValue::where('id', $request->osd1_controllability)->pluck('value');
         $request->merge([
             'tgl_selesai' => $tgl_selesai,
             'waktudenumnum' => $request->target_waktu,
+            'pic_id' => $encodedPic,
             // 'osd1_dampak' => $osd1_dampak[0],
             // 'osd1_probabilitas' => $osd1_probabilitas[0],
             'osd1_controllability' => $osd1_controllability[0],
@@ -442,11 +459,11 @@ class RiskRegisterKlinisController extends Controller
     public function destroy($id)
     {
         // dd($id);
-        $fgdInherent = FgdInherent::where('risk_register_id',$id);
-        $fgdResidual = FgdResidual::where('risk_register_id',$id);
-        $fgdTreated = FgdTreated::where('risk_register_id',$id);
-        $formulirRca = FormulirRca::where('risk_register_id',$id);
-        $history = RiskRegisterHistory::where('risk_register_id',$id);
+        $fgdInherent = FgdInherent::where('risk_register_id', $id);
+        $fgdResidual = FgdResidual::where('risk_register_id', $id);
+        $fgdTreated = FgdTreated::where('risk_register_id', $id);
+        $formulirRca = FormulirRca::where('risk_register_id', $id);
+        $history = RiskRegisterHistory::where('risk_register_id', $id);
         $riskRegister = RiskRegister::find($id);
 
         $fgdInherent->delete();

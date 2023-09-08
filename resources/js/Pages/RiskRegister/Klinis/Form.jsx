@@ -1,3 +1,4 @@
+import AnimatedMulti from "@/Components/AnimatedMulti";
 import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxPage from "@/Components/ComboboxPage";
 import ComboboxPageReadonly from "@/Components/ComboboxPageReadonly";
@@ -25,13 +26,13 @@ export default function Form({
     closeButton,
 }) {
     const defaultValue = [{ name: "" }];
-    // console.log(ShouldMap);
-    const [selectedProses, setSelectedProses] = useState(() => {
-        if (model) {
-            return ShouldMap.proses.find((x) => x.id === model.proses_id);
-        }
-        return defaultValue[0];
-    });
+    // console.log(ShouldMap.pics)
+    // console.log(data)
+    const picIdStrings = data.pic_id ? data.pic_id : ",";
+    const picIdString = picIdStrings.replace(/['"]+/g, '')
+    const defaultPicIds = picIdString.split(",");
+    const defaultPicIdStrings = defaultPicIds.map((value) => value.toString());
+
     const [selectedCurrently, setSelectedCurrently] = useState(() => {
         if (model) {
             return ShouldMap.currently.find((x) => x.id === model.currently_id);
@@ -46,18 +47,11 @@ export default function Form({
         }
         return defaultValue[0];
     });
-    // console.log(data)
     const [selectedSource, setSelectedSource] = useState(() => {
         if (model) {
             return ShouldMap.identificationSources.find(
                 (x) => x.id === model.identification_source_id
             );
-        }
-        return defaultValue[0];
-    });
-    const [selectedLocation, setSelectedLocation] = useState(() => {
-        if (model) {
-            return ShouldMap.locations.find((x) => x.id === model.location_id);
         }
         return defaultValue[0];
     });
@@ -107,36 +101,6 @@ export default function Form({
         }
         return defaultValue[0];
     });
-    const [selectedImpact2, setSelectedImpact2] = useState(() => {
-        if (model) {
-            return ShouldMap.impactValues.find(
-                (x) => x.id === model.osd2_dampak
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedProbability2, setSelectedProbability2] = useState(() => {
-        if (model) {
-            return ShouldMap.probabilityValues.find(
-                (x) => x.id === model.osd2_probabilitas
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedControl2, setSelectedControl2] = useState(() => {
-        if (model) {
-            return ShouldMap.controlValues.find(
-                (x) => x.id === model.osd2_controllability
-            );
-        }
-        return defaultValue[0];
-    });
-    const [selectedPic, setSelectedPic] = useState(() => {
-        if (model) {
-            return ShouldMap.pics.find((x) => x.id === model.pic_id);
-        }
-        return defaultValue[0];
-    });
     const [selectedIndikatorFitur4, setSelectedIndikatorFitur4] = useState(
         () => {
             if (model) {
@@ -147,14 +111,6 @@ export default function Form({
             return defaultValue[0];
         }
     );
-    const [selectedPengawasan, setSelectedPengawasan] = useState(() => {
-        if (model) {
-            return ShouldMap.pengawasan.find(
-                (x) => x.id === model.pengawasan_id
-            );
-        }
-        return defaultValue[0];
-    });
     const [selectedPerluPenanganan, setSelectedPerluPenanganan] = useState(
         () => {
             if (model) {
@@ -212,24 +168,6 @@ export default function Form({
         }
     );
 
-    const [selectedWaktuImplementasi, setSelectedWaktuImplementasi] = useState(
-        () => {
-            if (model) {
-                return ShouldMap.waktuImplementasi.find(
-                    (x) => x.id === model.waktu_implementasi_id
-                );
-            }
-            return defaultValue[0];
-        }
-    );
-
-    const [selectedRealisasi, setSelectedRealisasi] = useState(() => {
-        if (model) {
-            return ShouldMap.realisasi.find((x) => x.id === model.realisasi_id);
-        }
-        return defaultValue[0];
-    });
-
     useEffect(() => {
         setData({
             ...data,
@@ -241,11 +179,8 @@ export default function Form({
                 " sehingga " +
                 data.dampak,
         });
-        // const setPernyataanResiko = 'Karena ' + data.sebab + 'Kemungkinan ' + data.resiko + 'Sehingga ' + data.dampak;
     }, [data.sebab, data.resiko, data.dampak]);
-
     const [tglRegister, setTglRegister] = useState(null);
-    const [tglSelesai, setTglSelesai] = useState(null);
     return (
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
@@ -381,18 +316,21 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            <div className="col-span-8">
+                            <div className="col-span-12">
                                 <InputLabel
                                     for="Kategori Risiko"
                                     value="PIC Unit Terkait"
                                 />
-                                <ComboboxPage
+                                <ComboboxMultiple
                                     ShouldMap={ShouldMap.pics}
-                                    selected={selectedPic}
-                                    onChange={(e) => {
-                                        setData({ ...data, ["pic_id"]: e.id });
-                                        setSelectedPic(e);
+                                    name={"pic_id"}
+                                    onChange={(selectedIdsString) => {
+                                        setData({
+                                            ...data,
+                                            ["pic_id"]: selectedIdsString,
+                                        });
                                     }}
+                                    defaultValues={defaultPicIdStrings}
                                 />
                                 <InputError
                                     message={errors.pic_id}
@@ -906,181 +844,6 @@ export default function Form({
                             </div>
                         </div>
                     </div>
-                    {/* <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
-                        <label
-                            htmlFor=""
-                            className="block mb-4 text-lg font-bold text-gray-700"
-                        >
-                            OSD Residual (Wajib di input setelah ada pengendalian)
-                        </label>
-                        <div className="grid grid-cols-12 gap-6">
-                            <div className="col-span-12">
-                                <InputLabel for="Dampak" value="Dampak" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.impactValues}
-                                    selected={selectedImpact2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_dampak"]: e.id,
-                                        });
-                                        setSelectedImpact2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_dampak}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Probabilitas"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.probabilityValues}
-                                    selected={selectedProbability2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_probabilitas"]: e.id,
-                                        });
-                                        setSelectedProbability2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_probabilitas}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Kategori Risiko"
-                                    value="Controllability"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.controlValues}
-                                    selected={selectedControl2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["osd2_controllability"]: e.id,
-                                        });
-                                        setSelectedControl2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.osd2_controllability}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Yang Belum Tertangani"
-                                    value="Yang Belum Tertangani"
-                                />
-                                <TextAreaInput
-                                    id="belum_tertangani"
-                                    value={data.belum_tertangani}
-                                    handleChange={(e) =>
-                                        setData(
-                                            "belum_tertangani",
-                                            e.target.value
-                                        )
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.belum_tertangani}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="Usulan Perbaikan"
-                                    value="Usulan Perbaikan"
-                                />
-                                <TextAreaInput
-                                    id="usulan_perbaikan"
-                                    value={data.usulan_perbaikan}
-                                    handleChange={(e) =>
-                                        setData(
-                                            "usulan_perbaikan",
-                                            e.target.value
-                                        )
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.usulan_perbaikan}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="col-span-6 my-6">
-                                <InputLabel
-                                    for="Waktu Implementasi"
-                                    value="Waktu Implementasi"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.waktuImplementasi}
-                                    selected={selectedWaktuImplementasi}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["waktu_implementasi_id"]: e.id,
-                                        });
-                                        setSelectedWaktuImplementasi(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.waktu_implementasi_id}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="col-span-6 my-6">
-                                <InputLabel for="Realisasi" value="Realisasi" />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.realisasi}
-                                    selected={selectedRealisasi}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["realisasi_id"]: e.id,
-                                        });
-                                        setSelectedRealisasi(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.realisasi_id}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-12">
-                                <InputLabel for="Output" value="Output" />
-                                <TextAreaInput
-                                    id="output"
-                                    value={data.output}
-                                    handleChange={(e) =>
-                                        setData("output", e.target.value)
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.output}
-                                    className="mt-2"
-                                />
-                            </div>
-                            
-                        </div>
-                    </div> */}
                     {/* <Tooltip message={"✨ Coming soon!"}>
                                 <button>Subscribe</button>
                             </Tooltip> */}

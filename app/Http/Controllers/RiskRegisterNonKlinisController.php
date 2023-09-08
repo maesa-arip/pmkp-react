@@ -162,6 +162,7 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
+        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
         // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
         $osd1_controllability = ControlValue::where('id',$request->osd1_controllability)->pluck('value');
@@ -169,6 +170,7 @@ class RiskRegisterNonKlinisController extends Controller
             'user_id' => auth()->user()->id,
             'tipe_id' => 2,
             'tgl_selesai' => $tgl_selesai,
+            'pic_id' => $encodedPic,
             'waktudenumnum' => $request->target_waktu,
             'grading1' => 1,
             'grading2' => 1,
@@ -227,12 +229,14 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
+        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
         // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
         $osd1_controllability = ControlValue::where('id',$request->osd1_controllability)->pluck('value');
         $request->merge([
             'tgl_selesai' => $tgl_selesai,
             'waktudenumnum' => $request->target_waktu,
+            'pic_id' => $encodedPic,
             // 'osd1_dampak' => $osd1_dampak[0],
             // 'osd1_probabilitas' => $osd1_probabilitas[0],
             'osd1_controllability' => $osd1_controllability[0],

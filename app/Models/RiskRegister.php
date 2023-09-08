@@ -57,6 +57,10 @@ class RiskRegister extends Model
     {
         return $this->hasMany(RiskRegisterHistory::class);
     }
+    public function riskRegisterHistories()
+    {
+        return $this->hasMany(RiskRegisterHistory::class);
+    }
     public function formulirrca()
     {
         return $this->hasOne(FormulirRca::class);
@@ -73,5 +77,15 @@ class RiskRegister extends Model
     public function fgdtreated()
     {
         return $this->hasOne(FgdTreated::class);
+    }
+    public function historyCount()
+    {
+        return $this->hasMany(RiskRegisterHistory::class)
+            ->selectRaw('risk_register_id,
+                         SUM(QUARTER(created_at) = 1) as Q1,
+                         SUM(QUARTER(created_at) = 2) as Q2,
+                         SUM(QUARTER(created_at) = 3) as Q3,
+                         SUM(QUARTER(created_at) = 4) as Q4')
+            ->groupBy('risk_register_id');
     }
 }

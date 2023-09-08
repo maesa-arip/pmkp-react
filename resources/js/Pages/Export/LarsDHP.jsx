@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
@@ -6,6 +6,8 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import DatePicker from "react-datepicker";
+import ComboboxMultiple from "@/Components/ComboboxMultiple";
+import ComboboxMultipleWithOutSemuaUnit from "@/Components/ComboboxMultipleWithOutSemuaUnit";
 
 export default function LarsDHP({ setIsOpenAddDialog }) {
     const { data, setData, post, reset, errors, processing } = useForm({
@@ -14,12 +16,13 @@ export default function LarsDHP({ setIsOpenAddDialog }) {
     const closeButton = (e) => setIsOpenAddDialog(false);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [userId, setUserId] = useState(null);
     const [loadingLars, setLoadingLars] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const url = "/riskregisterklinislarsdhp";
-        const data = { startDate, endDate };
+        const data = { startDate, endDate, userId };
         setLoadingLars(true);
 
         axios
@@ -45,11 +48,16 @@ export default function LarsDHP({ setIsOpenAddDialog }) {
                 setLoadingLars(false);
             });
     };
+    const { users } = usePage().props;
+    const { auth, permissionNames } = usePage().props;
+    const permission_name = permissionNames
+        ? permissionNames.map((permission) => permission.name)
+        : "null";
     return (
         <form onSubmit={handleSubmit}>
             <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-12 px-3 py-4 text-base font-semibold text-gray-700 rounded shadow">
+                    <div className="col-span-12 px-3 py-4 text-base font-semibold text-gray-700 border rounded">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="justify-center inline w-6 h-6 mr-3 -mt-1 text-center text-white rounded-full bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 icon icon-tabler icon-tabler-info-circle"
@@ -67,11 +75,15 @@ export default function LarsDHP({ setIsOpenAddDialog }) {
                             <line x1={12} y1={8} x2="12.01" y2={8} />
                             <polyline points="11 12 12 12 12 16 13 16" />
                         </svg>
-                        Kosongkan Tanggal dan Langsung Tekan Export Jika Ingin Export Data Dari Awal
-                        Sampai Sekarang.
+                        Kosongkan Tanggal dan Langsung Tekan Export Jika Ingin
+                        Export Data Dari Awal Sampai Sekarang.
                     </div>
                     <div className="col-span-6">
-                        <InputLabel className={"text-base font-semibold"}  for="startDate" value="Start Date" />
+                        <InputLabel
+                            className={"text-base font-semibold"}
+                            for="Start Date"
+                            value="Start Date"
+                        />
                         <DatePicker
                             dateFormat="dd-MM-yyyy"
                             value={data.startDate}
@@ -90,7 +102,11 @@ export default function LarsDHP({ setIsOpenAddDialog }) {
                     </div>
 
                     <div className="col-span-6">
-                        <InputLabel className={"text-base font-semibold"} for="endDate" value="End Date" />
+                        <InputLabel
+                            className={"text-base font-semibold"}
+                            for="End Date"
+                            value="End Date"
+                        />
                         <DatePicker
                             dateFormat="dd-MM-yyyy"
                             value={data.endDate}
@@ -107,6 +123,54 @@ export default function LarsDHP({ setIsOpenAddDialog }) {
                             }}
                         />
                     </div>
+                    {permission_name.indexOf("lihat data semua risk register") >
+                        -1 && (
+                        
+                            
+
+                            <div className="col-span-12">
+                            
+                                <InputLabel
+                                    className={"text-base font-semibold"}
+                                    for="Pilih Unit"
+                                    value="Pilih Unit"
+                                />
+                                <div className="col-span-12 px-3 py-4 mb-2 text-base font-semibold text-gray-700 border rounded">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="justify-center inline w-6 h-6 mr-3 -mt-1 text-center text-white rounded-full bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 icon icon-tabler icon-tabler-info-circle"
+                                    width={24}
+                                    height={24}
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={2}
+                                    stroke="currentColor"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path
+                                        stroke="none"
+                                        d="M0 0h24v24H0z"
+                                        fill="none"
+                                    />
+                                    <circle cx={12} cy={12} r={9} />
+                                    <line x1={12} y1={8} x2="12.01" y2={8} />
+                                    <polyline points="11 12 12 12 12 16 13 16" />
+                                </svg>
+                                Kosongkan dan Langsung Tekan Export Jika Ingin Menarik Semua Unit.
+                            </div>
+                                <ComboboxMultipleWithOutSemuaUnit
+                                    ShouldMap={users}
+                                    name={"userId"}
+                                    onChange={(selectedIdsString) => {
+                                        setUserId(selectedIdsString);
+                                        setData("userId", selectedIdsString);
+                                    }}
+                                    defaultValues={[]}
+                                />
+                            </div>
+                        
+                    )}
                 </div>
             </div>
             <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

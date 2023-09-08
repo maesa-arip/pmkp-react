@@ -315,13 +315,15 @@ class ExportController extends Controller
     {
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-        return Excel::download(new FormatLARSDHPExport($startDate, $endDate), 'Form Manajemen Risiko LARS DHP.xlsx');
+        $userId = $request->input('userId');
+        return Excel::download(new FormatLARSDHPExport($startDate, $endDate,$userId), 'Form Manajemen Risiko LARS DHP.xlsx');
     }
     public function riskregisterklinislarsdhpwithchart(Request $request)
     {
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-        $export = new FormatLARSDHPExport($startDate, $endDate);
+        $userId = $request->input('userId');
+        $export = new FormatLARSDHPExport($startDate, $endDate,$userId);
         $spreadsheet = $export->sheets()[2]->createChart();
         $exportFile = public_path('Form Manajemen Risiko LARS DHP2.xlsx');
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');

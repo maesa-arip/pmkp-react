@@ -1135,7 +1135,7 @@ export default function Index(props) {
                                                             )}
                                                     </div>
                                                 </th>
-                                                <th
+                                                {/* <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
                                                 >
@@ -1159,7 +1159,7 @@ export default function Index(props) {
                                                                 <DownIcon />
                                                             )}
                                                     </div>
-                                                </th>
+                                                </th> */}
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
@@ -1341,12 +1341,12 @@ export default function Index(props) {
                                                             </div>
                                                         </td>
 
-                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1
                                                                     .pic.name
                                                             }
-                                                        </td>
+                                                        </td> */}
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {
                                                                 riskregisterklinis1

@@ -1,3 +1,4 @@
+import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxPage from "@/Components/ComboboxPage";
 import ComboboxPageReadonly from "@/Components/ComboboxPageReadonly";
 import InputError from "@/Components/InputError";
@@ -25,6 +26,10 @@ export default function Form({
 }) {
     const defaultValue = [{ name: "" }];
     // console.log(ShouldMap);
+    const picIdStrings = data.pic_id ? data.pic_id : ",";
+    const picIdString = picIdStrings.replace(/['"]+/g, '')
+    const defaultPicIds = picIdString.split(",");
+    const defaultPicIdStrings = defaultPicIds.map((value) => value.toString());
     const [selectedProses, setSelectedProses] = useState(() => {
         if (model) {
             return ShouldMap.proses.find((x) => x.id === model.proses_id);
@@ -380,18 +385,21 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            <div className="col-span-8">
+                            <div className="col-span-12">
                                 <InputLabel
                                     for="Kategori Risiko"
                                     value="PIC Unit Terkait"
                                 />
-                                <ComboboxPage
+                                <ComboboxMultiple
                                     ShouldMap={ShouldMap.pics}
-                                    selected={selectedPic}
-                                    onChange={(e) => {
-                                        setData({ ...data, ["pic_id"]: e.id });
-                                        setSelectedPic(e);
+                                    name={"pic_id"}
+                                    onChange={(selectedIdsString) => {
+                                        setData({
+                                            ...data,
+                                            ["pic_id"]: selectedIdsString,
+                                        });
                                     }}
+                                    defaultValues={defaultPicIdStrings}
                                 />
                                 <InputError
                                     message={errors.pic_id}

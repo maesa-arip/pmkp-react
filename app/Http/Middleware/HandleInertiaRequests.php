@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Pic;
 use App\Models\RiskRegister;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -32,6 +34,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
             $whosLogin = $request->user() ? (auth()->user()->can('lihat data semua risk register') ? [['pic_id', '<>', 0]] : [['pic_id', auth()->user()->pic_id]]) : '';
+            $users = User::where('id','>',2)->get();
             $notifications = $request->user() ? RiskRegister::query()
             ->where($whosLogin)->where('currently_id',1)->count() : '';
             $permissionNames = $request->user() ? $request->user()->getAllPermissions() : null;
@@ -50,6 +53,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'notifications' => $notifications,
             'permissionNames' => $permissionNames,
+            'users' => $users,
         ]);
     }
 }

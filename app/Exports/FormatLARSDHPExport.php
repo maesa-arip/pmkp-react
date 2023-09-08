@@ -38,28 +38,34 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Settings;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+use PhpOffice\PhpSpreadsheet\Chart\Axis as ChartAxis;
+
+use PhpOffice\PhpSpreadsheet\Chart\ChartColor;
+
 
 class FormatLARSDHPExport implements WithMultipleSheets
 {
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function sheets(): array
     {
         return [
-            new Sheet1($this->startDate, $this->endDate),
-            new Sheet2($this->startDate, $this->endDate),
-            new Sheet3($this->startDate, $this->endDate),
-            new Sheet4($this->startDate, $this->endDate),
-            new Sheet5($this->startDate, $this->endDate),
-            new Sheet6($this->startDate, $this->endDate),
-            new Sheet7($this->startDate, $this->endDate),
-            new Sheet8($this->startDate, $this->endDate),
+            new Sheet1($this->startDate, $this->endDate, $this->userId),
+            new Sheet2($this->startDate, $this->endDate, $this->userId),
+            new Sheet3($this->startDate, $this->endDate, $this->userId),
+            new Sheet4($this->startDate, $this->endDate, $this->userId),
+            new Sheet5($this->startDate, $this->endDate, $this->userId),
+            new Sheet6($this->startDate, $this->endDate, $this->userId),
+            new Sheet7($this->startDate, $this->endDate, $this->userId),
+            new Sheet8($this->startDate, $this->endDate, $this->userId),
         ];
     }
 }
@@ -72,11 +78,13 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
@@ -90,7 +98,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->selectRaw(
-                    'indikator_fitur1s.name as sasaran, ' .
+                'indikator_fitur1s.name as sasaran, ' .
                     'indikator_fitur2s.name as program, ' .
                     'indikator_fitur3s.name as kegiatan, ' .
                     'indikator_fitur3s.tujuan, ' .
@@ -99,26 +107,17 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'risk_categories.name as kategori_risiko, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
-            ->groupBy(
-                'indikator_fitur1s.name',
-                'indikator_fitur2s.name',
-                'indikator_fitur3s.name',
-                'indikator_fitur3s.tujuan',
-                'indikator_fitur4s.name',
-                'users.name',
-                'risk_categories.name',
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                'risk_registers.osd1_controllability'
-            )
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
-                
+        }
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $subquery->whereIn('risk_registers.user_id', $userIds);
         }
         $query = DB::query()
-            ->select('Peringkat', 'sasaran','program','kegiatan', 'tujuan','indikator', 'pemilik_name', 'kategori_risiko')
+            ->select('Peringkat', 'sasaran', 'program', 'kegiatan', 'tujuan', 'indikator', 'pemilik_name', 'kategori_risiko')
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
 
@@ -132,7 +131,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['NO','SASARAN STRATEGIS','PROGRAM', 'KEGIATAN', 'TUJUAN KEGIATAN (S.M.A.R.T)-', 'INDIKATOR', 'PEMILIK RISIKO', 'KATEGORI RISIKO'],
+            ['NO', 'SASARAN STRATEGIS', 'PROGRAM', 'KEGIATAN', 'TUJUAN KEGIATAN (S.M.A.R.T)-', 'INDIKATOR', 'PEMILIK RISIKO', 'KATEGORI RISIKO'],
         ];
     }
     public function columnWidths(): array
@@ -213,11 +212,13 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
@@ -226,6 +227,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
+            ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
+            ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
             ->leftJoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftJoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
@@ -239,18 +242,23 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
+            ->leftJoin('jenis_sebabs', 'jenis_sebabs.id', 'risk_registers.jenis_sebab_id')
             ->leftJoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
             ->leftJoin('risk_gradings AS grading2', 'grading2.kode', 'risk_registers.concatdp2')
             ->leftJoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
             ->leftJoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
+            ->leftjoin("pics as sa", \DB::raw("FIND_IN_SET(sa.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
             ->selectRaw('
             risk_registers.id,
             DATE_FORMAT(risk_registers.tgl_register, "%d-%m-%Y") AS formatted_tgl_register,
             risk_registers.tipe_id,
         row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`,
-        indikator_fitur3s.name,
+        indikator_fitur1s.name as sasaran,
+        indikator_fitur2s.name as program,
+        indikator_fitur3s.name as kegiatan,
         indikator_fitur3s.tujuan,
-        locations.name as location_name,
+        indikator_fitur4s.name as indikator,
+        GROUP_CONCAT(sa.name) as picsname,
         risk_registers.sebab,
         CASE
             WHEN risk_registers.tipe_id = 1 THEN CONCAT("RK.", risk_categories.kode,".",locations.id,".", RIGHT(YEAR(risk_registers.tgl_register), 2),".",risk_registers.id)
@@ -278,14 +286,18 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         risk_registers.osd2_inherent,
         grading2.name as grading2_name,
         users.name as pemilik_name,
-        CONCAT(risk_registers.target_waktu, " Hari") AS target_waktu
+        CONCAT(risk_registers.target_waktu, " Hari") AS target_waktu,
+        jenis_sebabs.name as jenis_sebab
     ')
             ->groupBy(
                 'risk_registers.id',
                 'risk_registers.tgl_register',
+                'indikator_fitur1s.name',
+                'indikator_fitur2s.name',
                 'indikator_fitur3s.name',
                 'indikator_fitur3s.tujuan',
-                'locations.name',
+                'indikator_fitur4s.name',
+                // 'sa.name',
                 'risk_registers.sebab',
                 'risk_registers.resiko',
                 'risk_registers.dampak',
@@ -305,20 +317,29 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd2_inherent',
                 'grading2.name',
                 'users.name',
-                'risk_registers.target_waktu'
-            )->where($whosLogin);
+                'risk_registers.target_waktu',
+                'jenis_sebabs.name'
+            )
+            ->where($whosLogin);
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $subquery->whereIn('risk_registers.user_id', $userIds);
+        }
         $query = DB::query()
             ->select(
                 'Peringkat',
                 'formatted_tgl_register',
-                'name',
+                'sasaran',
+                'program',
+                'kegiatan',
                 'tujuan',
-                'location_name',
+                'indikator',
+                'picsname',
                 'sebab',
                 'Kode',
                 'resiko',
@@ -339,7 +360,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'osd2_inherent',
                 'grading2_name',
                 'pemilik_name',
-                'target_waktu'
+                'target_waktu',
+                'jenis_sebab'
             )
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
@@ -353,11 +375,11 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No','TANGGAL REGISTER', 'NAMA KEGIATAN (PROSES BISNIS)', 'Tujuan KEGIATAN*)', 'AREA / LOKASI', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'AREA / LOKASI', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB'],
 
-            ['No', 'TANGGAL REGISTER','NAMA KEGIATAN (PROSES BISNIS)', 'Tujuan KEGIATAN*)', 'AREA / LOKASI', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'AREA / LOKASI', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)'],
         ];
     }
     public function columnWidths(): array
@@ -367,28 +389,32 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'B' => 20,
             'C' => 45,
             'D' => 45,
-            'E' => 20,
+            'E' => 45,
             'F' => 45,
-            'G' => 20,
-            'H' => 45,
+            'G' => 45,
+            'H' => 20,
             'I' => 45,
-            'J' => 65,
-            'K' => 40,
-            'L' => 12,
-            'M' => 15,
-            'N' => 15,
+            'J' => 20,
+            'K' => 45,
+            'L' => 45,
+            'M' => 65,
+            'N' => 40,
             'O' => 12,
-            'P' => 12,
-            'Q' => 20,
-            'R' => 20,
-            'S' => 40,
-            'T' => 15,
-            'U' => 12,
-            'V' => 15,
+            'P' => 15,
+            'Q' => 15,
+            'R' => 12,
+            'S' => 12,
+            'T' => 20,
+            'U' => 20,
+            'V' => 40,
             'W' => 15,
             'X' => 12,
-            'Y' => 20,
-            'Z' => 12,
+            'Y' => 15,
+            'Z' => 15,
+            'AA' => 12,
+            'AB' => 20,
+            'AC' => 12,
+            'AD' => 12,
         ];
     }
     public function registerEvents(): array
@@ -399,17 +425,17 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $highestRow = $event->sheet->getHighestRow();
                 $highestColumn = $event->sheet->getHighestColumn();
                 $range = 'A1:' . $highestColumn . $highestRow;
-                $rangeB = 'B4:' . 'B' . $highestRow;
-                $rangeG = 'G4:' . 'G' . $highestRow;
-                $rangeLQ = 'L4:' . 'Q' . $highestRow;
-                $rangeUX = 'U4:' . 'X' . $highestRow;
+                $rangeE = 'E4:' . 'E' . $highestRow;
+                $rangeJ = 'J4:' . 'J' . $highestRow;
+                $rangeOT = 'O4:' . 'T' . $highestRow;
+                $rangeXAA = 'X4:' . 'AA' . $highestRow;
 
-                $rangeL = 'L4:' . 'L' . $highestRow;
-                $rangeM = 'M4:' . 'M' . $highestRow;
+                $rangeO = 'O4:' . 'O' . $highestRow;
                 $rangeP = 'P4:' . 'P' . $highestRow;
-                $rangeU = 'U4:' . 'U' . $highestRow;
-                $rangeV = 'V4:' . 'V' . $highestRow;
+                $rangeS = 'S4:' . 'S' . $highestRow;
                 $rangeX = 'X4:' . 'X' . $highestRow;
+                $rangeY = 'Y4:' . 'Y' . $highestRow;
+                $rangeAA = 'AA4:' . 'AA' . $highestRow;
                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
                 $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
                     'borders' => [
@@ -594,10 +620,10 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $endRow = $highestRow; // You need to determine the highest row based on your data
                 for ($row = $startRow; $row <= $endRow; $row++) {
                     foreach (range($startRow, $endRow) as $row) {
-                        $formula = '=(L' . $row . '*M' . $row . ')';
-                        $worksheet->getCell('O' . $row)->setValue($formula);
-                        $formula1 = '=(U' . $row . '*V' . $row . ')';
-                        $worksheet->getCell('W' . $row)->setValue($formula1);
+                        $formula = '=(O' . $row . '*P' . $row . ')';
+                        $worksheet->getCell('R' . $row)->setValue($formula);
+                        $formula1 = '=(X' . $row . '*Y' . $row . ')';
+                        $worksheet->getCell('Z' . $row)->setValue($formula1);
                     }
                 }
 
@@ -607,45 +633,45 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional->addCondition(5);
                 $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeL)->getConditionalStyles();
+                $conditionalStyles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeL)->setConditionalStyles($conditionalStyles);
+                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditionalStyles);
 
                 $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional2->addCondition(4);
                 $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeL)->getConditionalStyles();
+                $conditional2Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeL)->setConditionalStyles($conditional2Styles);
+                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional2Styles);
 
                 $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional3->addCondition(3);
                 $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeL)->getConditionalStyles();
+                $conditional3Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeL)->setConditionalStyles($conditional3Styles);
+                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional3Styles);
 
                 $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
                 $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeL)->getConditionalStyles();
+                $conditional4Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeL)->setConditionalStyles($conditional4Styles);
+                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional4Styles);
 
                 $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
                 $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeL)->getConditionalStyles();
+                $conditional5Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeL)->setConditionalStyles($conditional5Styles);
+                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional5Styles);
 
 
                 // KOLOM L
@@ -654,45 +680,45 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional->addCondition(5);
                 $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeM)->getConditionalStyles();
+                $conditionalStyles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeM)->setConditionalStyles($conditionalStyles);
+                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditionalStyles);
 
                 $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional2->addCondition(4);
                 $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeM)->getConditionalStyles();
+                $conditional2Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeM)->setConditionalStyles($conditional2Styles);
+                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional2Styles);
 
                 $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional3->addCondition(3);
                 $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeM)->getConditionalStyles();
+                $conditional3Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeM)->setConditionalStyles($conditional3Styles);
+                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional3Styles);
 
                 $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
                 $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeM)->getConditionalStyles();
+                $conditional4Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeM)->setConditionalStyles($conditional4Styles);
+                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional4Styles);
 
                 $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
                 $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeM)->getConditionalStyles();
+                $conditional5Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeM)->setConditionalStyles($conditional5Styles);
+                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional5Styles);
 
                 // KOLOM O
                 // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
@@ -739,45 +765,45 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional->addCondition(5);
                 $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeU)->getConditionalStyles();
+                $conditionalStyles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
                 $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeU)->setConditionalStyles($conditionalStyles);
+                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditionalStyles);
 
                 $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional2->addCondition(4);
                 $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeU)->getConditionalStyles();
+                $conditional2Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeU)->setConditionalStyles($conditional2Styles);
+                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional2Styles);
 
                 $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional3->addCondition(3);
                 $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeU)->getConditionalStyles();
+                $conditional3Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeU)->setConditionalStyles($conditional3Styles);
+                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional3Styles);
 
                 $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
                 $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeU)->getConditionalStyles();
+                $conditional4Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeU)->setConditionalStyles($conditional4Styles);
+                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional4Styles);
 
                 $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
                 $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeU)->getConditionalStyles();
+                $conditional5Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeU)->setConditionalStyles($conditional5Styles);
+                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional5Styles);
 
                 // KOLOM U
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
@@ -785,45 +811,45 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional->addCondition(5);
                 $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeV)->getConditionalStyles();
+                $conditionalStyles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeV)->setConditionalStyles($conditionalStyles);
+                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditionalStyles);
 
                 $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional2->addCondition(4);
                 $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeV)->getConditionalStyles();
+                $conditional2Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeV)->setConditionalStyles($conditional2Styles);
+                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional2Styles);
 
                 $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional3->addCondition(3);
                 $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeV)->getConditionalStyles();
+                $conditional3Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeV)->setConditionalStyles($conditional3Styles);
+                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional3Styles);
 
                 $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
                 $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeV)->getConditionalStyles();
+                $conditional4Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeV)->setConditionalStyles($conditional4Styles);
+                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional4Styles);
 
                 $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
                 $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeV)->getConditionalStyles();
+                $conditional5Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeV)->setConditionalStyles($conditional5Styles);
+                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional5Styles);
 
                 // KOLOM W
                 // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
@@ -873,22 +899,22 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
                 $event->sheet->getDelegate()->getStyle('A3:Z3')->applyFromArray($styleHeader2);
 
-                $event->sheet->getDelegate()->getStyle($rangeB)->applyFromArray([
+                // $event->sheet->getDelegate()->getStyle($rangeE)->applyFromArray([
+                //     'alignment' => [
+                //         'horizontal' => Alignment::HORIZONTAL_CENTER,
+                //     ],
+                // ]);
+                $event->sheet->getDelegate()->getStyle($rangeJ)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle($rangeG)->applyFromArray([
+                $event->sheet->getDelegate()->getStyle($rangeOT)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle($rangeLQ)->applyFromArray([
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    ],
-                ]);
-                $event->sheet->getDelegate()->getStyle($rangeUX)->applyFromArray([
+                $event->sheet->getDelegate()->getStyle($rangeXAA)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
@@ -904,33 +930,42 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('D1:D2')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->mergeCells('E1:E2');
                 $event->sheet->getDelegate()->getStyle('E1:E2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('F1:F2');
+                $event->sheet->getDelegate()->getStyle('F1:F2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('F1:J1');
-                $event->sheet->getDelegate()->getStyle('F1:J1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('F2:J2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('G1:G2');
+                $event->sheet->getDelegate()->getStyle('G1:G2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('H1:H2');
+                $event->sheet->getDelegate()->getStyle('H1:H2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('K1:K2');
-                $event->sheet->getDelegate()->getStyle('K1:K2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('I1:M1');
+                $event->sheet->getDelegate()->getStyle('I1:M1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('I2:M2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('L1:P1');
-                $event->sheet->getDelegate()->getStyle('L1:P1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('L2:P2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('N1:N2');
+                $event->sheet->getDelegate()->getStyle('N1:N2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->getStyle('Q1:Q1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('Q2:Q2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('O1:S1');
+                $event->sheet->getDelegate()->getStyle('O1:S1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('O2:S2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('R1:T1');
-                $event->sheet->getDelegate()->getStyle('R1:T1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('R2:T2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('T1:T1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('T2:T2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('U1:X1');
-                $event->sheet->getDelegate()->getStyle('U1:X1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('U2:X2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('U1:W1');
+                $event->sheet->getDelegate()->getStyle('U1:W1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('U2:W2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('Y1:Y2');
-                $event->sheet->getDelegate()->getStyle('Y1:Y2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('Z1:Z2');
-                $event->sheet->getDelegate()->getStyle('Z1:Z2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('X1:AA1');
+                $event->sheet->getDelegate()->getStyle('X1:AA1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('X2:AA2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('AB1:AB2');
+                $event->sheet->getDelegate()->getStyle('AB1:AB2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('AC1:AC2');
+                $event->sheet->getDelegate()->getStyle('AC1:AC2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('AD1:AD2');
+                $event->sheet->getDelegate()->getStyle('AD1:AD2')->applyFromArray($styleHeader);
             },
         ];
     }
@@ -943,18 +978,20 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
 
     public function query()
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-        ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(
@@ -971,6 +1008,10 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $query->whereIn('risk_registers.user_id', $userIds);
         }
         $this->data = $query->get();
         return $query;
@@ -1001,7 +1042,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
             ->select(
-                DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
+                // DB::raw("CONCAT('R.', risk_registers.id) AS Kode"),
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
             )
@@ -1012,129 +1053,151 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
 
+        $query2 = RiskRegister::query()
+            ->select(
+                'risk_registers.osd1_dampak',
+                'risk_registers.osd1_probabilitas',
+            )
+            ->where($whosLogin);
+
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
         $data = $query->get();
-        $dataGraph = [['', 'Dampak', 'Probabilitas']];
-        foreach ($data as $row) {
+        $data2 = $query2->get();
+        $dataGraph = [['Dampak', 'Probabilitas']];
+        foreach ($data2 as $row) {
             $dataGraph[] = [
-                $row->Kode,
                 $row->osd1_dampak,
                 $row->osd1_probabilitas,
             ];
         }
         $totalData = count($dataGraph);
         $worksheet->fromArray($dataGraph);
-        $dataSeriesValues = [];
-        for ($i = 1; $i < count($dataGraph[0]); $i++) {
-            $pos = $i + 65;
-            $posTitle = chr($pos);
-            $dataSeriesValues[] = new DataSeriesValues(
-                DataSeriesValues::DATASERIES_TYPE_NUMBER,
-                'PETA_PANAS!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
-                null,
-                4
-            );
-        }
-        // foreach ($dataSeriesValues as $dataSeriesValue) {
-        //     $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
-        // }
-        $dataSeriesValues = [];
-        for ($i = 1; $i < count($dataGraph[0]); $i++) {
-            $pos = $i + 65;
-            $posTitle = chr($pos);
-            $dataSeriesValues[] = new DataSeriesValues(
-                DataSeriesValues::DATASERIES_TYPE_NUMBER,
-                'PETA_PANAS!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
-                null,
-                4
-            );
-        }
-        // foreach ($dataSeriesValues as $dataSeriesValue) {
-        //     $dataSeriesValue->setLineWidth(60000 / Properties::POINTS_WIDTH_MULTIPLIER);
-        // }
 
-        $dataSeriesLabels = [];
-        for ($i = 1; $i < count($dataGraph[0]); $i++) {
-            $pos = $i + 65;
-            $posTitle = chr($pos);
-            $dataSeriesLabels[] = new DataSeriesValues(
-                DataSeriesValues::DATASERIES_TYPE_STRING,
-                'PETA_PANAS!$' . $posTitle . '$1',
-                null,
-                1
-            );
-        }
-        $dataSeriesLabels[0]->setFillColor('FF0000');
-        $xAxisTickValues = [
-            new DataSeriesValues(
-                DataSeriesValues::DATASERIES_TYPE_STRING,
-                'PETA_PANAS!$A$2:$A$' . $totalData,
-                null,
-                4
-            ), // Q1 to Q(last)
+        $dataSeriesLabels = [
+            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_STRING, 'PETA_PANAS!$C$1', null, 1),
         ];
-        $dataSeriesValues = [];
-        for ($i = 1; $i < count($dataGraph[0]); $i++) {
-            $pos = $i + 65;
-            $posTitle = chr($pos);
-            $dataSeriesValues[] = new DataSeriesValues(
-                DataSeriesValues::DATASERIES_TYPE_NUMBER,
-                'PETA_PANAS!$' . $posTitle . '$2:$' . $posTitle . '$' . $totalData,
-                null,
-                4
-            );
-        }
-        // $series = new DataSeries(
-        //     DataSeries::TYPE_LINECHART, // plotType
-        //     null, // plotGrouping, was DataSeries::GROUPING_STACKED, not a usual choice for line chart
-        //     range(0, count($dataSeriesValues) - 1), // plotOrder
-        //     $dataSeriesLabels, // plotLabel
-        //     $xAxisTickValues, // plotCategory
-        //     $dataSeriesValues        // plotValues
-        // );
-        // $series = new DataSeries(
-        //     DataSeries::TYPE_SCATTERCHART, // plotType
-        //     null, // plotGrouping (Scatter charts don't have any grouping)
-        //     range(0, count($dataSeriesValues) - 1), // plotOrder
-        //     $dataSeriesLabels, // plotLabel
-        //     $xAxisTickValues, // plotCategory
-        //     $dataSeriesValues, // plotValues
-        //     null, // plotDirection
-        //     null, // smooth line
-        //     DataSeries::STYLE_LINEMARKER // plotStyle
-        //     );
-            $series = new DataSeries(
-                DataSeries::TYPE_SCATTERCHART, // plotType
-                null, // plotGrouping
-                range(0, count($dataSeriesValues) - 1), // plotOrder
-                $dataSeriesLabels, // plotLabel
-                $xAxisTickValues, // plotCategory
-                $dataSeriesValues        // plotValues
-            );
-            
-            
+
+        $dataSeriesValues = [
+            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'PETA_PANAS!$C$2:$C$' . count($dataGraph), Properties::FORMAT_CODE_NUMBER, 4, null, 'diamond', null, 7),
+        ];
+
+        $xAxisTickValues = [
+            new DataSeriesValues(DataSeriesValues::DATASERIES_TYPE_NUMBER, 'PETA_PANAS!$B$2:$B$' . count($dataGraph), Properties::FORMAT_CODE_NUMBER, 8),
+        ];
+
+        $dataSeriesValues[0]->setScatterLines(false); // Points not connected
+
+        $dataSeriesValues[0]->getMarkerFillColor()
+            ->setColorProperties('accent1', null, ChartColor::EXCEL_COLOR_TYPE_SCHEME);
+
+        // Build the dataseries
+        $series = new DataSeries(
+            DataSeries::TYPE_SCATTERCHART, // plotType
+            null, // plotGrouping (Scatter charts don't have grouping)
+            range(0, count($dataSeriesValues) - 1), // plotOrder
+            $dataSeriesLabels, // plotLabel
+            $xAxisTickValues, // plotCategory
+            $dataSeriesValues, // plotValues
+            null, // plotDirection
+            null, // smooth line
+            DataSeries::STYLE_LINEMARKER // plotStyle
+        );
 
         // Set the series in the plot area
         $plotArea = new PlotArea(null, [$series]);
+
+        $pos1 = 0; // pos = 0% (extreme low side or lower left corner)
+        $brightness1 = 1.0; // 0%
+        $gsColor1 = new ChartColor();
+        $gsColor1->setColorProperties('0000FF', 0, 'srgbClr', $brightness1); // blue
+        $gradientStop1 = [$pos1, $gsColor1];
+
+        $pos2 = 0.45; // pos = 50% (middle)
+        $brightness2 = 1.0; // 50%
+        $gsColor2 = new ChartColor();
+        $gsColor2->setColorProperties('00CC66', 0, 'srgbClr', $brightness2); // green
+        $gradientStop2 = [$pos2, $gsColor2];
+
+        $pos3 = 0.55; // pos = 75% (extreme high side or upper right corner)
+        $brightness3 = 1.0; // 50%
+        $gsColor3 = new ChartColor();
+        $gsColor3->setColorProperties('FFFF00', 0, 'srgbClr', $brightness3); // yellow
+        $gradientStop3 = [$pos3, $gsColor3];
+
+        $pos4 = 1.0; // pos = 75% (extreme high side or upper right corner)
+        $brightness4 = 1.0; // 50%
+        $gsColor4 = new ChartColor();
+        $gsColor4->setColorProperties('FF0000', 0, 'srgbClr', $brightness4); // red
+        $gradientStop4 = [$pos4, $gsColor4];
+
+        $gradientFillStops = [
+            $gradientStop1,
+            $gradientStop2,
+            $gradientStop3,
+            $gradientStop4,
+        ];
+        $gradientFillAngle = 340.0; // 45deg above horiz
+
+        $plotArea->setGradientFillProperties($gradientFillStops, $gradientFillAngle);
         // Set the chart legend
         $legend = new ChartLegend(ChartLegend::POSITION_TOPRIGHT, null, false);
 
+        $title = new Title($dataGraph[0][0]);
+
+        $xAxis = new ChartAxis();
+
+        $xAxis->setAxisOptionsProperties(
+            Properties::AXIS_LABELS_NEXT_TO,
+            null, // horizontalCrossesValue
+            null, // horizontalCrosses
+            null, // axisOrientation
+            null, // majorTmt
+            Properties::TICK_MARK_OUTSIDE, // minorTmt
+            0, // minimum
+            6, // maximum
+            null, // majorUnit
+            1, // minorUnit
+        );
+
+        $xAxis->setAxisType(ChartAxis::AXIS_TYPE_VALUE);
+
+        $yAxis = new ChartAxis();
+
+        $yAxis->setAxisOptionsProperties(
+            Properties::AXIS_LABELS_NEXT_TO,
+            null, // horizontalCrossesValue
+            null, // horizontalCrosses
+            null, // axisOrientation
+            null, // majorTmt
+            Properties::TICK_MARK_OUTSIDE, // minorTmt
+            0, // minimum
+            6, // 30 // maximum
+            null, // majorUnit
+            1, // minorUnit
+        );
         $title = new Title('RISK ASSESSMENT HEATMAP');
-        $yAxisLabel = new Title('Probabilitas');
-        $xAxisLabel = new Title('Dampak');
+        $yAxisLabel = new Title('Dampak');
+        $xAxisLabel = new Title('Probabilitas');
 
         // Create the chart
         $chart = new Chart(
-            'chart1', // name
+            'chart2', // name
             $title, // title
-            $legend, // legend
+            null, // legend
             $plotArea, // plotArea
             true, // plotVisibleOnly
-            'gap',  // displayBlanksAs
-            $xAxisLabel, // xAxisLabel
-            $yAxisLabel  // yAxisLabel
+            DataSeries::EMPTY_AS_GAP, // displayBlanksAs
+            null, // xAxisLabel
+            null, // yAxisLabel
+            // added xAxis for correct date display
+            $xAxis, // xAxis
+            $yAxis, // yAxis
         );
         $chart->setTopLeftPosition('G1');
-        $chart->setBottomRightPosition('S12');
+        $chart->setBottomRightPosition('Q23');
         $worksheet->addChart($chart);
 
         return $chart;
@@ -1195,7 +1258,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getStyle('A1:C1')->applyFromArray($styleHeader);
 
                 $chart = $this->charts();
-                $event->sheet->getDelegate()->addChart($chart);                
+                $event->sheet->getDelegate()->addChart($chart);
             },
         ];
     }
@@ -1208,17 +1271,19 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Nomor`'),
                 'risk_categories.name as kategori',
@@ -1230,19 +1295,24 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability AS `Skor`'),
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat1`'),
             )
-            ->groupBy(
-                'risk_registers.pernyataan_risiko',
-                'risk_categories.name',
-                'risk_registers.sebab',
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                'risk_registers.osd1_controllability'
-            )
+            // ->groupBy(
+            //     'risk_registers.pernyataan_risiko',
+            //     'risk_categories.name',
+            //     'risk_registers.sebab',
+            //     'risk_registers.osd1_dampak',
+            //     'risk_registers.osd1_probabilitas',
+            //     'risk_registers.osd1_controllability'
+            // )
             ->where($whosLogin)
             ->orderBy('Skor', 'DESC');
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $query->whereIn('risk_registers.user_id', $userIds);
         }
 
 
@@ -1497,29 +1567,31 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $subquery = RiskRegister::query()
-            ->join('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->join('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
             ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
             ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur3s.sasaran_strategis_id')
-            ->join('users', 'users.id', 'risk_registers.user_id')
+            ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
             ->leftjoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->leftjoin('jenis_pengendalians', 'jenis_pengendalians.id', 'risk_registers.jenis_pengendalian_id')
             ->selectRaw(
-                    'indikator_fitur3s.name, ' .
+                'indikator_fitur3s.name, ' .
                     'indikator_fitur1s.name as sasaran_name, ' .
                     'risk_registers.pernyataan_risiko, ' .
                     'opsi_pengendalians.name as opsi, ' .
@@ -1533,27 +1605,31 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'users.name as pemilik, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
-            ->groupBy(
-                'indikator_fitur3s.name',
-                'indikator_fitur1s.name',
-                'risk_registers.pernyataan_risiko',
-                'opsi_pengendalians.name',
-                'risk_registers.pengendalian_risiko',
-                'risk_registers.penanganan_risiko',
-                'efektifs.name',
-                'risk_registers.pengendalian_harus_ada',
-                'risk_registers.rencana_pengendalian',
-                'waktu_pengendalians.name',
-                'jenis_pengendalians.name',
-                'users.name',
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-                'risk_registers.osd1_controllability'
-            )
+            // ->groupBy(
+            //     'indikator_fitur3s.name',
+            //     'indikator_fitur1s.name',
+            //     'risk_registers.pernyataan_risiko',
+            //     'opsi_pengendalians.name',
+            //     'risk_registers.pengendalian_risiko',
+            //     'risk_registers.penanganan_risiko',
+            //     'efektifs.name',
+            //     'risk_registers.pengendalian_harus_ada',
+            //     'risk_registers.rencana_pengendalian',
+            //     'waktu_pengendalians.name',
+            //     'jenis_pengendalians.name',
+            //     'users.name',
+            //     'risk_registers.osd1_dampak',
+            //     'risk_registers.osd1_probabilitas',
+            //     'risk_registers.osd1_controllability'
+            // )
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $subquery->whereIn('risk_registers.user_id', $userIds);
         }
         $query = DB::query()
             ->select(
@@ -1776,34 +1852,41 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $query = RiskRegister::query()
+        $subquery = RiskRegister::query()
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
             ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
             ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur3s.sasaran_strategis_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
-            ->select('risk_registers.id', 'indikator_fitur3s.name', 'indikator_fitur1s.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.pengendalian_risiko as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name')
+            ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'indikator_fitur3s.name', 'indikator_fitur1s.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.rencana_pengendalian as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name', \DB::raw("GROUP_CONCAT(pics.name) as picsname"))->groupBy("risk_registers.id")
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+            $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
-
-
-
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $subquery->whereIn('risk_registers.user_id', $userIds);
+        }
+        $query = DB::query()
+            ->select('Peringkat', 'name', 'sasaran_name', 'pernyataan_risiko', 'rencana', 'realisasi', 'belum_tertangani', 'usulan_perbaikan', 'target_waktu', 'waktu', 'pemilik_name', 'picsname')
+            ->fromSub($subquery, 'sub')
+            ->orderBy('sub.Peringkat', 'ASC');
         $this->data = $query->get();
         return $query;
     }
@@ -1814,11 +1897,11 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Penanganan', 'Penanganan', 'Penanganan', 'Usulan Perbaikan', 'Waktu Pemantauan', 'Waktu Pemantauan', 'Penanggung Jawab Pemantauan'],
+            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Penanganan', 'Penanganan', 'Penanganan', 'Usulan Perbaikan', 'Waktu Pemantauan', 'Waktu Pemantauan', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko'],
 
-            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Rencana (Pengendalian yg harus ada)', 'Realisasi (Kegiatan Rencana Pengendalian )', 'Yang belum tertangani', 'Usulan Perbaikan', 'Rencana', 'Realisasi', 'Penanggung Jawab Pemantauan'],
+            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Rencana (Pengendalian yg harus ada)', 'Realisasi (Kegiatan Rencana Pengendalian )', 'Yang belum tertangani', 'Usulan Perbaikan', 'Rencana', 'Realisasi', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)'],
 
         ];
     }
@@ -1836,6 +1919,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'I' => 20,
             'J' => 12,
             'K' => 20,
+            'L' => 20,
         ];
     }
     public function registerEvents(): array
@@ -1990,6 +2074,9 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
                 $event->sheet->getDelegate()->mergeCells('K1:K2');
                 $event->sheet->getDelegate()->getStyle('K1:K2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('L1:L2');
+                $event->sheet->getDelegate()->getStyle('L1:L2')->applyFromArray($styleHeader);
             },
         ];
     }
@@ -2002,17 +2089,19 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
         $query = $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-        ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(DB::raw("
@@ -2024,6 +2113,11 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $query->whereIn('risk_registers.user_id', $userIds);
         }
         $this->data = $query->get();
         return $query;
@@ -2221,7 +2315,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ]);
                 $event->sheet->getDelegate()->getStyle('A1:F1')->applyFromArray($styleHeader);
                 $chart = $this->charts();
-                $event->sheet->getDelegate()->addChart($chart); 
+                $event->sheet->getDelegate()->addChart($chart);
             },
         ];
     }
@@ -2234,11 +2328,13 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $data;
     protected $startDate;
     protected $endDate;
+    protected $userId;
 
-    public function __construct($startDate, $endDate)
+    public function __construct($startDate, $endDate, $userId)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->userId = $userId;
     }
     public function query()
     {
@@ -2263,6 +2359,11 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $query->whereIn('risk_registers.user_id', $userIds);
         }
 
 

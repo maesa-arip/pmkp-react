@@ -23,10 +23,12 @@
         "@heroicons/react": "^2.0.14",
         "@tabler/icons": "^2.1.2",
         "chart.js": "^4.3.0",
+        "clsx": "^2.0.0",
         "dayjs": "^1.11.8",
         "moment": "^2.29.4",
         "puppeteer": "^19.6.3",
         "react-datepicker": "^4.10.0",
-        "react-hot-toast": "^2.4.0"
+        "react-hot-toast": "^2.4.0",
+        "react-select": "^5.7.4"
     }
 }
