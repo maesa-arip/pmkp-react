@@ -394,6 +394,23 @@ export default function Form({
                                 />
                             </div>
                             <div className="col-span-12">
+                                <InputLabel for="pihak_terkena" value="Dampak (Pihak yang Terkena)" />
+                                <TextAreaInput
+                                    id="pihak_terkena"
+                                    value={data.pihak_terkena}
+                                    handleChange={(e) =>
+                                        setData("pihak_terkena", e.target.value)
+                                    }
+                                    // onChange={onChange}
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                <InputError
+                                    message={errors.pihak_terkena}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-12">
                                 <InputLabel
                                     for="pernyataan risiko"
                                     value="Pernyataan Risiko"

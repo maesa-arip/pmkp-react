@@ -45,6 +45,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         penanganan_risiko: model.penanganan_risiko,
         rencana_pengendalian: model.rencana_pengendalian,
         jenis_sebab_id: model.jenis_sebab_id,
+        pihak_terkena: model.pihak_terkena,
        
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
@@ -104,6 +105,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             penanganan_risiko: model.penanganan_risiko,
             rencana_pengendalian: model.rencana_pengendalian,
             jenis_sebab_id: model.jenis_sebab_id,
+            pihak_terkena: model.pihak_terkena,
             
         });
     }, [model]);

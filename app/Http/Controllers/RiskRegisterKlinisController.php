@@ -175,6 +175,7 @@ class RiskRegisterKlinisController extends Controller
             'jenis_pengendalian_id' => 'required',
             'waktu_pengendalian_id' => 'required',
             'rencana_pengendalian' => 'required',
+            'pihak_terkena' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
         $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
@@ -238,6 +239,7 @@ class RiskRegisterKlinisController extends Controller
             'jenis_pengendalian_id' => 'required',
             'waktu_pengendalian_id' => 'required',
             'rencana_pengendalian' => 'required',
+            'pihak_terkena' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
@@ -449,6 +451,19 @@ class RiskRegisterKlinisController extends Controller
             'probabilitas_responden8' => $request->probabilitas_responden8,
         ]);
         FgdTreated::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
+        $riskRegisterKlinis = RiskRegister::find($request->id);
+        $this->validate($request, [
+            'osd3_dampak' => 'required',
+            'osd3_probabilitas' => 'required',
+        ]);
+        $request->merge([
+            'concatdp3' => $request->osd3_dampak . $request->osd3_probabilitas,
+        ]);
+        $riskRegisterKlinis->update([
+            'osd3_dampak' => $request->osd3_dampak,
+            'osd3_probabilitas' => $request->osd3_probabilitas,
+            'concatdp3' => $request->concatdp3,
+        ]);
         return back()->with([
             'type' => 'success',
             'message' => 'Data FGD Treated berhasil disimpan',

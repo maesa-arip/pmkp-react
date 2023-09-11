@@ -26,7 +26,7 @@ export default function Form({
     const [probabilitasMode, setProbabilitasMode] = useState("");
 
     // Watch for changes in dampak_responden values and compute the mode
-    
+
     useEffect(() => {
         const dampakValues = [
             data.dampak_responden1,
@@ -62,7 +62,7 @@ export default function Form({
         setDampakMode(modeValue);
         setData({
             ...data,
-            ["osd1_dampak"]: modeValue
+            ["osd3_dampak"]: modeValue,
         });
     }, [
         data.dampak_responden1,
@@ -110,7 +110,7 @@ export default function Form({
         setProbabilitasMode(modeValue);
         setData({
             ...data,
-            ["osd1_probabilitas"]: modeValue
+            ["osd3_probabilitas"]: modeValue,
         });
     }, [
         data.probabilitas_responden1,
@@ -160,7 +160,6 @@ export default function Form({
                             </div>
                         </div>
                     </div>
-
                     <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
                         <label
                             htmlFor=""
@@ -177,12 +176,18 @@ export default function Form({
                                     Dampak
                                 </label>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden1" value="Responden 1" />
+                                    <InputLabel
+                                        for="dampak_responden1"
+                                        value="Responden 1"
+                                    />
                                     <TextInput
                                         id="dampak_responden1"
                                         value={data.dampak_responden1}
                                         handleChange={(e) =>
-                                            setData("dampak_responden1", e.target.value)
+                                            setData(
+                                                "dampak_responden1",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -194,12 +199,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden2" value="Responden 2" />
+                                    <InputLabel
+                                        for="dampak_responden2"
+                                        value="Responden 2"
+                                    />
                                     <TextInput
                                         id="dampak_responden2"
                                         value={data.dampak_responden2}
                                         handleChange={(e) =>
-                                            setData("dampak_responden2", e.target.value)
+                                            setData(
+                                                "dampak_responden2",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -227,12 +238,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden4" value="Responden 4" />
+                                    <InputLabel
+                                        for="dampak_responden4"
+                                        value="Responden 4"
+                                    />
                                     <TextInput
                                         id="dampak_responden4"
                                         value={data.dampak_responden4}
                                         handleChange={(e) =>
-                                            setData("dampak_responden4", e.target.value)
+                                            setData(
+                                                "dampak_responden4",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -244,12 +261,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden5" value="Responden 5" />
+                                    <InputLabel
+                                        for="dampak_responden5"
+                                        value="Responden 5"
+                                    />
                                     <TextInput
                                         id="dampak_responden5"
                                         value={data.dampak_responden5}
                                         handleChange={(e) =>
-                                            setData("dampak_responden5", e.target.value)
+                                            setData(
+                                                "dampak_responden5",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -277,12 +300,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden7" value="Responden 7" />
+                                    <InputLabel
+                                        for="dampak_responden7"
+                                        value="Responden 7"
+                                    />
                                     <TextInput
                                         id="dampak_responden7"
                                         value={data.dampak_responden7}
                                         handleChange={(e) =>
-                                            setData("dampak_responden7", e.target.value)
+                                            setData(
+                                                "dampak_responden7",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -318,12 +347,18 @@ export default function Form({
                                     Probabilitas
                                 </label>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden1" value="Responden 1" />
+                                    <InputLabel
+                                        for="probabilitas_responden1"
+                                        value="Responden 1"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden1"
                                         value={data.probabilitas_responden1}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden1", e.target.value)
+                                            setData(
+                                                "probabilitas_responden1",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -335,12 +370,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden2" value="Responden 2" />
+                                    <InputLabel
+                                        for="probabilitas_responden2"
+                                        value="Responden 2"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden2"
                                         value={data.probabilitas_responden2}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden2", e.target.value)
+                                            setData(
+                                                "probabilitas_responden2",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -368,12 +409,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden4" value="Responden 4" />
+                                    <InputLabel
+                                        for="probabilitas_responden4"
+                                        value="Responden 4"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden4"
                                         value={data.probabilitas_responden4}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden4", e.target.value)
+                                            setData(
+                                                "probabilitas_responden4",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -385,12 +432,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden5" value="Responden 5" />
+                                    <InputLabel
+                                        for="probabilitas_responden5"
+                                        value="Responden 5"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden5"
                                         value={data.probabilitas_responden5}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden5", e.target.value)
+                                            setData(
+                                                "probabilitas_responden5",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -418,12 +471,18 @@ export default function Form({
                                     />
                                 </div>
                                 <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden7" value="Responden 7" />
+                                    <InputLabel
+                                        for="probabilitas_responden7"
+                                        value="Responden 7"
+                                    />
                                     <TextInput
                                         id="probabilitas_responden7"
                                         value={data.probabilitas_responden7}
                                         handleChange={(e) =>
-                                            setData("probabilitas_responden7", e.target.value)
+                                            setData(
+                                                "probabilitas_responden7",
+                                                e.target.value
+                                            )
                                         }
                                         readOnly={false}
                                         type="number"
@@ -454,56 +513,55 @@ export default function Form({
                         </div>
                     </div>
                     <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
-                                <label
-                                    htmlFor=""
-                                    className="block mb-4 text-lg font-bold text-gray-700"
-                                >
-                                    Modus Dampak
-                                </label>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel
-                                        for="osd1_dampak"
-                                        value="Modus Dampak"
-                                    />
-                                    <TextInput
-                                        id="osd1_dampak"
-                                        value={dampakMode}
-                                        
-                                        readOnly={true}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.osd1_dampak}
-                                        className="mt-2"
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
-                                <label
-                                    htmlFor=""
-                                    className="block mb-4 text-lg font-bold text-gray-700"
-                                >
-                                    Modus Probabilitas
-                                </label>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel
-                                        for="osd1_probabilitas"
-                                        value="Modus Probabilitas"
-                                    />
-                                    <TextInput
-                                        id="osd1_probabilitas"
-                                        value={probabilitasMode}
-                                        readOnly={true}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.osd1_probabilitas}
-                                        className="mt-2"
-                                    />
-                                </div>
-                            </div>
+                        <label
+                            htmlFor=""
+                            className="block mb-4 text-lg font-bold text-gray-700"
+                        >
+                            Modus Dampak
+                        </label>
+                        <div className="col-span-6 py-2">
+                            <InputLabel
+                                for="osd3_dampak"
+                                value="Modus Dampak"
+                            />
+                            <TextInput
+                                id="osd3_dampak"
+                                value={dampakMode}
+                                readOnly={true}
+                                type="number"
+                                className="block w-full mt-1"
+                            />
+                            <InputError
+                                message={errors.osd3_dampak}
+                                className="mt-2"
+                            />
+                        </div>
+                    </div>
+                    <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
+                        <label
+                            htmlFor=""
+                            className="block mb-4 text-lg font-bold text-gray-700"
+                        >
+                            Modus Probabilitas
+                        </label>
+                        <div className="col-span-6 py-2">
+                            <InputLabel
+                                for="osd3_probabilitas"
+                                value="Modus Probabilitas"
+                            />
+                            <TextInput
+                                id="osd3_probabilitas"
+                                value={probabilitasMode}
+                                readOnly={true}
+                                type="number"
+                                className="block w-full mt-1"
+                            />
+                            <InputError
+                                message={errors.osd3_probabilitas}
+                                className="mt-2"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 

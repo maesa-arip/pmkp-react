@@ -159,6 +159,7 @@ class RiskRegisterNonKlinisController extends Controller
             'jenis_pengendalian_id' => 'required',
             'waktu_pengendalian_id' => 'required',
             'rencana_pengendalian' => 'required',
+            'pihak_terkena' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
@@ -226,6 +227,7 @@ class RiskRegisterNonKlinisController extends Controller
             'jenis_pengendalian_id' => 'required',
             'waktu_pengendalian_id' => 'required',
             'rencana_pengendalian' => 'required',
+            'pihak_terkena' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);

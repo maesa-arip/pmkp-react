@@ -17,6 +17,9 @@ import LarsDHP from "@/Pages/Export/LarsDHP";
 import ThirdButton from "@/Components/ThirdButton";
 import BPKPKlinis from "@/Pages/Export/BPKPKlinis";
 import BPKPNonKlinis from "@/Pages/Export/BPKPNonKlinis";
+import BPKP from "@/Pages/Export/BPKP";
+import LarsDHPKlinis from "@/Pages/Export/LarsDHPKlinis";
+import LarsDHPNonKlinis from "@/Pages/Export/LarsDHPNonKlinis";
 
 export default function Sidebar() {
     const { auth, notifications } = usePage().props;
@@ -24,127 +27,158 @@ export default function Sidebar() {
     const [loadingLars, setLoadingLars] = useState(false);
     const [loadingKlinis, setLoadingKlinis] = useState(false);
     const [loadingNonKlinis, setLoadingNonKlinis] = useState(false);
-    const handleExportLARSDHP = () => {
-        setLoadingLars(true);
-        axios
-            .get(route("export.riskregisterklinislarsdhp"), {
-                responseType: "blob",
-            })
-            .then((response) => {
-                const url = window.URL.createObjectURL(
-                    new Blob([response.data])
-                );
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    "Form Manajemen Risiko LARS DHP.xlsx"
-                );
-                document.body.appendChild(link);
-                link.click();
-                setLoadingLars(false);
-            })
-            .catch((error) => {
-                console.error("Export failed:", error);
-                setLoadingLars(false);
-            });
-    };
-    const handleExportBPKPKlinis = () => {
-        setLoadingKlinis(true);
-        axios
-            .get(route("export.riskregisterklinisbpkp"), {
-                responseType: "blob",
-            })
-            .then((response) => {
-                const url = window.URL.createObjectURL(
-                    new Blob([response.data])
-                );
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    "Proses Manajemen Risiko RSBM.xlsx"
-                );
-                document.body.appendChild(link);
-                link.click();
-                setLoadingKlinis(false);
-            })
-            .catch((error) => {
-                console.error("Export failed:", error);
-                setLoadingKlinis(false);
-            });
+    // const handleExportLARSDHP = () => {
+    //     setLoadingLars(true);
+    //     axios
+    //         .get(route("export.riskregisterklinislarsdhp"), {
+    //             responseType: "blob",
+    //         })
+    //         .then((response) => {
+    //             const url = window.URL.createObjectURL(
+    //                 new Blob([response.data])
+    //             );
+    //             const link = document.createElement("a");
+    //             link.href = url;
+    //             link.setAttribute(
+    //                 "download",
+    //                 "Form Manajemen Risiko LARS DHP.xlsx"
+    //             );
+    //             document.body.appendChild(link);
+    //             link.click();
+    //             setLoadingLars(false);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Export failed:", error);
+    //             setLoadingLars(false);
+    //         });
+    // };
+    // const handleExportBPKPKlinis = () => {
+    //     setLoadingKlinis(true);
+    //     axios
+    //         .get(route("export.riskregisterklinisbpkp"), {
+    //             responseType: "blob",
+    //         })
+    //         .then((response) => {
+    //             const url = window.URL.createObjectURL(
+    //                 new Blob([response.data])
+    //             );
+    //             const link = document.createElement("a");
+    //             link.href = url;
+    //             link.setAttribute(
+    //                 "download",
+    //                 "Proses Manajemen Risiko RSBM.xlsx"
+    //             );
+    //             document.body.appendChild(link);
+    //             link.click();
+    //             setLoadingKlinis(false);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Export failed:", error);
+    //             setLoadingKlinis(false);
+    //         });
+    // };
+
+    // const handleExportBPKPNonKlinis = () => {
+    //     setLoadingNonKlinis(true);
+    //     axios
+    //         .get(route("export.riskregisternonklinisbpkp"), {
+    //             responseType: "blob",
+    //         })
+    //         .then((response) => {
+    //             const url = window.URL.createObjectURL(
+    //                 new Blob([response.data])
+    //             );
+    //             const link = document.createElement("a");
+    //             link.href = url;
+    //             link.setAttribute(
+    //                 "download",
+    //                 "Proses Manajemen Risiko RSBM.xlsx"
+    //             );
+    //             document.body.appendChild(link);
+    //             link.click();
+    //             setLoadingNonKlinis(false);
+    //         })
+    //         .catch((error) => {
+    //             console.error("Export failed:", error);
+    //             setLoadingNonKlinis(false);
+    //         });
+    // };
+
+    // const [isOpenExportDialog, setIsOpenExportDialog] = useState(false);
+    // const openExportDialog = () => {
+    //     setIsOpenExportDialog(true);
+    // };
+
+    const [isOpenExportDialogBPKP, setIsOpenExportDialogBPKP] = useState(false);
+    const openExportDialogBPKP = () => {
+        setIsOpenExportDialogBPKP(true);
     };
 
-    const handleExportBPKPNonKlinis = () => {
-        setLoadingNonKlinis(true);
-        axios
-            .get(route("export.riskregisternonklinisbpkp"), {
-                responseType: "blob",
-            })
-            .then((response) => {
-                const url = window.URL.createObjectURL(
-                    new Blob([response.data])
-                );
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    "Proses Manajemen Risiko RSBM.xlsx"
-                );
-                document.body.appendChild(link);
-                link.click();
-                setLoadingNonKlinis(false);
-            })
-            .catch((error) => {
-                console.error("Export failed:", error);
-                setLoadingNonKlinis(false);
-            });
+    const [
+        isOpenExportDialogLarsDHPKlinis,
+        setIsOpenExportDialogLarsDHPKlinis,
+    ] = useState(false);
+    const openExportDialogLarsDHPKlinis = () => {
+        setIsOpenExportDialogLarsDHPKlinis(true);
     };
 
-    const [isOpenExportDialog, setIsOpenExportDialog] = useState(false);
-    const openExportDialog = () => {
-        setIsOpenExportDialog(true);
+    const [
+        isOpenExportDialogLarsDHPNonKlinis,
+        setIsOpenExportDialogLarsDHPNonKlinis,
+    ] = useState(false);
+    const openExportDialogLarsDHPNonKlinis = () => {
+        setIsOpenExportDialogLarsDHPNonKlinis(true);
     };
-
-    const [isOpenExportDialog2, setIsOpenExportDialog2] = useState(false);
-    const openExportDialog2 = () => {
-        setIsOpenExportDialog2(true);
-    };
-
-    const [isOpenExportDialog3, setIsOpenExportDialog3] = useState(false);
-    const openExportDialog3 = () => {
-        setIsOpenExportDialog3(true);
-    };
+    // const [isOpenExportDialog3, setIsOpenExportDialog3] = useState(false);
+    // const openExportDialog3 = () => {
+    //     setIsOpenExportDialog3(true);
+    // };
 
     return (
         <div className="col-span-12 col-start-1 py-4 antialiased text-gray-800 lg:px-4 lg:pb-0 lg:pt-4 lg:col-span-2 lg:block">
             <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
                 <ExportModal
-                    isOpenExportDialog={isOpenExportDialog}
-                    setIsOpenExportDialog={setIsOpenExportDialog}
+                    isOpenExportDialog={isOpenExportDialogLarsDHPKlinis}
+                    setIsOpenExportDialog={setIsOpenExportDialogLarsDHPKlinis}
                     size="max-w-4xl"
-                    title={`Pilihan Export LARS DHP Register ` + auth.user.name}
+                    title={
+                        `Pilihan Export LARS DHP Klinis Register ` +
+                        auth.user.name
+                    }
                 >
-                    <LarsDHP setIsOpenAddDialog={setIsOpenExportDialog} />
+                    <LarsDHPKlinis
+                        setIsOpenAddDialog={setIsOpenExportDialogLarsDHPKlinis}
+                    />
+                </ExportModal>
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogLarsDHPNonKlinis}
+                    setIsOpenExportDialog={
+                        setIsOpenExportDialogLarsDHPNonKlinis
+                    }
+                    size="max-w-4xl"
+                    title={
+                        `Pilihan Export LARS DHP Non Klinis Register ` +
+                        auth.user.name
+                    }
+                >
+                    <LarsDHPNonKlinis
+                        setIsOpenAddDialog={
+                            setIsOpenExportDialogLarsDHPNonKlinis
+                        }
+                    />
                 </ExportModal>
 
                 <ExportModal
-                    isOpenExportDialog={isOpenExportDialog2}
-                    setIsOpenExportDialog={setIsOpenExportDialog2}
+                    isOpenExportDialog={isOpenExportDialogBPKP}
+                    setIsOpenExportDialog={setIsOpenExportDialogBPKP}
                     size="max-w-4xl"
-                    title={`Pilihan Export BPKP Register Klinis ` + auth.user.name}
+                    title={
+                        `Pilihan Export BPKP Risk Register ` + auth.user.name
+                    }
                 >
-                    <BPKPKlinis setIsOpenAddDialog={setIsOpenExportDialog2} />
+                    <BPKP setIsOpenAddDialog={setIsOpenExportDialogBPKP} />
                 </ExportModal>
 
-                <ExportModal
-                    isOpenExportDialog={isOpenExportDialog3}
-                    setIsOpenExportDialog={setIsOpenExportDialog3}
-                    size="max-w-4xl"
-                    title={`Pilihan Export BPKP Register Non Klinis ` + auth.user.name}
-                >
-                    <BPKPNonKlinis setIsOpenAddDialog={setIsOpenExportDialog3} />
-                </ExportModal>
                 <Transition.Root show={mobileFiltersOpen} as={Fragment}>
                     <Dialog
                         as="div"
@@ -296,139 +330,10 @@ export default function Sidebar() {
                                                     </h3>
                                                     <Disclosure.Panel className="pt-6">
                                                         <div className="space-y-4">
-                                                        <button
-                                                        type="button"
-                                                        onClick={
-                                                            openExportDialog
-                                                        }
-                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                viewBox="0 0 24 24"
-                                                                strokeWidth={2}
-                                                                stroke="currentColor"
-                                                                fill="none"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            >
-                                                                <path
-                                                                    stroke="none"
-                                                                    d="M0 0h24v24H0z"
-                                                                    fill="none"
-                                                                />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                <path d="M8 11h8v7h-8z" />
-                                                                <path d="M8 15h8" />
-                                                                <path d="M11 11v7" />
-                                                            </svg>
-                                                        </span>
-                                                        {loadingLars ? (
-                                                            <div
-                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                disabled={true}
-                                                            >
-                                                                Exporting...
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                LARS DHP
-                                                            </div>
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={
-                                                            openExportDialog2
-                                                        }
-                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                viewBox="0 0 24 24"
-                                                                strokeWidth={2}
-                                                                stroke="currentColor"
-                                                                fill="none"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            >
-                                                                <path
-                                                                    stroke="none"
-                                                                    d="M0 0h24v24H0z"
-                                                                    fill="none"
-                                                                />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                <path d="M8 11h8v7h-8z" />
-                                                                <path d="M8 15h8" />
-                                                                <path d="M11 11v7" />
-                                                            </svg>
-                                                        </span>
-                                                        {loadingLars ? (
-                                                            <div
-                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                disabled={true}
-                                                            >
-                                                                Exporting...
-                                                            </div>
-                                                        ) : (
-                                                            <div className="ml-2 text-sm tracking-wide truncate">
-                                                                BPKP KLINIS
-                                                            </div>
-                                                        )}
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={
-                                                            openExportDialog3
-                                                        }
-                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                viewBox="0 0 24 24"
-                                                                strokeWidth={2}
-                                                                stroke="currentColor"
-                                                                fill="none"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            >
-                                                                <path
-                                                                    stroke="none"
-                                                                    d="M0 0h24v24H0z"
-                                                                    fill="none"
-                                                                />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                <path d="M8 11h8v7h-8z" />
-                                                                <path d="M8 15h8" />
-                                                                <path d="M11 11v7" />
-                                                            </svg>
-                                                        </span>
-                                                        {loadingLars ? (
-                                                            <div
-                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                disabled={true}
-                                                            >
-                                                                Exporting...
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                BPKP NON KLINIS
-                                                            </div>
-                                                        )}
-                                                    </button>
-                                                            {/* <Link
-                                                                href="#"
+                                                            <button
+                                                                type="button"
                                                                 onClick={
-                                                                    handleExportLARSDHP
+                                                                    openExportDialogLarsDHPKlinis
                                                                 }
                                                                 className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                             >
@@ -458,25 +363,24 @@ export default function Sidebar() {
                                                                     </svg>
                                                                 </span>
                                                                 {loadingLars ? (
-                                                                    <button
+                                                                    <div
                                                                         className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
                                                                         disabled={
                                                                             true
                                                                         }
                                                                     >
                                                                         Exporting...
-                                                                    </button>
+                                                                    </div>
                                                                 ) : (
-                                                                    <button className="ml-2 text-sm tracking-wide truncate">
-                                                                        Format
-                                                                        LARS DHP
-                                                                    </button>
+                                                                    <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                        LARS DHP KLINIS
+                                                                    </div>
                                                                 )}
-                                                            </Link>
-                                                            <Link
-                                                                href="#"
+                                                            </button>
+                                                            <button
+                                                                type="button"
                                                                 onClick={
-                                                                    handleExportBPKPKlinis
+                                                                    openExportDialogLarsDHPNonKlinis
                                                                 }
                                                                 className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                             >
@@ -505,72 +409,68 @@ export default function Sidebar() {
                                                                         <path d="M11 11v7" />
                                                                     </svg>
                                                                 </span>
-                                                                {loadingKlinis ? (
-                                                                    <button
+                                                                {loadingLars ? (
+                                                                    <div
                                                                         className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
                                                                         disabled={
                                                                             true
                                                                         }
                                                                     >
                                                                         Exporting...
-                                                                    </button>
+                                                                    </div>
                                                                 ) : (
-                                                                    <button className="ml-2 text-sm tracking-wide truncate">
-                                                                        Format
+                                                                    <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                        LARS DHP NON KLINIS
+                                                                    </div>
+                                                                )}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={
+                                                                    openExportDialogBPKP
+                                                                }
+                                                                className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                            >
+                                                                <span className="inline-flex items-center justify-center">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth={
+                                                                            2
+                                                                        }
+                                                                        stroke="currentColor"
+                                                                        fill="none"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                    >
+                                                                        <path
+                                                                            stroke="none"
+                                                                            d="M0 0h24v24H0z"
+                                                                            fill="none"
+                                                                        />
+                                                                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                        <path d="M8 11h8v7h-8z" />
+                                                                        <path d="M8 15h8" />
+                                                                        <path d="M11 11v7" />
+                                                                    </svg>
+                                                                </span>
+                                                                {loadingLars ? (
+                                                                    <div
+                                                                        className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                        disabled={
+                                                                            true
+                                                                        }
+                                                                    >
+                                                                        Exporting...
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="ml-2 text-sm tracking-wide truncate">
                                                                         BPKP
-                                                                        KLINIS
-                                                                    </button>
+                                                                    </div>
                                                                 )}
-                                                            </Link>
-                                                            <Link
-                                                                href="#"
-                                                                onClick={
-                                                                    handleExportBPKPNonKlinis
-                                                                }
-                                                                className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                            >
-                                                                <span className="inline-flex items-center justify-center">
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                        viewBox="0 0 24 24"
-                                                                        strokeWidth={
-                                                                            2
-                                                                        }
-                                                                        stroke="currentColor"
-                                                                        fill="none"
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                    >
-                                                                        <path
-                                                                            stroke="none"
-                                                                            d="M0 0h24v24H0z"
-                                                                            fill="none"
-                                                                        />
-                                                                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                        <path d="M8 11h8v7h-8z" />
-                                                                        <path d="M8 15h8" />
-                                                                        <path d="M11 11v7" />
-                                                                    </svg>
-                                                                </span>
-                                                                {loadingNonKlinis ? (
-                                                                    <button
-                                                                        className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                        disabled={
-                                                                            true
-                                                                        }
-                                                                    >
-                                                                        Exporting...
-                                                                    </button>
-                                                                ) : (
-                                                                    <button className="ml-2 text-sm tracking-wide truncate">
-                                                                        Format
-                                                                        BPKP NON
-                                                                        KLINIS
-                                                                    </button>
-                                                                )}
-                                                            </Link> */}
+                                                            </button>
                                                         </div>
                                                     </Disclosure.Panel>
                                                 </>
@@ -916,7 +816,7 @@ export default function Sidebar() {
                                                     <button
                                                         type="button"
                                                         onClick={
-                                                            openExportDialog
+                                                            openExportDialogLarsDHPKlinis
                                                         }
                                                         className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                     >
@@ -952,14 +852,14 @@ export default function Sidebar() {
                                                             </div>
                                                         ) : (
                                                             <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                LARS DHP
+                                                                LARS DHP KLINIS
                                                             </div>
                                                         )}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={
-                                                            openExportDialog2
+                                                            openExportDialogLarsDHPNonKlinis
                                                         }
                                                         className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                     >
@@ -995,14 +895,14 @@ export default function Sidebar() {
                                                             </div>
                                                         ) : (
                                                             <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                BPKP KLINIS
+                                                                LARS DHP NON KLINIS
                                                             </div>
                                                         )}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={
-                                                            openExportDialog3
+                                                            openExportDialogBPKP
                                                         }
                                                         className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                     >
@@ -1038,96 +938,10 @@ export default function Sidebar() {
                                                             </div>
                                                         ) : (
                                                             <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                BPKP NON KLINIS
-                                                            </div>
-                                                        )}
-                                                    </button>
-                                                    {/* <Link
-                                                        onClick={
-                                                            handleExportBPKPKlinis
-                                                        }
-                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                viewBox="0 0 24 24"
-                                                                strokeWidth={2}
-                                                                stroke="currentColor"
-                                                                fill="none"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            >
-                                                                <path
-                                                                    stroke="none"
-                                                                    d="M0 0h24v24H0z"
-                                                                    fill="none"
-                                                                />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                <path d="M8 11h8v7h-8z" />
-                                                                <path d="M8 15h8" />
-                                                                <path d="M11 11v7" />
-                                                            </svg>
-                                                        </span>
-                                                        {loadingKlinis ? (
-                                                            <button
-                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                disabled={true}
-                                                            >
-                                                                Exporting...
-                                                            </button>
-                                                        ) : (
-                                                            <button className="ml-2 text-sm tracking-wide truncate">
                                                                 BPKP
-                                                                KLINIS
-                                                            </button>
+                                                            </div>
                                                         )}
-                                                    </Link>
-                                                    <Link
-                                                        onClick={
-                                                            handleExportBPKPNonKlinis
-                                                        }
-                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                viewBox="0 0 24 24"
-                                                                strokeWidth={2}
-                                                                stroke="currentColor"
-                                                                fill="none"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            >
-                                                                <path
-                                                                    stroke="none"
-                                                                    d="M0 0h24v24H0z"
-                                                                    fill="none"
-                                                                />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                <path d="M8 11h8v7h-8z" />
-                                                                <path d="M8 15h8" />
-                                                                <path d="M11 11v7" />
-                                                            </svg>
-                                                        </span>
-                                                        {loadingNonKlinis ? (
-                                                            <button
-                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                disabled={true}
-                                                            >
-                                                                Exporting...
-                                                            </button>
-                                                        ) : (
-                                                            <button className="ml-2 text-sm tracking-wide truncate">
-                                                                BPKP NON
-                                                                KLINIS
-                                                            </button>
-                                                        )}
-                                                    </Link> */}
+                                                    </button>
                                                 </div>
                                             </Disclosure.Panel>
                                         </>
@@ -1226,7 +1040,8 @@ export default function Sidebar() {
                                                             </svg>
                                                         </span>
                                                         <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                            Risk Register Non Klinis
+                                                            Risk Register Non
+                                                            Klinis
                                                         </span>
                                                     </Link>
                                                 </div>

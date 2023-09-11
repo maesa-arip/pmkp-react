@@ -1052,22 +1052,13 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
-
-        $query2 = RiskRegister::query()
-            ->select(
-                'risk_registers.osd1_dampak',
-                'risk_registers.osd1_probabilitas',
-            )
-            ->where($whosLogin);
-
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         $data = $query->get();
-        $data2 = $query2->get();
         $dataGraph = [['Dampak', 'Probabilitas']];
-        foreach ($data2 as $row) {
+        foreach ($data as $row) {
             $dataGraph[] = [
                 $row->osd1_dampak,
                 $row->osd1_probabilitas,
@@ -1157,15 +1148,13 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             null, // majorTmt
             Properties::TICK_MARK_OUTSIDE, // minorTmt
             0, // minimum
-            6, // maximum
+            5, // maximum
             null, // majorUnit
             1, // minorUnit
         );
 
         $xAxis->setAxisType(ChartAxis::AXIS_TYPE_VALUE);
-
         $yAxis = new ChartAxis();
-
         $yAxis->setAxisOptionsProperties(
             Properties::AXIS_LABELS_NEXT_TO,
             null, // horizontalCrossesValue
@@ -1174,13 +1163,15 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             null, // majorTmt
             Properties::TICK_MARK_OUTSIDE, // minorTmt
             0, // minimum
-            6, // 30 // maximum
+            5, // 30 // maximum
             null, // majorUnit
             1, // minorUnit
         );
+        
         $title = new Title('RISK ASSESSMENT HEATMAP');
-        $yAxisLabel = new Title('Dampak');
-        $xAxisLabel = new Title('Probabilitas');
+        $xAxisLabel = new Title('DAMPAK');
+        $yAxisLabel = new Title('PROBABILITAS');
+
 
         // Create the chart
         $chart = new Chart(
@@ -1190,8 +1181,8 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $plotArea, // plotArea
             true, // plotVisibleOnly
             DataSeries::EMPTY_AS_GAP, // displayBlanksAs
-            null, // xAxisLabel
-            null, // yAxisLabel
+            $xAxisLabel, // xAxisLabel
+            $yAxisLabel, // yAxisLabel
             // added xAxis for correct date display
             $xAxis, // xAxis
             $yAxis, // yAxis

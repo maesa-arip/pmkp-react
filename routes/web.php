@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('riskRegisterNonKlinis', RiskRegisterNonKlinisController::class);
     
     Route::get('export/riskregisterklinis', [ExportController::class, 'riskregisterklinis'])->name('export.riskregisterklinis');
+    Route::get('export/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp'])->name('export.riskregisterbpkp');
     Route::get('export/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp'])->name('export.riskregisterklinisbpkp');
     Route::get('export/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp'])->name('export.riskregisternonklinisbpkp');
     Route::get('export/riskregisterklinisfitur4', [ExportController::class, 'riskregisterklinisfitur4'])->name('export.riskregisterklinisfitur4');
@@ -106,8 +107,10 @@ Route::middleware('auth')->group(function () {
 
     // Route::post('/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
-    Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
-    Route::match(['GET', 'POST'], '/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp']);
+    Route::match(['GET', 'POST'], '/riskregisternonklinislarsdhp', [ExportController::class, 'riskregisternonklinislarsdhp']);
+    Route::match(['GET', 'POST'], '/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp']);
+    // Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
+    // Route::match(['GET', 'POST'], '/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp']);
 });
 
 require __DIR__.'/auth.php';
