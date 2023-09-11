@@ -420,7 +420,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
                 DB::raw("
@@ -762,7 +762,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_gradings as risk_grading2', 'risk_grading2.kode', 'risk_registers.concatdp2')
             ->leftjoin('risk_gradings as risk_grading3', 'risk_grading3.kode', 'risk_registers.concatdp3')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 DB::raw('DATE_FORMAT(risk_registers.tgl_register, "%d-%m-%Y") AS formatted_tgl_register'),
                 'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
@@ -1308,15 +1308,15 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `No Urut`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `No Urut`'),
                 'risk_registers.resiko as Penyataan Risiko',
                 'risk_categories.name as Kategori Risiko',
                 'risk_registers.sebab as Sebab',
-                'risk_registers.osd2_dampak',
-                'risk_registers.osd2_probabilitas',
-                'risk_registers.osd2_controllability',
-                DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability AS `Skor`'),
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `Peringkat2`'),
+                'risk_registers.osd1_dampak',
+                'risk_registers.osd1_probabilitas',
+                'risk_registers.osd1_controllability',
+                DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability AS `Skor`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat1`'),
             )
             // ->groupBy(
             //     'risk_registers.resiko',
@@ -1494,7 +1494,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'), 'risk_registers.resiko as risiko_prioritas', 'risk_registers.rencana_pengendalian', 'risk_registers.output', 'waktu_pengendalians.name as rencana_waktu', 'waktu_implementasis.name as waktu_implementasi', 'pics.name as PJ', 'risk_registers.dokumen_pendukung', 'risk_registers.kendala')
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'), 'risk_registers.resiko as risiko_prioritas', 'risk_registers.rencana_pengendalian', 'risk_registers.output', 'waktu_pengendalians.name as rencana_waktu', 'waktu_implementasis.name as waktu_implementasi', 'pics.name as PJ', 'risk_registers.dokumen_pendukung', 'risk_registers.kendala')
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
@@ -1749,7 +1749,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('jenis_sebabs', 'jenis_sebabs.id', 'risk_registers.jenis_sebab_id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 'risk_registers.resiko as Penyataan Risiko',
                 'formulir_rcas.why1',
                 'formulir_rcas.why2',
@@ -1914,7 +1914,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('fgd_inherents', 'fgd_inherents.risk_register_id', 'risk_registers.id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 'risk_registers.resiko as Penyataan Risiko',
                 'fgd_inherents.dampak_responden1',
                 'fgd_inherents.dampak_responden2',
@@ -2171,7 +2171,7 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('fgd_residuals', 'fgd_residuals.risk_register_id', 'risk_registers.id')
             ->leftjoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 'risk_registers.resiko as Penyataan Risiko',
                 DB::raw("'-' AS 'Dampak'"),
                 DB::raw("'-' AS 'Probabilitas'"),
@@ -2449,7 +2449,7 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
             ->leftjoin('fgd_treateds', 'fgd_treateds.risk_register_id', 'risk_registers.id')
             ->leftjoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 'risk_registers.pernyataan_risiko as Penyataan Risiko',
                 DB::raw("'-' AS 'Dampak'"),
                 DB::raw("'-' AS 'Probabilitas'"),
@@ -2718,7 +2718,7 @@ class Sheet11 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
         $query = RiskRegister::query()
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd2_dampak * risk_registers.osd2_probabilitas * risk_registers.osd2_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 DB::raw("'' AS '1'"),
                 DB::raw("'' AS '2'"),
                 DB::raw("'' AS 'Dampak'"),
