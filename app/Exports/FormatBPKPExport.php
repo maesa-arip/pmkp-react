@@ -749,11 +749,11 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
+            // ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
-            ->leftJoin('locations', 'locations.id', 'pics.location_id')
-            ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
+            // ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
+            // ->leftJoin('locations', 'locations.id', 'pics.location_id')
+            // ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftJoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->leftJoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
@@ -761,8 +761,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
             ->leftjoin('risk_gradings as risk_grading2', 'risk_grading2.kode', 'risk_registers.concatdp2')
             ->leftjoin('risk_gradings as risk_grading3', 'risk_grading3.kode', 'risk_registers.concatdp3')
+            ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'),
                 DB::raw('DATE_FORMAT(risk_registers.tgl_register, "%d-%m-%Y") AS formatted_tgl_register'),
                 'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
                 'indikator_fitur4s.tujuan as Indikator',
@@ -779,16 +780,6 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd1_probabilitas',
                 DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas AS `Tingkat risiko`'),
                 'risk_gradings.name_bpkp',
-                // DB::raw(
-                //     '
-                // CASE
-                //     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 14 THEN "SANGAT TINGGI"
-                //     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 9 THEN "TINGGI"
-                //     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 4 THEN "SEDANG"
-                //     WHEN risk_registers.osd1_dampak * risk_registers.osd1_probabilitas > 2 THEN "RENDAH"
-                //     ELSE "SANGAT RENDAH"
-                // END AS `Peringkat Risiko`'
-                // ),
                 'risk_registers.pengendalian_risiko',
                 DB::raw("'Ada' AS 'Desain'"),
                 'efektifs.name as efektifitas',
@@ -796,39 +787,21 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd2_probabilitas',
                 DB::raw('risk_registers.osd2_dampak * risk_registers.osd2_probabilitas AS `Tingkat risiko2`'),
                 'risk_grading2.name_bpkp AS name_bpkp2',
-                // DB::raw(
-                //     '
-                // CASE
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 14 THEN "SANGAT TINGGI"
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 9 THEN "TINGGI"
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 4 THEN "SEDANG"
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 2 THEN "RENDAH"
-                //     ELSE "SANGAT RENDAH"
-                // END AS `Peringkat Risiko2`'
-                // ),
                 'opsi_pengendalians.name as opsi',
                 'risk_registers.rencana_pengendalian',
                 'risk_registers.dokumen_pendukung',
                 'waktu_implementasis.name as waktu_implemen',
-                'users.name',
+                'users.name AS pemilik',
+                \DB::raw("GROUP_CONCAT(pics.name) as picsname"),
                 'risk_registers.osd3_dampak as dampak3',
                 'risk_registers.osd3_probabilitas as probabilitas3',
                 DB::raw('risk_registers.osd3_dampak * risk_registers.osd3_probabilitas AS `Tingkat risiko3`'),
                 'risk_grading3.name_bpkp AS name_bpkp3',
-                // DB::raw(
-                //     '
-                // CASE
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 14 THEN "SANGAT TINGGI"
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 9 THEN "TINGGI"
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 4 THEN "SEDANG"
-                //     WHEN risk_registers.osd2_dampak * risk_registers.osd2_probabilitas > 2 THEN "RENDAH"
-                //     ELSE "SANGAT RENDAH"
-                // END AS `Peringkat Risiko3`'
-                // ),
+                
             )
-            
+            ->groupBy('risk_registers.id','risk_gradings.name_bpkp','risk_grading2.name_bpkp','risk_grading3.name_bpkp')
             ->where($whosLogin)
-            ->orderBy('row_number', 'ASC');
+            ->orderBy('Peringkat', 'ASC');
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
@@ -847,11 +820,11 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Tanggal Register', 'Sasaran Strategis', 'Indikator', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Residual Risk', 'Residual Risk', 'Residual Risk', 'Residual Risk', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Treated Risk', 'Treated Risk', 'Treated Risk', 'Treated Risk'],
+            ['No', 'Tanggal Register', 'Sasaran Strategis', 'Indikator', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Inherent Risk', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Pengendalian Yang Ada', 'Residual Risk', 'Residual Risk', 'Residual Risk', 'Residual Risk', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)','Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Rencana Pengendalian (Untuk skor risk residual > selera risiko)', 'Treated Risk', 'Treated Risk', 'Treated Risk', 'Treated Risk'],
 
-            ['No', 'Tanggal Register', 'Sasaran Strategis', 'Indikator', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Dampak', 'Probability', 'Tingkat Risiko', 'Peringkat Risiko', 'Uraian', 'Desain', 'Efektifitas', 'Dampak', 'Probability', 'Tingkat Risiko', 'Peringkat Risiko', 'Strategi', 'Uraian', 'Indikator Keluaran', 'Jadwal', 'Penanggungjawab', 'Dampak', 'Probability', 'Tingkat Risiko', 'Peringkat Risiko'],
+            ['No', 'Tanggal Register', 'Sasaran Strategis', 'Indikator', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Penyebab', 'UC/C', 'Dampak', 'Probability', 'Tingkat Risiko', 'Peringkat Risiko', 'Uraian', 'Desain', 'Efektifitas', 'Dampak', 'Probability', 'Tingkat Risiko', 'Peringkat Risiko', 'Strategi', 'Uraian', 'Indikator Keluaran', 'Jadwal', 'Pemilik Risiko','Penanggungjawab', 'Dampak', 'Probability', 'Tingkat Risiko', 'Peringkat Risiko'],
 
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
         ];
     }
     public function columnWidths(): array
@@ -882,10 +855,11 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'W' => 20,
             'X' => 20,
             'Y' => 20,
-            'Z' => 12,
+            'Z' => 20,
             'AA' => 12,
-            'AB' => 10,
+            'AB' => 12,
             'AC' => 10,
+            'AD' => 10,
         ];
     }
     public function registerEvents(): array
@@ -901,7 +875,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $rangeS = 'S4:' . 'S' . $highestRow;
                 $rangeT = 'T4:' . 'T' . $highestRow;
                 $rangeAB = 'AB4:' . 'AB' . $highestRow;
-                $rangeAC = 'AC4:' . 'AC' . $highestRow;
+                $rangeAD = 'AD4:' . 'AD' . $highestRow;
                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
                 $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
                     'borders' => [
@@ -1189,9 +1163,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $conditional->addCondition(14);
                 $conditional->setText('SANGAT TINGGI');
                 $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeAC)->getConditionalStyles();
+                $conditionalStyles = $event->sheet->getStyle($rangeAD)->getConditionalStyles();
                 $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeAC)->setConditionalStyles($conditionalStyles);
+                $event->sheet->getStyle($rangeAD)->setConditionalStyles($conditionalStyles);
 
                 $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
@@ -1199,9 +1173,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $conditional2->addCondition(9);
                 $conditional2->setText('TINGGI');
                 $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeAC)->getConditionalStyles();
+                $conditional2Styles = $event->sheet->getStyle($rangeAD)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeAC)->setConditionalStyles($conditional2Styles);
+                $event->sheet->getStyle($rangeAD)->setConditionalStyles($conditional2Styles);
 
                 $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
@@ -1209,9 +1183,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $conditional3->addCondition(4);
                 $conditional3->setText('SEDANG');
                 $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeAC)->getConditionalStyles();
+                $conditional3Styles = $event->sheet->getStyle($rangeAD)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeAC)->setConditionalStyles($conditional3Styles);
+                $event->sheet->getStyle($rangeAD)->setConditionalStyles($conditional3Styles);
                 
                 $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
@@ -1219,9 +1193,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $conditional5->addCondition(1);
                 $conditional5->setText('SANGAT RENDAH');
                 $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeAC)->getConditionalStyles();
+                $conditional5Styles = $event->sheet->getStyle($rangeAD)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeAC)->setConditionalStyles($conditional5Styles);
+                $event->sheet->getStyle($rangeAD)->setConditionalStyles($conditional5Styles);
 
                 $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
@@ -1229,11 +1203,11 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $conditional4->addCondition(2);
                 $conditional4->setText('RENDAH');
                 $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeAC)->getConditionalStyles();
+                $conditional4Styles = $event->sheet->getStyle($rangeAD)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeAC)->setConditionalStyles($conditional4Styles);
+                $event->sheet->getStyle($rangeAD)->setConditionalStyles($conditional4Styles);
 
-                $event->sheet->getDelegate()->getStyle('A3:AC3')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A3:AD3')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
@@ -1270,13 +1244,13 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('Q1:T1')->applyFromArray($styleHeader3);
                 $event->sheet->getDelegate()->getStyle('Q2:T2')->applyFromArray($styleHeader3);
 
-                $event->sheet->getDelegate()->mergeCells('U1:Y1');
-                $event->sheet->getDelegate()->getStyle('U1:Y1')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->getStyle('U2:Y2')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->mergeCells('U1:Z1');
+                $event->sheet->getDelegate()->getStyle('U1:Z1')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->getStyle('U2:Z2')->applyFromArray($styleHeader3);
 
-                $event->sheet->getDelegate()->mergeCells('Z1:AC1');
-                $event->sheet->getDelegate()->getStyle('Z1:AC1')->applyFromArray($styleHeader4);
-                $event->sheet->getDelegate()->getStyle('Z2:AC2')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->mergeCells('AA1:AD1');
+                $event->sheet->getDelegate()->getStyle('AA1:AD1')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->getStyle('AA2:AD2')->applyFromArray($styleHeader4);
             },
         ];
     }
@@ -1494,7 +1468,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'), 'risk_registers.resiko as risiko_prioritas', 'risk_registers.rencana_pengendalian', 'risk_registers.output', 'waktu_pengendalians.name as rencana_waktu', 'waktu_implementasis.name as waktu_implementasi', 'pics.name as PJ', 'risk_registers.dokumen_pendukung', 'risk_registers.kendala')
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'), 'risk_registers.resiko as risiko_prioritas', 'risk_registers.rencana_pengendalian', 'risk_registers.output', 'waktu_pengendalians.name as rencana_waktu', 'waktu_implementasis.name as waktu_implementasi', 'pics.name as PJ','users.name as pemilik', 'risk_registers.dokumen_pendukung', 'risk_registers.kendala')
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
@@ -1560,13 +1534,13 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Risiko Prioritas', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko'],
+            ['No', 'Risiko Prioritas', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan RTP', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko', 'Pemantauan Keterjadian Risiko'],
 
-            ['No', 'Risiko Prioritas', 'Uraian Tindak Pengendalian', 'Uraian Tindak Pengendalian', 'Waktu Tindak Pengendalian', 'Waktu Tindak Pengendalian', 'Penanggungjawab', 'Dokumen Pendukung', 'Kendala', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian'],
+            ['No', 'Risiko Prioritas', 'Uraian Tindak Pengendalian', 'Uraian Tindak Pengendalian', 'Waktu Tindak Pengendalian', 'Waktu Tindak Pengendalian', 'Penanggungjawab','Pemilik Risiko', 'Dokumen Pendukung', 'Kendala', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian', 'Jumlah Keterjadian'],
 
-            ['No', 'Risiko Prioritas', 'Rencana', 'Realisasi', 'Rencana', 'Realisasi', 'Penanggungjawab', 'Dokumen Pendukung', 'Kendala', 'Triwulan I', 'Triwulan II', 'Triwulan III', 'Triwulan IV', 'Total'],
+            ['No', 'Risiko Prioritas', 'Rencana', 'Realisasi', 'Rencana', 'Realisasi', 'Penanggungjawab','Pemilik Risiko', 'Dokumen Pendukung', 'Kendala', 'Triwulan I', 'Triwulan II', 'Triwulan III', 'Triwulan IV', 'Total'],
 
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15'],
         ];
     }
     public function columnWidths(): array
@@ -1581,11 +1555,12 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'G' => 26,
             'H' => 26,
             'I' => 26,
-            'J' => 20,
+            'J' => 26,
             'K' => 20,
             'L' => 20,
             'M' => 20,
-            'N' => 10,
+            'N' => 20,
+            'O' => 10,
         ];
     }
     public function registerEvents(): array
@@ -1685,7 +1660,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ];
 
-                $event->sheet->getDelegate()->getStyle('A4:N4')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A4:O4')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
@@ -1709,13 +1684,15 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('H2:H3')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->mergeCells('I2:I3');
                 $event->sheet->getDelegate()->getStyle('I2:I3')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('J2:J3');
+                $event->sheet->getDelegate()->getStyle('K2:K3')->applyFromArray($styleHeader);
 
 
-                $event->sheet->getDelegate()->mergeCells('J1:N1');
-                $event->sheet->getDelegate()->getStyle('J1:N1')->applyFromArray($styleHeader4);
-                $event->sheet->getDelegate()->mergeCells('J2:N2');
-                $event->sheet->getDelegate()->getStyle('J2:N2')->applyFromArray($styleHeader4);
-                $event->sheet->getDelegate()->getStyle('J3:N3')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->mergeCells('K1:O1');
+                $event->sheet->getDelegate()->getStyle('K1:O1')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->mergeCells('K2:O2');
+                $event->sheet->getDelegate()->getStyle('K2:O2')->applyFromArray($styleHeader4);
+                $event->sheet->getDelegate()->getStyle('K3:O3')->applyFromArray($styleHeader4);
             },
         ];
     }
@@ -1745,25 +1722,27 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('formulir_rcas', 'formulir_rcas.risk_register_id', 'risk_registers.id')
-            ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
+            // ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
             ->leftjoin('jenis_sebabs', 'jenis_sebabs.id', 'risk_registers.jenis_sebab_id')
             ->select(
-                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
-                'risk_registers.resiko as Penyataan Risiko',
+                DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'),
+                'risk_registers.resiko as PenyataanRisiko',
                 'formulir_rcas.why1',
                 'formulir_rcas.why2',
                 'formulir_rcas.why3',
                 'formulir_rcas.why4',
                 'formulir_rcas.why5',
                 'formulir_rcas.akar_penyebab',
-                'users.name',
+                \DB::raw("GROUP_CONCAT(pics.name) as picsname"),
+                'users.name as pemilik',
                 'jenis_sebabs.name as jenis',
                 'risk_registers.rencana_pengendalian',
-            )
+                'risk_registers.id'
+            )->groupBy("risk_registers.id","PenyataanRisiko","why1",'why2','why3','why4','why5','akar_penyebab','pemilik','jenis','rencana_pengendalian')
             
-            ->where($whosLogin)
-            ->orderBy('row_number', 'ASC');
+            ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
@@ -1772,6 +1751,10 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
             $query->whereIn('risk_registers.user_id', $userIds);
         }
+        $query = DB::query()
+            ->select('Peringkat', 'PenyataanRisiko', 'why1', 'why2', 'why3', 'why4', 'why5', 'akar_penyebab', 'picsname', 'pemilik', 'jenis', 'rencana_pengendalian')
+            ->fromSub($query, 'sub')
+            ->orderBy('sub.Peringkat', 'ASC');
         $this->data = $query->get();
 
         return $query;
@@ -1783,8 +1766,8 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Why 1', 'Why 2', 'Why 3', 'Why 4', 'Why 5', 'Akar Penyebab', 'Penanggungjawab', 'Jenis Penyebab', 'Kegiatan Pengendalian'],
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+            ['No', 'Pernyataan Risiko', 'Why 1', 'Why 2', 'Why 3', 'Why 4', 'Why 5', 'Akar Penyebab', 'Penanggungjawab','Pemilik Risiko', 'Jenis Penyebab', 'Kegiatan Pengendalian'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11','12'],
         ];
     }
     public function columnWidths(): array
@@ -1800,7 +1783,8 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'H' => 45,
             'I' => 25,
             'J' => 25,
-            'K' => 45,
+            'K' => 25,
+            'L' => 45,
         ];
     }
     public function registerEvents(): array
@@ -1880,8 +1864,8 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle('A1:K1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('A2:K2')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A1:L1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A2:L2')->applyFromArray($styleHeader2);
             },
         ];
     }
