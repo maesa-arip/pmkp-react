@@ -220,6 +220,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
+            ->leftJoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
+            ->leftJoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
+            ->leftJoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
@@ -241,6 +244,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'risk_registers.pihak_terkena, ' .
                     'risk_categories.name as kategori_risiko, ' .
                     'jenis_sebabs.name as jenis_sebab, ' .
+                    'identification_sources.name as identifikasi, ' .
+                    'risk_varieties.name as jenis, ' .
+                    'risk_types.name as tipe, ' .
                     'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
             )
             ->groupBy(
@@ -256,7 +262,10 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'jenis_sebabs.name',
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
-                'risk_registers.osd1_controllability'
+                'risk_registers.osd1_controllability',
+                'identification_sources.name',
+                'risk_varieties.name',
+                'risk_types.name',
             )
             
             ->where($whosLogin);
@@ -269,7 +278,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $subquery->whereIn('risk_registers.user_id', $userIds);
         }
         $query = DB::query()
-            ->select('Peringkat', 'name', 'tujuan', 'kode', 'kategori_risiko', 'resiko', 'sebab', 'UC/C', 'pihak_terkena','jenis_sebab')
+            ->select('Peringkat', 'name', 'tujuan', 'kode', 'kategori_risiko', 'resiko', 'sebab', 'UC/C', 'pihak_terkena','jenis_sebab','identifikasi','jenis','tipe')
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
 
@@ -285,8 +294,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Sasaran Strategis', 'Indikator', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Sebab', 'UC/C', 'Dampak (Pihak yang Terkena)','Jenis Sebab'],
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9','10'],
+            ['No', 'Sasaran Strategis', 'Indikator', 'Kode Risiko', 'Kategori Risiko', 'Pernyataan Risiko', 'Sebab', 'UC/C', 'Dampak (Pihak yang Terkena)','Jenis Sebab','Sumber Indentifikasi','Jenis Insiden','Tipe Insiden'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9','10','11','12','13'],
         ];
     }
     public function columnWidths(): array
@@ -302,6 +311,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'H' => 7,
             'I' => 20,
             'J' => 20,
+            'K' => 20,
+            'L' => 20,
+            'M' => 20,
         ];
     }
     public function registerEvents(): array
@@ -381,8 +393,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle('A1:J1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('A2:J2')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A1:M1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A2:M2')->applyFromArray($styleHeader2);
             },
         ];
     }

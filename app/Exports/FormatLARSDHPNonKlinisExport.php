@@ -288,7 +288,10 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         grading2.name as grading2_name,
         users.name as pemilik_name,
         CONCAT(risk_registers.target_waktu, " Hari") AS target_waktu,
-        jenis_sebabs.name as jenis_sebab
+        jenis_sebabs.name as jenis_sebab,
+        identification_sources.name as identifikasi,
+        risk_varieties.name as jenis,
+        risk_types.name as tipe
     ')
             ->groupBy(
                 'risk_registers.id',
@@ -319,7 +322,10 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'grading2.name',
                 'users.name',
                 'risk_registers.target_waktu',
-                'jenis_sebabs.name'
+                'jenis_sebabs.name',
+                'identification_sources.name',
+                'risk_varieties.name',
+                'risk_types.name'
             )
             ->where('tipe_id', 2)
             ->where($whosLogin);
@@ -363,7 +369,10 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'grading2_name',
                 'pemilik_name',
                 'target_waktu',
-                'jenis_sebab'
+                'jenis_sebab',
+                'identifikasi',
+                'jenis',
+                'tipe'
             )
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
@@ -377,11 +386,11 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB','SUMBER IDENTIFIKASI','JENIS INSIDEN','TIPE INSIDEN'],
 
-            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB','SUMBER IDENTIFIKASI','JENIS INSIDEN','TIPE INSIDEN'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)','(31)','(32)','(33)'],
         ];
     }
     public function columnWidths(): array
@@ -417,6 +426,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'AB' => 20,
             'AC' => 12,
             'AD' => 12,
+            'AE' => 20,
+            'AF' => 20,
+            'AG' => 20,
         ];
     }
     public function registerEvents(): array
@@ -899,7 +911,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
 
 
-                $event->sheet->getDelegate()->getStyle('A3:AD3')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A3:AG3')->applyFromArray($styleHeader2);
 
                 // $event->sheet->getDelegate()->getStyle($rangeE)->applyFromArray([
                 //     'alignment' => [
@@ -968,6 +980,12 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('AC1:AC2')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->mergeCells('AD1:AD2');
                 $event->sheet->getDelegate()->getStyle('AD1:AD2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('AE1:AE2');
+                $event->sheet->getDelegate()->getStyle('AE1:AE2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('AF1:AF2');
+                $event->sheet->getDelegate()->getStyle('AF1:AF2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('AG1:AG2');
+                $event->sheet->getDelegate()->getStyle('AG1:AG2')->applyFromArray($styleHeader);
             },
         ];
     }
