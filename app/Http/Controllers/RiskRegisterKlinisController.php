@@ -20,6 +20,7 @@ use App\Models\OpsiPengendalian;
 use App\Models\PembiayaanRisiko;
 use App\Models\Pic;
 use App\Models\ProbabilityValue;
+use App\Models\RequestUpdate;
 use App\Models\RiskCategory;
 use App\Models\RiskRegister;
 use App\Models\RiskRegisterHistory;
@@ -467,6 +468,43 @@ class RiskRegisterKlinisController extends Controller
         return back()->with([
             'type' => 'success',
             'message' => 'Data FGD Treated berhasil disimpan',
+        ]);
+    }
+    public function requestupdatestatus(Request $request)
+    {
+        $this->validate($request, [
+            'tgl_perbaikan' => 'required',
+            'jam_perbaikan' => 'required',
+            'upaya_pengendalian' => 'required',
+        ]);
+        $atrributes = ([
+            'tgl_perbaikan' => $request->tgl_perbaikan,
+            'jam_perbaikan' => $request->jam_perbaikan,
+            'upaya_pengendalian' => $request->upaya_pengendalian,
+        ]);
+        // dd($request->all());
+        RequestUpdate::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Request Berhasil di Kirim',
+        ]);
+    }
+    public function updatestatus(Request $request)
+    {
+        // $this->validate($request, [
+        //     'currently_id' => 'required',
+        // ]);
+        $atrributes = ([
+            // 'currently_id' => $request->currently_id,
+            'is_approved' => $request->currently_id - 1,
+            'tgl_update_status' => now(),
+        ]);
+        // dd($request->all());
+        RequestUpdate::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
+        RiskRegister::where('id',$request->id)->update(['currently_id' => $request->currently_id]);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Status Berhasil dirubah',
         ]);
     }
 

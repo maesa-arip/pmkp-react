@@ -78,6 +78,13 @@ class RiskRegister extends Model
     {
         return $this->hasOne(FgdTreated::class);
     }
+    public function requestupdate()
+    {
+        return $this->hasOne(RequestUpdate::class);
+    }
+    public function riskgrading(){
+        return $this->hasOne(RiskGrading::class,'kode','concatdp1');
+    }
     public function historyCount()
     {
         return $this->hasMany(RiskRegisterHistory::class)

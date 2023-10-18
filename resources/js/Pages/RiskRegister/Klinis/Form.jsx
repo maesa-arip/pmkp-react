@@ -655,7 +655,7 @@ export default function Form({
                             <div className="col-span-12">
                                 <InputLabel
                                     for="pengendalian_risiko"
-                                    value="Pengendalian Risiko yang Sudah Ada"
+                                    value="Pengendalian Risiko yang Sudah Ada (Sesuai Standar)"
                                 />
                                 <TextAreaInput
                                     id="pengendalian_risiko"
@@ -839,7 +839,7 @@ export default function Form({
                             <div className="col-span-12">
                                 <InputLabel
                                     for="rencana_pengendalian"
-                                    value="Rencana Kegiatan Pengendalian"
+                                    value="Rencana Kegiatan Pengendalian (Langkah Pengendalian dari Awal Hingga Akhir)"
                                 />
                                 <TextAreaInput
                                     id="rencana_pengendalian"

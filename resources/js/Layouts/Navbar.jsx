@@ -15,7 +15,7 @@ export default function Navbar() {
         : "null";
     return (
         <nav className="hidden my-4 bg-white border md:block rounded-xl">
-            <div className="px-4 mx-auto bg-white">
+            <div className="px-4 mx-auto ">
                 <div className="flex justify-between h-16">
                     <div className="flex">
                         <div className="flex items-center shrink-0">

@@ -14,6 +14,10 @@ import EditFormulirRCA from "../KlinisFormulirRCA/Edit";
 import EditFGDInherent from "../KlinisFGDInherent/Edit";
 import EditFGDResidual from "../KlinisFGDResidual/Edit";
 import EditFGDTreated from "../KlinisFGDTreated/Edit";
+import Pagination from "@/Components/Pagination";
+import Table from "@/Components/Table";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons";
+import Badge from "@/Components/Badge";
 
 const UpIcon = () => (
     <svg
@@ -336,7 +340,7 @@ export default function Index(props) {
                     <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
                         RISK REGISTER KLINIS ({riskRegisterCount})
                     </p>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between pb-1.5 mt-2 mb-2 rounded-lg">
                         <div className="w-3/4">
                             <div className="flex items-center justify-start mt-2 mb-0 mr-4 overflow-auto whitespace-nowrap gap-x-1">
                                 <ThirdButton
@@ -564,27 +568,6 @@ export default function Index(props) {
                                 >
                                     Formulir RCA
                                 </ThirdButton>
-                                {/* <ThirdButton
-                                    color={
-                                        selectedRow === null ? "gray" : "amber"
-                                    }
-                                    type="button"
-                                    className={`${
-                                        selectedRow === null
-                                            ? "cursor-not-allowed"
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        if (selectedRow !== null) {
-                                            const selectedRisk =
-                                                riskRegisterKlinis[selectedRow];
-                                            openEditDialog2(selectedRisk);
-                                        }
-                                    }}
-                                    disabled={selectedRow === null}
-                                >
-                                    Pelaporan
-                                </ThirdButton> */}
                             </div>
                         </div>
                         <div className="w-1/4">
@@ -628,772 +611,294 @@ export default function Index(props) {
                             </div>
                         </div>
                     </div>
-
-                    <div className="flex flex-col p-1">
-                        <div className="-my-2 overflow-x-auto rounded sm:-mx-6 lg:-mx-8">
-                            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                                <div className="border-b border-gray-200 shadow sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200 table-auto">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("created_at")
-                                                        }
-                                                    >
-                                                        #
-                                                        {params.field ==
-                                                            "created_at" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "created_at" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("tgl_register")
-                                                        }
-                                                    >
-                                                        Tanggal Register
-                                                        {params.field ==
-                                                            "tgl_register" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "tgl_register" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("tgl_selesai")
-                                                        }
-                                                    >
-                                                        Tanggal Selesai
-                                                        {params.field ==
-                                                            "tgl_selesai" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "tgl_selesai" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "risk_category_id"
-                                                            )
-                                                        }
-                                                    >
-                                                        Kategori
-                                                        {params.field ==
-                                                            "risk_category_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "risk_category_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "identification_source_id"
-                                                            )
-                                                        }
-                                                    >
-                                                        Sumber
-                                                        {params.field ==
-                                                            "identification_source_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "identification_source_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "pernyataan_risiko"
-                                                            )
-                                                        }
-                                                    >
-                                                        Pernyataan Risiko
-                                                        {params.field ==
-                                                            "pernyataan_risiko" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "pernyataan_risiko" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase w-96"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
-                                                        onClick={() =>
-                                                            sort("sebab")
-                                                        }
-                                                    >
-                                                        Sebab
-                                                        {params.field ==
-                                                            "sebab" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "sebab" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
-                                                        onClick={() =>
-                                                            sort("risk_type_id")
-                                                        }
-                                                    >
-                                                        Jenis
-                                                        {params.field ==
-                                                            "risk_type_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "risk_type_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "risk_variety_id"
-                                                            )
-                                                        }
-                                                    >
-                                                        Tipe
-                                                        {params.field ==
-                                                            "risk_variety_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "risk_variety_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
-                                                        onClick={() =>
-                                                            sort("dampak")
-                                                        }
-                                                    >
-                                                        Efek
-                                                        {params.field ==
-                                                            "dampak" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "dampak" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("osd1_dampak")
-                                                        }
-                                                    >
-                                                        OSD1 Dampak
-                                                        {params.field ==
-                                                            "osd1_dampak" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd1_dampak" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "osd1_probabilitas"
-                                                            )
-                                                        }
-                                                    >
-                                                        OSD1 Probabilitas
-                                                        {params.field ==
-                                                            "osd1_probabilitas" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd1_probabilitas" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "osd1_controllability"
-                                                            )
-                                                        }
-                                                    >
-                                                        OSD1 Controllability
-                                                        {params.field ==
-                                                            "osd1_controllability" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd1_controllability" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "osd1_inherent"
-                                                            )
-                                                        }
-                                                    >
-                                                        OSD1 Inherent
-                                                        {params.field ==
-                                                            "osd1_inherent" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd1_inherent" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("osd2_dampak")
-                                                        }
-                                                    >
-                                                        OSD2 Dampak
-                                                        {params.field ==
-                                                            "osd2_dampak" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd2_dampak" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "osd2_probabilitas"
-                                                            )
-                                                        }
-                                                    >
-                                                        OSD2 Probabilitas
-                                                        {params.field ==
-                                                            "osd2_probabilitas" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd2_probabilitas" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "osd2_controllability"
-                                                            )
-                                                        }
-                                                    >
-                                                        OSD2 Controllability
-                                                        {params.field ==
-                                                            "osd2_controllability" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd2_controllability" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "osd2_inherent"
-                                                            )
-                                                        }
-                                                    >
-                                                        OSD2 Residu
-                                                        {params.field ==
-                                                            "osd2_inherent" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "osd2_inherent" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer w-96 gap-x-2"
-                                                        onClick={() =>
-                                                            sort(
-                                                                "pengendalian_risiko"
-                                                            )
-                                                        }
-                                                    >
-                                                        Pengendalian Risiko
-                                                        {params.field ==
-                                                            "pengendalian_risiko" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "pengendalian_risiko" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                {/* <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("pic_id")
-                                                        }
-                                                    >
-                                                        PIC
-                                                        {params.field ==
-                                                            "pic_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "pic_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th> */}
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("user_id")
-                                                        }
-                                                    >
-                                                        Pemilik Risiko
-                                                        {params.field ==
-                                                            "user_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "user_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-
-                                                <th
-                                                    scope="col"
-                                                    className="relative px-6 py-3"
-                                                >
-                                                    <span className="sr-only">
-                                                        Edit
-                                                    </span>
-                                                </th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {riskRegisterKlinis.map(
-                                                (
-                                                    riskregisterklinis1,
-                                                    index
-                                                ) => (
-                                                    <tr
-                                                        key={index}
-                                                        className={
-                                                            selectedRow ===
-                                                            index
-                                                                ? "bg-sky-100  cursor-pointer"
-                                                                : "cursor-pointer"
-                                                        }
-                                                    >
-                                                        <td
-                                                            className="px-6 py-4 whitespace-nowrap"
-                                                            onClick={() =>
-                                                                selectRow(index)
-                                                            }
-                                                        >
-                                                            {meta.from + index}
-                                                        </td>
-                                                        <td className="p-2 whitespace-nowrap">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1.tgl_register
-                                                                }
-                                                            </div>
-                                                        </td>
-
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.tgl_selesai
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .risk_category
-                                                                    .name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .identification_source
-                                                                    .name
-                                                            }
-                                                        </td> */}
-                                                        <td className="p-2">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1.pernyataan_risiko
-                                                                }
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1.sebab
-                                                                }
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1
-                                                                        .risk_variety
-                                                                        .name
-                                                                }
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1
-                                                                        .risk_type
-                                                                        .name
-                                                                }
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-2">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1.dampak
-                                                                }
-                                                            </div>
-                                                        </td>
-
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd1_dampak
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd1_probabilitas
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd1_controllability
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd1_inherent
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd2_dampak
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd2_probabilitas
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd2_controllability
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.osd2_inherent
-                                                            }
-                                                        </td>
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .grading1
-                                                            }
-                                                        </td> */}
-                                                        <td className="p-2">
-                                                            <div className="p-4 border border-gray-300 rounded-md shadow-sm">
-                                                                {
-                                                                    riskregisterklinis1.pengendalian_risiko
-                                                                }
-                                                            </div>
-                                                        </td>
-
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pic.name
-                                                            }
-                                                        </td> */}
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .user.name
-                                                            }
-                                                        </td>
-                                                        {/* <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pengawasan_id
-                                                            }
-                                                        </td> */}
-                                                    </tr>
-                                                )
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {/* <Pagination meta={meta} /> */}
-                                <ul className="flex items-center mt-10 gap-x-1">
-                                    {meta.links.map((item, index) => (
-                                        <button
-                                            key={index}
-                                            disabled={
-                                                item.url == null ? true : false
+                    <Table>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>#</Table.Th>
+                                <Table.Th onClick={() => sort("tgl_register")}>
+                                    Tanggal Register
+                                    {params.field == "tgl_register" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "tgl_register" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("pernyataan_risiko")}
+                                >
+                                    Pernyataan Risiko
+                                    {params.field == "pernyataan_risiko" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "pernyataan_risiko" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("sebab")}
+                                >
+                                    Sebab
+                                    {params.field == "sebab" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "sebab" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("risk_type_id")}>
+                                    Jenis
+                                    {params.field == "risk_type_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "risk_type_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("risk_variety_id")}
+                                >
+                                    Tipe
+                                    {params.field == "risk_variety_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "risk_variety_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("dampak")}
+                                >
+                                    Efek
+                                    {params.field == "dampak" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "dampak" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd1_dampak")}>
+                                    OSD1 Dampak
+                                    {params.field == "osd1_dampak" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_dampak" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd1_probabilitas")}
+                                >
+                                    OSD1 Probabilitas
+                                    {params.field == "osd1_probabilitas" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_probabilitas" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd1_controllability")}
+                                >
+                                    OSD1 Controllability
+                                    {params.field == "osd1_controllability" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_controllability" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd1_inherent")}>
+                                    OSD1 Inherent
+                                    {params.field == "osd1_inherent" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_inherent" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd2_dampak")}>
+                                    OSD2 Dampak
+                                    {params.field == "osd2_dampak" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_dampak" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd2_probabilitas")}
+                                >
+                                    OSD2 Probabilitas
+                                    {params.field == "osd2_probabilitas" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_probabilitas" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd2_controllability")}
+                                >
+                                    OSD2 Controllability
+                                    {params.field == "osd2_controllability" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_controllability" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd2_inherent")}>
+                                    OSD2 Residu
+                                    {params.field == "osd2_inherent" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_inherent" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("pengendalian_risiko")}
+                                >
+                                    Pengendalian Risiko
+                                    {params.field == "pengendalian_risiko" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "pengendalian_risiko" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("user_id")}>
+                                    Pemilik Risiko
+                                    {params.field == "user_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "user_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {riskRegisterKlinis.map(
+                                (riskregisterklinis1, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            selectedRow === index
+                                                ? "bg-sky-100  cursor-pointer"
+                                                : "cursor-pointer"
+                                        }
+                                        onClick={() => selectRow(index)}
+                                    >
+                                        <Table.Td>
+                                            <Badge>{meta.from + index}</Badge>
+                                        </Table.Td>
+                                        <Table.Td className="whitespace-nowrap">
+                                            {riskregisterklinis1.tgl_register}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.pernyataan_risiko
                                             }
-                                            className={`${
-                                                item.url == null
-                                                    ? "text-gray-500"
-                                                    : "text-gray-800"
-                                            } w-12 h-9 rounded-lg flex items-center justify-center border bg-white`}
-                                            onClick={() =>
-                                                setParams({
-                                                    ...params,
-                                                    page: new URL(
-                                                        item.url
-                                                    ).searchParams.get("page"),
-                                                })
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.sebab}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.risk_variety
+                                                    .name
                                             }
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.risk_type.name}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.dampak}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd1_dampak}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd1_probabilitas
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd1_controllability
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd1_inherent}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd2_dampak}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd2_probabilitas
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd2_controllability
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd2_inherent}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.pengendalian_risiko
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.user.name}
+                                        </Table.Td>
+                                    </tr>
+                                )
+                            )}
+                        </Table.Tbody>
+                    </Table>
+                    <Pagination meta={meta} />
                 </div>
             </div>
         </>

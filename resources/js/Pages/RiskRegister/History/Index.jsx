@@ -6,7 +6,14 @@ import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Edit from "./Edit";
-import axios from 'axios';
+import axios from "axios";
+import Pagination from "@/Components/Pagination";
+import Table from "@/Components/Table";
+import Badge from "@/Components/Badge";
+import { IconChevronDown } from "@tabler/icons";
+import ThirdButton from "@/Components/ThirdButton";
+import EditStatus from "../RequestUpdateStatus/Edit";
+import moment from "moment";
 
 const UpIcon = () => (
     <svg
@@ -82,7 +89,7 @@ export default function Index(props) {
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                route('dashboard'),
+                route("notifications"),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,
@@ -146,14 +153,31 @@ export default function Index(props) {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
+    const openRequestUpdateStatus = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenRequestUpdateStatus(true);
+    };
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [isOpenRequestUpdateStatus, setIsOpenRequestUpdateStatus] =
+        useState(false);
     const [state, setState] = useState([]);
-  
+
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [editingRow, setEditingRow] = useState(null); // Use this state to track the row being edited
+    const selectRow = (index) => {
+        if (selectedRow === index) {
+            setSelectedRow(null);
+        } else {
+            setSelectedRow(index);
+        }
+    };
+
     return (
         <>
-            <Head title="Dashboard_History" />
+            <Head title="Notifications" />
             <EditModal
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
@@ -166,23 +190,76 @@ export default function Index(props) {
                     isOpenEditDialog={isOpenEditDialog}
                     setIsOpenEditDialog={setIsOpenEditDialog}
                 />
-            </EditModal> 
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenRequestUpdateStatus}
+                setIsOpenEditDialog={setIsOpenRequestUpdateStatus}
+                size="max-w-6xl"
+                title="Request Update Status"
+            >
+                <EditStatus
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenRequestUpdateStatus}
+                    setIsOpenEditDialog={setIsOpenRequestUpdateStatus}
+                />
+            </EditModal>
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
-                <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">HISTORY RISK REGISTER</p>
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="w-1/2">
-                            {/* <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
+                    <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
+                        HISTORY RISK REGISTER
+                    </p>
+                    <div className="flex items-center justify-between pb-1.5 mt-2 mb-2 rounded-lg">
+                        <div className="w-3/4">
+                            <div className="flex items-center justify-start py-2 mt-2 mb-0 mr-4 overflow-auto whitespace-nowrap gap-x-2">
                                 <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "teal"
+                                    }
                                     type="button"
-                                    onClick={openAddDialog}
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialog(selectedRisk);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
                                 >
-                                    Tambah
+                                    Lihat History
                                 </ThirdButton>
-                            </div> */}
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "cyan"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openRequestUpdateStatus(
+                                                selectedRisk
+                                            );
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Request Update Status
+                                </ThirdButton>
+                            </div>
                         </div>
-                        <div className="w-1/2">
-                            <div className="flex items-center justify-end mt-2 mb-0 gap-x-1">
+                        <div className="w-1/4">
+                            <div className="flex items-center justify-end mt-2 mb-0 overflow-auto gap-x-1 whitespace-nowrap">
                                 <select
                                     name="load"
                                     id="load"
@@ -223,253 +300,110 @@ export default function Index(props) {
                         </div>
                     </div>
 
-                    <div className="flex flex-col p-1">
-                        <div className="-my-2 overflow-x-auto rounded sm:-mx-6 lg:-mx-8">
-                            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                                <div className="border-b border-gray-200 shadow sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
+                    <div className="flex flex-col">
+                        <div className="-my-2 overflow-x-auto rounded ">
+                            <div className="inline-block min-w-full py-2 align-middle ">
+                                <Table>
+                                    <Table.Thead>
+                                        <Table.Tr>
+                                            <Table.Th>#</Table.Th>
+                                            <Table.Th>
+                                                Tanggal Kejadian
+                                            </Table.Th>
+                                            <Table.Th>
+                                                Tanggal Perbaikan
+                                            </Table.Th>
+                                            <Table.Th
+                                                width={"w-96"}
+                                                onClick={() => sort("sebab")}
+                                            >
+                                                Sebab
+                                                {params.field == "sebab" &&
+                                                    params.direction ==
+                                                        "asc" && <UpIcon />}
+                                                {params.field == "sebab" &&
+                                                    params.direction ==
+                                                        "desc" && <DownIcon />}
+                                            </Table.Th>
+                                            <Table.Th
+                                                onClick={() => sort("pic_id")}
+                                            >
+                                                Penanggung Jawab
+                                                {params.field == "pic_id" &&
+                                                    params.direction ==
+                                                        "asc" && <UpIcon />}
+                                                {params.field == "pic_id" &&
+                                                    params.direction ==
+                                                        "desc" && <DownIcon />}
+                                            </Table.Th>
+                                            <Table.Th
+                                                onClick={() => sort("user_id")}
+                                            >
+                                                Pemilik Risiko
+                                                {params.field == "user_id" &&
+                                                    params.direction ==
+                                                        "asc" && <UpIcon />}
+                                                {params.field == "user_id" &&
+                                                    params.direction ==
+                                                        "desc" && <DownIcon />}
+                                            </Table.Th>
+                                        </Table.Tr>
+                                    </Table.Thead>
+                                    <Table.Tbody>
+                                        {riskRegisterKlinis.map(
+                                            (riskregisterklinis1, index) => (
+                                                <tr
+                                                    key={index}
+                                                    className={
+                                                        selectedRow === index
+                                                            ? "bg-sky-100  cursor-pointer"
+                                                            : "cursor-pointer text-red-500 bg-red-50"
+                                                    }
+                                                    onClick={() =>
+                                                        selectRow(index)
+                                                    }
                                                 >
-                                                    <div className="flex items-center cursor-pointer gap-x-2">
-                                                        #
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("created_at")
-                                                        }
-                                                    >
-                                                        Opsi
-                                                        {params.field ==
-                                                            "created_at" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "created_at" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("pernyataan_risiko")
-                                                        }
-                                                    >
-                                                        Kejadian
-                                                        {params.field ==
-                                                            "pernyataan_risiko" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "pernyataan_risiko" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("sebab")
-                                                        }
-                                                    >
-                                                        Sebab
-                                                        {params.field ==
-                                                            "sebab" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "sebab" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("pic_id")
-                                                        }
-                                                    >
-                                                        Penanggung Jawab
-                                                        {params.field ==
-                                                            "pic_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "pic_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-800 uppercase"
-                                                >
-                                                    <div
-                                                        className="flex items-center cursor-pointer gap-x-2"
-                                                        onClick={() =>
-                                                            sort("user_id")
-                                                        }
-                                                    >
-                                                        Pemilik Risiko
-                                                        {params.field ==
-                                                            "user_id" &&
-                                                            params.direction ==
-                                                                "asc" && (
-                                                                <UpIcon />
-                                                            )}
-                                                        {params.field ==
-                                                            "user_id" &&
-                                                            params.direction ==
-                                                                "desc" && (
-                                                                <DownIcon />
-                                                            )}
-                                                    </div>
-                                                </th>
-                                                
-                                                
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {riskRegisterKlinis.map(
-                                                (
-                                                    riskregisterklinis1,
-                                                    index
-                                                ) => (
-                                                    <tr key={index} className={riskregisterklinis1.currently_id == 1 ? 'text-red-500 bg-red-50': ''}>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                    <Table.Td>
+                                                        <Badge>
                                                             {meta.from + index}
-                                                        </td>
-                                                        <td className="text-center">
-                                                            <Dropdown>
-                                                                <Dropdown.Trigger>
-                                                                    <button>
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            className="w-4 h-4 text-gray-400"
-                                                                            viewBox="0 0 20 20"
-                                                                            fill="currentColor"
-                                                                        >
-                                                                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                </Dropdown.Trigger>
-                                                                <Dropdown.Content align="right" width="100%">
-                                                                    <button
-                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                        onClick={() =>
-                                                                            openEditDialog(
-                                                                                riskregisterklinis1
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Lihat History
-                                                                    </button>
-                                                                    {/* <button
-                                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                                        onClick={() =>
-                                                                            openDestroyDialog(
-                                                                                riskregisterklinis1
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Hapus
-                                                                    </button> */}
-                                                                </Dropdown.Content>
-                                                            </Dropdown>
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.currently_id == 1 ? 'Sedang Terjadi': 'Tidak Sedang Terjadi'
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1.sebab
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .pic.name
-                                                            }
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            {
-                                                                riskregisterklinis1
-                                                                    .user.name
-                                                            }
-                                                        </td>
-                                                       
-                                                    </tr>
-                                                )
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {/* <Pagination meta={meta} /> */}
-                                <ul className="flex items-center mt-10 gap-x-1">
-                                    {meta.links.map((item, index) => (
-                                        <button
-                                            key={index}
-                                            disabled={
-                                                item.url == null ? true : false
-                                            }
-                                            className={`${
-                                                item.url == null
-                                                    ? "text-gray-500"
-                                                    : "text-gray-800"
-                                            } w-12 h-9 rounded-lg flex items-center justify-center border bg-white`}
-                                            onClick={() =>
-                                                setParams({
-                                                    ...params,
-                                                    page: new URL(
-                                                        item.url
-                                                    ).searchParams.get("page"),
-                                                })
-                                            }
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </ul>
+                                                        </Badge>
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {moment(
+                                                            riskregisterklinis1.created_at
+                                                        ).format("YYYY-MM-DD")}
+                                                    </Table.Td>
+
+                                                    <Table.Td>
+                                                        {riskregisterklinis1.requestupdate
+                                                            ? riskregisterklinis1
+                                                                  .requestupdate
+                                                                  .tgl_perbaikan
+                                                            : "Belum Perbaikan"}
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {
+                                                            riskregisterklinis1.sebab
+                                                        }
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {
+                                                            riskregisterklinis1
+                                                                .pic.name
+                                                        }
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {
+                                                            riskregisterklinis1
+                                                                .user.name
+                                                        }
+                                                    </Table.Td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </Table.Tbody>
+                                </Table>
+                                <Pagination meta={meta} />
                             </div>
                         </div>
                     </div>

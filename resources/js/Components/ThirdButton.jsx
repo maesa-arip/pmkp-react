@@ -10,13 +10,15 @@ export default function ThirdButton({ type = 'submit', className = '', processin
         sky: 'bg-sky-50 text-sky-500 hover:bg-sky-100 focus:bg-sky-100 active:bg-sky-100 focus:ring-sky-100',
         gray: 'bg-gray-50 text-gray-500 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 focus:ring-gray-100',
         green: 'bg-green-50 text-green-500 hover:bg-green-100 focus:bg-green-100 active:bg-green-100 focus:ring-green-100',
+        violet: 'bg-violet-50 text-violet-500 hover:bg-violet-100 focus:bg-violet-100 active:bg-violet-100 focus:ring-violet-100',
+        fuchsia: 'bg-fuchsia-50 text-fuchsia-500 hover:bg-fuchsia-100 focus:bg-fuchsia-100 active:bg-fuchsia-100 focus:ring-fuchsia-100',
       }
     return (
         <button
             type={type}
             onClick={onClick}
             className={ 
-                `${colorVariants[color]} inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150 ${
+                `${colorVariants[color]} inline-flex items-center px-4 py-2 border border-transparent rounded-lg font-semibold text-xs uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150 ${
                     processing && 'opacity-25'
                 } ` + className
             }

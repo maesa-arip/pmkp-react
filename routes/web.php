@@ -15,6 +15,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PicController;
 use App\Http\Controllers\ProbabilityValueController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RCAController;
 use App\Http\Controllers\RiskCategoryController;
 use App\Http\Controllers\RiskRegisterKlinisController;
 use App\Http\Controllers\RiskRegisterKlinisOpsiPengendalianController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\RiskTypeController;
 use App\Http\Controllers\RiskVarietyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -56,8 +58,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/ ', HomeController::class)->name('home');
-    Route::get('/dashboard ', HomeController::class)->name('dashboard');
+    Route::get('/ ', [HomeController::class,'index'])->name('home');
+    Route::get('/dashboard ', [HomeController::class,'index'])->name('dashboard');
+    Route::get('/notifications ', [HomeController::class,'notifications'])->name('notifications');
+    Route::get('/requeststatus ', [HomeController::class,'requeststatus'])->name('requeststatus');
     
     Route::Resource('users', UserController::class);
     // Route::Resource('casemix', CasemixController::class);
@@ -76,7 +80,13 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('jenisSebabs', JenisSebabController::class);
 
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
+    Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
+    Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');
     Route::put('/formulirrca', [RiskRegisterKlinisController::class,'formulirrca'])->name('riskregister.formulirrca');
+    Route::put('/requestupdatestatus', [RiskRegisterKlinisController::class,'requestupdatestatus'])->name('riskregister.requestupdatestatus');
+    Route::get('/verification/management', [VerificationController::class,'management'])->name('riskregister.verificationmanagement');
+    Route::get('/verification/admin', [VerificationController::class,'admin'])->name('riskregister.verificationadmin');
+    Route::put('/updatestatus', [RiskRegisterKlinisController::class,'updatestatus'])->name('riskregister.updatestatus');
     Route::put('/fgdinherent', [RiskRegisterKlinisController::class,'fgdinherent'])->name('riskregister.fgdinherent');
     Route::put('/fgdresidual', [RiskRegisterKlinisController::class,'fgdresidual'])->name('riskregister.fgdresidual');
     Route::put('/fgdtreated', [RiskRegisterKlinisController::class,'fgdtreated'])->name('riskregister.fgdtreated');
