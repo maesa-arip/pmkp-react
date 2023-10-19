@@ -84,8 +84,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');
     Route::put('/formulirrca', [RiskRegisterKlinisController::class,'formulirrca'])->name('riskregister.formulirrca');
     Route::put('/requestupdatestatus', [RiskRegisterKlinisController::class,'requestupdatestatus'])->name('riskregister.requestupdatestatus');
-    Route::get('/verification/management', [VerificationController::class,'management'])->name('riskregister.verificationmanagement');
-    Route::get('/verification/admin', [VerificationController::class,'admin'])->name('riskregister.verificationadmin');
+    Route::get('/verification/occurring/management', [VerificationController::class,'occurringmanagement'])->name('riskregister.verificationmanagementoccurring');
+    Route::get('/verification/occurring/admin', [VerificationController::class,'occurringadmin'])->name('riskregister.verificationadminoccurring');
+
+    Route::get('/verification/priority/management', [VerificationController::class,'prioritymanagement'])->name('riskregister.verificationmanagementpriority');
+    Route::get('/verification/priority/admin', [VerificationController::class,'priorityadmin'])->name('riskregister.verificationadminpriority');
     Route::put('/updatestatus', [RiskRegisterKlinisController::class,'updatestatus'])->name('riskregister.updatestatus');
     Route::put('/fgdinherent', [RiskRegisterKlinisController::class,'fgdinherent'])->name('riskregister.fgdinherent');
     Route::put('/fgdresidual', [RiskRegisterKlinisController::class,'fgdresidual'])->name('riskregister.fgdresidual');

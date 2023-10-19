@@ -8,6 +8,7 @@ import TextAreaInput from "@/Components/TextAreaInput";
 import TextInput from "@/Components/TextInput";
 import TextInputWithError from "@/Components/TextInputWithError";
 import Tooltip from "@/Components/Tooltip";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -92,12 +93,28 @@ console.log(model.currently_id)
                             Data PIC Unit Terkait
                         </label>
                         <div className="grid grid-cols-12 gap-6">
-                            <div className="col-span-12">
+                            <div className="col-span-6">
                                 <InputLabel for="created_at" value="Tanggal Input" />
                                 <TextInput
                                     id="created_at"
                                     readOnly={true}
-                                    value={data.created_at}
+                                    value={moment(
+                                        data.created_at
+                                    ).format("YYYY-MM-DD")}
+                                   
+                                    type="text"
+                                    className="block w-full mt-1"
+                                />
+                                
+                            </div>
+                            <div className="col-span-6">
+                                <InputLabel for="created_at" value="Jam Input" />
+                                <TextInput
+                                    id="created_at"
+                                    readOnly={true}
+                                    value={moment(
+                                        data.created_at
+                                    ).format("H:MM")}
                                    
                                     type="text"
                                     className="block w-full mt-1"
@@ -109,11 +126,13 @@ console.log(model.currently_id)
                                 <TextInput
                                     id="tgl_perbaikan"
                                     readOnly={true}
-                                    value={data.tgl_perbaikan}
+                                    value={moment(
+                                        data.tgl_perbaikan
+                                    ).format("YYYY-MM-DD")}
                                     handleChange={(e) =>
                                         setData("tgl_perbaikan", e.target.value)
                                     }
-                                    type="date"
+                                    type="text"
                                     className="block w-full mt-1"
                                 />
                                 <InputError

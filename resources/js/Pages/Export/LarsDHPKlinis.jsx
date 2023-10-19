@@ -7,6 +7,7 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import DatePicker from "react-datepicker";
 import ComboboxMultiple from "@/Components/ComboboxMultiple";
+import "react-datepicker/dist/react-datepicker.css";
 import ComboboxMultipleWithOutSemuaUnit from "@/Components/ComboboxMultipleWithOutSemuaUnit";
 
 export default function LarsDHPKlinis({ setIsOpenAddDialog }) {

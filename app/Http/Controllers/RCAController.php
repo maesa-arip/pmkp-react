@@ -60,7 +60,7 @@ class RCAController extends Controller
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $riskRegisterKlinis = RiskRegister::query()->whereHas('riskgrading', function (Builder $query) {
-            $query->where('name_bpkp', 'like', '%TINGGI%');
+            $query->where('name_bpkp', 'like', '%TINGGI%')->orWhere('name_bpkp', 'SEDANG');
         })
             ->with('risk_category')
             ->with('identification_source')

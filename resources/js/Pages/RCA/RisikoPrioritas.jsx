@@ -547,7 +547,7 @@ export default function RisikoPrioritas(props) {
                                     <tr
                                         key={index}
                                         className={
-                                            selectedRow === index ? "bg-sky-100  cursor-pointer" : (riskregisterklinis1.riskgrading.name_bpkp == 'SANGAT TINGGI' ? "cursor-pointer text-red-500 bg-red-50" : "cursor-pointer text-yellow-700 bg-yellow-50")
+                                            selectedRow === index ? "bg-sky-100  cursor-pointer" : ( riskregisterklinis1.riskgrading.name_bpkp == 'SANGAT TINGGI' ? "cursor-pointer text-white bg-red-500" : ( riskregisterklinis1.riskgrading.name_bpkp == 'TINGGI' ? "cursor-pointer text-white bg-amber-500" : "cursor-pointer text-black bg-yellow-300"))
                                         }
                                         onClick={() => selectRow(index)}
                                     >
