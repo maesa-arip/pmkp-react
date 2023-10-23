@@ -215,7 +215,6 @@ class RiskRegisterKlinisController extends Controller
             'risk_category_id' => 'required',
             'tgl_register' => 'required',
             'sebab' => 'required',
-            'currently_id' => 'required',
             'pic_id' => 'required',
             'identification_source_id' => 'required',
             'resiko' => 'required',
@@ -260,8 +259,21 @@ class RiskRegisterKlinisController extends Controller
         ]);
         $riskRegisterKlinis = RiskRegister::find($id);
 
+        // dd($request->all());
+        // currently_id = 1 => sedang terjadi
+        if ($riskRegisterKlinis->currently_id == 1 && $request->currently_id == 2) {
+            return back()->with([
+                'type' => 'error',
+                'message' => 'Tidak bisa rubah status tidak sedang terjadi, silakan rubah di menu "Request Perubahan Status"',
+            ]);
+            // $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => $riskRegisterKlinis->currently_id]);
+        }
+        if ($riskRegisterKlinis->currently_id == 2 && $request->currently_id == 1) {
+            $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => 1]);
+        }
         $riskRegisterKlinis->update($request->except('home'));
-        $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => $riskRegisterKlinis->currently_id]);
+        
+        
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();

@@ -32,6 +32,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         pengawasan_id: model.pengawasan_id,
         created_at: model.created_at,
     });
+    // console.log(data)
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
         e.preventDefault();

@@ -317,6 +317,9 @@ export default function Index(props) {
                                             <Table.Th>
                                                 Tanggal Perbaikan
                                             </Table.Th>
+                                            <Table.Th>
+                                                Tanggal Update Status
+                                            </Table.Th>
                                             <Table.Th
                                                 width={"w-96"}
                                                 onClick={() => sort("sebab")}
@@ -384,6 +387,10 @@ export default function Index(props) {
                                                                   .requestupdate
                                                                   .tgl_perbaikan
                                                             : "Belum Perbaikan"}
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {riskregisterklinis1.requestupdate
+                                                            ? (riskregisterklinis1.requestupdate.is_approved == 1 ? riskregisterklinis1.requestupdate.tgl_update_status  :"Belum Update Status"): "Belum Update Status"}
                                                     </Table.Td>
                                                     <Table.Td>
                                                         {

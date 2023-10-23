@@ -1,18 +1,14 @@
-import Dropdown from "@/Components/Dropdown";
 import EditModal from "@/Components/Modal/EditModal";
-
 import App from "@/Layouts/App";
 import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
-import Edit from "./Edit";
-import axios from "axios";
+import History from "./Edit";
 import Pagination from "@/Components/Pagination";
 import Table from "@/Components/Table";
 import Badge from "@/Components/Badge";
-import { IconChevronDown } from "@tabler/icons";
 import ThirdButton from "@/Components/ThirdButton";
-import EditStatus from "../../../UpdateStatus/Edit";
+import EditVerification from "./Edit";
 import moment from "moment";
 
 const UpIcon = () => (
@@ -89,7 +85,8 @@ export default function Index(props) {
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                route("requeststatus"),
+                // route("requeststatus"),
+                route(route().current()),
                 { ...pickBy(query), page: query.page },
                 {
                     preserveState: true,
@@ -182,9 +179,9 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="max-w-4xl"
-                title="Update Status"
+                title="Lihat History"
             >
-                <Edit
+                <History
                     model={state}
                     ShouldMap={ShouldMap}
                     isOpenEditDialog={isOpenEditDialog}
@@ -195,9 +192,9 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenRequestUpdateStatus}
                 setIsOpenEditDialog={setIsOpenRequestUpdateStatus}
                 size="max-w-6xl"
-                title="Update Status"
+                title="Verifikasi Admin Risiko Sedang Terjadi"
             >
-                <EditStatus
+                <EditVerification
                     model={state}
                     ShouldMap={ShouldMap}
                     isOpenEditDialog={isOpenRequestUpdateStatus}
@@ -307,7 +304,7 @@ export default function Index(props) {
                     <div className="flex flex-col">
                         <div className="-my-2 overflow-x-auto rounded ">
                             <div className="inline-block min-w-full py-2 align-middle ">
-                                <Table>
+                            <Table>
                                     <Table.Thead>
                                         <Table.Tr>
                                             <Table.Th>#</Table.Th>
@@ -316,6 +313,18 @@ export default function Index(props) {
                                             </Table.Th>
                                             <Table.Th>
                                                 Tanggal Perbaikan
+                                            </Table.Th>
+                                            <Table.Th
+                                                width={"w-96"}
+                                                onClick={() => sort("keterangan")}
+                                            >
+                                                Keterangan Manajer Risiko
+                                                {params.field == "keterangan" &&
+                                                    params.direction ==
+                                                        "asc" && <UpIcon />}
+                                                {params.field == "keterangan" &&
+                                                    params.direction ==
+                                                        "desc" && <DownIcon />}
                                             </Table.Th>
                                             <Table.Th
                                                 width={"w-96"}
@@ -384,6 +393,13 @@ export default function Index(props) {
                                                                   .requestupdate
                                                                   .tgl_perbaikan
                                                             : "Belum Perbaikan"}
+                                                    </Table.Td>
+                                                    <Table.Td>
+                                                        {riskregisterklinis1.requestupdateverificationmanagement
+                                                            ? riskregisterklinis1
+                                                                  .requestupdateverificationmanagement
+                                                                  .keterangan
+                                                            : "Belum Verifikasi"}
                                                     </Table.Td>
                                                     <Table.Td>
                                                         {

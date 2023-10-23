@@ -59,7 +59,7 @@ export default function Dashboard(props) {
                                                 Total Risiko
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                9 job positions
+                                                {props.riskRegisterKlinis + props.riskRegisterNonKlinis} Risiko
                                             </p>
                                         </div>
                                         <div className="pl-3">
@@ -94,7 +94,7 @@ export default function Dashboard(props) {
                                                 Risiko Klinis
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                10 job positions
+                                            {props.riskRegisterKlinis} Risiko
                                             </p>
                                         </div>
                                         <div className="pl-3">
@@ -129,7 +129,7 @@ export default function Dashboard(props) {
                                                 Risiko Non Klinis
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                14 job positions
+                                            {props.riskRegisterNonKlinis} Risiko
                                             </p>
                                         </div>
                                         <div className="pl-3">
@@ -235,7 +235,7 @@ export default function Dashboard(props) {
                                                 Perlu RCA
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                11 job positions
+                                            {props.priorityRisk} Risiko
                                             </p>
                                         </div>
                                         <div className="pl-3">
@@ -270,7 +270,7 @@ export default function Dashboard(props) {
                                                 Belum Verifikasi Manajemen
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                37 job positions
+                                            {props.occuringManagement} Risiko
                                             </p>
                                         </div>
                                         <div className="pl-3">
@@ -305,7 +305,7 @@ export default function Dashboard(props) {
                                                 Belum Verifikasi Admin
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                2 job positions
+                                            {props.occuringAdmin} Risiko
                                             </p>
                                         </div>
                                         <div className="pl-3">

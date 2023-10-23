@@ -86,6 +86,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/requestupdatestatus', [RiskRegisterKlinisController::class,'requestupdatestatus'])->name('riskregister.requestupdatestatus');
     Route::get('/verification/occurring/management', [VerificationController::class,'occurringmanagement'])->name('riskregister.verificationmanagementoccurring');
     Route::get('/verification/occurring/admin', [VerificationController::class,'occurringadmin'])->name('riskregister.verificationadminoccurring');
+    Route::put('/verification/occurring/admin', [VerificationController::class,'storeoccurringadmin'])->name('riskregister.storeverificationadminoccurring');
+    Route::put('/verification/occurring/management', [VerificationController::class,'storeoccurringmanagement'])->name('riskregister.storeverificationmanagementoccurring');
+    Route::put('/verification/priority/admin', [VerificationController::class,'storepriorityadmin'])->name('riskregister.storeverificationadminpriority');
+    Route::put('/verification/priority/management', [VerificationController::class,'storeprioritymanagement'])->name('riskregister.storeverificationmanagementpriority');
 
     Route::get('/verification/priority/management', [VerificationController::class,'prioritymanagement'])->name('riskregister.verificationmanagementpriority');
     Route::get('/verification/priority/admin', [VerificationController::class,'priorityadmin'])->name('riskregister.verificationadminpriority');

@@ -1293,6 +1293,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `No Urut`'),
                 'risk_registers.resiko as Penyataan Risiko',
@@ -1303,6 +1304,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd1_controllability',
                 DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability AS `Skor`'),
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat1`'),
+                'users.name',
+                'risk_gradings.name_bpkp',
             )
             // ->groupBy(
             //     'risk_registers.resiko',
@@ -1314,7 +1317,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             // )
             
             ->where($whosLogin)
-            ->orderBy('Skor', 'DESC');
+            ->orderBy('Peringkat1', 'ASC');
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
@@ -1333,8 +1336,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Pernyataan Risiko', 'Kategori Risiko', 'Penyebab Risiko', 'Probabilitas', 'Dampak', 'Controllability', 'Skor', 'Ranking'],
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+            ['No', 'Pernyataan Risiko', 'Kategori Risiko', 'Penyebab Risiko', 'Probabilitas', 'Dampak', 'Controllability', 'Skor', 'Ranking','Pemilik Risiko','Peringkat Risiko'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9','10','11'],
         ];
     }
     public function columnWidths(): array
@@ -1349,6 +1352,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'G' => 15,
             'H' => 7,
             'I' => 12,
+            'J' => 20,
+            'K' => 20,
         ];
     }
     public function registerEvents(): array
@@ -1360,6 +1365,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $highestColumn = $event->sheet->getHighestColumn();
                 $range = 'A1:' . $highestColumn . $highestRow;
                 $rangeA = 'A1:' . 'A' . $highestRow;
+                $rangeK = 'K3:' . 'K' . $highestRow;
                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
                 $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
                     'borders' => [
@@ -1447,6 +1453,120 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         ],
                     ],
                 ];
+                $styleStandar = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                ];
+                $styleST = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FF0D0D',
+                        ],
+                    ],
+                ];
+                $styleT = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFC000',
+                        ],
+                    ],
+                ];
+                $styleM = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFFF00',
+                        ],
+                    ],
+                ];
+                $styleR = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '00B0F0',
+                        ],
+                    ],
+                ];
+                $styleSR = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '00B050',
+                        ],
+                    ],
+                ];
+                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional->addCondition(14);
+                $conditional->setText('SANGAT TINGGI');
+                $conditional->getStyle()->applyFromArray($styleST);
+                $conditionalStyles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditionalStyles[] = $conditional;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditionalStyles);
+
+                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional2->addCondition(9);
+                $conditional2->setText('TINGGI');
+                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional2Styles[] = $conditional2;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional2Styles);
+
+                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional3->addCondition(4);
+                $conditional3->setText('SEDANG');
+                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional3Styles[] = $conditional3;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional3Styles);
+                
+                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional5->addCondition(1);
+                $conditional5->setText('SANGAT RENDAH');
+                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional5Styles[] = $conditional5;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional5Styles);
+
+                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional4->addCondition(2);
+                $conditional4->setText('RENDAH');
+                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional4Styles[] = $conditional4;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional4Styles);
 
                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
                     'alignment' => [
@@ -1454,8 +1574,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ]);
                 $event->sheet->getDelegate()->getStyle('A1:F1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('G1:I1')->applyFromArray($styleHeader3);
-                $event->sheet->getDelegate()->getStyle('A2:I2')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('G1:K1')->applyFromArray($styleHeader3);
+                $event->sheet->getDelegate()->getStyle('A2:K2')->applyFromArray($styleHeader2);
             },
         ];
     }

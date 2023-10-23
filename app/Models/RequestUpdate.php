@@ -20,6 +20,6 @@ class RequestUpdate extends Model
     }
     public function verificationadmin()
     {
-        return $this->hasMany(VerificationAdmin::class);
+        return $this->hasOne(VerificationAdmin::class);
     }
 }

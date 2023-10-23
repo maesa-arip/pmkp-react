@@ -1296,6 +1296,8 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Nomor`'),
                 'risk_categories.name as kategori',
@@ -1306,6 +1308,8 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd1_controllability',
                 DB::raw('risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability AS `Skor`'),
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat1`'),
+                'users.name',
+                'risk_gradings.name as grading_name',
             )
             // ->groupBy(
             //     'risk_registers.pernyataan_risiko',
@@ -1317,7 +1321,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             // )
             ->where('tipe_id', 1)
             ->where($whosLogin)
-            ->orderBy('Skor', 'DESC');
+            ->orderBy('Peringkat1', 'ASC');
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
@@ -1341,9 +1345,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'KATEGORI RISIKO', 'PERNYATAAN RISIKO', 'AKAR MASALAH (PENYEBAB UTAMA RISIKO)', 'DAMPAK (D)', 'PROBABILITAS (P)', 'CONTROLLABILITY (Pengendalian)', 'SCORING', 'RANGKING'],
+            ['No', 'KATEGORI RISIKO', 'PERNYATAAN RISIKO', 'AKAR MASALAH (PENYEBAB UTAMA RISIKO)', 'DAMPAK (D)', 'PROBABILITAS (P)', 'CONTROLLABILITY (Pengendalian)', 'SCORING', 'RANGKING','PEMILIK RISIKO','PERINGKAT RISIKO'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8) (5x6x7)', '(9)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8) (5x6x7)', '(9)','(10)','(11)'],
         ];
     }
     public function columnWidths(): array
@@ -1358,6 +1362,8 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'G' => 30,
             'H' => 9,
             'I' => 12,
+            'J' => 20,
+            'K' => 20,
         ];
     }
     public function registerEvents(): array
@@ -1370,6 +1376,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $highestColumn = $event->sheet->getHighestColumn();
                 $range = 'A1:' . $highestColumn . $highestRow;
                 $rangeA = 'A3:' . 'A' . $highestRow;
+                $rangeK = 'K3:' . 'K' . $highestRow;
                 $rangeEI = 'E3:' . 'I' . $highestRow;
 
                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
@@ -1552,11 +1559,59 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ];
                 // KOLOM K
+                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional->addCondition(14);
+                $conditional->setText('EXTREME');
+                $conditional->getStyle()->applyFromArray($styleST);
+                $conditionalStyles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditionalStyles[] = $conditional;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditionalStyles);
+
+                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional2->addCondition(9);
+                $conditional2->setText('HIGH');
+                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional2Styles[] = $conditional2;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional2Styles);
+
+                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional3->addCondition(4);
+                $conditional3->setText('MODERATE');
+                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional3Styles[] = $conditional3;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional3Styles);
+                
+                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional5->addCondition(1);
+                $conditional5->setText('SANGAT RENDAH');
+                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional5Styles[] = $conditional5;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional5Styles);
+
+                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional4->addCondition(2);
+                $conditional4->setText('LOW');
+                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                $conditional4Styles[] = $conditional4;
+                $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional4Styles);
 
 
 
-
-                $event->sheet->getDelegate()->getStyle('A1:I2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A1:K2')->applyFromArray($styleHeader);
 
                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
                     'alignment' => [

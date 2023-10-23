@@ -82,6 +82,22 @@ class RiskRegister extends Model
     {
         return $this->hasOne(RequestUpdate::class);
     }
+    public function requestupdateverificationadmin()
+    {
+        return $this->hasOneThrough(VerificationAdmin::class, RequestUpdate::class);
+    }
+    public function requestupdateverificationmanagement()
+    {
+        return $this->hasOneThrough(VerificationManagement::class, RequestUpdate::class);
+    }
+    public function verificationpriorityadmin()
+    {
+        return $this->hasOne(VerificationPriorityAdmin::class);
+    }
+    public function verificationprioritymanagement()
+    {
+        return $this->hasOne(VerificationPriorityManagement::class);
+    }
     public function riskgrading(){
         return $this->hasOne(RiskGrading::class,'kode','concatdp1');
     }

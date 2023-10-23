@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('request_update_id')->constrained();
             $table->string('keterangan');
-            $table->boolean('is_approved')->default(0);
             $table->timestamps();
         });
     }

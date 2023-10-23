@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class VerificationAdmin extends Model
 {
     use HasFactory;
-    protected $guraded = [];
+    protected $fillable = ['request_update_id','keterangan'];
     public function requestupdate()
     {
         return $this->belongsTo(RequestUpdate::class);

@@ -9,15 +9,17 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         created_at: model.created_at,
         currently_id: model.currently_id,
         pernyataan_risiko: model.pernyataan_risiko,
+        request_update_id: model.requestupdate?.id ?? '',
         tgl_perbaikan: model.requestupdate?.tgl_perbaikan ?? '',
         jam_perbaikan: model.requestupdate?.jam_perbaikan ?? '',
         upaya_pengendalian: model.requestupdate?.upaya_pengendalian ?? '',
+        keterangan: model.verificationpriorityadmin?.keterangan ?? '',
     });
-    // console.log(model)
+    console.log(model)
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("riskregister.updatestatus", model.id), {
+        put(route("riskregister.storeverificationadminpriority", model.id), {
             data,
             onSuccess: () => {
                 reset(), setIsOpenEditDialog(false);
@@ -30,11 +32,13 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             id: model.id,
             tgl_register: model.tgl_register,
             created_at: model.created_at,
-        currently_id: model.currently_id,
+            currently_id: model.currently_id,
             pernyataan_risiko: model.pernyataan_risiko,
+            request_update_id: model.requestupdate?.id ?? '',
             tgl_perbaikan: model.requestupdate?.tgl_perbaikan ?? '',
             jam_perbaikan: model.requestupdate?.jam_perbaikan ?? '',
             upaya_pengendalian: model.requestupdate?.upaya_pengendalian ?? '',
+            keterangan: model.verificationpriorityadmin?.keterangan ?? '',
         });
     }, [model]);
     return (
