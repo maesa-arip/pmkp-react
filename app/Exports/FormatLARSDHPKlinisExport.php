@@ -1524,7 +1524,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FFC000',
+                            'argb' => 'FFFF00',
                         ],
                     ],
                 ];
@@ -1534,7 +1534,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FFFF00',
+                            'argb' => '00B050',
                         ],
                     ],
                 ];
@@ -2418,7 +2418,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
             ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->select('risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as aksi', 'risk_registers.output', 'indikator_fitur4s.name', DB::raw(
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'),'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as aksi', 'risk_registers.output', 'indikator_fitur4s.name', DB::raw(
                 '
                 CASE
                     WHEN risk_registers.realisasi_id = 1 THEN "Sudah Tercapai"
@@ -2427,6 +2427,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 END AS `PerluPenanganan`'
             ), 'waktu_implementasis.name as waktu_implementasi', 'users.name as pemilik_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name as grading')
             ->where('tipe_id', 1)
+            ->orderBy('Peringkat','ASC')
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
@@ -2450,24 +2451,25 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['Prioritas Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Status Risiko', 'Status Risiko'],
+            ['No','Prioritas Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Status Risiko', 'Status Risiko'],
 
-            ['Prioritas Risiko', 'Aksi pengendalian', 'Output', 'Target', 'Realisasi', 'Waktu Implementasi', 'Penanggung jawab', 'Trend (naik/ turun)', 'Level Risiko'],
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)'],
+            ['No','Prioritas Risiko', 'Aksi pengendalian', 'Output', 'Target', 'Realisasi', 'Waktu Implementasi', 'Penanggung jawab', 'Trend (naik/ turun)', 'Level Risiko'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)','(10)'],
         ];
     }
     public function columnWidths(): array
     {
         return [
-            'A' => 65,
-            'B' => 25,
-            'C' => 20,
+            'A' => 5,
+            'B' => 65,
+            'C' => 25,
             'D' => 20,
             'E' => 20,
             'F' => 20,
             'G' => 20,
             'H' => 20,
-            'I' => 10,
+            'I' => 20,
+            'J' => 15,
         ];
     }
     public function registerEvents(): array
@@ -2599,17 +2601,20 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ]);
 
-                $event->sheet->getDelegate()->getStyle('A3:I3')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A3:J3')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->mergeCells('A1:A2');
                 $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('B1:G1');
-                $event->sheet->getDelegate()->getStyle('B1:G1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('B2:G2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('B1:B2');
+                $event->sheet->getDelegate()->getStyle('B1:B2')->applyFromArray($styleHeader);
 
-                $event->sheet->getDelegate()->mergeCells('H1:I1');
-                $event->sheet->getDelegate()->getStyle('H1:I1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('H2:I2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('C1:H1');
+                $event->sheet->getDelegate()->getStyle('C1:H1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('C2:H2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('I1:J1');
+                $event->sheet->getDelegate()->getStyle('I1:J1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('I2:J2')->applyFromArray($styleHeader);
             },
         ];
     }

@@ -554,11 +554,12 @@ export default function RisikoPrioritas(props) {
                                         <Table.Td>
                                             <Badge>{meta.from + index}</Badge>
                                         </Table.Td>
-                                        <Table.Td className="whitespace-nowrap">
-                                            {riskregisterklinis1.tgl_register}
-                                        </Table.Td>
+                                        
                                         <Table.Td className="whitespace-nowrap">
                                             {riskregisterklinis1.riskgrading.name_bpkp}
+                                        </Table.Td>
+                                        <Table.Td className="whitespace-nowrap">
+                                            {riskregisterklinis1.tgl_register}
                                         </Table.Td>
                                         <Table.Td>
                                             {

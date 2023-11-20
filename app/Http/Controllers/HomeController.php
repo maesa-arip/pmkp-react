@@ -43,15 +43,15 @@ class HomeController extends Controller
         })->with('riskgrading')->where($whosLogin)->count();
         $occuringManagement = RiskRegister::query()
             ->whereHas('requestupdate', function (Builder $query) {
-                $query->where('is_approved', 1);
+                $query->where('request_updates.is_approved', 1);
             })->whereDoesntHave('requestupdateverificationmanagement', function (Builder $query) {
-                $query->where('is_approved', 1);
+                $query->where('request_updates.is_approved', 1);
             })->where($whosLogin)->count();
         $occuringAdmin = RiskRegister::query()
             ->whereHas('requestupdate', function (Builder $query) {
                 $query->where('is_approved', 1);
             })->whereDoesntHave('requestupdateverificationadmin', function (Builder $query) {
-                $query->where('is_approved', 1);
+                $query->where('request_updates.is_approved', 1);
             })->where($whosLogin)->count();
 
         return inertia('Dashboard', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskRegisterNonKlinis' => $riskRegisterNonKlinis, 'priorityRisk' => $priorityRisk, 'occuringManagement' => $occuringManagement, 'occuringAdmin' => $occuringAdmin]);

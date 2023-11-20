@@ -6,11 +6,11 @@ import { Link, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 
 export default function Navbar() {
-    const { auth,permissionNames } = usePage().props;
+    const { auth, permissionNames } = usePage().props;
     const [isOpenMenuModal, setIsOpenMenuModal] = useState(false);
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-        const permission_name = permissionNames
+    const permission_name = permissionNames
         ? permissionNames.map((permission) => permission.name)
         : "null";
     return (
@@ -43,55 +43,259 @@ export default function Navbar() {
                             >
                                 Users
                             </NavLink> */}
-                             {permission_name.indexOf("atur hak akses") > -1 && (
-                            <div className="hidden sm:flex sm:items-center sm:ml-6">
-                                <div className="relative ml-3">
-                                    <Dropdown>
-                                        <Dropdown.Trigger>
-                                            <span className="inline-flex rounded-md">
-                                                <button
-                                                    type="button"
-                                                    className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
-                                                >
-                                                    Permission
-                                                    <svg
-                                                        className="ml-2 -mr-0.5 h-4 w-4"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
+                            {permission_name.indexOf("atur hak akses") > -1 && (
+                                <div className="hidden sm:flex sm:items-center sm:ml-6">
+                                    <div className="relative ml-3">
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span className="inline-flex rounded-md">
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
                                                     >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </span>
-                                        </Dropdown.Trigger>
-                                        <Dropdown.Content>
-                                            <Link className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                href={route("users.index")}
-                                            >
-                                                Users
-                                            </Link>
-                                            <Link className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                href={route("roles.index")}
-                                            >
-                                                Roles
-                                            </Link>
-                                            <Link className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
-                                                href={route("permissions.index")}
-                                            >
-                                                Permissions
-                                            </Link>
-                                        </Dropdown.Content>
-                                    </Dropdown>
+                                                        Permission
+                                                        <svg
+                                                            className="ml-2 -mr-0.5 h-4 w-4"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+                                            <Dropdown.Content>
+                                                <Link
+                                                    className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                    href={route("users.index")}
+                                                >
+                                                    Users
+                                                </Link>
+                                                <Link
+                                                    className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                    href={route("roles.index")}
+                                                >
+                                                    Roles
+                                                </Link>
+                                                <Link
+                                                    className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                    href={route(
+                                                        "permissions.index"
+                                                    )}
+                                                >
+                                                    Permissions
+                                                </Link>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
                                 </div>
-                            </div>
-                             )}
-                             {permission_name.indexOf("edit data master manajemen risiko") > -1 && (
-                            <div className="hidden sm:flex sm:items-center sm:ml-6">
+                            )}
+                            {permission_name.indexOf(
+                                "edit data master manajemen risiko"
+                            ) > -1 && (
+                                <div className="hidden sm:flex sm:items-center sm:ml-6">
+                                    <div className="relative ml-3">
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span className="inline-flex rounded-md">
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
+                                                    >
+                                                        Master Risiko
+                                                        <svg
+                                                            className="ml-2 -mr-0.5 h-4 w-4"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+
+                                            <Dropdown.Content>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "opsiPengendalians.index"
+                                                    )}
+                                                >
+                                                    Opsi Pengendalian
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "riskCategories.index"
+                                                    )}
+                                                >
+                                                    Kategori Risiko
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "identificationSources.index"
+                                                    )}
+                                                >
+                                                    Sumber Identifikasi
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "locations.index"
+                                                    )}
+                                                >
+                                                    Lokasi
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "riskVarieties.index"
+                                                    )}
+                                                >
+                                                    Jenis Insiden
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "riskTypes.index"
+                                                    )}
+                                                >
+                                                    Tipe Insiden
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route("pics.index")}
+                                                >
+                                                    Penangung Jawab/PIC
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "jenisSebabs.index"
+                                                    )}
+                                                >
+                                                    Jenis Sebab
+                                                </Dropdown.Link>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+                            )}
+                            {permission_name.indexOf("atur data nilai") >
+                                -1 && (
+                                <div className="hidden sm:flex sm:items-center sm:ml-6">
+                                    <div className="relative ml-3">
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span className="inline-flex rounded-md">
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
+                                                    >
+                                                        Data Nilai
+                                                        <svg
+                                                            className="ml-2 -mr-0.5 h-4 w-4"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+
+                                            <Dropdown.Content>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "impactValues.index"
+                                                    )}
+                                                >
+                                                    Dampak
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "probabilityValues.index"
+                                                    )}
+                                                >
+                                                    Probabilitas
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "controlValues.index"
+                                                    )}
+                                                >
+                                                    Controllability
+                                                </Dropdown.Link>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+                            )}
+                            {permission_name.indexOf(
+                                "lihat data risk register sesuai lokasi"
+                            ) > -1 && (
+                                <div className="hidden sm:flex sm:items-center sm:ml-6">
+                                    <div className="relative ml-3">
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span className="inline-flex rounded-md">
+                                                    <button
+                                                        type="button"
+                                                        className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
+                                                    >
+                                                        Data Risiko
+                                                        <svg
+                                                            className="ml-2 -mr-0.5 h-4 w-4"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+
+                                            <Dropdown.Content>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "riskRegisterKlinis.index"
+                                                    )}
+                                                >
+                                                    Risk Register Klinis
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "riskRegisterNonKlinis.index"
+                                                    )}
+                                                >
+                                                    Risk Register Non Klinis
+                                                </Dropdown.Link>
+                                                {/* <Dropdown.Link
+                                                href={route(
+                                                    "locations.index"
+                                                )}
+                                            >
+                                                Budaya Keselamatan
+                                            </Dropdown.Link> */}
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+                            )}
+                            {/* <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
                                         <Dropdown.Trigger>
@@ -100,7 +304,7 @@ export default function Navbar() {
                                                     type="button"
                                                     className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
                                                 >
-                                                    Master Risiko
+                                                    Master IKP
                                                     <svg
                                                         className="ml-2 -mr-0.5 h-4 w-4"
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -118,52 +322,46 @@ export default function Navbar() {
                                         </Dropdown.Trigger>
 
                                         <Dropdown.Content>
-                                        <Dropdown.Link
+                                            <Dropdown.Link
                                                 href={route(
                                                     "opsiPengendalians.index"
                                                 )}
                                             >
-                                                Opsi Pengendalian
+                                                IKP Jenis Insiden
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
                                                     "riskCategories.index"
                                                 )}
                                             >
-                                                Kategori Risiko
+                                                IKP Spesialisasi
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
                                                     "identificationSources.index"
                                                 )}
                                             >
-                                                Sumber Identifikasi
+                                                IKP Dampak
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route(
-                                                    "locations.index"
-                                                )}
+                                                href={route("locations.index")}
                                             >
-                                                Lokasi
+                                                IKP Probabilitas
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
                                                     "riskVarieties.index"
                                                 )}
                                             >
-                                                Jenis Insiden
+                                                IKP Melaporkan Insiden
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route(
-                                                    "riskTypes.index"
-                                                )}
+                                                href={route("riskTypes.index")}
                                             >
-                                                Tipe Insiden
+                                                IKP Menyangkut Pasien
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route(
-                                                    "pics.index"
-                                                )}
+                                                href={route("pics.index")}
                                             >
                                                 Penangung Jawab/PIC
                                             </Dropdown.Link>
@@ -175,119 +373,9 @@ export default function Navbar() {
                                                 Jenis Sebab
                                             </Dropdown.Link>
                                         </Dropdown.Content>
-                                        
                                     </Dropdown>
                                 </div>
-                            </div>
-                             )}
-                             {permission_name.indexOf("atur data nilai") > -1 && (
-                            <div className="hidden sm:flex sm:items-center sm:ml-6">
-                                <div className="relative ml-3">
-                                    <Dropdown>
-                                        <Dropdown.Trigger>
-                                            <span className="inline-flex rounded-md">
-                                                <button
-                                                    type="button"
-                                                    className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
-                                                >
-                                                    Data Nilai
-                                                    <svg
-                                                        className="ml-2 -mr-0.5 h-4 w-4"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </span>
-                                        </Dropdown.Trigger>
-
-                                        <Dropdown.Content>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "impactValues.index"
-                                                )}
-                                            >
-                                                Dampak
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "probabilityValues.index"
-                                                )}
-                                            >
-                                                Probabilitas
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "controlValues.index"
-                                                )}
-                                            >
-                                                Controllability
-                                            </Dropdown.Link>
-                                        </Dropdown.Content>
-                                    </Dropdown>
-                                </div>
-                            </div>
-                             )}
-                             {permission_name.indexOf("lihat data risk register sesuai lokasi") > -1 && (
-                            <div className="hidden sm:flex sm:items-center sm:ml-6">
-                                <div className="relative ml-3">
-                                    <Dropdown>
-                                        <Dropdown.Trigger>
-                                            <span className="inline-flex rounded-md">
-                                                <button
-                                                    type="button"
-                                                    className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
-                                                >
-                                                    Data Risiko
-                                                    <svg
-                                                        className="ml-2 -mr-0.5 h-4 w-4"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </span>
-                                        </Dropdown.Trigger>
-
-                                        <Dropdown.Content>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "riskRegisterKlinis.index"
-                                                )}
-                                            >
-                                                Risk Register Klinis
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "riskRegisterNonKlinis.index"
-                                                )}
-                                            >
-                                                Risk Register Non Klinis
-                                            </Dropdown.Link>
-                                            {/* <Dropdown.Link
-                                                href={route(
-                                                    "locations.index"
-                                                )}
-                                            >
-                                                Budaya Keselamatan
-                                            </Dropdown.Link> */}
-                                        </Dropdown.Content>
-                                    </Dropdown>
-                                </div>
-                            </div>
-                             )}
+                            </div> */}
                         </div>
                     </div>
 
