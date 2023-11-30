@@ -152,6 +152,8 @@ Route::middleware('auth')->group(function () {
     Route::match(['GET', 'POST'], '/riskregisternonklinislarsdhp', [ExportController::class, 'riskregisternonklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp']);
     Route::match(['GET', 'POST'], '/riskregistersedangterjadi', [ExportController::class, 'riskregistersedangterjadi']);
+    Route::match(['GET', 'POST'], '/ikpdatainsiden', [ExportController::class, 'ikpdatainsiden']);
+    Route::match(['GET', 'POST'], '/ikpdataevaluasi', [ExportController::class, 'ikpdataevaluasi']);
     // Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
     // Route::match(['GET', 'POST'], '/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp']);
 });

@@ -272,7 +272,7 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            <div className="col-span-4">
+                            {/* <div className="col-span-4">
                                 <InputLabel
                                     for="tanggal_tindakan"
                                     value="Tanggal"
@@ -293,7 +293,7 @@ export default function Form({
                                     message={errors.tanggal_tindakan}
                                     className="mt-2"
                                 />
-                            </div>
+                            </div> */}
 
                             <div className="col-span-6">
                                 <InputLabel

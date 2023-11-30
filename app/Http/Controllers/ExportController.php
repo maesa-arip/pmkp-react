@@ -23,6 +23,8 @@ use PDF;
 
 use App\Exports\ExampleExport;
 use App\Exports\FormatBPKPKlinisExport;
+use App\Exports\FormatIKPDataEvaluasiExport;
+use App\Exports\FormatIKPDataInsidenExport;
 use App\Exports\FormatLARSDHPKlinisExport;
 use App\Exports\FormatLARSDHPNonKlinisExport;
 use App\Exports\FormatSedangTerjadiExport;
@@ -71,6 +73,21 @@ class ExportController extends Controller
         $endDate = $request->input('endDate');
         $userId = $request->input('userId');
         return Excel::download(new FormatSedangTerjadiExport($startDate, $endDate, $userId), 'Form Manajemen Risiko RSBM.xlsx');
+    }
+
+    public function ikpdatainsiden(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $userId = $request->input('userId');
+        return Excel::download(new FormatIKPDataInsidenExport($startDate, $endDate, $userId), 'Form IKP RSBM.xlsx');
+    }
+    public function ikpdataevaluasi(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $userId = $request->input('userId');
+        return Excel::download(new FormatIKPDataEvaluasiExport($startDate, $endDate, $userId), 'Form IKP RSBM.xlsx');
     }
     // public function riskregisterklinis()
     // {

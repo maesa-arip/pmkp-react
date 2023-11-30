@@ -22,6 +22,8 @@ import LarsDHPKlinis from "@/Pages/Export/LarsDHPKlinis";
 import LarsDHPNonKlinis from "@/Pages/Export/LarsDHPNonKlinis";
 import { IconNotification } from "@tabler/icons";
 import SedangTerjadi from "@/Pages/Export/SedangTerjadi";
+import IKPDataInsiden from "@/Pages/Export/IKPDataInsiden";
+import IKPDataEvaluasi from "@/Pages/Export/IKPDataEvaluasi";
 
 export default function Sidebar() {
     const { auth, notifications, updatestatus, permissionNames } =
@@ -44,6 +46,16 @@ export default function Sidebar() {
         setIsOpenExportDialogSedangTerjadi(true);
     };
 
+    const [isOpenExportDialogIKPDataInsiden, setIsOpenExportDialogIKPDataInsiden] = useState(false);
+    const openExportDialogIKPDataInsiden = () => {
+        setIsOpenExportDialogIKPDataInsiden(true);
+    };
+
+    const [isOpenExportDialogIKPDataEvaluasi, setIsOpenExportDialogIKPDataEvaluasi] = useState(false);
+    const openExportDialogIKPDataEvaluasi = () => {
+        setIsOpenExportDialogIKPDataEvaluasi(true);
+    };
+
     const [
         isOpenExportDialogLarsDHPKlinis,
         setIsOpenExportDialogLarsDHPKlinis,
@@ -59,6 +71,7 @@ export default function Sidebar() {
     const openExportDialogLarsDHPNonKlinis = () => {
         setIsOpenExportDialogLarsDHPNonKlinis(true);
     };
+
     // const [isOpenExportDialog3, setIsOpenExportDialog3] = useState(false);
     // const openExportDialog3 = () => {
     //     setIsOpenExportDialog3(true);
@@ -117,6 +130,28 @@ export default function Sidebar() {
                     }
                 >
                     <SedangTerjadi setIsOpenAddDialog={setIsOpenExportDialogSedangTerjadi} />
+                </ExportModal>
+
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogIKPDataInsiden}
+                    setIsOpenExportDialog={setIsOpenExportDialogIKPDataInsiden}
+                    size="max-w-4xl"
+                    title={
+                        `Pilihan Export IKP Data Insiden ` + auth.user.name
+                    }
+                >
+                    <IKPDataInsiden setIsOpenAddDialog={setIsOpenExportDialogIKPDataInsiden} />
+                </ExportModal>
+
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogIKPDataEvaluasi}
+                    setIsOpenExportDialog={setIsOpenExportDialogIKPDataEvaluasi}
+                    size="max-w-4xl"
+                    title={
+                        `Pilihan Export IKP Data Evaluasi ` + auth.user.name
+                    }
+                >
+                    <IKPDataEvaluasi setIsOpenAddDialog={setIsOpenExportDialogIKPDataEvaluasi} />
                 </ExportModal>
 
                 <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -1636,10 +1671,10 @@ export default function Sidebar() {
                                             </h3>
                                             <Disclosure.Panel className="pt-6">
                                                 <div className="space-y-4">
-                                                    {/* <button
+                                                    <button
                                                         type="button"
                                                         onClick={
-                                                            openExportDialogLarsDHPKlinis
+                                                            openExportDialogIKPDataInsiden
                                                         }
                                                         className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                     >
@@ -1682,7 +1717,7 @@ export default function Sidebar() {
                                                     <button
                                                         type="button"
                                                         onClick={
-                                                            openExportDialogLarsDHPNonKlinis
+                                                            openExportDialogIKPDataEvaluasi
                                                         }
                                                         className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                     >
@@ -1721,7 +1756,7 @@ export default function Sidebar() {
                                                                 DATA EVALUASI
                                                             </div>
                                                         )}
-                                                    </button> */}
+                                                    </button>
                                                     
                                                 </div>
                                             </Disclosure.Panel>

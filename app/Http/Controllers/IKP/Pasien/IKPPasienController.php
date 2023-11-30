@@ -42,7 +42,7 @@ class IKPPasienController extends Controller
             ->with('penindak')
             ->where($whosLogin);
         if ($request->q) {
-            $IkpPasien->where('kronologi', 'like', '%' . $request->q . '%');
+            $IkpPasien->where('insiden', 'like', '%' . $request->q . '%');
         }
 
         if ($request->has(['field', 'direction'])) {
@@ -79,7 +79,7 @@ class IKPPasienController extends Controller
     }
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validate($request, [
             'namapasien' => 'required',
             'nrm' => 'required',
             'umur_tahun' => 'required',
@@ -107,10 +107,11 @@ class IKPPasienController extends Controller
             'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1',
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
-        $validated = $validator->validated();
+        // $validated = $validator->validated();
         $validated['user_id'] = auth()->user()->id;
         $validated['pic_id'] = $encodedPic;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
+        // dd($validated);
         IkpPasien::create($validated);
         return back()->with([
             'type' => 'success',
@@ -119,7 +120,7 @@ class IKPPasienController extends Controller
     }
     public function update(Request $request, IkpPasien $IkpPasien)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validate($request, [
             'namapasien' => 'required',
             'nrm' => 'required',
             'umur_tahun' => 'required',
@@ -147,7 +148,6 @@ class IKPPasienController extends Controller
             'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1',
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
-        $validated = $validator->validated();
         $validated['user_id'] = auth()->user()->id;
         $validated['pic_id'] = $encodedPic;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
@@ -167,8 +167,7 @@ class IKPPasienController extends Controller
     }
     public function hasilinvestigasi(Request $request, IkpPasien $IkpPasien)
     {
-        $validator = Validator::make($request->all(), [
-            'ikp_pasien_id' => 'required',
+        $this->validate($request, [
             'penyebab' => 'required',
             'akarmasalah' => 'required',
             'rekomendasi' => 'required',
@@ -176,7 +175,6 @@ class IKPPasienController extends Controller
             'tanggal_rekomendasi' => 'required',
             'tindakan' => 'required',
             'pj2' => 'required',
-            'tanggal_tindakan' => 'required',
             'nama' => 'required',
             'verifikasi' => 'required',
             'tanggal_mulai_investigasi' => 'required',
@@ -187,9 +185,11 @@ class IKPPasienController extends Controller
             'ikp_dampak2_id' => 'required',
             'ikp_probabilitas2_id' => 'required',
         ]);
-        $validated = $validator->validated();
-        $validated['concatdp2'] = $request->ikp_dampak2_id . $request->ikp_probabilitas2_id;
-        IkpHasil::updateOrCreate(['ikp_pasien_id' => $IkpPasien->id], $validated);
+        $request->merge([
+            'concatdp2' => $request->ikp_dampak2_id . $request->ikp_probabilitas2_id,
+            'tanggal_tindakan' => $request->tanggal_rekomendasi,
+        ]);
+        IkpHasil::updateOrCreate(['ikp_pasien_id' => $IkpPasien->id], $request->all());
         return back()->with([
             'type' => 'success',
             'message' => 'Hhasil Investigasi berhasil disimpan',

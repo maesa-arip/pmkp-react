@@ -15,6 +15,7 @@ import Edit from "./Edit";
 import Table from "@/Components/Table";
 import Pagination from "@/Components/Pagination";
 import Badge from "@/Components/Badge";
+import moment from "moment";
 
 const UpIcon = () => (
     <svg
@@ -80,6 +81,7 @@ export default function Index(props) {
             { id: 1, name: "Ya" },
         ],
     };
+    console.log(ShouldMap)
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
@@ -409,14 +411,14 @@ export default function Index(props) {
                             </div>
                         </div>
                     </div>
-                    <Table overflow="none">
+                    <Table>
                         <Table.Thead>
                             <Table.Tr>
                                 <Table.Th>#</Table.Th>
                                 <Table.Th
                                     onClick={() => sort("tanggal_insiden")}
                                 >
-                                    Tanggal Kejadian
+                                    Tanggal_Kejadian
                                     {params.field == "tanggal_insiden" &&
                                         params.direction == "asc" && <UpIcon />}
                                     {params.field == "tanggal_insiden" &&
@@ -424,11 +426,20 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                <Table.Th onClick={() => sort("umur_tahun")}>
-                                    Umur
-                                    {params.field == "umur_tahun" &&
+                                <Table.Th onClick={() => sort("created_at")}>
+                                    Tanggal Melapor
+                                    {params.field == "created_at" &&
                                         params.direction == "asc" && <UpIcon />}
-                                    {params.field == "umur_tahun" &&
+                                    {params.field == "created_at" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("lokasi_name")}>
+                                    Unit
+                                    {params.field == "lokasi_name" &&
+                                        params.direction == "asc" && <UpIcon />}
+                                    {params.field == "lokasi_name" &&
                                         params.direction == "desc" && (
                                             <DownIcon />
                                         )}
@@ -444,24 +455,16 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                <Table.Th onClick={() => sort("kronologi")}>
-                                    Kronologis
-                                    {params.field == "kronologi" &&
+                                <Table.Th onClick={() => sort("insiden")}>
+                                    Insiden
+                                    {params.field == "insiden" &&
                                         params.direction == "asc" && <UpIcon />}
-                                    {params.field == "kronologi" &&
+                                    {params.field == "insiden" &&
                                         params.direction == "desc" && (
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                <Table.Th onClick={() => sort("kronologi")}>
-                                    Tanggal Registrasi Pasien
-                                    {params.field == "kronologi" &&
-                                        params.direction == "asc" && <UpIcon />}
-                                    {params.field == "kronologi" &&
-                                        params.direction == "desc" && (
-                                            <DownIcon />
-                                        )}
-                                </Table.Th>
+                                
                                 <Table.Th
                                     onClick={() => sort("ikp_penanggung_id")}
                                 >
@@ -518,18 +521,19 @@ export default function Index(props) {
                                         <Badge>{meta.from + index}</Badge>
                                     </Table.Td>
                                     <Table.Td>
-                                        {IkpPasien.tanggal_insiden}
+                                        {moment(IkpPasien.tanggal_insiden).format("DD-MM-YYYY")} ({moment(IkpPasien.tanggal_insiden).format("hh:mm")})
                                     </Table.Td>
                                     <Table.Td className="whitespace-nowrap">
-                                        {IkpPasien.umur_tahun}
+                                        {moment(IkpPasien.created_at).format("DD-MM-YYYY")}
+                                    </Table.Td>
+                                    <Table.Td>
+                                        {IkpPasien.lokasi_name}
                                     </Table.Td>
                                     <Table.Td>
                                         {IkpPasien.jenis_insiden?.name}
                                     </Table.Td>
-                                    <Table.Td>{IkpPasien.kronologi}</Table.Td>
-                                    <Table.Td>
-                                        {IkpPasien.tanggal_pelayanan}
-                                    </Table.Td>
+                                    <Table.Td>{IkpPasien.insiden}</Table.Td>
+                                    
                                     <Table.Td>
                                         {IkpPasien.penanggung?.name}
                                     </Table.Td>

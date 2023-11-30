@@ -8,6 +8,7 @@ import TextInput from "@/Components/TextInput";
 import DatePicker from "react-datepicker";
 import React, { useState } from "react";
 import ComboboxMultiple from "@/Components/ComboboxMultiple";
+import ComboboxPageKeterangan from "@/Components/ComboboxPageKeterangan";
 
 export default function Form({
     errors,
@@ -267,24 +268,21 @@ export default function Form({
                             <div className="col-span-6">
                                 <InputLabel
                                     for="TanggalPelayanan"
-                                    value="Tanggal Pelayanan"
+                                    value="Tanggal Masuk RS"
                                 />
-                                <DatePicker
-                                    dateFormat="dd-MM-yyyy"
-                                    value={data.tanggal_pelayanan}
-                                    selected={tglPelayanan}
+                                <TextInput
                                     id="tanggal_pelayanan"
-                                    name="tanggal_pelayanan"
-                                    autoComplete="off"
-                                    className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    onChange={(date) => {
-                                        setTglPelayanan(date);
-                                        const d = new Date(
-                                            date
-                                        ).toLocaleDateString("en-CA");
-                                        setData("tanggal_pelayanan", d);
-                                    }}
+                                    value={data.tanggal_pelayanan}
+                                    handleChange={(e) =>
+                                        setData(
+                                            "tanggal_pelayanan",
+                                            e.target.value
+                                        )
+                                    }
+                                    type="datetime-local"
+                                    className="block w-full mt-1"
                                 />
+                                
                                 <InputError
                                     message={errors.tanggal_pelayanan}
                                     className="mt-2"
@@ -493,7 +491,7 @@ export default function Form({
                                     <div className="col-span-6">
                                         <InputLabel
                                             for="lokasi_name"
-                                            value="Sebutkan"
+                                            value="Lokasi Detail Kejadian IKP"
                                         />
                                         <TextInput
                                             id="lokasi_name"
@@ -520,7 +518,7 @@ export default function Form({
                             <div className="col-span-12">
                                 <InputLabel
                                     for="Kategori Risiko"
-                                    value="PIC Unit Terkait"
+                                    value="Unit Kerja Penyebab Insiden"
                                 />
                                 <ComboboxMultiple
                                     ShouldMap={ShouldMap.pics}
@@ -544,7 +542,7 @@ export default function Form({
                                     for="Dampak"
                                     value="Dampak Insiden Terhadap Pasien"
                                 />
-                                <ComboboxPage
+                                <ComboboxPageKeterangan
                                     ShouldMap={ShouldMap.IkpDampak}
                                     selected={selectedIkpDampak}
                                     onChange={(e) => {
@@ -628,7 +626,7 @@ export default function Form({
                             <div className="col-span-6">
                                 <InputLabel
                                     for="TerjadiTempatlain"
-                                    value="Tindak Lanjut Dilakukan Oleh"
+                                    value="Apakah kejadian insiden yang sama pernah terjadi pada Pelayanan lain ?"
                                 />
                                 <ComboboxPage
                                     ShouldMap={ShouldMap.IkpTerjadiTempatLain}
