@@ -115,7 +115,7 @@ export default function IKPDataEvaluasi({ setIsOpenAddDialog }) {
                             }}
                         />
                     </div>
-                    {permission_name.indexOf("lihat data semua risk register") >
+                    {permission_name.indexOf("lihat semua data ikp") >
                         -1 && (
                         
                             
