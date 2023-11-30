@@ -27,7 +27,6 @@ export default function Form({
 }) {
     const defaultValue = [{ name: "" }];
     // console.log(ShouldMap.pics)
-    // console.log(data)
     const picIdStrings = data.pic_id ? data.pic_id : ",";
     const picIdString = picIdStrings.replace(/['"]+/g, '')
     const defaultPicIds = picIdString.split(",");

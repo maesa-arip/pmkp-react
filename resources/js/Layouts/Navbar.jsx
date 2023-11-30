@@ -295,7 +295,7 @@ export default function Navbar() {
                                     </div>
                                 </div>
                             )}
-                            {/* <div className="hidden sm:flex sm:items-center sm:ml-6">
+                            <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
                                         <Dropdown.Trigger>
@@ -324,58 +324,72 @@ export default function Navbar() {
                                         <Dropdown.Content>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "opsiPengendalians.index"
+                                                    "IkpJenisInsidens.index"
                                                 )}
                                             >
                                                 IKP Jenis Insiden
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "riskCategories.index"
+                                                    "IkpTipeInsiden.index"
+                                                )}
+                                            >
+                                                IKP Tipe Insiden
+                                            </Dropdown.Link>
+                                            <Dropdown.Link
+                                                href={route(
+                                                    "IkpSpesialisasi.index"
                                                 )}
                                             >
                                                 IKP Spesialisasi
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "identificationSources.index"
+                                                    "IkpDampak.index"
                                                 )}
                                             >
                                                 IKP Dampak
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route("locations.index")}
+                                                href={route("IkpProbabilitas.index")}
                                             >
                                                 IKP Probabilitas
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "riskVarieties.index"
+                                                    "IkpPelapor.index"
                                                 )}
                                             >
                                                 IKP Melaporkan Insiden
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route("riskTypes.index")}
+                                                href={route("IkpGrupLayanan.index")}
                                             >
                                                 IKP Menyangkut Pasien
                                             </Dropdown.Link>
                                             <Dropdown.Link
-                                                href={route("pics.index")}
+                                                href={route("IkpPenanggung.index")}
                                             >
-                                                Penangung Jawab/PIC
+                                                IKP Penangung Biaya
                                             </Dropdown.Link>
                                             <Dropdown.Link
                                                 href={route(
-                                                    "jenisSebabs.index"
+                                                    "IkpLokasi.index"
                                                 )}
                                             >
-                                                Jenis Sebab
+                                                IKP Tempat Insiden
+                                            </Dropdown.Link>
+                                            <Dropdown.Link
+                                                href={route(
+                                                    "IkpPenindak.index"
+                                                )}
+                                            >
+                                                IKP Tindak Lanjut
                                             </Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                     </div>
 

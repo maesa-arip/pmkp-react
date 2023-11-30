@@ -25,6 +25,7 @@ use App\Exports\ExampleExport;
 use App\Exports\FormatBPKPKlinisExport;
 use App\Exports\FormatLARSDHPKlinisExport;
 use App\Exports\FormatLARSDHPNonKlinisExport;
+use App\Exports\FormatSedangTerjadiExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 use OpenSpout\Common\Entity\Style\Color;
@@ -45,21 +46,31 @@ class ExportController extends Controller
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $userId = $request->input('userId');
-        return Excel::download(new FormatBPKPExport($startDate, $endDate, $userId), 'Form Manajemen Risiko RSBM.xlsx');
+        $currently_id = $request->input('currently_id');
+        return Excel::download(new FormatBPKPExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko RSBM.xlsx');
     }
     public function riskregisterklinislarsdhp(Request $request)
     {
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $userId = $request->input('userId');
-        return Excel::download(new FormatLARSDHPKlinisExport($startDate, $endDate, $userId), 'Form Manajemen Risiko Klinis LARS DHP.xlsx');
+        $currently_id = $request->input('currently_id');
+        return Excel::download(new FormatLARSDHPKlinisExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko Klinis LARS DHP.xlsx');
     }
     public function riskregisternonklinislarsdhp(Request $request)
     {
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $userId = $request->input('userId');
-        return Excel::download(new FormatLARSDHPNonKlinisExport($startDate, $endDate, $userId), 'Form Manajemen Risiko Non Klinis LARS DHP.xlsx');
+        $currently_id = $request->input('currently_id');
+        return Excel::download(new FormatLARSDHPNonKlinisExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko Non Klinis LARS DHP.xlsx');
+    }
+    public function riskregistersedangterjadi(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $userId = $request->input('userId');
+        return Excel::download(new FormatSedangTerjadiExport($startDate, $endDate, $userId), 'Form Manajemen Risiko RSBM.xlsx');
     }
     // public function riskregisterklinis()
     // {

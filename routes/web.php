@@ -7,6 +7,17 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IdentificationSourceController;
+use App\Http\Controllers\IKP\Master\IKPDampakController;
+use App\Http\Controllers\IKP\Master\IKPGrupLayananController;
+use App\Http\Controllers\IKP\Master\IKPJenisInsidenController;
+use App\Http\Controllers\IKP\Master\IKPLokasiController;
+use App\Http\Controllers\IKP\Master\IKPPelaporController;
+use App\Http\Controllers\IKP\Master\IKPPenanggungController;
+use App\Http\Controllers\IKP\Master\IKPPenindakController;
+use App\Http\Controllers\IKP\Master\IKPProbabilitasController;
+use App\Http\Controllers\IKP\Master\IKPSpesialisasiController;
+use App\Http\Controllers\IKP\Master\IKPTipeInsidenController;
+use App\Http\Controllers\IKP\Pasien\IKPPasienController;
 use App\Http\Controllers\ImpactValueController;
 use App\Http\Controllers\JenisSebabController;
 use App\Http\Controllers\LocationController;
@@ -79,6 +90,19 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('controlValues', ControlValueController::class);
     Route::apiResource('jenisSebabs', JenisSebabController::class);
 
+    Route::apiResource('IkpJenisInsidens', IKPJenisInsidenController::class);
+    Route::apiResource('IkpTipeInsiden', IKPTipeInsidenController::class);
+    Route::apiResource('IkpSpesialisasi', IKPSpesialisasiController::class);
+    Route::apiResource('IkpPelapor', IKPPelaporController::class);
+    Route::apiResource('IkpGrupLayanan', IKPGrupLayananController::class);
+    Route::apiResource('IkpPenanggung', IKPPenanggungController::class);
+    Route::apiResource('IkpLokasi', IKPLokasiController::class);
+    Route::apiResource('IkpPenindak', IKPPenindakController::class);
+    Route::apiResource('IkpDampak', IKPDampakController::class);
+    Route::apiResource('IkpProbabilitas', IKPProbabilitasController::class);
+    Route::apiResource('IkpPasien', IKPPasienController::class);
+    Route::put('/hasilinvestigasi/{IkpPasien}',[IKPPasienController::class,'hasilinvestigasi'])->name('ikppasien.hasilinvestigasi');
+
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
     Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');
@@ -105,6 +129,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('export/riskregisterklinis', [ExportController::class, 'riskregisterklinis'])->name('export.riskregisterklinis');
     Route::get('export/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp'])->name('export.riskregisterbpkp');
+    Route::get('export/riskregistersedangterjadi', [ExportController::class, 'riskregistersedangterjadi'])->name('export.riskregistersedangterjadi');
     Route::get('export/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp'])->name('export.riskregisterklinisbpkp');
     Route::get('export/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp'])->name('export.riskregisternonklinisbpkp');
     Route::get('export/riskregisterklinisfitur4', [ExportController::class, 'riskregisterklinisfitur4'])->name('export.riskregisterklinisfitur4');
@@ -126,6 +151,7 @@ Route::middleware('auth')->group(function () {
     Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisternonklinislarsdhp', [ExportController::class, 'riskregisternonklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp']);
+    Route::match(['GET', 'POST'], '/riskregistersedangterjadi', [ExportController::class, 'riskregistersedangterjadi']);
     // Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
     // Route::match(['GET', 'POST'], '/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp']);
 });

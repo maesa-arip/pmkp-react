@@ -48,24 +48,26 @@ class FormatLARSDHPNonKlinisExport implements WithMultipleSheets
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function sheets(): array
     {
         return [
-            new Sheet1($this->startDate, $this->endDate, $this->userId),
-            new Sheet2($this->startDate, $this->endDate, $this->userId),
-            new Sheet3($this->startDate, $this->endDate, $this->userId),
-            new Sheet4($this->startDate, $this->endDate, $this->userId),
-            new Sheet5($this->startDate, $this->endDate, $this->userId),
-            new Sheet6($this->startDate, $this->endDate, $this->userId),
-            new Sheet7($this->startDate, $this->endDate, $this->userId),
-            new Sheet8($this->startDate, $this->endDate, $this->userId),
+            new Sheet1($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet2($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet3($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet4($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet5($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet6($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet7($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet8($this->startDate, $this->endDate, $this->userId,$this->currently_id),
         ];
     }
 }
@@ -79,12 +81,14 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -112,6 +116,9 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->currently_id)) {
+            $subquery->where('risk_registers.currently_id', '=', $this->currently_id);
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -214,12 +221,14 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -333,6 +342,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->currently_id)) {
+            $subquery->where('risk_registers.currently_id', '=', $this->currently_id);
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -999,12 +1011,14 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
 
     public function query()
@@ -1029,6 +1043,9 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->currently_id)) {
+            $query->where('risk_registers.currently_id', '=', $this->currently_id);
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -1284,12 +1301,14 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -1326,7 +1345,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
-
+        if (!empty($this->currently_id)) {
+            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+        }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
             $query->whereIn('risk_registers.user_id', $userIds);
@@ -1636,12 +1657,14 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -1695,6 +1718,9 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->currently_id)) {
+            $subquery->where('risk_registers.currently_id', '=', $this->currently_id);
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -1922,12 +1948,14 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -1948,6 +1976,9 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        }
+        if (!empty($this->currently_id)) {
+            $subquery->where('risk_registers.currently_id', '=', $this->currently_id);
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -2160,12 +2191,14 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -2185,7 +2218,9 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
-
+        if (!empty($this->currently_id)) {
+            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+        }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
             $query->whereIn('risk_registers.user_id', $userIds);
@@ -2401,12 +2436,14 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $startDate;
     protected $endDate;
     protected $userId;
+    protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId)
+    public function __construct($startDate, $endDate, $userId,$currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->userId = $userId;
+        $this->currently_id = $currently_id;
     }
     public function query()
     {
@@ -2433,7 +2470,9 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
-
+        if (!empty($this->currently_id)) {
+            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+        }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
             $query->whereIn('risk_registers.user_id', $userIds);

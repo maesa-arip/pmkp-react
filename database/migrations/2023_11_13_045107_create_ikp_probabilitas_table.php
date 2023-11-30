@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('ikp_probabilitas', function (Blueprint $table) {
             $table->id();
+            $table->integer('value');
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();

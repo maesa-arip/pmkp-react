@@ -21,6 +21,7 @@ import BPKP from "@/Pages/Export/BPKP";
 import LarsDHPKlinis from "@/Pages/Export/LarsDHPKlinis";
 import LarsDHPNonKlinis from "@/Pages/Export/LarsDHPNonKlinis";
 import { IconNotification } from "@tabler/icons";
+import SedangTerjadi from "@/Pages/Export/SedangTerjadi";
 
 export default function Sidebar() {
     const { auth, notifications, updatestatus, permissionNames } =
@@ -37,6 +38,10 @@ export default function Sidebar() {
     const [isOpenExportDialogBPKP, setIsOpenExportDialogBPKP] = useState(false);
     const openExportDialogBPKP = () => {
         setIsOpenExportDialogBPKP(true);
+    };
+    const [isOpenExportDialogSedangTerjadi, setIsOpenExportDialogSedangTerjadi] = useState(false);
+    const openExportDialogSedangTerjadi = () => {
+        setIsOpenExportDialogSedangTerjadi(true);
     };
 
     const [
@@ -102,6 +107,16 @@ export default function Sidebar() {
                     }
                 >
                     <BPKP setIsOpenAddDialog={setIsOpenExportDialogBPKP} />
+                </ExportModal>
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogSedangTerjadi}
+                    setIsOpenExportDialog={setIsOpenExportDialogSedangTerjadi}
+                    size="max-w-4xl"
+                    title={
+                        `Pilihan Export SedangTerjadi Risk Register ` + auth.user.name
+                    }
+                >
+                    <SedangTerjadi setIsOpenAddDialog={setIsOpenExportDialogSedangTerjadi} />
                 </ExportModal>
 
                 <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -928,7 +943,7 @@ export default function Sidebar() {
                                                 <h3 className="flow-root -my-3">
                                                     <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
                                                         <span className="font-medium text-left text-gray-900">
-                                                            Verifications
+                                                            Verifikasi
                                                         </span>
                                                         <span className="flex items-center ml-6">
                                                             {open ? (
@@ -1124,7 +1139,7 @@ export default function Sidebar() {
                                             <h3 className="flow-root -my-3">
                                                 <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
                                                     <span className="font-medium text-left text-gray-900">
-                                                        Data Risiko
+                                                        Data Risiko.
                                                     </span>
                                                     <span className="flex items-center ml-6">
                                                         {open ? (
@@ -1212,6 +1227,74 @@ export default function Sidebar() {
                                                             Klinis
                                                         </span>
                                                     </Link>
+                                                </div>
+                                            </Disclosure.Panel>
+                                        </>
+                                    )}
+                                </Disclosure>
+                                <Disclosure
+                                    as="div"
+                                    className="py-6 border-b border-gray-200"
+                                >
+                                    {({ open }) => (
+                                        <>
+                                            <h3 className="flow-root -my-3">
+                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                    <span className="font-medium text-left text-gray-900">
+                                                        Data IKP.
+                                                    </span>
+                                                    <span className="flex items-center ml-6">
+                                                        {open ? (
+                                                            <MinusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        ) : (
+                                                            <PlusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                            </h3>
+                                            <Disclosure.Panel className="pt-6">
+                                                <div className="space-y-4">
+                                                    <Link
+                                                        href={route(
+                                                            "IkpPasien.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            IKP List Insiden
+                                                        </span>
+                                                    </Link>
+                                                    
                                                 </div>
                                             </Disclosure.Panel>
                                         </>
@@ -1328,7 +1411,7 @@ export default function Sidebar() {
                                             <h3 className="flow-root -my-3">
                                                 <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
                                                     <span className="font-medium text-gray-900">
-                                                        Report
+                                                        Report Manajemen Risiko.
                                                     </span>
                                                     <span className="flex items-center ml-6">
                                                         {open ? (
@@ -1477,6 +1560,169 @@ export default function Sidebar() {
                                                             </div>
                                                         )}
                                                     </button>
+                                                    {/* <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogSedangTerjadi
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                RISIKO SEDANG TERJADI
+                                                            </div>
+                                                        )}
+                                                    </button> */}
+                                                </div>
+                                            </Disclosure.Panel>
+                                        </>
+                                    )}
+                                </Disclosure>
+                                <Disclosure
+                                    as="div"
+                                    className="py-6 border-b border-gray-200"
+                                >
+                                    {({ open }) => (
+                                        <>
+                                            <h3 className="flow-root -my-3">
+                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                    <span className="font-medium text-gray-900">
+                                                        Report IKP.
+                                                    </span>
+                                                    <span className="flex items-center ml-6">
+                                                        {open ? (
+                                                            <MinusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        ) : (
+                                                            <PlusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                            </h3>
+                                            <Disclosure.Panel className="pt-6">
+                                                <div className="space-y-4">
+                                                    {/* <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogLarsDHPKlinis
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                DATA INSIDEN
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogLarsDHPNonKlinis
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                DATA EVALUASI
+                                                            </div>
+                                                        )}
+                                                    </button> */}
+                                                    
                                                 </div>
                                             </Disclosure.Panel>
                                         </>

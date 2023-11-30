@@ -1,13 +1,13 @@
 import React from "react";
 
-const Table = ({ children }) => {
+const Table = ({ children, overflow= 'overflow-x-auto' }) => {
     return (
         <>
-            <div className="flex flex-col overflow-x-auto">
+            <div className={"flex flex-col " + overflow}>
                 <div className="rounded-lg">
                     <div className="inline-block min-w-full py-2 align-middle">
                         <div className="min-w-full border rounded-lg border-slate-300">
-                            <table className="min-w-full border-separate rounded-lg ">
+                            <table className="min-w-full border-separate rounded-lg">
                                 {children}
                             </table>
                         </div>

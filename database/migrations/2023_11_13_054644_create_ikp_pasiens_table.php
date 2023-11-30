@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('umur_bulan');
             $table->integer('umur_hari');
             $table->foreignId('ikp_penanggung_id')->constrained();
-            $table->string('jeniskelamin');
+            $table->tinyInteger('jeniskelamin');
             $table->timestamp('tanggal_pelayanan');
             $table->timestamp('tanggal_insiden');
             $table->string('insiden');
@@ -36,10 +36,11 @@ return new class extends Migration
             $table->foreignId('ikp_gruplayanan_id')->constrained();
             $table->foreignId('ikp_lokasi_id')->constrained();
             $table->string('lokasi_name');
-            $table->foreignId('pic_id')->constrained();
+            $table->text('pic_id');
             $table->string('tindak_lanjut_hasil');
-            $table->foreignId('ikp_tindaklanjut_id')->constrained();
+            $table->foreignId('ikp_penindak_id')->constrained();
             $table->boolean('terjadi_tempatlain')->default(0);
+            $table->string('langkah_tempatlain');
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
             $table->softDeletes();

@@ -8,6 +8,7 @@ import TextInput from "@/Components/TextInput";
 import DatePicker from "react-datepicker";
 import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxMultipleWithOutSemuaUnit from "@/Components/ComboboxMultipleWithOutSemuaUnit";
+import ComboboxPage from "@/Components/ComboboxPage";
 
 export default function LarsDHPNonKlinis({ setIsOpenAddDialog }) {
     const { data, setData, post, reset, errors, processing } = useForm({
@@ -18,11 +19,12 @@ export default function LarsDHPNonKlinis({ setIsOpenAddDialog }) {
     const [endDate, setEndDate] = useState("");
     const [userId, setUserId] = useState(null);
     const [loadingLars, setLoadingLars] = useState(false);
+    const [currently_id, setCurrently_id] = useState([]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const url = "/riskregisternonklinislarsdhp";
-        const data = { startDate, endDate, userId };
+        const data = { startDate, endDate, userId, currently_id };
         setLoadingLars(true);
 
         axios
@@ -47,6 +49,12 @@ export default function LarsDHPNonKlinis({ setIsOpenAddDialog }) {
                 console.error(error);
                 setLoadingLars(false);
             });
+    };
+    let ShouldMap = {
+        currently: [
+            { id: 1, name: "Sedang Terjadi" },
+            { id: 2, name: "Tidak Sedang Terjadi" },
+        ],
     };
     const { users } = usePage().props;
     const { auth, permissionNames } = usePage().props;
@@ -120,6 +128,49 @@ export default function LarsDHPNonKlinis({ setIsOpenAddDialog }) {
                                     "en-CA"
                                 );
                                 setData("endDate", d);
+                            }}
+                        />
+                    </div>
+                    <div className="col-span-12">
+                        <InputLabel
+                            className={"text-base font-semibold"}
+                            for="Pilih Kejadian"
+                            value="Pilih Kejadian"
+                        />
+                        <div className="col-span-12 px-3 py-4 mb-2 text-base font-semibold text-gray-700 border rounded">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="justify-center inline w-6 h-6 mr-3 -mt-1 text-center text-white rounded-full bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 icon icon-tabler icon-tabler-info-circle"
+                                width={24}
+                                height={24}
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path
+                                    stroke="none"
+                                    d="M0 0h24v24H0z"
+                                    fill="none"
+                                />
+                                <circle cx={12} cy={12} r={9} />
+                                <line x1={12} y1={8} x2="12.01" y2={8} />
+                                <polyline points="11 12 12 12 12 16 13 16" />
+                            </svg>
+                            Kosongkan dan Langsung Tekan Export Jika Ingin
+                            Menarik Semua Kejadian.
+                        </div>
+                        <ComboboxPage
+                            ShouldMap={ShouldMap.currently}
+                            selected={currently_id}
+                            onChange={(e) => {
+                                setData({
+                                    ...data,
+                                    ["currently_id"]: e.id,
+                                });
+                                setCurrently_id(e);
                             }}
                         />
                     </div>

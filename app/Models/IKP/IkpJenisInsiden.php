@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class IkpJenisInsiden extends Model
 {
     use HasFactory;
+    protected $fillable = ['name'];
+    public function ikpPasien()
+    {
+        return $this->hasMany(IkpPasien::class);
+    }
 }
