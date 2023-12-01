@@ -67,6 +67,7 @@ export default function Index(props) {
         JenisKelamin: [
             { id: 1, name: "Laki - Laki" },
             { id: 2, name: "Perempuan" },
+            { id: 3, name: "-" },
         ],
         IkpVerifikasi: [
             { id: 0, name: "Tidak" },
