@@ -9,6 +9,7 @@ import DatePicker from "react-datepicker";
 import React, { useState } from "react";
 import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxPageReadonly from "@/Components/ComboboxPageReadonly";
+import { usePage } from "@inertiajs/react";
 
 export default function Form({
     errors,
@@ -25,6 +26,10 @@ export default function Form({
     const picIdString = picIdStrings.replace(/['"]+/g, "");
     const defaultPicIds = picIdString.split(",");
     const defaultPicIdStrings = defaultPicIds.map((value) => value.toString());
+    const { auth, permissionNames } = usePage().props;
+    const permission_name = permissionNames
+        ? permissionNames.map((permission) => permission.name)
+        : "null";
 
     const [selectedVerifikasi, setSelectedVerifikasi] = useState(() => {
         if (model) {
@@ -34,22 +39,25 @@ export default function Form({
         }
         return defaultValue[0];
     });
-    const [selectedInvestigasiLengkap, setSelectedInvestigasiLengkap] = useState(() => {
-        if (model) {
-            return ShouldMap.IkpInvestigasiLengkap.find(
-                (x) => x.id === model.ikp_hasil?.investigasi_lengkap
-            );
+    const [selectedInvestigasiLengkap, setSelectedInvestigasiLengkap] =
+        useState(() => {
+            if (model) {
+                return ShouldMap.IkpInvestigasiLengkap.find(
+                    (x) => x.id === model.ikp_hasil?.investigasi_lengkap
+                );
+            }
+            return defaultValue[0];
+        });
+    const [selectedInvestigasiLanjut, setSelectedInvestigasiLanjut] = useState(
+        () => {
+            if (model) {
+                return ShouldMap.IkpInvestigasiLanjut.find(
+                    (x) => x.id === model.ikp_hasil?.investigasi_lanjut
+                );
+            }
+            return defaultValue[0];
         }
-        return defaultValue[0];
-    });
-    const [selectedInvestigasiLanjut, setSelectedInvestigasiLanjut] = useState(() => {
-        if (model) {
-            return ShouldMap.IkpInvestigasiLanjut.find(
-                (x) => x.id === model.ikp_hasil?.investigasi_lanjut
-            );
-        }
-        return defaultValue[0];
-    });
+    );
     const [selectedIkpDampak, setSelectedIkpDampak] = useState(() => {
         if (model) {
             return ShouldMap.IkpDampak.find(
@@ -87,7 +95,6 @@ export default function Form({
             return defaultValue[0];
         }
     );
-
 
     return (
         <>
@@ -421,9 +428,7 @@ export default function Form({
                                     className="block w-full mt-1"
                                 />
                                 <InputError
-                                    message={
-                                        errors.tanggal_investigasi
-                                    }
+                                    message={errors.tanggal_investigasi}
                                     className="mt-2"
                                 />
                             </div>
@@ -450,52 +455,110 @@ export default function Form({
                                 />
                             </div>
                             <div className="col-span-6"></div>
-
-                            <div className="col-span-6">
-                                <InputLabel
-                                    for="Dampak"
-                                    value="Dampak Insiden Terhadap Pasien"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.IkpDampak}
-                                    selected={selectedIkpDampak2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["ikp_dampak2_id"]: e.id,
-                                        });
-                                        setSelectedIkpDampak2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.ikp_dampak2_id}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div className="col-span-6">
-                                <InputLabel
-                                    for="Probabilitas"
-                                    value="Probabilitas"
-                                />
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.IkpProbabilitas}
-                                    selected={selectedIkpProbabilitas2}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["ikp_probabilitas2_id"]: e.id,
-                                        });
-                                        setSelectedIkpProbabilitas2(e);
-                                    }}
-                                />
-                                <InputError
-                                    message={errors.ikp_probabilitas2_id}
-                                    className="mt-2"
-                                />
-                            </div>
                         </div>
                     </div>
                 </div>
+                {permission_name.indexOf("regrading data ikp") > -1 && (
+                    <div className="grid grid-cols-12 gap-6">
+                        <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-sky-200 ">
+                            <label
+                                htmlFor=""
+                                className="block mb-4 text-lg font-bold text-gray-700 "
+                            >
+                                Admin IKP
+                            </label>
+                            <div className="grid grid-cols-12 gap-6">
+                                <div className="col-span-4">
+                                    <InputLabel
+                                        for="tanggal_cek"
+                                        value="Tanggal Cek Keruangan"
+                                    />
+                                    <TextInput
+                                        id="tanggal_cek"
+                                        value={data.tanggal_cek}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "tanggal_cek",
+                                                e.target.value
+                                            )
+                                        }
+                                        type="date"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.tanggal_cek}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-12">
+                                    <InputLabel
+                                        for="tindak_lanjut"
+                                        value="Tindak Lanjut :"
+                                    />
+                                    <TextAreaInput
+                                        id="tindak_lanjut"
+                                        value={data.tindak_lanjut}
+                                        handleChange={(e) =>
+                                            setData(
+                                                "tindak_lanjut",
+                                                e.target.value
+                                            )
+                                        }
+                                        rows={5}
+                                        type="text"
+                                        className="block w-full mt-1"
+                                    />
+                                    <InputError
+                                        message={errors.tindak_lanjut}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6">
+                                    <InputLabel
+                                        for="Dampak"
+                                        value="Dampak Insiden Terhadap Pasien"
+                                    />
+                                    <ComboboxPage
+                                        ShouldMap={ShouldMap.IkpDampak}
+                                        selected={selectedIkpDampak2}
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                ["ikp_dampak2_id"]: e.id,
+                                            });
+                                            setSelectedIkpDampak2(e);
+                                        }}
+                                    />
+                                    <InputError
+                                        message={errors.ikp_dampak2_id}
+                                        className="mt-2"
+                                    />
+                                </div>
+                                <div className="col-span-6">
+                                    <InputLabel
+                                        for="Probabilitas"
+                                        value="Probabilitas"
+                                    />
+                                    <ComboboxPage
+                                        ShouldMap={ShouldMap.IkpProbabilitas}
+                                        selected={selectedIkpProbabilitas2}
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                ["ikp_probabilitas2_id"]: e.id,
+                                            });
+                                            setSelectedIkpProbabilitas2(e);
+                                        }}
+                                    />
+                                    <InputError
+                                        message={errors.ikp_probabilitas2_id}
+                                        className="mt-2"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

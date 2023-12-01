@@ -21,6 +21,8 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         investigasi_lanjut: model.ikp_hasil?.investigasi_lanjut,
         ikp_dampak2_id: model.ikp_hasil?.ikp_dampak2_id,
         ikp_probabilitas2_id: model.ikp_hasil?.ikp_probabilitas2_id,
+        tanggal_cek: model.ikp_hasil?.tanggal_cek,
+        tindak_lanjut: model.ikp_hasil?.tindak_lanjut,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -52,6 +54,8 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             investigasi_lanjut: model.ikp_hasil?.investigasi_lanjut,
             ikp_dampak2_id: model.ikp_hasil?.ikp_dampak2_id,
             ikp_probabilitas2_id: model.ikp_hasil?.ikp_probabilitas2_id,
+            tanggal_cek: model.ikp_hasil?.tanggal_cek,
+            tindak_lanjut: model.ikp_hasil?.tindak_lanjut,
         });
     }, [model]);
     return (

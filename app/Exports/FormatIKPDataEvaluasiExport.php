@@ -69,11 +69,15 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->join('ikp_hasils', 'ikp_hasils.ikp_pasien_id', 'ikp_pasiens.id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY ikp_pasiens.ikp_dampak_id * ikp_pasiens.ikp_probabilitas_id DESC) AS `row_number`'),
-                DB::raw('DATE_FORMAT(ikp_pasiens.created_at, "%d-%m-%Y") as formatted'),
+                DB::raw('DATE_FORMAT(ikp_hasils.tanggal_cek, "%d-%m-%Y") as formatted'),
                 'ikp_pasiens.lokasi_name',
                 'ikp_jenis_insidens.name',
                 'ikp_hasils.rekomendasi',
                 'pics.name as pj',
+                DB::raw("'' AS 'TL'"),
+                DB::raw("'' AS 'TL2'"),
+                'ikp_hasils.tindak_lanjut',
+
             )
             ->where($whosLogin)
             ->orderBy('row_number', 'ASC');
@@ -124,7 +128,8 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $highestColumn = $event->sheet->getHighestColumn();
                 $range = 'A1:' . $highestColumn . $highestRow;
                 $rangeA = 'A1:' . 'A' . $highestRow;
-                $rangeH = 'H3:' . 'H' . $highestRow;
+                $rangeG = 'G4:' . 'H' . $highestRow;
+                $rangeH = 'H4:' . 'H' . $highestRow;
                 $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
                 $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
                     'borders' => [
@@ -252,6 +257,42 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         ],
                     ],
                 ];
+                $event->sheet->getDelegate()->getStyle($rangeG)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                    'font' => [
+                        'bold'  => true,
+                        'size'  => 15,
+                        'name'  => 'Wingdings'
+                    ],
+                ]);
+                $event->sheet->getDelegate()->getStyle($rangeH)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                    'font' => [
+                        'bold'  => false,
+                        'color' => array('rgb' => 'FF0000'),
+                        'size'  => 20,
+                        'name'  => 'Wingdings'
+                    ],
+                ]);
+                $worksheet = $event->sheet->getDelegate();
+                $startRow = 4; // Assuming your data starts from row 3
+                $endRow = $highestRow; // You need to determine the highest row based on your data
+                for ($row = $startRow; $row <= $endRow; $row++) {
+                    foreach (range($startRow, $endRow) as $row) {
+                        // IF(ISBLANK(B1);"";CHAR(252))
+                        // LEN(TRIM(K6))
+                        $formula = '=IF(LEN(TRIM(I' . $row . '))=0, "",CHAR(252))';
+                        $worksheet->getCell('G' . $row)->setValue($formula);
+                        $formula1 = '=IF(LEN(TRIM(I' . $row . '))=0, CHAR(251),"")';
+                        $worksheet->getCell('H' . $row)->setValue($formula1);
+                        // $formula1 = '=IFERROR(MODE.MULT(K' . $row . ':R' . $row . '), "")';
+                        // $worksheet->getCell('T' . $row)->setValue($formula1);
+                    }
+                }
 
 
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
@@ -324,9 +365,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->getStyle('G1:H2')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->mergeCells('I1:I2');
                 $event->sheet->getDelegate()->getStyle('I1:I2')->applyFromArray($styleHeader);
-
             },
         ];
     }
 }
-

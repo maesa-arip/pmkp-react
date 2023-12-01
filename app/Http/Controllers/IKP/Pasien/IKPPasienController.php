@@ -80,8 +80,8 @@ class IKPPasienController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validate($request, [
-            'namapasien' => 'required',
-            'nrm' => 'required',
+            'namapasien' => 'required|max:255',
+            'nrm' => 'required|max:8',
             'umur_tahun' => 'required',
             'umur_bulan' => 'required',
             'umur_hari' => 'required',
@@ -89,7 +89,7 @@ class IKPPasienController extends Controller
             'jeniskelamin' => 'required',
             'tanggal_pelayanan' => 'required',
             'tanggal_insiden' => 'required',
-            'insiden' => 'required',
+            'insiden' => 'required|max:255',
             'kronologi' => 'required',
             'ikp_jenis_insiden_id' => 'required',
             'ikp_tipe_insiden_id' => 'required',
@@ -99,12 +99,12 @@ class IKPPasienController extends Controller
             'ikp_pelapor_id' => 'required',
             'ikp_gruplayanan_id' => 'required',
             'ikp_lokasi_id' => 'required',
-            'lokasi_name' => 'required',
+            'lokasi_name' => 'required|max:255',
             'pic_id' => 'required',
-            'tindak_lanjut_hasil' => 'required',
+            'tindak_lanjut_hasil' => 'required|max:255',
             'ikp_penindak_id' => 'required',
             'terjadi_tempatlain' => 'required',
-            'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1',
+            'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1|max:255',
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         // $validated = $validator->validated();
@@ -121,8 +121,8 @@ class IKPPasienController extends Controller
     public function update(Request $request, IkpPasien $IkpPasien)
     {
         $validated = $this->validate($request, [
-            'namapasien' => 'required',
-            'nrm' => 'required',
+            'namapasien' => 'required|max:255',
+            'nrm' => 'required|max:8',
             'umur_tahun' => 'required',
             'umur_bulan' => 'required',
             'umur_hari' => 'required',
@@ -130,7 +130,7 @@ class IKPPasienController extends Controller
             'jeniskelamin' => 'required',
             'tanggal_pelayanan' => 'required',
             'tanggal_insiden' => 'required',
-            'insiden' => 'required',
+            'insiden' => 'required|max:255',
             'kronologi' => 'required',
             'ikp_jenis_insiden_id' => 'required',
             'ikp_tipe_insiden_id' => 'required',
@@ -140,12 +140,12 @@ class IKPPasienController extends Controller
             'ikp_pelapor_id' => 'required',
             'ikp_gruplayanan_id' => 'required',
             'ikp_lokasi_id' => 'required',
-            'lokasi_name' => 'required',
+            'lokasi_name' => 'required|max:255',
             'pic_id' => 'required',
-            'tindak_lanjut_hasil' => 'required',
+            'tindak_lanjut_hasil' => 'required|max:255',
             'ikp_penindak_id' => 'required',
             'terjadi_tempatlain' => 'required',
-            'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1',
+            'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1|max:255',
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         $validated['user_id'] = auth()->user()->id;
@@ -168,27 +168,35 @@ class IKPPasienController extends Controller
     public function hasilinvestigasi(Request $request, IkpPasien $IkpPasien)
     {
         $this->validate($request, [
-            'penyebab' => 'required',
-            'akarmasalah' => 'required',
-            'rekomendasi' => 'required',
+            'penyebab' => 'required|max:255',
+            'akarmasalah' => 'required|max:255',
+            'rekomendasi' => 'required|max:255',
             'pj1' => 'required',
             'tanggal_rekomendasi' => 'required',
-            'tindakan' => 'required',
-            'pj2' => 'required',
-            'nama' => 'required',
+            'tindakan' => 'required|max:255',
+            'pj2' => 'required|max:255',
+            'nama' => 'required|max:255',
             'verifikasi' => 'required',
             'tanggal_mulai_investigasi' => 'required',
             'tanggal_selesaii_investigasi' => 'required',
             'investigasi_lengkap' => 'required',
             'tanggal_investigasi' => 'required',
             'investigasi_lanjut' => 'required',
-            'ikp_dampak2_id' => 'required',
-            'ikp_probabilitas2_id' => 'required',
         ]);
         $request->merge([
-            'concatdp2' => $request->ikp_dampak2_id . $request->ikp_probabilitas2_id,
             'tanggal_tindakan' => $request->tanggal_rekomendasi,
         ]);
+        if (auth()->user()->hasPermissionTo('regrading data ikp')) {
+            $this->validate($request, [
+                'ikp_dampak2_id' => 'required',
+                'ikp_probabilitas2_id' => 'required',
+                'tanggal_cek' => 'required',
+                'tindak_lanjut' => 'required',
+            ]);
+            $request->merge([
+                'concatdp2' => $request->ikp_dampak2_id . $request->ikp_probabilitas2_id,
+            ]);
+        }
         IkpHasil::updateOrCreate(['ikp_pasien_id' => $IkpPasien->id], $request->all());
         return back()->with([
             'type' => 'success',
