@@ -54,6 +54,7 @@ export default function LarsDHPNonKlinis({ setIsOpenAddDialog }) {
         currently: [
             { id: 1, name: "Sedang Terjadi" },
             { id: 2, name: "Tidak Sedang Terjadi" },
+            { id: 3, name: "Risiko Prioritas" },
         ],
     };
     const { users } = usePage().props;

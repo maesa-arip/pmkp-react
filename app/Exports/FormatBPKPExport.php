@@ -97,7 +97,12 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $subquery->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $subquery->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -268,7 +273,12 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $subquery->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $subquery->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -468,7 +478,12 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -821,7 +836,12 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -1329,7 +1349,12 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -1635,7 +1660,12 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -1894,7 +1924,12 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -2077,7 +2112,12 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -2342,7 +2382,12 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -2624,7 +2669,12 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
@@ -2878,7 +2928,12 @@ class Sheet11 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
                 ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
         }
         if (!empty($this->currently_id)) {
-            $query->where('risk_registers.currently_id', '=', $this->currently_id);
+            if ($this->currently_id['id'] <3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [24,25,33,34,35,42,43,44,45,51,52,53,54,55]);
+            }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];

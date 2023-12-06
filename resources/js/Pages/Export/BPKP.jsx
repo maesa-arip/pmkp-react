@@ -58,9 +58,10 @@ export default function BPKP({ setIsOpenAddDialog }) {
         currently: [
             { id: 1, name: "Sedang Terjadi" },
             { id: 2, name: "Tidak Sedang Terjadi" },
+            { id: 3, name: "Risiko Prioritas" },
         ],
     };
-
+    console.log(data)
     const { auth, permissionNames } = usePage().props;
     const permission_name = permissionNames
         ? permissionNames.map((permission) => permission.name)

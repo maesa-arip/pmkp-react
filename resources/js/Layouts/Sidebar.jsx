@@ -1445,7 +1445,7 @@ export default function Sidebar() {
                                         <>
                                             <h3 className="flow-root -my-3">
                                                 <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
-                                                    <span className="font-medium text-gray-900">
+                                                    <span className="font-medium text-left text-gray-900">
                                                         Report Manajemen Risiko.
                                                     </span>
                                                     <span className="flex items-center ml-6">
@@ -1651,7 +1651,7 @@ export default function Sidebar() {
                                         <>
                                             <h3 className="flow-root -my-3">
                                                 <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
-                                                    <span className="font-medium text-gray-900">
+                                                    <span className="font-medium text-left text-gray-900">
                                                         Report IKP.
                                                     </span>
                                                     <span className="flex items-center ml-6">

@@ -24,10 +24,11 @@ const Thead = ({ children }) => {
         </>
     );
 };
-const Th = ({ children, onClick, className = "text-left", width }) => {
+const Th = ({ children, onClick, className = "text-left", width, colSpan=1 }) => {
     return (
         <>
             <th
+                colSpan={colSpan}
                 scope="col"
                 className={
                     "px-6 py-3 text-xs font-semibold tracking-normal text-gray-800 uppercase border rounded-lg border-slate-300 " +
@@ -56,10 +57,11 @@ const Tbody = ({ children }) => {
         </>
     );
 };
-const Td = ({ children, className = "" }) => {
+const Td = ({ children, className = "", rowSpan=1}) => {
     return (
         <>
             <td
+                rowSpan={rowSpan}
                 className={
                     "px-6 py-4 text-sm font-normal tracking-normal border border-slate-300 rounded-lg " +
                     className

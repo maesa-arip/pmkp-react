@@ -21,6 +21,9 @@ use App\Http\Controllers\IKP\Pasien\IKPPasienController;
 use App\Http\Controllers\ImpactValueController;
 use App\Http\Controllers\JenisSebabController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MUTU\MutuIndikatorController;
+use App\Http\Controllers\MUTU\MutuKategoriController;
+use App\Http\Controllers\MUTU\MutuUnitController;
 use App\Http\Controllers\OpsiPengendalianController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PicController;
@@ -102,6 +105,9 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('IkpProbabilitas', IKPProbabilitasController::class);
     Route::apiResource('IkpPasien', IKPPasienController::class);
     Route::put('/hasilinvestigasi/{IkpPasien}',[IKPPasienController::class,'hasilinvestigasi'])->name('ikppasien.hasilinvestigasi');
+    Route::apiResource('MutuKategori', MutuKategoriController::class);
+    Route::apiResource('MutuIndikator', MutuIndikatorController::class);
+    Route::apiResource('MutuUnit', MutuUnitController::class);
 
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
