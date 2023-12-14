@@ -1344,6 +1344,107 @@ export default function Sidebar() {
                                             <h3 className="flow-root -my-3">
                                                 <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
                                                     <span className="font-medium text-left text-gray-900">
+                                                        Data MUTU.
+                                                    </span>
+                                                    <span className="flex items-center ml-6">
+                                                        {open ? (
+                                                            <MinusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        ) : (
+                                                            <PlusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                            </h3>
+                                            <Disclosure.Panel className="pt-6">
+                                                <div className="space-y-4">
+                                                    <Link
+                                                        href={route(
+                                                            "MutuIndikator.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Indikator MUTU
+                                                        </span>
+                                                    </Link>
+                                                    <Link
+                                                        href={route(
+                                                            "MutuUnit.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            MUTU Unit
+                                                        </span>
+                                                    </Link>
+                                                </div>
+                                            </Disclosure.Panel>
+                                        </>
+                                    )}
+                                </Disclosure>
+                                <Disclosure
+                                    as="div"
+                                    className="py-6 border-b border-gray-200"
+                                >
+                                    {({ open }) => (
+                                        <>
+                                            <h3 className="flow-root -my-3">
+                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                    <span className="font-medium text-left text-gray-900">
                                                         Formulir RCA.
                                                     </span>
                                                     <span className="flex items-center ml-6">

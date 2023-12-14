@@ -4,7 +4,7 @@ import Form from './Form';
 
 export default function Create({setIsOpenAddDialog,ShouldMap}) {
     const { data, setData, post, reset, errors } = useForm({
-        name: "",
+        // name: "",
     });
     const closeButton = (e) => setIsOpenAddDialog(false);
     const onSubmit = (e) => {

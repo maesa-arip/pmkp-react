@@ -6,7 +6,7 @@ import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
 import ThirdButton from "@/Components/ThirdButton";
 import App from "@/Layouts/App";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
@@ -15,6 +15,8 @@ import Table from "@/Components/Table";
 import Pagination from "@/Components/Pagination";
 import Badge from "@/Components/Badge";
 import moment from "moment";
+import PrimaryButton from "@/Components/PrimaryButton";
+import { Fragment } from "react";
 
 const UpIcon = () => (
     <svg
@@ -54,6 +56,7 @@ export default function Index(props) {
     } = props.MutuIndikator;
     let ShouldMap = {
         MutuKategori: props.MutuKategori,
+        IndikatorFitur3: props.IndikatorFitur3,
         IndikatorFitur4: props.IndikatorFitur4,
         IndikatorBaru: [
             { id: 0, name: "Tidak" },
@@ -66,8 +69,15 @@ export default function Index(props) {
             { id: '<', name: "<" },
             { id: '=', name: "=" },
         ],
+        Penyebut: [
+            { id: '%', name: "%" },
+            { id: '‰', name: "‰" },
+        ],
     };
-    // console.log(ShouldMap);
+    const { permissionNames } = usePage().props;
+    const permission_name = permissionNames
+        ? permissionNames.map((permission) => permission.name)
+        : "null";
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
@@ -141,9 +151,23 @@ export default function Index(props) {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
+
+    const openApprovedDialog = (MutuIndikator) => {
+        setState(MutuIndikator);
+        setIsOpenApprovedDialog(true);
+    };
+
+    const approvedMutuIndikator = () => {
+        router.put(route("MutuIndikator.approved", state.id), {
+            onSuccess: () => setIsOpenApprovedDialog(false),
+        });
+    };
+    
+    
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [isOpenApprovedDialog, setIsOpenApprovedDialog] = useState(false);
     const [state, setState] = useState([]);
     return (
         <>
@@ -178,11 +202,23 @@ export default function Index(props) {
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
                 size="max-w-4xl"
                 title="Delete Mutu Indikator"
-                warning="Yakin hapus data ini ?"
+                warning="Yakin hapus data ini ? Semua Mutu Unit yang Terkait dengan Indikator ini akan dihapus juga"
             >
                 <DangerButton className="ml-2" onClick={destroyMutuIndikator}>
                     Delete
                 </DangerButton>
+            </DestroyModal>
+
+            <DestroyModal
+                isOpenDestroyDialog={isOpenApprovedDialog}
+                setIsOpenDestroyDialog={setIsOpenApprovedDialog}
+                size="max-w-4xl"
+                title="Approved Mutu Indikator"
+                warning="Yakin approved data ini ?"
+            >
+                <PrimaryButton className="ml-2" onClick={approvedMutuIndikator}>
+                    Approved
+                </PrimaryButton>
             </DestroyModal>
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
@@ -291,8 +327,8 @@ export default function Index(props) {
                         </Table.Thead>
                         <Table.Tbody>
                             {MutuIndikator.map((MutuIndikator, index) => (
-                                <>
-                                    <tr key={index}>
+                                <Fragment key={index}>
+                                    <tr>
                                         <Table.Td rowSpan={2}>
                                             <Badge>{meta.from + index}</Badge>
                                         </Table.Td>
@@ -315,7 +351,7 @@ export default function Index(props) {
                                             rowSpan={2}
                                             className="whitespace-nowrap"
                                         >
-                                            {MutuIndikator.operator == '=' ?'':MutuIndikator.operator}{MutuIndikator.standar}%
+                                            {MutuIndikator.operator == '=' ?'':MutuIndikator.operator}{MutuIndikator.standar}{MutuIndikator.penyebut}
                                         </Table.Td>
                                         <Table.Td
                                             rowSpan={2}
@@ -338,6 +374,18 @@ export default function Index(props) {
                                                     </button>
                                                 </Dropdown.Trigger>
                                                 <Dropdown.Content>
+                                                {permission_name.indexOf("approved indikator mutu") > -1 && <>
+                                                    {MutuIndikator.approved == 0 && <button
+                                                        className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                        onClick={() =>
+                                                            openApprovedDialog(
+                                                                MutuIndikator
+                                                            )
+                                                        }
+                                                    >
+                                                        Approved
+                                                    </button>}
+                                                    </>}
                                                     <button
                                                         className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                         onClick={() =>
@@ -362,13 +410,13 @@ export default function Index(props) {
                                             </Dropdown>
                                         </Table.Td>
                                     </tr>
-                                    <tr key={index}>
+                                    <tr>
                                         <Table.Td>D</Table.Td>
                                         <Table.Td>
                                             {MutuIndikator.denum_name}
                                         </Table.Td>
                                     </tr>
-                                </>
+                                </Fragment>
                             ))}
                         </Table.Tbody>
                     </Table>

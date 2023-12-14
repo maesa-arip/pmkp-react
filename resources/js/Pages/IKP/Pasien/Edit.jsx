@@ -31,6 +31,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         terjadi_tempatlain: model.terjadi_tempatlain,
         langkah_tempatlain: model.langkah_tempatlain,
         user_id: model.user_id,
+        kronologis: model.kronologis,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -72,6 +73,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             terjadi_tempatlain: model.terjadi_tempatlain,
             langkah_tempatlain: model.langkah_tempatlain,
             user_id: model.user_id,
+            kronologis: model.kronologis,
         });
     }, [model]);
     return (

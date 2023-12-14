@@ -36,6 +36,7 @@ class HandleInertiaRequests extends Middleware
             $whosLogin = $request->user() ? (auth()->user()->can('lihat data semua risk register') ? [['pic_id', '<>', 0]] : [['pic_id', auth()->user()->pic_id]]) : '';
             $whosStatus = $request->user() ? (auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]]) : '';
             $users = User::where('id','>',2)->get();
+            $pics = PIC::get();
             $notifications = $request->user() ? RiskRegister::query()
             ->where($whosLogin)->where('currently_id',1)->count() : '';
             $updatestatus = $request->user() ? RiskRegister::query()->has('requestupdate')
@@ -58,6 +59,7 @@ class HandleInertiaRequests extends Middleware
             'updatestatus' => $updatestatus,
             'permissionNames' => $permissionNames,
             'users' => $users,
+            'pics' => $pics,
         ]);
     }
 }

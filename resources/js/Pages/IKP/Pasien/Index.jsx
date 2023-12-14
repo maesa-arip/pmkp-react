@@ -16,6 +16,7 @@ import Table from "@/Components/Table";
 import Pagination from "@/Components/Pagination";
 import Badge from "@/Components/Badge";
 import moment from "moment";
+import SecondaryButton from "@/Components/SecondaryButton";
 
 const UpIcon = () => (
     <svg
@@ -82,7 +83,7 @@ export default function Index(props) {
             { id: 1, name: "Ya" },
         ],
     };
-    console.log(ShouldMap)
+    // console.log(ShouldMap)
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
@@ -144,6 +145,7 @@ export default function Index(props) {
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
     const [isOpenEditDialogHasilInvestigasi, setIsOpenEditDialogHasilInvestigasi] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [isOpenPrintDialog, setIsOpenPrintDialog] = useState(false);
     const [state, setState] = useState([]);
 
     const openAddDialog = () => {
@@ -177,7 +179,20 @@ export default function Index(props) {
         setEditingRow(row);
         setIsOpenEditDialogHasilInvestigasi(true);
     };
+    const openPrintDialog = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenPrintDialog(true);
+    };
 
+    const printIkpPasien = (row) => {
+        setState(row);
+        window.open(route("export.printFormInvestigasiSederhana", state.code));
+        setIsOpenPrintDialog(false);
+        // router.get(route("export.printFormInvestigasiSederhana", state.id), {
+        //     onSuccess: () => setIsOpenDestroyDialog(false),
+        // });
+    };
     return (
         <>
             <Head title="IKP Form" />
@@ -229,6 +244,17 @@ export default function Index(props) {
                 <DangerButton className="ml-2" onClick={destroyIkpPasien}>
                     Delete
                 </DangerButton>
+            </DestroyModal>
+            <DestroyModal
+                isOpenDestroyDialog={isOpenPrintDialog}
+                setIsOpenDestroyDialog={setIsOpenPrintDialog}
+                size="max-w-4xl"
+                title="Print IKP Form"
+                warning="Yakin print data ini ?"
+            >
+                <SecondaryButton className="ml-2" onClick={printIkpPasien}>
+                    Print
+                </SecondaryButton>
             </DestroyModal>
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
@@ -367,6 +393,30 @@ export default function Index(props) {
                                     disabled={selectedRow === null}
                                 >
                                     Hasil Investigasi
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search" width={24} height={24} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" /><path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" /><path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M8 11h4" /><path d="M8 15h3" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "yellow"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    // onClick={printIkpPasien}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedIkp =
+                                                IkpPasien[selectedRow];
+                                                openPrintDialog(selectedIkp);
+                                            // printIkpPasien(selectedIkp);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Print
                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search" width={24} height={24} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" /><path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" /><path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M8 11h4" /><path d="M8 15h3" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
                                 </ThirdButton>
                             </div>

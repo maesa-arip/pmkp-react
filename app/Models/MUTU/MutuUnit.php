@@ -15,6 +15,6 @@ class MutuUnit extends Model
     }
     public function mutu_pdsa()
     {
-        return $this->hasMany(MutuPdsa::class);
+        return $this->hasOne(MutuPdsa::class);
     }
 }

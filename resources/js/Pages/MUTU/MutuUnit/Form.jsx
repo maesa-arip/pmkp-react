@@ -20,14 +20,7 @@ export default function Form({
     // console.log(ShouldMap)
     // const onChange = (e) => setData({ ...data, [e.target.id]: e.target.value });
     const defaultValue = [{ name: "" }];
-    const [selectedIndikatorBaru, setSelectedIndikatorBaru] = useState(() => {
-        if (model) {
-            return ShouldMap.IndikatorBaru.find(
-                (x) => x.id === model.IndikatorBaru
-            );
-        }
-        return defaultValue[0];
-    });
+   
 
     const [selectedIndikator, setSelectedIndikator] = useState(() => {
         if (model) {
@@ -73,7 +66,7 @@ export default function Form({
                         />
                         <ReactDatePicker
                             dateFormat="MMMM yyyy"
-                            value={data.tanggal_mutu}
+                            value={data.tanggal_mutu ? new Date(data.tanggal_mutu).toLocaleDateString("en-CA", formatDate) : null}
                             showMonthYearPicker
                             id="tanggal_mutu"
                             name="tanggal_mutu"

@@ -8,6 +8,7 @@ use App\Models\IKP\IkpDampak;
 use App\Models\IKP\IkpGruplayanan;
 use App\Models\IKP\IkpHasil;
 use App\Models\IKP\IkpJenisInsiden;
+use App\Models\IKP\IkpKronologiPasien;
 use App\Models\IKP\IkpLokasi;
 use App\Models\IKP\IkpPasien;
 use App\Models\IKP\IkpPelapor;
@@ -19,6 +20,7 @@ use App\Models\IKP\IkpTipeInsiden;
 use App\Models\Pic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class IKPPasienController extends Controller
 {
@@ -40,9 +42,12 @@ class IKPPasienController extends Controller
             ->with('hasil_grading')
             ->with('ikp_hasil')
             ->with('penindak')
+            ->with('kronologis')
             ->where($whosLogin);
         if ($request->q) {
-            $IkpPasien->where('insiden', 'like', '%' . $request->q . '%');
+            $IkpPasien->whereRelation('tipe_insiden', 'name', 'like', '%'.$request->q.'%')
+            ->orWhere('insiden', 'like', '%' . $request->q . '%')
+            ->orWhere('lokasi_name', 'like', '%' . $request->q . '%');
         }
 
         if ($request->has(['field', 'direction'])) {
@@ -74,11 +79,13 @@ class IKPPasienController extends Controller
         $IkpPenanggung = IkpPenanggung::get();
         $IkpLokasi = IkpLokasi::get();
         $IkpPenindak = IkpPenindak::get();
+        // $IkpKronologiPasien = IkpKronologiPasien::get();
         $pics = Pic::get();
         return inertia('IKP/Pasien/Index', ['IkpPasien' => $IkpPasien, 'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak, 'pics' => $pics]);
     }
     public function store(Request $request)
     {
+        // dd($request->all());
         $validated = $this->validate($request, [
             'namapasien' => 'required|max:255',
             'nrm' => 'required|max:8',
@@ -90,7 +97,7 @@ class IKPPasienController extends Controller
             'tanggal_pelayanan' => 'required',
             'tanggal_insiden' => 'required',
             'insiden' => 'required|max:255',
-            'kronologi' => 'required',
+            // 'kronologi' => 'required',
             'ikp_jenis_insiden_id' => 'required',
             'ikp_tipe_insiden_id' => 'required',
             'ikp_spesialisasi_id' => 'required',
@@ -112,7 +119,14 @@ class IKPPasienController extends Controller
         $validated['pic_id'] = $encodedPic;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
         // dd($validated);
-        IkpPasien::create($validated);
+        $IkpPasien = IkpPasien::create($validated);
+        foreach ($request->kronologis as $kronologis) {
+            IkpKronologiPasien::create([
+                'ikp_pasien_id' => $IkpPasien->id,
+                'waktu' => $kronologis['waktu'],
+                'kronologi' => $kronologis['kronologi'],
+            ]);
+        }
         return back()->with([
             'type' => 'success',
             'message' => 'Data IKP Pasien berhasil disimpan',
@@ -120,6 +134,10 @@ class IKPPasienController extends Controller
     }
     public function update(Request $request, IkpPasien $IkpPasien)
     {
+        // $idAll = IkpPasien::where('id','>',0)->get();
+        // foreach ($idAll as $key) {
+        //     IkpPasien::where('id', $key->id)->update(['code'=>Str::random(8)]);
+        // }
         $validated = $this->validate($request, [
             'namapasien' => 'required|max:255',
             'nrm' => 'required|max:8',
@@ -131,7 +149,7 @@ class IKPPasienController extends Controller
             'tanggal_pelayanan' => 'required',
             'tanggal_insiden' => 'required',
             'insiden' => 'required|max:255',
-            'kronologi' => 'required',
+            // 'kronologi' => 'required',
             'ikp_jenis_insiden_id' => 'required',
             'ikp_tipe_insiden_id' => 'required',
             'ikp_spesialisasi_id' => 'required',
@@ -152,6 +170,15 @@ class IKPPasienController extends Controller
         $validated['pic_id'] = $encodedPic;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
         $IkpPasien->update($validated);
+        $IkpKronologiPasien = IkpKronologiPasien::where('ikp_pasien_id',$IkpPasien->id);
+        $IkpKronologiPasien->delete();
+        foreach ($request->kronologis as $kronologis) {
+            IkpKronologiPasien::create([
+                'ikp_pasien_id' => $IkpPasien->id,
+                'waktu' => $kronologis['waktu'],
+                'kronologi' => $kronologis['kronologi'],
+            ]);
+        }
         return back()->with([
             'type' => 'success',
             'message' => 'Data IKP Pasien berhasil diubah',

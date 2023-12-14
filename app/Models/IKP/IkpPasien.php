@@ -2,6 +2,7 @@
 
 namespace App\Models\IKP;
 
+use App\Models\Pic;
 use App\Models\RiskGrading;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,6 +58,19 @@ class IkpPasien extends Model
     public function ikp_hasil()
     {
         return $this->hasOne(IkpHasil::class);
+    }
+    public function kronologis()
+    {
+        return $this->hasMany(IkpKronologiPasien::class,'ikp_pasien_id');
+    }
+    /**
+     * Get the user that owns the IkpPasien
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function pic()
+    {
+        return $this->belongsTo(Pic::class);
     }
     public function hasil_grading()
     {

@@ -51,7 +51,7 @@ export default function ComboboxMultipleWithOutSemuaUnit({
             isDisabled: false,
         })),
     ]);
-
+// console.log(ShouldMap)
     const handleOptionSelect = (selectedOptions) => {
         const updatedOptions = options.map((option) => {
             if ((option.value === 0) | (option.value === "0")) {

@@ -3,8 +3,13 @@ import React, { useEffect } from 'react'
 import Form from './Form';
 
 export default function Edit({ setIsOpenEditDialog, model,ShouldMap }) {
+    // console.log(model)
     const { data, setData, put, reset, errors } = useForm({
-        name: model.name,
+        mutu_indikator_id: model.mutu_indikator_id,
+        tanggal_mutu: model.tanggal_mutu,
+        num: model.num,
+        denum: model.denum,
+        capaian: model.capaian,
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
@@ -19,7 +24,11 @@ export default function Edit({ setIsOpenEditDialog, model,ShouldMap }) {
     useEffect(() => {
         setData({
             ...data,
-            name: model.name,
+            mutu_indikator_id: model.mutu_indikator_id,
+        tanggal_mutu: model.tanggal_mutu,
+        num: model.num,
+        denum: model.denum,
+        capaian: model.capaian,
         });
     }, [model]);
   return (

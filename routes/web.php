@@ -5,6 +5,7 @@ use App\Http\Controllers\CombinedRiskRegisterController;
 use App\Http\Controllers\ControlValueController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ExportPDFController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IdentificationSourceController;
 use App\Http\Controllers\IKP\Master\IKPDampakController;
@@ -107,7 +108,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/hasilinvestigasi/{IkpPasien}',[IKPPasienController::class,'hasilinvestigasi'])->name('ikppasien.hasilinvestigasi');
     Route::apiResource('MutuKategori', MutuKategoriController::class);
     Route::apiResource('MutuIndikator', MutuIndikatorController::class);
+    Route::put('/MutuIndikatorApproved/{MutuIndikator}',[MutuIndikatorController::class,'approved'])->name('MutuIndikator.approved');
     Route::apiResource('MutuUnit', MutuUnitController::class);
+    Route::put('/formulirpdsa', [MutuUnitController::class,'formulirpdsa'])->name('MutuUnit.formulirpdsa');
+    // Route::get('/exportpdf',[MutuUnitController::class,'exportpdf'])->name('MutuUnit.exportpdf');
+    // Route::post('/exportpdf',[MutuUnitController::class,'exportpdf'])->name('MutuUnit.exportpdf');
+    // Route::get('/print-table/{code}',[ExportPDFController::class,'printTable'])->name('ExportPDF.printTable');
+    // Route::get('/print-pdsa/{code}',[ExportPDFController::class,'printPDSA'])->name('ExportPDF.printPDSA');
 
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
@@ -160,6 +167,10 @@ Route::middleware('auth')->group(function () {
     Route::match(['GET', 'POST'], '/riskregistersedangterjadi', [ExportController::class, 'riskregistersedangterjadi']);
     Route::match(['GET', 'POST'], '/ikpdatainsiden', [ExportController::class, 'ikpdatainsiden']);
     Route::match(['GET', 'POST'], '/ikpdataevaluasi', [ExportController::class, 'ikpdataevaluasi']);
+
+    Route::match(['GET', 'POST'], '/print-pdsa', [ExportPDFController::class, 'printPDSA'])->name('export.printPDSA');
+    Route::match(['GET', 'POST'], '/print-mutu-indikator', [ExportPDFController::class, 'printMutuIndikator'])->name('export.printMutuIndikator');
+    Route::match(['GET', 'POST'], '/print-investigasi-sederhana/{code}', [ExportPDFController::class, 'printFormInvestigasiSederhana'])->name('export.printFormInvestigasiSederhana');
     // Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
     // Route::match(['GET', 'POST'], '/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp']);
 });

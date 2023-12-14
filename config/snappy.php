@@ -37,7 +37,10 @@ return [
         'enabled' => true,
         'binary'  => env('WKHTML_PDF_BINARY', 'C:\usr\wkhtmltopdf\bin\wkhtmltopdf'),
         'timeout' => false,
-        'options' => [],
+        'options' => [
+            'enable-local-file-access' => true,
+            'background' => true,
+        ],
         'env'     => [],
     ],
     
@@ -45,7 +48,9 @@ return [
         'enabled' => true,
         'binary'  => env('WKHTML_IMG_BINARY', 'C:\usr\wkhtmltoimage\bin\wkhtmltoimage'),
         'timeout' => false,
-        'options' => [],
+        'options' => [
+            'enable-local-file-access' => true,
+        ],
         'env'     => [],
     ],
 

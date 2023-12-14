@@ -9,6 +9,11 @@ import DatePicker from "react-datepicker";
 import React, { useState } from "react";
 import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxPageKeterangan from "@/Components/ComboboxPageKeterangan";
+import Inputs from "./Inputs";
+import { IconTrash } from "@tabler/icons";
+import { useEffect } from "react";
+import ThirdButton from "@/Components/ThirdButton";
+import { Fragment } from "react";
 
 export default function Form({
     errors,
@@ -19,7 +24,7 @@ export default function Form({
     ShouldMap,
     model,
 }) {
-    console.log(model)
+    // console.log(model)
     const [tglPelayanan, setTglPelayanan] = useState(null);
     const defaultValue = [{ name: "" }];
     const picIdStrings = data.pic_id ? data.pic_id : ",";
@@ -125,6 +130,27 @@ export default function Form({
             }
             return defaultValue[0];
         });
+    
+    const [inputFields, setInputFields] = useState(model?.kronologis ?? [{ waktu: "", kronologi: "" }]);
+    const handleFormChange = (index, event) => {
+        let data = [...inputFields];
+        data[index][event.target.name] = event.target.value;
+        setInputFields(data);
+    };
+    const addFields = (e) => {
+        e.preventDefault();
+        let newfield = { waktu: "", kronologi: "" };
+        setInputFields([...inputFields, newfield]);
+    };
+    const removeFields = (index) => {
+        let data = [...inputFields];
+        data.splice(index, 1);
+        setInputFields(data);
+    };
+    useEffect(() => {
+        setData({ ...data, ["kronologis"]: inputFields });
+    }, [inputFields]);
+    // console.log(inputFields)
     return (
         <>
             <div className="px-4 py-5 bg-white sm:p-6">
@@ -136,6 +162,7 @@ export default function Form({
                         >
                             Data Pasien (Wajib di Input)
                         </label>
+                        {/* <Inputs/> */}
                         <div className="grid grid-cols-12 gap-6">
                             <div className="col-span-6">
                                 <InputLabel
@@ -282,7 +309,7 @@ export default function Form({
                                     type="datetime-local"
                                     className="block w-full mt-1"
                                 />
-                                
+
                                 <InputError
                                     message={errors.tanggal_pelayanan}
                                     className="mt-2"
@@ -381,25 +408,101 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="kronologi"
-                                    value="Kronologis Insiden"
-                                />
-                                <TextAreaInput
-                                    id="kronologi"
-                                    value={data.kronologi}
-                                    handleChange={(e) =>
-                                        setData("kronologi", e.target.value)
-                                    }
-                                    rows={5}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.kronologi}
-                                    className="mt-2"
-                                />
+                            <div className="col-span-12 px-4 py-6 my-6 border-2 border-yellow-200 rounded-lg ">
+                                <label
+                                    htmlFor=""
+                                    className="block mb-4 text-lg font-bold text-gray-700 "
+                                >
+                                    Kronologi
+                                </label>
+                                <div className="grid grid-cols-12 gap-2">
+                                    {inputFields.map((input, index) => {
+                                        return (
+                                            <Fragment key={index}>
+                                                <div className="col-span-2">
+                                                    <InputLabel
+                                                        for="waktu"
+                                                        value="Waktu"
+                                                    />
+                                                    <input
+                                                        required
+                                                        type="datetime-local"
+                                                        name="waktu"
+                                                        value={input.waktu}
+                                                        autoComplete="off"
+                                                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                        onChange={(event) =>
+                                                            handleFormChange(
+                                                                index,
+                                                                event
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
+                                                <div className="col-span-9">
+                                                    <InputLabel
+                                                        for="kronologi"
+                                                        value="Kronologis Insiden"
+                                                    />
+                                                    <textarea
+                                                        required
+                                                        name="kronologi"
+                                                        value={input.kronologi}
+                                                        rows={5}
+                                                        autoComplete="off"
+                                                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                        onChange={(event) =>
+                                                            handleFormChange(
+                                                                index,
+                                                                event
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
+                                                {inputFields.length !== 1 && (
+                                                <div className="col-span-1">
+                                                    <ThirdButton
+                                                        type={"button"}
+                                                        color="red"
+                                                        className="mt-6"
+                                                        onClick={() =>
+                                                            removeFields(index)
+                                                        }
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="w-5 h-5 icon icon-tabler icon-tabler-trash"
+                                                            width={24}
+                                                            height={24}
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth={2}
+                                                            stroke="currentColor"
+                                                            fill="none"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path
+                                                                stroke="none"
+                                                                d="M0 0h24v24H0z"
+                                                                fill="none"
+                                                            />
+                                                            <path d="M4 7l16 0" />
+                                                            <path d="M10 11l0 6" />
+                                                            <path d="M14 11l0 6" />
+                                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                                        </svg>
+                                                    </ThirdButton>
+                                                </div>)}
+                                            </Fragment>
+                                        );
+                                    })}
+                                    <div className="col-span-12">
+                                        <ThirdButton onClick={addFields}>
+                                            Tambah
+                                        </ThirdButton>
+                                    </div>
+                                </div>
                             </div>
                             <div className="col-span-6">
                                 <InputLabel

@@ -295,6 +295,9 @@ export default function Navbar() {
                                     </div>
                                 </div>
                             )}
+                            {permission_name.indexOf(
+                                "lihat data master ikp"
+                            ) > -1 && (
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -390,6 +393,10 @@ export default function Navbar() {
                                     </Dropdown>
                                 </div>
                             </div>
+                            )}
+                            {permission_name.indexOf(
+                                "lihat data master mutu"
+                            ) > -1 && (
                             <div className="hidden sm:flex sm:items-center sm:ml-6">
                                 <div className="relative ml-3">
                                     <Dropdown>
@@ -424,24 +431,11 @@ export default function Navbar() {
                                             >
                                                 Mutu Kategori
                                             </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "MutuIndikator.index"
-                                                )}
-                                            >
-                                                Mutu Indikator
-                                            </Dropdown.Link>
-                                            <Dropdown.Link
-                                                href={route(
-                                                    "MutuUnit.index"
-                                                )}
-                                            >
-                                                Mutu Unit
-                                            </Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
                             </div>
+                            )}
                         </div>
                     </div>
 

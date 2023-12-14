@@ -6,7 +6,7 @@ import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
 import ThirdButton from "@/Components/ThirdButton";
 import App from "@/Layouts/App";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import Create from "./Create";
@@ -15,6 +15,12 @@ import Table from "@/Components/Table";
 import Pagination from "@/Components/Pagination";
 import Badge from "@/Components/Badge";
 import moment from "moment";
+import EditFormulirPDSA from "../MutuPDSA/Edit";
+import ThirdButtonLink from "@/Components/ThirdButtonLink";
+import { Fragment } from "react";
+import PDSA from "@/Pages/Export/PDSA";
+import ExportModal from "@/Components/Modal/ExportModal";
+import MutuIndikator from "@/Pages/Export/MutuIndikator";
 
 const UpIcon = () => (
     <svg
@@ -46,12 +52,7 @@ const DownIcon = () => (
 );
 
 export default function Index(props) {
-    const {
-        data: MutuUnit,
-        meta,
-        filtered,
-        attributes,
-    } = props.MutuUnit;
+    const { data: MutuUnit, meta, filtered, attributes } = props.MutuUnit;
     // console.log(MutuUnit)
     let ShouldMap = {
         MutuIndikator: props.MutuIndikator,
@@ -61,6 +62,8 @@ export default function Index(props) {
             { id: 1, name: "Ya" },
         ],
     };
+    const {auth} =  usePage().props;
+    // console.log(ShouldMap)
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
 
@@ -124,6 +127,10 @@ export default function Index(props) {
         setState(MutuUnit);
         setIsOpenEditDialog(true);
     };
+    const openEditPDSADialog = (MutuUnit) => {
+        setState(MutuUnit);
+        setIsOpenEditDialogFormulirPDSA(true);
+    };
     const openDestroyDialog = (MutuUnit) => {
         setState(MutuUnit);
         setIsOpenDestroyDialog(true);
@@ -137,15 +144,30 @@ export default function Index(props) {
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [isOpenEditDialogFormulirPDSA, setIsOpenEditDialogFormulirPDSA] =
+        useState(false);
     const [state, setState] = useState([]);
+    
+    const [isOpenExportDialogPDSA, setIsOpenExportDialogPDSA] = useState(false);
+    const openExportDialogPDSA = () => {
+        setIsOpenExportDialogPDSA(true);
+    };
+    const [isOpenExportDialogMutuIndikator, setIsOpenExportDialogMutuIndikator] = useState(false);
+    const openExportDialogMutuIndikator = () => {
+        setIsOpenExportDialogMutuIndikator(true);
+    };
+
+    const handleGeneratePDF = () => {
+        router.post("/exportpdf");
+    };
     return (
         <>
-            <Head title="Mutu Indikator" />
+            <Head title="Mutu Unit" />
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}
                 size="max-w-4xl"
-                title="Tambah Mutu Indikator"
+                title="Tambah Mutu Unit"
             >
                 <Create
                     ShouldMap={ShouldMap}
@@ -157,19 +179,53 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenEditDialog}
                 setIsOpenEditDialog={setIsOpenEditDialog}
                 size="max-w-4xl"
-                title="Edit Mutu Indikator"
+                title="Edit Mutu Unit"
             >
                 <Edit
+                    ShouldMap={ShouldMap}
                     model={state}
                     isOpenEditDialog={isOpenEditDialog}
                     setIsOpenEditDialog={setIsOpenEditDialog}
                 />
             </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFormulirPDSA}
+                setIsOpenEditDialog={setIsOpenEditDialogFormulirPDSA}
+                size="max-w-6xl"
+                title="Edit Formulir PDSA Mutu Unit"
+            >
+                <EditFormulirPDSA
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFormulirPDSA}
+                    setIsOpenEditDialog={setIsOpenEditDialogFormulirPDSA}
+                />
+            </EditModal>
+            <ExportModal
+                    isOpenExportDialog={isOpenExportDialogPDSA}
+                    setIsOpenExportDialog={setIsOpenExportDialogPDSA}
+                    size="max-w-4xl"
+                    title={
+                        `Pilihan Export PDSA ` + auth.user.name
+                    }
+                >
+                    <PDSA setIsOpenAddDialog={setIsOpenExportDialogPDSA} />
+                </ExportModal>
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogMutuIndikator}
+                    setIsOpenExportDialog={setIsOpenExportDialogMutuIndikator}
+                    size="max-w-4xl"
+                    title={
+                        `Pilihan Export Indikator  Mutu ` + auth.user.name
+                    }
+                >
+                    <MutuIndikator setIsOpenAddDialog={setIsOpenExportDialogMutuIndikator} />
+                </ExportModal>
             <DestroyModal
                 isOpenDestroyDialog={isOpenDestroyDialog}
                 setIsOpenDestroyDialog={setIsOpenDestroyDialog}
                 size="max-w-4xl"
-                title="Delete Mutu Indikator"
+                title="Delete Mutu Unit"
                 warning="Yakin hapus data ini ?"
             >
                 <DangerButton className="ml-2" onClick={destroyMutuUnit}>
@@ -187,6 +243,16 @@ export default function Index(props) {
                                 >
                                     Tambah
                                 </ThirdButton>
+                                {/* <a
+                                    target="_blank"
+                                    className="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-wide text-teal-500 uppercase transition duration-150 ease-in-out border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 bg-teal-50 hover:bg-teal-100 focus:bg-teal-100 active:bg-teal-100 focus:ring-teal-100"
+                                    href="/print-table"
+                                >
+                                    Print PDSA
+                                </a> */}
+                                <ThirdButton onClick={openExportDialogPDSA}>Print PDSA</ThirdButton>
+                                <ThirdButton color="cyan" onClick={openExportDialogMutuIndikator}>Print Indikator</ThirdButton>
+                                {/* <ThirdButtonLink color="cyan" type="button" href={'/print-table'} >Print Indikator</ThirdButtonLink> */}
                             </div>
                         </div>
                         <div className="w-1/2">
@@ -236,7 +302,9 @@ export default function Index(props) {
                                 <Table.Th>#</Table.Th>
                                 <Table.Th>Status</Table.Th>
                                 <Table.Th>Bulan</Table.Th>
-                                <Table.Th onClick={() => sort("mutu_kategori_id")}>
+                                <Table.Th
+                                    onClick={() => sort("mutu_kategori_id")}
+                                >
                                     Kategori
                                     {params.field == "mutu_kategori_id" &&
                                         params.direction == "asc" && <UpIcon />}
@@ -245,8 +313,10 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                
-                                <Table.Th onClick={() => sort("indikator_fitur4_id")}>
+
+                                <Table.Th
+                                    onClick={() => sort("indikator_fitur4_id")}
+                                >
                                     Indikator
                                     {params.field == "indikator_fitur4_id" &&
                                         params.direction == "asc" && <UpIcon />}
@@ -255,12 +325,8 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                <Table.Th
-                                    colSpan={3}
-                                    
-                                >
+                                <Table.Th colSpan={3}>
                                     Numerator (N) & Denuminator (D)
-                                    
                                 </Table.Th>
                                 <Table.Th onClick={() => sort("standar")}>
                                     Capaian
@@ -271,11 +337,10 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                <Table.Th>
-                                    Standar
-                                    
-                                </Table.Th>
-                                <Table.Th onClick={() => sort("mutu_kategori_id")}>
+                                <Table.Th>Standar</Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("mutu_kategori_id")}
+                                >
                                     UNIT
                                     {params.field == "mutu_kategori_id" &&
                                         params.direction == "asc" && <UpIcon />}
@@ -289,40 +354,75 @@ export default function Index(props) {
                         </Table.Thead>
                         <Table.Tbody>
                             {MutuUnit.map((MutuUnit, index) => (
-                                <>
-                                    <tr key={index}>
+                                // <>
+                                <Fragment key={index}>
+                                    <tr>
                                         <Table.Td rowSpan={2}>
                                             <Badge>{meta.from + index}</Badge>
                                         </Table.Td>
                                         <Table.Td rowSpan={2}>
-                                            {(
-                                                (MutuUnit.mutu_indikator.operator === '=' && MutuUnit.capaian >= MutuUnit.mutu_indikator.standar) ||
-                                                (MutuUnit.mutu_indikator.operator === '≥' && MutuUnit.capaian >= MutuUnit.mutu_indikator.standar) ||
-                                                (MutuUnit.mutu_indikator.operator === '≤' && MutuUnit.capaian <= MutuUnit.mutu_indikator.standar) ||
-                                                (MutuUnit.mutu_indikator.operator === '>' && MutuUnit.capaian > MutuUnit.mutu_indikator.standar) ||
-                                                (MutuUnit.mutu_indikator.operator === '<' && MutuUnit.capaian < MutuUnit.mutu_indikator.standar)
-                                                ) ? (
+                                            {(MutuUnit.mutu_indikator
+                                                .operator === "=" &&
+                                                MutuUnit.capaian >=
+                                                    MutuUnit.mutu_indikator
+                                                        .standar) ||
+                                            (MutuUnit.mutu_indikator
+                                                .operator === "≥" &&
+                                                MutuUnit.capaian >=
+                                                    MutuUnit.mutu_indikator
+                                                        .standar) ||
+                                            (MutuUnit.mutu_indikator
+                                                .operator === "≤" &&
+                                                MutuUnit.capaian <=
+                                                    MutuUnit.mutu_indikator
+                                                        .standar) ||
+                                            (MutuUnit.mutu_indikator
+                                                .operator === ">" &&
+                                                MutuUnit.capaian >
+                                                    MutuUnit.mutu_indikator
+                                                        .standar) ||
+                                            (MutuUnit.mutu_indikator
+                                                .operator === "<" &&
+                                                MutuUnit.capaian <
+                                                    MutuUnit.mutu_indikator
+                                                        .standar) ? (
                                                 <Badge>Tercapai</Badge>
-                                                ) : (
-                                                <Badge color="red">Perlu PDSA</Badge>
+                                            ) : (
+                                                <>
+                                                    {MutuUnit.mutu_pdsa ? (
+                                                        <Badge color="yellow">
+                                                            Sudah PDSA
+                                                        </Badge>
+                                                    ) : (
+                                                        <Badge color="red">
+                                                            Perlu PDSA
+                                                        </Badge>
+                                                    )}
+                                                </>
                                             )}
                                         </Table.Td>
                                         <Table.Td rowSpan={2}>
-                                        {moment(MutuUnit.tanggal_mutu).locale('he').format("MMMM YYYY")}
+                                            {moment(MutuUnit.tanggal_mutu)
+                                                .locale("he")
+                                                .format("MMMM YYYY")}
                                         </Table.Td>
                                         <Table.Td rowSpan={2}>
-                                            {MutuUnit.mutu_indikator.kategori.name}
-                                        </Table.Td>
-                                        <Table.Td rowSpan={2} >
                                             {
-                                                MutuUnit.mutu_indikator.indikator_fitur4.name
+                                                MutuUnit.mutu_indikator.kategori
+                                                    .name
+                                            }
+                                        </Table.Td>
+                                        <Table.Td rowSpan={2}>
+                                            {
+                                                MutuUnit.mutu_indikator
+                                                    .indikator_fitur4.name
                                             }
                                         </Table.Td>
                                         <Table.Td>N</Table.Td>
-                                        <Table.Td>{MutuUnit.mutu_indikator.num_name}</Table.Td>
                                         <Table.Td>
-                                            {MutuUnit.num}
+                                            {MutuUnit.mutu_indikator.num_name}
                                         </Table.Td>
+                                        <Table.Td>{MutuUnit.num}</Table.Td>
                                         <Table.Td
                                             rowSpan={2}
                                             className="whitespace-nowrap"
@@ -333,13 +433,17 @@ export default function Index(props) {
                                             rowSpan={2}
                                             className="whitespace-nowrap"
                                         >
-                                            {MutuUnit.mutu_indikator.operator} {MutuUnit.mutu_indikator.standar }%
+                                            {MutuUnit.mutu_indikator.operator}{" "}
+                                            {MutuUnit.mutu_indikator.standar}%
                                         </Table.Td>
                                         <Table.Td
                                             rowSpan={2}
                                             className="whitespace-nowrap"
                                         >
-                                            {MutuUnit.mutu_indikator.location.name}
+                                            {
+                                                MutuUnit.mutu_indikator.location
+                                                    .name
+                                            }
                                         </Table.Td>
                                         <Table.Td rowSpan={2}>
                                             <Dropdown>
@@ -356,6 +460,61 @@ export default function Index(props) {
                                                     </button>
                                                 </Dropdown.Trigger>
                                                 <Dropdown.Content>
+                                                    {(MutuUnit.mutu_indikator
+                                                        .operator === "=" &&
+                                                        MutuUnit.capaian >=
+                                                            MutuUnit
+                                                                .mutu_indikator
+                                                                .standar) ||
+                                                    (MutuUnit.mutu_indikator
+                                                        .operator === "≥" &&
+                                                        MutuUnit.capaian >=
+                                                            MutuUnit
+                                                                .mutu_indikator
+                                                                .standar) ||
+                                                    (MutuUnit.mutu_indikator
+                                                        .operator === "≤" &&
+                                                        MutuUnit.capaian <=
+                                                            MutuUnit
+                                                                .mutu_indikator
+                                                                .standar) ||
+                                                    (MutuUnit.mutu_indikator
+                                                        .operator === ">" &&
+                                                        MutuUnit.capaian >
+                                                            MutuUnit
+                                                                .mutu_indikator
+                                                                .standar) ||
+                                                    (MutuUnit.mutu_indikator
+                                                        .operator === "<" &&
+                                                        MutuUnit.capaian <
+                                                            MutuUnit
+                                                                .mutu_indikator
+                                                                .standar) ? (
+                                                        <></>
+                                                    ) : (
+                                                        <>
+                                                            <button
+                                                                className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                                onClick={() =>
+                                                                    openEditPDSADialog(
+                                                                        MutuUnit
+                                                                    )
+                                                                }
+                                                            >
+                                                                PDSA
+                                                            </button>
+                                                            {MutuUnit.mutu_pdsa && (
+                                                                <a
+                                                                    // target="_blank"
+                                                                    className="block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out tems-center hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
+                                                                    href={`/print-pdsa/${MutuUnit.code}`}
+                                                                >
+                                                                    Print
+                                                                </a>
+                                                            )}
+                                                        </>
+                                                    )}
+
                                                     <button
                                                         className="items-center block w-full px-4 py-2 text-sm leading-5 text-left text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus:bg-gray-100 gap-x-2"
                                                         onClick={() =>
@@ -380,14 +539,15 @@ export default function Index(props) {
                                             </Dropdown>
                                         </Table.Td>
                                     </tr>
-                                    <tr key={index}>
+                                    <tr>
                                         <Table.Td>D</Table.Td>
-                                        <Table.Td>{MutuUnit.mutu_indikator.denum_name}</Table.Td>
                                         <Table.Td>
-                                            {MutuUnit.denum}
+                                            {MutuUnit.mutu_indikator.denum_name}
                                         </Table.Td>
+                                        <Table.Td>{MutuUnit.denum}</Table.Td>
                                     </tr>
-                                </>
+                                </Fragment>
+                                // </>
                             ))}
                         </Table.Tbody>
                     </Table>
