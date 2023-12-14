@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    @vite('resources/css/app.css')
+
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <title>Mutu Indikator</title>
 </head>
 <style>
     .times {
         font-family: "Times New Roman", Times, serif;
-        /* letter-spacing: 1px; */
         font-size: 19px;
     }
 
@@ -87,8 +87,6 @@
                     <td rowspan="1" class="px-1 py-1 font-normal ">{{ $data->umur_tahun }} Tahun
                         {{ $data->umur_bulan }} Bulan {{ $data->umur_hari }} Hari</td>
                 </tr>
-
-
                 <tr>
                     <td rowspan="1" class="px-1 py-1 font-normal ">
                     </td>
