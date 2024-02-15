@@ -115,8 +115,10 @@ class IKPPasienController extends Controller
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         // $validated = $validator->validated();
+        $code= Str::random(8);
         $validated['user_id'] = auth()->user()->id;
         $validated['pic_id'] = $encodedPic;
+        $validated['code'] = $code;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
         // dd($validated);
         $IkpPasien = IkpPasien::create($validated);
@@ -134,10 +136,10 @@ class IKPPasienController extends Controller
     }
     public function update(Request $request, IkpPasien $IkpPasien)
     {
-        $idAll = IkpPasien::where('id','>',248)->get();
-        foreach ($idAll as $key) {
-            IkpPasien::where('id', $key->id)->update(['code'=>Str::random(8)]);
-        }
+        // $idAll = IkpPasien::where('id','>',248)->get();
+        // foreach ($idAll as $key) {
+        //     IkpPasien::where('id', $key->id)->update(['code'=>Str::random(8)]);
+        // }
         $validated = $this->validate($request, [
             'namapasien' => 'required|max:255',
             'nrm' => 'required|max:8',
