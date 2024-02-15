@@ -65,6 +65,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_gradings', 'risk_gradings.kode', 'ikp_pasiens.concatdp')
             ->leftjoin('ikp_jenis_insidens', 'ikp_jenis_insidens.id', 'ikp_pasiens.ikp_jenis_insiden_id')
             ->leftjoin('ikp_tipe_insidens', 'ikp_tipe_insidens.id', 'ikp_pasiens.ikp_tipe_insiden_id')
+            ->leftjoin('ikp_hasils', 'ikp_hasils.ikp_pasien_id', 'ikp_pasiens.id')
             ->select(
                 DB::raw('row_number() OVER (ORDER BY ikp_pasiens.ikp_dampak_id * ikp_pasiens.ikp_probabilitas_id DESC) AS `row_number`'),
                 'ikp_pasiens.lokasi_name',
@@ -75,6 +76,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'ikp_tipe_insidens.name as tipe_name',
                 'risk_gradings.name_ikp',
                 'ikp_pasiens.tindak_lanjut_hasil',
+                DB::raw('CASE WHEN ikp_hasils.id IS NULL THEN "Belum Investigasi" ELSE "Sudah Investigasi" END AS investigasi_status')
             )
             ->where($whosLogin)
             ->orderBy('row_number', 'ASC');
@@ -98,9 +100,9 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Ruangan', 'Tanggal Insiden', 'Jenis Insiden', 'Laporan', 'Insiden', 'Tipe Insiden', 'Dampak/Grading', 'Tindak Lanjut'],
+            ['No', 'Ruangan', 'Tanggal Insiden', 'Jenis Insiden', 'Laporan', 'Insiden', 'Tipe Insiden', 'Dampak/Grading', 'Tindak Lanjut','Investigasi'],
             
-            ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9','10'],
         ];
     }
     public function columnWidths(): array
@@ -115,6 +117,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'G' => 20,
             'H' => 17,
             'I' => 40,
+            'J' => 17,
         ];
     }
     public function registerEvents(): array
@@ -303,13 +306,13 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $conditional4Styles[] = $conditional4;
                 // $event->sheet->getStyle($rangeH)->setConditionalStyles($conditional4Styles);
 
-                $event->sheet->getDelegate()->getStyle('A2:I2')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A2:J2')->applyFromArray($styleHeader2);
                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle('A1:I1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A1:J1')->applyFromArray($styleHeader);
             },
         ];
     }
