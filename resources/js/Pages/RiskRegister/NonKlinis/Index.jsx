@@ -843,12 +843,11 @@ export default function Index(props) {
                                         </Table.Td>
                                         <Table.Td>
                                             {
-                                                riskregisterklinis1.risk_variety
-                                                    .name
+                                                riskregisterklinis1.risk_variety?.name
                                             }
                                         </Table.Td>
                                         <Table.Td>
-                                            {riskregisterklinis1.risk_type.name}
+                                            {riskregisterklinis1.risk_type?.name}
                                         </Table.Td>
                                         <Table.Td>
                                             {riskregisterklinis1.dampak}

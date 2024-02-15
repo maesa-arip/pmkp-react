@@ -6,6 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mutu Indikator</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script>
+        function updatePrintedAt() {
+            var currentDate = new Date();
+            var printedAt = currentDate.toLocaleString('id-ID');
+            document.querySelector('.date').textContent = printedAt;
+        }
+    </script>
+    <script>
+        // Update printed-at timestamp when the document is loaded
+        window.onload = function () {
+            updatePrintedAt();
+        };
+    </script>
+    <style>
+        .printed-at {
+            /* position: fixed;
+            bottom: 10px;
+            left: 10px; */
+            font-size: 10px;
+            color: #555;
+        }
+    </style>
 </head>
 
 <body>
@@ -75,13 +98,13 @@
                     </td>
                     <td style="border:1px solid black;" rowspan="2"
                         class="px-1 py-4 text-sm font-normal text-center border border-slate-300 whitespace-nowrap">
-                        {{ $item->capaian }}%</td>
+                        {{ $item->capaian }}{{ $item->mutu_indikator->penyebut }}</td>
                     <td style="border:1px solid black;" rowspan="2"
                         class="px-1 py-4 text-sm font-normal text-center border border-slate-300 whitespace-nowrap">
                         @if ($item->mutu_indikator->operator != '=')
                             {{ $item->mutu_indikator->operator }}
                         @endif
-                        {{ $item->mutu_indikator->standar }}%
+                        {{ $item->mutu_indikator->standar }}{{ $item->mutu_indikator->penyebut }}
                     </td>
 
 
@@ -113,11 +136,19 @@
         </thead> --}}
         <tbody>
             <tr class="pb-8" style="border-left:1px solid black; border-top:1px solid white; border-right:1px solid black; border-bottom:1px solid black;">
-                <td style="width: 600px;height: 50px; vertical-align:bottom; border-bottom:1px solid white; border-right:1px solid white;" class="mb-8">Verifikasi</td>
-                <td style="width: 600px;height: 50px; vertical-align:bottom; border-bottom:1px solid white; border-left:1px solid white;" class="mb-8">Disusun Oleh :</td>
+                <td style="width: 600px;height: 50px; vertical-align:bottom; border-bottom:1px solid white; border-right:1px solid white;" class="mb-8"></td>
+                <td style="width: 600px;height: 50px; vertical-align:bottom; border-bottom:1px solid white; border-right:1px solid black;" class="printed-at">Printed at: <span class="date"></span></td>
+                
+                {{-- <td style="width: 600px;height: 50px; vertical-align:bottom; border-bottom:1px solid white; border-left:1px solid white;" class="mb-8">Disusun Oleh :</td> --}}
+            </tr>
+            <tr class="pb-8" style="border-left:1px solid black; border-top:1px solid white; border-right:1px solid black; border-bottom:1px solid black;">
+                {{-- <td style="width: 600px;height: 50px; vertical-align:bottom; border-bottom:1px solid white; border-right:1px solid white;" class="printed-at">Printed at: <span class="date"></span></td> --}}
+                <td style="width: 600px;vertical-align:bottom; border-bottom:1px solid white; border-right:1px solid white;" class="mb-8">Verifikasi</td>
+                <td style="width: 600px;vertical-align:bottom; border-bottom:1px solid white; border-left:1px solid white;" class="mb-8">Disusun Oleh :</td>
             </tr>
             <tr style="border-top:1px solid black; border-right:1px solid black; border-left:1px solid black; border-bottom:1px solid white;">
-                <td style="height: 150px; vertical-align:top; border-right:1px solid white;">KPMKP</td>
+                {{-- <td style="height: 150px; vertical-align:top; border-right:1px solid white;">Komite Mutu</td> --}}
+                <td style="height: 150px; vertical-align:top; border-right:1px solid white;">Komite Mutu</td>
                 <td style="height: 150px; vertical-align:top; border-left:1px solid white;">Kepala {{ $first->mutu_indikator->location->name }}</td>
             </tr>
             <tr style="border-top:1px solid black; border-right:1px solid black; border-left:1px solid black; border-bottom:1px solid black;">
@@ -127,7 +158,7 @@
         </tbody>
     </table>
 
-
+    
 </body>
 
 </html>

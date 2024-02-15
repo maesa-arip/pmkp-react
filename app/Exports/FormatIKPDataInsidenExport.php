@@ -68,7 +68,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select(
                 DB::raw('row_number() OVER (ORDER BY ikp_pasiens.ikp_dampak_id * ikp_pasiens.ikp_probabilitas_id DESC) AS `row_number`'),
                 'ikp_pasiens.lokasi_name',
-                DB::raw('DATE_FORMAT(ikp_pasiens.created_at, "%d-%m-%Y") as formatted'),
+                DB::raw('DATE_FORMAT(ikp_pasiens.tanggal_insiden, "%d-%m-%Y") as formatted'),
                 'ikp_jenis_insidens.name',
                 'ikp_pasiens.insiden as laporan',
                 'ikp_pasiens.insiden',
@@ -98,7 +98,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Ruangan', 'Tanggal Melapor', 'Jenis Insiden', 'Laporan', 'Insiden', 'Tipe Insiden', 'Dampak/Grading', 'Tindak Lanjut'],
+            ['No', 'Ruangan', 'Tanggal Insiden', 'Jenis Insiden', 'Laporan', 'Insiden', 'Tipe Insiden', 'Dampak/Grading', 'Tindak Lanjut'],
             
             ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
         ];

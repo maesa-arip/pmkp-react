@@ -427,14 +427,14 @@ export default function Index(props) {
                                             rowSpan={2}
                                             className="whitespace-nowrap"
                                         >
-                                            {MutuUnit.capaian}%
+                                            {MutuUnit.capaian}{MutuUnit.mutu_indikator.penyebut}
                                         </Table.Td>
                                         <Table.Td
                                             rowSpan={2}
                                             className="whitespace-nowrap"
                                         >
                                             {MutuUnit.mutu_indikator.operator}{" "}
-                                            {MutuUnit.mutu_indikator.standar}%
+                                            {MutuUnit.mutu_indikator.standar}{MutuUnit.mutu_indikator.penyebut}
                                         </Table.Td>
                                         <Table.Td
                                             rowSpan={2}
