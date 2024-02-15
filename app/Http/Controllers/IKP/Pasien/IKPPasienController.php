@@ -134,10 +134,10 @@ class IKPPasienController extends Controller
     }
     public function update(Request $request, IkpPasien $IkpPasien)
     {
-        // $idAll = IkpPasien::where('id','>',0)->get();
-        // foreach ($idAll as $key) {
-        //     IkpPasien::where('id', $key->id)->update(['code'=>Str::random(8)]);
-        // }
+        $idAll = IkpPasien::where('id','>',248)->get();
+        foreach ($idAll as $key) {
+            IkpPasien::where('id', $key->id)->update(['code'=>Str::random(8)]);
+        }
         $validated = $this->validate($request, [
             'namapasien' => 'required|max:255',
             'nrm' => 'required|max:8',
