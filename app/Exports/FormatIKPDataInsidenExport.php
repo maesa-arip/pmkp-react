@@ -76,7 +76,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'ikp_tipe_insidens.name as tipe_name',
                 'risk_gradings.name_ikp',
                 'ikp_pasiens.tindak_lanjut_hasil',
-                DB::raw('CASE WHEN ikp_hasils.id IS NULL THEN "Belum Investigasi" ELSE "Sudah Investigasi" END AS investigasi_status')
+                DB::raw('CASE WHEN ikp_hasils.concatdp2 IS NULL THEN "Belum Investigasi" ELSE "Sudah Investigasi" END AS investigasi_status')
             )
             ->where($whosLogin)
             ->orderBy('row_number', 'ASC');

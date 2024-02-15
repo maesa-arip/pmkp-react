@@ -592,7 +592,7 @@ export default function Index(props) {
                                         {IkpPasien.riskgrading?.name_ikp}
                                     </Table.Td>
                                     <Table.Td>
-                                        {IkpPasien.hasil_grading ? IkpPasien.hasil_grading.name_ikp : 'Belum Investigasi'}
+                                        {IkpPasien.hasil_grading ? IkpPasien.hasil_grading?.name_ikp : 'Belum Investigasi'}
                                     </Table.Td>
                                     {/* <Table.Td>
                                         <Dropdown>
