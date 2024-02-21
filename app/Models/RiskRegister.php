@@ -4,11 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class RiskRegister extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes,LogsActivity;
     protected $guarded=[];
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['sebab', 'risiko','dampak','pernyataan_risiko','osd1_dampak','osd1_probabilitas','osd2_dampak','osd2_probabilitas','osd2_controllability']);
+        // Chain fluent methods for configuration options
+    }
     public function risk_category()
     {
         return $this->belongsTo(RiskCategory::class);

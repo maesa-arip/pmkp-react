@@ -1,15 +1,15 @@
+import DangerButton from "@/Components/DangerButton";
+import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
+import EditVerification from "./Edit";
+import ThirdButton from "@/Components/ThirdButton";
 import App from "@/Layouts/App";
 import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
-import History from "./Edit";
 import Pagination from "@/Components/Pagination";
 import Table from "@/Components/Table";
 import Badge from "@/Components/Badge";
-import ThirdButton from "@/Components/ThirdButton";
-import EditVerification from "./Edit";
-import moment from "moment";
 
 const UpIcon = () => (
     <svg
@@ -48,17 +48,26 @@ export default function Index(props) {
         attributes,
     } = props.riskRegisterKlinis;
     const { auth } = usePage().props;
+    const riskRegisterCount = props.riskRegisterCount;
+    const riskRegisterOsd2Count = props.riskRegisterOsd2Count;
     let ShouldMap = {
         riskCategories: props.riskCategories,
         identificationSources: props.identificationSources,
         locations: props.locations,
         riskVarieties: props.riskVarieties,
         riskTypes: props.riskTypes,
+        jenisSebabs: props.jenisSebabs,
+        opsiPengendalian: props.opsiPengendalian,
+        pembiayaanRisiko: props.pembiayaanRisiko,
+        efektif: props.efektif,
+        jenisPengendalian: props.jenisPengendalian,
+        waktuPengendalian: props.waktuPengendalian,
+        waktuImplementasi: props.waktuImplementasi,
         pics: props.pics,
         impactValues: props.impactValues,
         probabilityValues: props.probabilityValues,
         controlValues: props.controlValues,
-        indikatorFitur04s: props.indikatorFitur04s,
+        indikatorFitur4s: props.indikatorFitur4s,
         proses: [
             { id: 1, name: "Mulai" },
             { id: 2, name: "Dalam Proses" },
@@ -77,15 +86,21 @@ export default function Index(props) {
             { id: 1, name: "Sudah dilaksanakan" },
             { id: 2, name: "Belum dilaksanakan" },
         ],
+        perluPenanganan: [
+            { id: 1, name: "Ya" },
+            { id: 2, name: "Tidak" },
+        ],
+        realisasi: [
+            { id: 1, name: "Sudah Tercapai" },
+            { id: 2, name: "Belum Tercapai" },
+        ],
     };
-
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
     const [isInitialRender, setIsInitialRender] = useState(true);
     const reload = useCallback(
         debounce((query) => {
             router.get(
-                // route("requeststatus"),
                 route(route().current()),
                 { ...pickBy(query), page: query.page },
                 {
@@ -96,7 +111,6 @@ export default function Index(props) {
         }, 150),
         []
     );
-
     useEffect(() => {
         if (!isInitialRender) {
             reload(params);
@@ -133,35 +147,7 @@ export default function Index(props) {
 
     // CRUD
 
-    const openAddDialog = () => {
-        setIsOpenAddDialog(true);
-    };
-    const openEditDialog = (riskregisterklinis1) => {
-        setState(riskregisterklinis1);
-        setIsOpenEditDialog(true);
-    };
-    const openDestroyDialog = (riskregisterklinis1) => {
-        setState(riskregisterklinis1);
-        setIsOpenDestroyDialog(true);
-    };
-
-    const destroyriskregisterklinis1 = () => {
-        router.delete(route("riskRegisterKlinis.destroy", state.id), {
-            onSuccess: () => setIsOpenDestroyDialog(false),
-        });
-    };
-    const openRequestUpdateStatus= (row) => {
-        setState(row);
-        setEditingRow(row);
-        setIsOpenRequestUpdateStatus(true);
-    };
-    const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
-    const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
-    const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
-    const [isOpenRequestUpdateStatus, setIsOpenRequestUpdateStatus] =
-        useState(false);
-    const [state, setState] = useState([]);
-
+    
     const [selectedRow, setSelectedRow] = useState(null);
     const [editingRow, setEditingRow] = useState(null); // Use this state to track the row being edited
     const selectRow = (index) => {
@@ -171,36 +157,63 @@ export default function Index(props) {
             setSelectedRow(index);
         }
     };
-console.log(riskRegisterKlinis)
+    
+
+    const openDestroyDialog = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenDestroyDialog(true);
+    };
+    const destroyriskregisterklinis1 = () => {
+        router.delete(route("riskRegisterKlinis.destroy", state.id), {
+            onSuccess: () => setIsOpenDestroyDialog(false),
+        });
+    };
+
+    const openVerification= (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenVerification(true);
+    };
+    const [isOpenVerification, setIsOpenVerification] =
+        useState(false);
+
+
+    const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [state, setState] = useState([]);
     return (
         <>
             <Head title="Verifikasi Risiko" />
             <EditModal
-                isOpenEditDialog={isOpenEditDialog}
-                setIsOpenEditDialog={setIsOpenEditDialog}
-                size="max-w-4xl"
-                title="Lihat History"
-            >
-                <History
-                    model={state}
-                    ShouldMap={ShouldMap}
-                    isOpenEditDialog={isOpenEditDialog}
-                    setIsOpenEditDialog={setIsOpenEditDialog}
-                />
-            </EditModal>
-            <EditModal
-                isOpenEditDialog={isOpenRequestUpdateStatus}
-                setIsOpenEditDialog={setIsOpenRequestUpdateStatus}
+                isOpenEditDialog={isOpenVerification}
+                setIsOpenEditDialog={setIsOpenVerification}
                 size="max-w-6xl"
                 title="Verifikasi Admin Risiko Sedang Terjadi"
             >
                 <EditVerification
                     model={state}
                     ShouldMap={ShouldMap}
-                    isOpenEditDialog={isOpenRequestUpdateStatus}
-                    setIsOpenEditDialog={setIsOpenRequestUpdateStatus}
+                    isOpenEditDialog={isOpenVerification}
+                    setIsOpenEditDialog={setIsOpenVerification}
                 />
             </EditModal>
+            
+            
+            <DestroyModal
+                isOpenDestroyDialog={isOpenDestroyDialog}
+                setIsOpenDestroyDialog={setIsOpenDestroyDialog}
+                size="max-w-2xl"
+                title="Delete Risk Register Klinis"
+                warning="Yakin hapus data ini ?"
+            >
+                <DangerButton
+                    className="ml-2"
+                    onClick={destroyriskregisterklinis1}
+                >
+                    Delete
+                </DangerButton>
+            </DestroyModal>
+
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
@@ -208,31 +221,7 @@ console.log(riskRegisterKlinis)
                     </p>
                     <div className="flex items-center justify-between pb-1.5 mt-2 mb-2 rounded-lg">
                         <div className="w-3/4">
-                            <div className="flex items-center justify-start py-2 mt-2 mb-0 mr-4 overflow-auto whitespace-nowrap gap-x-2">
-                               
-                                <ThirdButton
-                                    color={
-                                        selectedRow === null ? "gray" : "teal"
-                                    }
-                                    type="button"
-                                    className={`${
-                                        selectedRow === null
-                                            ? "cursor-not-allowed"
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        if (selectedRow !== null) {
-                                            const selectedRisk =
-                                                riskRegisterKlinis[selectedRow];
-                                                openEditDialog(
-                                                    selectedRisk
-                                                )
-                                        }
-                                    }}
-                                    disabled={selectedRow === null}
-                                >
-                                    Lihat History
-                                </ThirdButton>
+                            <div className="flex items-center justify-start mt-2 mb-0 mr-4 overflow-auto whitespace-nowrap gap-x-1">
                                 <ThirdButton
                                     color={
                                         selectedRow === null ? "gray" : "cyan"
@@ -247,16 +236,17 @@ console.log(riskRegisterKlinis)
                                         if (selectedRow !== null) {
                                             const selectedRisk =
                                                 riskRegisterKlinis[selectedRow];
-                                            openRequestUpdateStatus(
+                                            openVerification(
                                                 selectedRisk
                                             );
                                         }
                                     }}
                                     disabled={selectedRow === null}
                                 >
-                                    Update Status
+                                    Verifikasi
                                 </ThirdButton>
-                                
+
+                               
                             </div>
                         </div>
                         <div className="w-1/4">
@@ -300,133 +290,307 @@ console.log(riskRegisterKlinis)
                             </div>
                         </div>
                     </div>
-
-                    <div className="flex flex-col">
-                        <div className="-my-2 overflow-x-auto rounded ">
-                            <div className="inline-block min-w-full py-2 align-middle ">
-                                <Table>
-                                    <Table.Thead>
-                                        <Table.Tr>
-                                            <Table.Th>#</Table.Th>
-                                            <Table.Th>
-                                                Tanggal Kejadian
-                                            </Table.Th>
-                                            <Table.Th>
-                                                Tanggal Perbaikan
-                                            </Table.Th>
-                                            <Table.Th
-                                                width={"w-96"}
-                                                onClick={() => sort("keterangan")}
-                                            >
-                                                Keterangan Manajer Risiko
-                                                {params.field == "keterangan" &&
-                                                    params.direction ==
-                                                        "asc" && <UpIcon />}
-                                                {params.field == "keterangan" &&
-                                                    params.direction ==
-                                                        "desc" && <DownIcon />}
-                                            </Table.Th>
-                                            <Table.Th
-                                                width={"w-96"}
-                                                onClick={() => sort("sebab")}
-                                            >
-                                                Sebab
-                                                {params.field == "sebab" &&
-                                                    params.direction ==
-                                                        "asc" && <UpIcon />}
-                                                {params.field == "sebab" &&
-                                                    params.direction ==
-                                                        "desc" && <DownIcon />}
-                                            </Table.Th>
-                                            <Table.Th
-                                                onClick={() => sort("pic_id")}
-                                            >
-                                                Penanggung Jawab
-                                                {params.field == "pic_id" &&
-                                                    params.direction ==
-                                                        "asc" && <UpIcon />}
-                                                {params.field == "pic_id" &&
-                                                    params.direction ==
-                                                        "desc" && <DownIcon />}
-                                            </Table.Th>
-                                            <Table.Th
-                                                onClick={() => sort("user_id")}
-                                            >
-                                                Pemilik Risiko
-                                                {params.field == "user_id" &&
-                                                    params.direction ==
-                                                        "asc" && <UpIcon />}
-                                                {params.field == "user_id" &&
-                                                    params.direction ==
-                                                        "desc" && <DownIcon />}
-                                            </Table.Th>
-                                        </Table.Tr>
-                                    </Table.Thead>
-                                    <Table.Tbody>
-                                        {riskRegisterKlinis.map(
-                                            (riskregisterklinis1, index) => (
-                                                <tr
-                                                    key={index}
-                                                    className={
-                                                        selectedRow === index
-                                                            ? "bg-sky-100  cursor-pointer"
-                                                            : "cursor-pointer text-red-500 bg-red-50"
-                                                    }
-                                                    onClick={() =>
-                                                        selectRow(index)
-                                                    }
-                                                >
-                                                    <Table.Td>
-                                                        <Badge>
-                                                            {meta.from + index}
-                                                        </Badge>
-                                                    </Table.Td>
-                                                    <Table.Td>
-                                                        {moment(
-                                                            riskregisterklinis1.created_at
-                                                        ).format("YYYY-MM-DD")}
-                                                    </Table.Td>
-
-                                                    <Table.Td>
-                                                        {riskregisterklinis1.requestupdate
-                                                            ? riskregisterklinis1
-                                                                  .requestupdate
-                                                                  .tgl_perbaikan
-                                                            : "Belum Perbaikan"}
-                                                    </Table.Td>
-                                                    <Table.Td>
-                                                        {riskregisterklinis1.requestupdateverificationadmin
-                                                            ? riskregisterklinis1
-                                                                  .requestupdateverificationadmin
-                                                                  .keterangan
-                                                            : "Belum Verifikasi"}
-                                                    </Table.Td>
-                                                    <Table.Td>
-                                                        {
-                                                            riskregisterklinis1.sebab
-                                                        }
-                                                    </Table.Td>
-                                                    <Table.Td>
-                                                        {
-                                                            riskregisterklinis1
-                                                                .pic.name
-                                                        }
-                                                    </Table.Td>
-                                                    <Table.Td>
-                                                        {
-                                                            riskregisterklinis1
-                                                                .user.name
-                                                        }
-                                                    </Table.Td>
-                                                </tr>
-                                            )
+                    <Table>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>#</Table.Th>
+                                
+                                <Table.Th onClick={() => sort("tgl_register")}>
+                                    Tanggal Register
+                                    {params.field == "tgl_register" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
                                         )}
-                                    </Table.Tbody>
-                                </Table>
-                                <Pagination meta={meta} />
-                            </div>
-                        </div>
-                    </div>
+                                    {params.field == "tgl_register" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th>
+                                    Status
+                                    
+                                </Table.Th>
+                                <Table.Th>
+                                    Keterangan Verifikasi
+                                    
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("pernyataan_risiko")}
+                                >
+                                    Pernyataan Risiko
+                                    {params.field == "pernyataan_risiko" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "pernyataan_risiko" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("sebab")}
+                                >
+                                    Sebab
+                                    {params.field == "sebab" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "sebab" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("risk_type_id")}>
+                                    Jenis
+                                    {params.field == "risk_type_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "risk_type_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("risk_variety_id")}
+                                >
+                                    Tipe
+                                    {params.field == "risk_variety_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "risk_variety_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("dampak")}
+                                >
+                                    Efek
+                                    {params.field == "dampak" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "dampak" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd1_dampak")}>
+                                    OSD1 Dampak
+                                    {params.field == "osd1_dampak" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_dampak" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd1_probabilitas")}
+                                >
+                                    OSD1 Probabilitas
+                                    {params.field == "osd1_probabilitas" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_probabilitas" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd1_controllability")}
+                                >
+                                    OSD1 Controllability
+                                    {params.field == "osd1_controllability" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_controllability" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd1_inherent")}>
+                                    OSD1 Inherent
+                                    {params.field == "osd1_inherent" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd1_inherent" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd2_dampak")}>
+                                    OSD2 Dampak
+                                    {params.field == "osd2_dampak" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_dampak" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd2_probabilitas")}
+                                >
+                                    OSD2 Probabilitas
+                                    {params.field == "osd2_probabilitas" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_probabilitas" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    onClick={() => sort("osd2_controllability")}
+                                >
+                                    OSD2 Controllability
+                                    {params.field == "osd2_controllability" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_controllability" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("osd2_inherent")}>
+                                    OSD2 Residu
+                                    {params.field == "osd2_inherent" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "osd2_inherent" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th
+                                    width={"w-96"}
+                                    onClick={() => sort("pengendalian_risiko")}
+                                >
+                                    Pengendalian Risiko
+                                    {params.field == "pengendalian_risiko" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "pengendalian_risiko" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                                <Table.Th onClick={() => sort("user_id")}>
+                                    Pemilik Risiko
+                                    {params.field == "user_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "user_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {riskRegisterKlinis.map(
+                                (riskregisterklinis1, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            selectedRow === index ? "bg-sky-100  cursor-pointer" : ( riskregisterklinis1.riskgrading?.name_bpkp == 'SANGAT TINGGI' ? "cursor-pointer text-white bg-red-500" : ( riskregisterklinis1.riskgrading?.name_bpkp == 'TINGGI' ? "cursor-pointer text-white bg-amber-500" : "cursor-pointer text-black bg-yellow-300"))
+                                        }
+                                        onClick={() => selectRow(index)}
+                                    >
+                                        <Table.Td>
+                                            <Badge>{meta.from + index}</Badge>
+                                        </Table.Td>
+                                        <Table.Td className="whitespace-nowrap">
+                                            {riskregisterklinis1.tgl_register}
+                                        </Table.Td>
+                                        <Table.Td className="whitespace-nowrap">
+                                            {riskregisterklinis1.riskgrading?.name_bpkp}
+                                        </Table.Td>
+                                        <Table.Td className="whitespace-nowrap">
+                                            {riskregisterklinis1.verificationpriorityadmin ? riskregisterklinis1.verificationpriorityadmin.keterangan : 'Belum Verifikasi'}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.pernyataan_risiko
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.sebab}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.risk_variety
+                                                    .name
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.risk_type.name}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.dampak}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd1_dampak}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd1_probabilitas
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd1_controllability
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd1_inherent}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd2_dampak}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd2_probabilitas
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.osd2_controllability
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.osd2_inherent}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {
+                                                riskregisterklinis1.pengendalian_risiko
+                                            }
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.user.name}
+                                        </Table.Td>
+                                    </tr>
+                                )
+                            )}
+                        </Table.Tbody>
+                    </Table>
+                    <Pagination meta={meta} />
                 </div>
             </div>
         </>

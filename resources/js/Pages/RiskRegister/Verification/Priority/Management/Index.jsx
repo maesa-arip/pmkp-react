@@ -188,7 +188,7 @@ export default function Index(props) {
                 isOpenEditDialog={isOpenVerification}
                 setIsOpenEditDialog={setIsOpenVerification}
                 size="max-w-6xl"
-                title="Verifikasi Admin Risiko Prioritas"
+                title="Verifikasi Manajemen Risiko Prioritas"
             >
                 <EditVerification
                     model={state}

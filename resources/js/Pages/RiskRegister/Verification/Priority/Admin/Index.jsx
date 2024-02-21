@@ -217,7 +217,7 @@ export default function Index(props) {
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <p className="flex items-center justify-center py-3 font-semibold text-gray-500 bg-white border rounded-lg">
-                    VERIFIKASI MANAJEMEN (RISIKO PRIORITAS)
+                    VERIFIKASI ADMIN (RISIKO PRIORITAS)
                     </p>
                     <div className="flex items-center justify-between pb-1.5 mt-2 mb-2 rounded-lg">
                         <div className="w-3/4">

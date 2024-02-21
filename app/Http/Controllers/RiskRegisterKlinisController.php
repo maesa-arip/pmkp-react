@@ -202,6 +202,7 @@ class RiskRegisterKlinisController extends Controller
         //     $query->where('name', 'super admin');
         // })->get();
         // Notification::send($user, new RiskRegisterNewNotification($risk));
+            
         return back()->with([
             'type' => 'success',
             'message' => 'Data Risk Register Klinis berhasil disimpan',
@@ -272,8 +273,6 @@ class RiskRegisterKlinisController extends Controller
             $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => 1]);
         }
         $riskRegisterKlinis->update($request->except('home'));
-        
-        
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();

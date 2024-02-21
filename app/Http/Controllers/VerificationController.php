@@ -23,6 +23,7 @@ use App\Models\User;
 use App\Models\VerificationAdmin;
 use App\Models\VerificationManagement;
 use App\Models\VerificationPriorityAdmin;
+use App\Models\VerificationPriorityManagement;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class VerificationController extends Controller
@@ -43,6 +44,7 @@ class VerificationController extends Controller
             ->with('pic')
             ->with('risk_register_histories')
             ->with('user')
+            ->with('riskgrading')
             ->with('requestupdate')
             ->with('requestupdateverificationmanagement')
             ->where($whosLogin)
@@ -98,6 +100,7 @@ class VerificationController extends Controller
             ->with('pic')
             ->with('risk_register_histories')
             ->with('user')
+            ->with('riskgrading')
             ->with('requestupdate')
             ->with('requestupdateverificationadmin')
             ->where($whosLogin)
@@ -169,6 +172,7 @@ class VerificationController extends Controller
             'message' => 'Data Verifikasi Manajemen berhasil disimpan',
         ]);
     }
+
     public function prioritymanagement(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -226,7 +230,6 @@ class VerificationController extends Controller
         // dd($indikatorFitur04s);
         return inertia('RiskRegister/Verification/Priority/Management/Index', ['riskRegisterKlinis' => $riskRegisterKlinis, 'riskCategories' => $riskCategories, 'identificationSources' => $identificationSources, 'locations' => $locations, 'riskVarieties' => $riskVarieties, 'riskTypes' => $riskTypes, 'pics' => $pics, 'impactValues' => $impactValues, 'probabilityValues' => $probabilityValues, 'controlValues' => $controlValues, 'indikatorFitur04s' => $indikatorFitur04s]);
     }
-    
     public function priorityadmin(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -295,6 +298,21 @@ class VerificationController extends Controller
             'keterangan' => $request->keterangan,
         ]);
         VerificationPriorityAdmin::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Data Verifikasi Manajer Risiko berhasil disimpan',
+        ]);
+    }
+    public function storeprioritymanagement(Request $request)
+    {
+        // dd($request->all());
+        $this->validate($request, [
+            'keterangan' => 'required',
+        ]);
+        $atrributes = ([
+            'keterangan' => $request->keterangan,
+        ]);
+        VerificationPriorityManagement::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
         return back()->with([
             'type' => 'success',
             'message' => 'Data Verifikasi Manajer Risiko berhasil disimpan',

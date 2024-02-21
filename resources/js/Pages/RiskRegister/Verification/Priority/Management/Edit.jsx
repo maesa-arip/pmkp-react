@@ -13,12 +13,12 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         tgl_perbaikan: model.requestupdate?.tgl_perbaikan ?? '',
         jam_perbaikan: model.requestupdate?.jam_perbaikan ?? '',
         upaya_pengendalian: model.requestupdate?.upaya_pengendalian ?? '',
-        keterangan: model.requestupdateverificationadmin?.keterangan ?? '',
+        keterangan: model.requestupdateverificationmanagement?.keterangan ?? '',
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("riskregister.storeverificationmanagementoccurring", model.id), {
+        put(route("riskregister.storeverificationmanagementprioority", model.id), {
             data,
             onSuccess: () => {
                 reset(), setIsOpenEditDialog(false);
@@ -37,7 +37,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             tgl_perbaikan: model.requestupdate?.tgl_perbaikan ?? '',
             jam_perbaikan: model.requestupdate?.jam_perbaikan ?? '',
             upaya_pengendalian: model.requestupdate?.upaya_pengendalian ?? '',
-            keterangan: model.requestupdateverificationadmin?.keterangan ?? '',
+            keterangan: model.requestupdateverificationmanagement?.keterangan ?? '',
         });
     }, [model]);
     return (
