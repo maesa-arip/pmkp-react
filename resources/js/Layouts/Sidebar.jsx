@@ -41,17 +41,26 @@ export default function Sidebar() {
     const openExportDialogBPKP = () => {
         setIsOpenExportDialogBPKP(true);
     };
-    const [isOpenExportDialogSedangTerjadi, setIsOpenExportDialogSedangTerjadi] = useState(false);
+    const [
+        isOpenExportDialogSedangTerjadi,
+        setIsOpenExportDialogSedangTerjadi,
+    ] = useState(false);
     const openExportDialogSedangTerjadi = () => {
         setIsOpenExportDialogSedangTerjadi(true);
     };
 
-    const [isOpenExportDialogIKPDataInsiden, setIsOpenExportDialogIKPDataInsiden] = useState(false);
+    const [
+        isOpenExportDialogIKPDataInsiden,
+        setIsOpenExportDialogIKPDataInsiden,
+    ] = useState(false);
     const openExportDialogIKPDataInsiden = () => {
         setIsOpenExportDialogIKPDataInsiden(true);
     };
 
-    const [isOpenExportDialogIKPDataEvaluasi, setIsOpenExportDialogIKPDataEvaluasi] = useState(false);
+    const [
+        isOpenExportDialogIKPDataEvaluasi,
+        setIsOpenExportDialogIKPDataEvaluasi,
+    ] = useState(false);
     const openExportDialogIKPDataEvaluasi = () => {
         setIsOpenExportDialogIKPDataEvaluasi(true);
     };
@@ -126,32 +135,37 @@ export default function Sidebar() {
                     setIsOpenExportDialog={setIsOpenExportDialogSedangTerjadi}
                     size="max-w-4xl"
                     title={
-                        `Pilihan Export SedangTerjadi Risk Register ` + auth.user.name
+                        `Pilihan Export SedangTerjadi Risk Register ` +
+                        auth.user.name
                     }
                 >
-                    <SedangTerjadi setIsOpenAddDialog={setIsOpenExportDialogSedangTerjadi} />
+                    <SedangTerjadi
+                        setIsOpenAddDialog={setIsOpenExportDialogSedangTerjadi}
+                    />
                 </ExportModal>
 
                 <ExportModal
                     isOpenExportDialog={isOpenExportDialogIKPDataInsiden}
                     setIsOpenExportDialog={setIsOpenExportDialogIKPDataInsiden}
                     size="max-w-4xl"
-                    title={
-                        `Pilihan Export IKP Data Insiden ` + auth.user.name
-                    }
+                    title={`Pilihan Export IKP Data Insiden ` + auth.user.name}
                 >
-                    <IKPDataInsiden setIsOpenAddDialog={setIsOpenExportDialogIKPDataInsiden} />
+                    <IKPDataInsiden
+                        setIsOpenAddDialog={setIsOpenExportDialogIKPDataInsiden}
+                    />
                 </ExportModal>
 
                 <ExportModal
                     isOpenExportDialog={isOpenExportDialogIKPDataEvaluasi}
                     setIsOpenExportDialog={setIsOpenExportDialogIKPDataEvaluasi}
                     size="max-w-4xl"
-                    title={
-                        `Pilihan Export IKP Data Evaluasi ` + auth.user.name
-                    }
+                    title={`Pilihan Export IKP Data Evaluasi ` + auth.user.name}
                 >
-                    <IKPDataEvaluasi setIsOpenAddDialog={setIsOpenExportDialogIKPDataEvaluasi} />
+                    <IKPDataEvaluasi
+                        setIsOpenAddDialog={
+                            setIsOpenExportDialogIKPDataEvaluasi
+                        }
+                    />
                 </ExportModal>
 
                 <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -476,7 +490,7 @@ export default function Sidebar() {
                                                                     )
                                                                 }
                                                                 href={route(
-                                                                    "riskRegisterKlinis.index"
+                                                                    "rca.sedangterjadi"
                                                                 )}
                                                                 className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                             >
@@ -519,7 +533,7 @@ export default function Sidebar() {
                                                                     )
                                                                 }
                                                                 href={route(
-                                                                    "riskRegisterNonKlinis.index"
+                                                                    "rca.riskprioritas"
                                                                 )}
                                                                 className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
                                                             >
@@ -809,7 +823,7 @@ export default function Sidebar() {
                     </Dialog>
                 </Transition.Root>
 
-                <aside className="px-2 mx-2">
+                <aside className="px-1 mx-1">
                     <div className="flex items-center justify-between pt-4 pb-4 border-b border-gray-200 md:pt-6">
                         <div className="flex items-center md:hidden shrink-0">
                             <Link href="/">
@@ -859,36 +873,12 @@ export default function Sidebar() {
                             {/* Filters */}
                             <form className="hidden lg:block">
                                 <h3 className="sr-only">Categories</h3>
+                                
                                 <ul
                                     role="list"
-                                    className="py-4 space-y-2 text-sm font-medium text-gray-900 border-b border-gray-200"
+                                    className="px-1 py-4 pt-4 pb-4 my-4 space-y-2 text-sm font-medium text-gray-900 border border-red-500 rounded-lg"
                                 >
-                                    <li>
-                                        <Link
-                                            href={route("dashboard")}
-                                            className="relative flex flex-row items-center text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                        >
-                                            <span className="inline-flex items-center justify-center">
-                                                <svg
-                                                    className="w-5 h-5"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                                                    />
-                                                </svg>
-                                            </span>
-                                            <span className="ml-2 text-sm tracking-wide truncate">
-                                                Dashboard
-                                            </span>
-                                        </Link>
-                                    </li>
+
                                     <li>
                                         <Link
                                             href={route("notifications")}
@@ -966,206 +956,798 @@ export default function Sidebar() {
                                         </Link>
                                     </li>
                                 </ul>
-                                {permission_name.indexOf(
-                                    "lihat data verifikasi"
-                                ) > -1 && (
-                                    <Disclosure
-                                        as="div"
-                                        className="py-6 border-b border-gray-200"
-                                    >
-                                        {({ open }) => (
-                                            <>
-                                                <h3 className="flow-root -my-3">
-                                                    <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
-                                                        <span className="font-medium text-left text-gray-900">
-                                                            Verifikasi
-                                                        </span>
-                                                        <span className="flex items-center ml-6">
-                                                            {open ? (
-                                                                <MinusIcon
-                                                                    className="w-5 h-5"
-                                                                    aria-hidden="true"
-                                                                />
-                                                            ) : (
-                                                                <PlusIcon
-                                                                    className="w-5 h-5"
-                                                                    aria-hidden="true"
-                                                                />
-                                                            )}
-                                                        </span>
-                                                    </Disclosure.Button>
-                                                </h3>
-                                                <Disclosure.Panel className="pt-6">
-                                                    <div className="p-4 space-y-4 border border-red-500 rounded-lg">
-                                                        <h3 className="flow-root -my-3">
-                                                            <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
-                                                                <span className="font-medium text-left text-gray-900">
-                                                                    Sedang
-                                                                    Terjadi
-                                                                </span>
-                                                            </Disclosure.Button>
-                                                        </h3>
-                                                        <Link
-                                                            href={route(
-                                                                "riskregister.verificationmanagementoccurring"
-                                                            )}
-                                                            className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                        >
-                                                            <span className="inline-flex items-center justify-center">
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
-                                                                    stroke="currentColor"
-                                                                    fill="none"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                >
-                                                                    <path
-                                                                        stroke="none"
-                                                                        d="M0 0h24v24H0z"
-                                                                        fill="none"
-                                                                    />
-                                                                    <path d="M13 5h8" />
-                                                                    <path d="M13 9h5" />
-                                                                    <path d="M13 15h8" />
-                                                                    <path d="M13 19h5" />
-                                                                    <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                    <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                </svg>
-                                                            </span>
-                                                            <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                Manajemen
-                                                            </span>
-                                                        </Link>
-                                                        <Link
-                                                            href={route(
-                                                                "riskregister.verificationadminoccurring"
-                                                            )}
-                                                            className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                        >
-                                                            <span className="inline-flex items-center justify-center">
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
-                                                                    stroke="currentColor"
-                                                                    fill="none"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                >
-                                                                    <path
-                                                                        stroke="none"
-                                                                        d="M0 0h24v24H0z"
-                                                                        fill="none"
-                                                                    />
-                                                                    <path d="M13 5h8" />
-                                                                    <path d="M13 9h5" />
-                                                                    <path d="M13 15h8" />
-                                                                    <path d="M13 19h5" />
-                                                                    <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                    <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                </svg>
-                                                            </span>
-                                                            <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                Admin Risiko
-                                                            </span>
-                                                        </Link>
-                                                    </div>
-                                                    <div className="p-4 mt-4 space-y-4 border border-yellow-500 rounded-lg">
-                                                        <h3 className="flow-root -my-3">
-                                                            <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 hover:text-gray-500">
-                                                                <span className="font-medium text-left text-gray-900">
-                                                                    Risiko
-                                                                    Prioritas
-                                                                </span>
-                                                            </Disclosure.Button>
-                                                        </h3>
-                                                        <Link
-                                                            href={route(
-                                                                "riskregister.verificationmanagementpriority"
-                                                            )}
-                                                            className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:text-gray-800 "
-                                                        >
-                                                            <span className="inline-flex items-center justify-center">
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
-                                                                    stroke="currentColor"
-                                                                    fill="none"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                >
-                                                                    <path
-                                                                        stroke="none"
-                                                                        d="M0 0h24v24H0z"
-                                                                        fill="none"
-                                                                    />
-                                                                    <path d="M13 5h8" />
-                                                                    <path d="M13 9h5" />
-                                                                    <path d="M13 15h8" />
-                                                                    <path d="M13 19h5" />
-                                                                    <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                    <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                </svg>
-                                                            </span>
-                                                            <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                Manajemen
-                                                            </span>
-                                                        </Link>
-                                                        <Link
-                                                            href={route(
-                                                                "riskregister.verificationadminpriority"
-                                                            )}
-                                                            className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:text-gray-800"
-                                                        >
-                                                            <span className="inline-flex items-center justify-center">
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
-                                                                    stroke="currentColor"
-                                                                    fill="none"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                >
-                                                                    <path
-                                                                        stroke="none"
-                                                                        d="M0 0h24v24H0z"
-                                                                        fill="none"
-                                                                    />
-                                                                    <path d="M13 5h8" />
-                                                                    <path d="M13 9h5" />
-                                                                    <path d="M13 15h8" />
-                                                                    <path d="M13 19h5" />
-                                                                    <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                    <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-                                                                </svg>
-                                                            </span>
-                                                            <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                Admin Risiko
-                                                            </span>
-                                                        </Link>
-                                                    </div>
-                                                </Disclosure.Panel>
-                                            </>
-                                        )}
-                                    </Disclosure>
-                                )}
                                 <Disclosure
+                                    as="div"
+                                    className="px-1 pt-4 pb-4 border rounded-lg border-sky-500"
+                                >
+                                    {({ open }) => (
+                                        <>
+                                            <h3 className="flow-root -my-3">
+                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 pb-4 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                    <span className="font-medium text-left text-gray-900">
+                                                        Manajemen Risiko
+                                                    </span>
+                                                    <span className="flex items-center ml-6">
+                                                        {open ? (
+                                                            <MinusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        ) : (
+                                                            <PlusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                            </h3>
+
+                                            <Disclosure.Panel className="pt-4">
+                                                {permission_name.indexOf(
+                                                    "lihat data verifikasi"
+                                                ) > -1 && (
+                                                    <>
+                                                        <div className="p-4 space-y-4 border rounded-lg border-sky-500">
+                                                            <h3 className="flow-root -my-3">
+                                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                                    <span className="font-medium text-left text-gray-900">
+                                                                        Verifikasi
+                                                                        Sedang
+                                                                        Terjadi
+                                                                    </span>
+                                                                </Disclosure.Button>
+                                                            </h3>
+                                                            <Link
+                                                                href={route(
+                                                                    "riskregister.verificationmanagementoccurring"
+                                                                )}
+                                                                className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                            >
+                                                                <span className="inline-flex items-center justify-center">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth={
+                                                                            2
+                                                                        }
+                                                                        stroke="currentColor"
+                                                                        fill="none"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                    >
+                                                                        <path
+                                                                            stroke="none"
+                                                                            d="M0 0h24v24H0z"
+                                                                            fill="none"
+                                                                        />
+                                                                        <path d="M13 5h8" />
+                                                                        <path d="M13 9h5" />
+                                                                        <path d="M13 15h8" />
+                                                                        <path d="M13 19h5" />
+                                                                        <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                        <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                    Manajemen
+                                                                </span>
+                                                            </Link>
+                                                            <Link
+                                                                href={route(
+                                                                    "riskregister.verificationadminoccurring"
+                                                                )}
+                                                                className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                            >
+                                                                <span className="inline-flex items-center justify-center">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth={
+                                                                            2
+                                                                        }
+                                                                        stroke="currentColor"
+                                                                        fill="none"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                    >
+                                                                        <path
+                                                                            stroke="none"
+                                                                            d="M0 0h24v24H0z"
+                                                                            fill="none"
+                                                                        />
+                                                                        <path d="M13 5h8" />
+                                                                        <path d="M13 9h5" />
+                                                                        <path d="M13 15h8" />
+                                                                        <path d="M13 19h5" />
+                                                                        <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                        <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                    Admin Risiko
+                                                                </span>
+                                                            </Link>
+                                                        </div>
+                                                        <div className="p-4 mt-4 space-y-4 border rounded-lg border-sky-500">
+                                                            <h3 className="flow-root -my-3">
+                                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 hover:text-gray-500">
+                                                                    <span className="font-medium text-left text-gray-900">
+                                                                        Verifikasi
+                                                                        Risiko
+                                                                        Prioritas
+                                                                    </span>
+                                                                </Disclosure.Button>
+                                                            </h3>
+                                                            <Link
+                                                                href={route(
+                                                                    "riskregister.verificationmanagementpriority"
+                                                                )}
+                                                                className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:text-gray-800 "
+                                                            >
+                                                                <span className="inline-flex items-center justify-center">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth={
+                                                                            2
+                                                                        }
+                                                                        stroke="currentColor"
+                                                                        fill="none"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                    >
+                                                                        <path
+                                                                            stroke="none"
+                                                                            d="M0 0h24v24H0z"
+                                                                            fill="none"
+                                                                        />
+                                                                        <path d="M13 5h8" />
+                                                                        <path d="M13 9h5" />
+                                                                        <path d="M13 15h8" />
+                                                                        <path d="M13 19h5" />
+                                                                        <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                        <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                    Manajemen
+                                                                </span>
+                                                            </Link>
+                                                            <Link
+                                                                href={route(
+                                                                    "riskregister.verificationadminpriority"
+                                                                )}
+                                                                className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:text-gray-800"
+                                                            >
+                                                                <span className="inline-flex items-center justify-center">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                        viewBox="0 0 24 24"
+                                                                        strokeWidth={
+                                                                            2
+                                                                        }
+                                                                        stroke="currentColor"
+                                                                        fill="none"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                    >
+                                                                        <path
+                                                                            stroke="none"
+                                                                            d="M0 0h24v24H0z"
+                                                                            fill="none"
+                                                                        />
+                                                                        <path d="M13 5h8" />
+                                                                        <path d="M13 9h5" />
+                                                                        <path d="M13 15h8" />
+                                                                        <path d="M13 19h5" />
+                                                                        <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                        <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                    </svg>
+                                                                </span>
+                                                                <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                    Admin Risiko
+                                                                </span>
+                                                            </Link>
+                                                        </div>
+                                                    </>
+                                                )}
+                                                <div className="p-4 mt-4 space-y-4 border rounded-lg border-sky-500">
+                                                    <h3 className="flow-root -my-3">
+                                                        <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                            <span className="font-medium text-left text-gray-900">
+                                                                Data Risiko
+                                                            </span>
+                                                        </Disclosure.Button>
+                                                    </h3>
+                                                    <Link
+                                                        href={route(
+                                                            "riskRegisterKlinis.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Risk Register Klinis
+                                                        </span>
+                                                    </Link>
+                                                    <Link
+                                                        href={route(
+                                                            "riskRegisterNonKlinis.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Risk Register Non
+                                                            Klinis
+                                                        </span>
+                                                    </Link>
+                                                </div>
+                                                <div className="p-4 mt-4 space-y-4 border rounded-lg border-sky-500">
+                                                    <h3 className="flow-root -my-3">
+                                                        <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 hover:text-gray-500">
+                                                            <span className="font-medium text-left text-gray-900">
+                                                                Formulir RCA
+                                                            </span>
+                                                        </Disclosure.Button>
+                                                    </h3>
+                                                    <Link
+                                                        href={route(
+                                                            "rca.sedangterjadi"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:text-gray-800 "
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Risiko Sedang
+                                                            Terjadi
+                                                        </span>
+                                                    </Link>
+                                                    <Link
+                                                        href={route(
+                                                            "rca.risikoprioritas"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:text-gray-800"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Risiko Prioritas
+                                                        </span>
+                                                    </Link>
+                                                </div>
+                                                
+                                                <div className="p-4 mt-4 space-y-4 border rounded-lg border-sky-500">
+                                                    <h3 className="flow-root -my-3">
+                                                        <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 hover:text-gray-500">
+                                                            <span className="font-medium text-left text-gray-900">
+                                                                Report Manajemen
+                                                                Risiko.
+                                                            </span>
+                                                        </Disclosure.Button>
+                                                    </h3>
+                                                    <div className="space-y-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogLarsDHPKlinis
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                LARS DHP KLINIS
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogLarsDHPNonKlinis
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                LARS DHP NON
+                                                                KLINIS
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogBPKP
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                BPKP
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    
+                                                </div>
+                                                </div>
+                                            </Disclosure.Panel>
+                                        </>
+                                    )}
+                                </Disclosure>
+                                <Disclosure
+                                    as="div"
+                                    className="px-1 pt-4 pb-4 my-4 border rounded-lg border-fuchsia-500"
+                                >
+                                    {({ open }) => (
+                                        <>
+                                            <h3 className="flow-root -my-3">
+                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 pb-4 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                    <span className="font-medium text-left text-gray-900">
+                                                        IKP.
+                                                    </span>
+                                                    <span className="flex items-center ml-6">
+                                                        {open ? (
+                                                            <MinusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        ) : (
+                                                            <PlusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                            </h3>
+
+                                            <Disclosure.Panel className="">
+                                                
+                                                <div className="p-4 mt-4 space-y-4 border rounded-lg border-fuchsia-500">
+                                                    <h3 className="flow-root -my-3">
+                                                        <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                            <span className="font-medium text-left text-gray-900">
+                                                                Data IKP
+                                                            </span>
+                                                        </Disclosure.Button>
+                                                    </h3>
+                                                    <div className="space-y-4">
+                                                    <Link
+                                                        href={route(
+                                                            "IkpPasien.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            IKP List Insiden
+                                                        </span>
+                                                    </Link>
+                                                </div>
+                                                </div>
+                                                
+                                                <div className="p-4 mt-4 space-y-4 border rounded-lg border-fuchsia-500">
+                                                    <h3 className="flow-root -my-3">
+                                                        <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 hover:text-gray-500">
+                                                            <span className="font-medium text-left text-gray-900">
+                                                                Report IKP
+                                                            </span>
+                                                        </Disclosure.Button>
+                                                    </h3>
+                                                    <div className="space-y-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogIKPDataInsiden
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                DATA INSIDEN
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            openExportDialogIKPDataEvaluasi
+                                                        }
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                                                <path d="M8 11h8v7h-8z" />
+                                                                <path d="M8 15h8" />
+                                                                <path d="M11 11v7" />
+                                                            </svg>
+                                                        </span>
+                                                        {loadingLars ? (
+                                                            <div
+                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
+                                                                disabled={true}
+                                                            >
+                                                                Exporting...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                                DATA EVALUASI
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                                </div>
+                                            </Disclosure.Panel>
+                                        </>
+                                    )}
+                                </Disclosure>
+                                <Disclosure
+                                    as="div"
+                                    className="px-1 pt-4 pb-4 my-4 border rounded-lg border-emerald-500"
+                                >
+                                    {({ open }) => (
+                                        <>
+                                            <h3 className="flow-root -my-3">
+                                                <Disclosure.Button className="flex items-center justify-between w-full py-3 pb-4 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                    <span className="font-medium text-left text-gray-900">
+                                                        MUTU
+                                                    </span>
+                                                    <span className="flex items-center ml-6">
+                                                        {open ? (
+                                                            <MinusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        ) : (
+                                                            <PlusIcon
+                                                                className="w-5 h-5"
+                                                                aria-hidden="true"
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                            </h3>
+
+                                            <Disclosure.Panel className="">
+                                                
+                                                <div className="p-4 mt-4 space-y-4 border rounded-lg border-emerald-500">
+                                                    <h3 className="flow-root -my-3">
+                                                        <Disclosure.Button className="flex items-center justify-between w-full py-3 text-sm text-gray-400 bg-white hover:text-gray-500">
+                                                            <span className="font-medium text-left text-gray-900">
+                                                                Data MUTU.
+                                                            </span>
+                                                        </Disclosure.Button>
+                                                    </h3>
+                                                    <Link
+                                                        href={route(
+                                                            "MutuIndikator.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            Indikator MUTU
+                                                        </span>
+                                                    </Link>
+                                                    <Link
+                                                        href={route(
+                                                            "MutuUnit.index"
+                                                        )}
+                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
+                                                    >
+                                                        <span className="inline-flex items-center justify-center">
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5 icon icon-tabler icon-tabler-list-details"
+                                                                viewBox="0 0 24 24"
+                                                                strokeWidth={2}
+                                                                stroke="currentColor"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            >
+                                                                <path
+                                                                    stroke="none"
+                                                                    d="M0 0h24v24H0z"
+                                                                    fill="none"
+                                                                />
+                                                                <path d="M13 5h8" />
+                                                                <path d="M13 9h5" />
+                                                                <path d="M13 15h8" />
+                                                                <path d="M13 19h5" />
+                                                                <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                                <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                                                            </svg>
+                                                        </span>
+                                                        <span className="flex-wrap ml-2 text-sm tracking-tighter text-left">
+                                                            MUTU Unit
+                                                        </span>
+                                                    </Link>
+                                                </div>
+                                                
+                                            </Disclosure.Panel>
+                                        </>
+                                    )}
+                                </Disclosure>
+                                {/* <Disclosure
                                     as="div"
                                     className="py-6 border-b border-gray-200"
                                 >
@@ -1329,7 +1911,6 @@ export default function Sidebar() {
                                                             IKP List Insiden
                                                         </span>
                                                     </Link>
-                                                    
                                                 </div>
                                             </Disclosure.Panel>
                                         </>
@@ -1696,49 +2277,7 @@ export default function Sidebar() {
                                                             </div>
                                                         )}
                                                     </button>
-                                                    {/* <button
-                                                        type="button"
-                                                        onClick={
-                                                            openExportDialogSedangTerjadi
-                                                        }
-                                                        className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-gray-100"
-                                                    >
-                                                        <span className="inline-flex items-center justify-center">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                className="w-5 h-5 icon icon-tabler icon-tabler-file-spreadsheet"
-                                                                viewBox="0 0 24 24"
-                                                                strokeWidth={2}
-                                                                stroke="currentColor"
-                                                                fill="none"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            >
-                                                                <path
-                                                                    stroke="none"
-                                                                    d="M0 0h24v24H0z"
-                                                                    fill="none"
-                                                                />
-                                                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-                                                                <path d="M8 11h8v7h-8z" />
-                                                                <path d="M8 15h8" />
-                                                                <path d="M11 11v7" />
-                                                            </svg>
-                                                        </span>
-                                                        {loadingLars ? (
-                                                            <div
-                                                                className="ml-2 text-sm tracking-wide truncate cursor-not-allowed"
-                                                                disabled={true}
-                                                            >
-                                                                Exporting...
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                RISIKO SEDANG TERJADI
-                                                            </div>
-                                                        )}
-                                                    </button> */}
+                                                    
                                                 </div>
                                             </Disclosure.Panel>
                                         </>
@@ -1858,15 +2397,14 @@ export default function Sidebar() {
                                                             </div>
                                                         )}
                                                     </button>
-                                                    
                                                 </div>
                                             </Disclosure.Panel>
                                         </>
                                     )}
-                                </Disclosure>
+                                </Disclosure> */}
                                 <ul
                                     role="list"
-                                    className="py-4 space-y-2 text-sm font-medium text-gray-900 border-b border-gray-200"
+                                    className="px-1 py-4 pt-4 pb-4 my-4 space-y-2 text-sm font-medium text-gray-900 border rounded-lg"
                                 >
                                     <li>
                                         <Link
