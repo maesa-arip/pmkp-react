@@ -276,9 +276,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         GROUP_CONCAT(sa.name) as picsname,
         risk_registers.sebab,
         CASE
-            WHEN risk_registers.tipe_id = 1 THEN CONCAT("RK.", risk_categories.kode,".",locations.id,".", RIGHT(YEAR(risk_registers.tgl_register), 2),".",risk_registers.id)
-            WHEN risk_registers.tipe_id = 2 THEN CONCAT("RNK.", risk_categories.kode,".",locations.id,".", RIGHT(YEAR(risk_registers.tgl_register), 2),".",risk_registers.id)
-        END AS Kode,
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT("RSO.", RIGHT(YEAR(risk_registers.tgl_register), 2),".02.B.37.",risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT("ROO.", RIGHT(YEAR(risk_registers.tgl_register), 2),".02.B.37.",risk_registers.id)
+            END AS Kode,
         risk_registers.resiko,
         risk_registers.dampak,
         risk_registers.pernyataan_risiko,
@@ -1039,10 +1039,9 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(
-                DB::raw("
-                CASE
-                WHEN risk_registers.tipe_id = 1 THEN CONCAT('RK.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
-                WHEN risk_registers.tipe_id = 2 THEN CONCAT('RNK.','.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
+                DB::raw("CASE
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
             END AS Kode"),
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
@@ -2239,9 +2238,9 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(DB::raw("
             CASE
-            WHEN risk_registers.tipe_id = 1 THEN CONCAT('RK.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
-            WHEN risk_registers.tipe_id = 2 THEN CONCAT('RNK.','.', risk_categories.kode,'.',locations.id,'.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.',risk_registers.id)
-        END AS Kode"), 'risk_registers.denum', 'risk_registers.num', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+            END AS Kode"), 'risk_registers.denum', 'risk_registers.num', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
             ->where('tipe_id', 1)
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
