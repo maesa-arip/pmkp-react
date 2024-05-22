@@ -813,6 +813,17 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
+                                <Table.Th onClick={() => sort("user_id")}>
+                                    Grading
+                                    {params.field == "user_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "user_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
@@ -823,7 +834,19 @@ export default function Index(props) {
                                         className={
                                             selectedRow === index
                                                 ? "bg-sky-100  cursor-pointer"
-                                                : "cursor-pointer"
+                                                : riskregisterklinis1.riskgrading?.name ==
+                                                  "Extreme"
+                                                ? "cursor-pointer text-white bg-red-500"
+                                                : riskregisterklinis1.riskgrading?.name ==
+                                                  "High"
+                                                ? "cursor-pointer text-white bg-amber-600"
+                                                : riskregisterklinis1.riskgrading?.name ==
+                                                  "Moderate"
+                                                ? "cursor-pointer text-yellow-950 bg-yellow-400"
+                                                : riskregisterklinis1.riskgrading?.name ==
+                                                  "Low"
+                                                ? "cursor-pointer text-white bg-sky-500"
+                                                : "cursor-pointer text-white bg-sky-500"
                                         }
                                         onClick={() => selectRow(index)}
                                     >
@@ -890,7 +913,10 @@ export default function Index(props) {
                                             }
                                         </Table.Td>
                                         <Table.Td>
-                                            {riskregisterklinis1.user.name}
+                                            {riskregisterklinis1.user?.name}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.riskgrading?.name}
                                         </Table.Td>
                                     </tr>
                                 )

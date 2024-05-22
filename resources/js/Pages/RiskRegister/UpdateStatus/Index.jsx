@@ -400,7 +400,7 @@ export default function Index(props) {
                                                     <Table.Td>
                                                         {
                                                             riskregisterklinis1
-                                                                .pic.name
+                                                                .pic?.name
                                                         }
                                                     </Table.Td>
                                                     <Table.Td>

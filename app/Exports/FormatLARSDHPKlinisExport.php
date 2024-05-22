@@ -756,6 +756,57 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional5Styles);
 
+                // KOLOM K
+                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional->addCondition(14);
+                $conditional->setText('EXTREME');
+                $conditional->getStyle()->applyFromArray($styleST);
+                $conditionalStyles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
+                $conditionalStyles[] = $conditional;
+                $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditionalStyles);
+
+                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional2->addCondition(9);
+                $conditional2->setText('HIGH');
+                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
+                $conditional2Styles[] = $conditional2;
+                $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional2Styles);
+
+                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional3->addCondition(4);
+                $conditional3->setText('MODERATE');
+                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
+                $conditional3Styles[] = $conditional3;
+                $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional3Styles);
+                
+                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional5->addCondition(1);
+                $conditional5->setText('SANGAT RENDAH');
+                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
+                $conditional5Styles[] = $conditional5;
+                $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional5Styles);
+
+                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // $conditional4->addCondition(2);
+                $conditional4->setText('LOW');
+                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
+                $conditional4Styles[] = $conditional4;
+                $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional4Styles);
+
                 // KOLOM O
                 // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
@@ -1416,6 +1467,8 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $highestColumn = $event->sheet->getHighestColumn();
                 $range = 'A1:' . $highestColumn . $highestRow;
                 $rangeA = 'A3:' . 'A' . $highestRow;
+                $rangeE = 'E3:' . 'E' . $highestRow;
+                $rangeF = 'F3:' . 'F' . $highestRow;
                 $rangeK = 'K3:' . 'K' . $highestRow;
                 $rangeEI = 'E3:' . 'I' . $highestRow;
 
@@ -1598,6 +1651,98 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         ],
                     ],
                 ];
+                // KOLOM K
+                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional->addCondition(5);
+                $conditional->getStyle()->applyFromArray($styleST);
+                $conditionalStyles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                $conditionalStyles[] = $conditional;
+                $event->sheet->getStyle($rangeE)->setConditionalStyles($conditionalStyles);
+
+                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional2->addCondition(4);
+                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                $conditional2Styles[] = $conditional2;
+                $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional2Styles);
+
+                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional3->addCondition(3);
+                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                $conditional3Styles[] = $conditional3;
+                $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional3Styles);
+
+                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional4->addCondition(2);
+                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                $conditional4Styles[] = $conditional4;
+                $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional4Styles);
+
+                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional5->addCondition(1);
+                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                $conditional5Styles[] = $conditional5;
+                $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional5Styles);
+
+
+                // KOLOM L
+                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional->addCondition(5);
+                $conditional->getStyle()->applyFromArray($styleST);
+                $conditionalStyles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                $conditionalStyles[] = $conditional;
+                $event->sheet->getStyle($rangeF)->setConditionalStyles($conditionalStyles);
+
+                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional2->addCondition(4);
+                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                $conditional2Styles[] = $conditional2;
+                $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional2Styles);
+
+                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional3->addCondition(3);
+                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                $conditional3Styles[] = $conditional3;
+                $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional3Styles);
+
+                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional4->addCondition(2);
+                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                $conditional4Styles[] = $conditional4;
+                $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional4Styles);
+
+                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                $conditional5->addCondition(1);
+                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                $conditional5Styles[] = $conditional5;
+                $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional5Styles);
                 // KOLOM K
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);

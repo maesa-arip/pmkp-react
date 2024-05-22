@@ -51,6 +51,7 @@ class RiskRegisterNonKlinisController extends Controller
             ->with('jenis_sebab')
             ->with('pic')
             ->with('user')
+            ->with('riskgrading')
             ->with('formulirrca')
             ->with('fgdinherent')
             ->with('fgdresidual')

@@ -55,6 +55,7 @@ export default function Index(props) {
         filtered,
         attributes,
     } = props.riskRegisterKlinis;
+    // console.log(riskRegisterKlinis)
     const { auth } = usePage().props;
     const riskRegisterCount = props.riskRegisterCount;
     const riskRegisterPengendalianCount = props.riskRegisterPengendalianCount;
@@ -167,13 +168,17 @@ export default function Index(props) {
         });
     };
     const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRisk, setSelectedRisk] = useState(null);
     const [editingRow, setEditingRow] = useState(null); // Use this state to track the row being edited
-    const selectRow = (index) => {
+    const selectRow = (index,riskregisterklinis1) => {
+        // console.log(index,riskregisterklinis1)
         if (selectedRow === index) {
             setSelectedRow(null);
         } else {
             setSelectedRow(index);
+            setSelectedRisk(riskregisterklinis1);
         }
+        // console.log(setSelectedRisk)
     };
     const openDestroyDialog = (row) => {
         setState(row);
@@ -813,6 +818,17 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
+                                <Table.Th onClick={() => sort("user_id")}>
+                                    GRADING
+                                    {params.field == "user_id" &&
+                                        params.direction == "asc" && (
+                                            <UpIcon/>
+                                        )}
+                                    {params.field == "user_id" &&
+                                        params.direction == "desc" && (
+                                            <DownIcon />
+                                        )}
+                                </Table.Th>
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
@@ -823,7 +839,19 @@ export default function Index(props) {
                                         className={
                                             selectedRow === index
                                                 ? "bg-sky-100  cursor-pointer"
-                                                : "cursor-pointer"
+                                                : riskregisterklinis1.riskgrading?.name_nonklinis_pergub ==
+                                                  "EKSTRIM"
+                                                ? "cursor-pointer text-white bg-red-500"
+                                                : riskregisterklinis1.riskgrading?.name_nonklinis_pergub ==
+                                                  "TINGGI"
+                                                ? "cursor-pointer text-white bg-amber-600"
+                                                : riskregisterklinis1.riskgrading?.name_nonklinis_pergub ==
+                                                  "SEDANG"
+                                                ? "cursor-pointer text-yellow-950 bg-yellow-400"
+                                                : riskregisterklinis1.riskgrading?.name_nonklinis_pergub ==
+                                                  "RENDAH"
+                                                ? "cursor-pointer text-white bg-sky-500"
+                                                : "cursor-pointer text-white bg-green-500"
                                         }
                                         onClick={() => selectRow(index)}
                                     >
@@ -890,7 +918,10 @@ export default function Index(props) {
                                             }
                                         </Table.Td>
                                         <Table.Td>
-                                            {riskregisterklinis1.user.name}
+                                            {riskregisterklinis1.user?.name}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {riskregisterklinis1.riskgrading?.name_nonklinis_pergub}
                                         </Table.Td>
                                     </tr>
                                 )

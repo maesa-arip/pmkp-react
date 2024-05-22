@@ -56,7 +56,7 @@ export default function Form({
     });
     const [selectedVariety, setSelectedVariety] = useState(() => {
         if (model) {
-            return ShouldMap.riskVarieties.find(
+            return ShouldMap.riskVarieties.find( 
                 (x) => x.id === model.risk_variety_id
             );
         }

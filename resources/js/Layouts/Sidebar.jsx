@@ -692,13 +692,11 @@ export default function Sidebar() {
                                                                     </div>
                                                                 ) : (
                                                                     <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                        LARS DHP
-                                                                        NON
-                                                                        KLINIS
+                                                                        PERGUB NON KLINIS
                                                                     </div>
                                                                 )}
                                                             </button>
-                                                            <button
+                                                            {/* <button
                                                                 type="button"
                                                                 onClick={
                                                                     openExportDialogBPKP
@@ -744,7 +742,7 @@ export default function Sidebar() {
                                                                         BPKP
                                                                     </div>
                                                                 )}
-                                                            </button>
+                                                            </button> */}
                                                         </div>
                                                     </Disclosure.Panel>
                                                 </>
@@ -1405,12 +1403,11 @@ export default function Sidebar() {
                                                             </div>
                                                         ) : (
                                                             <div className="flex-wrap ml-2 text-sm tracking-tighter text-left">
-                                                                LARS DHP NON
-                                                                KLINIS
+                                                                PERGUB NON KLINIS
                                                             </div>
                                                         )}
                                                     </button>
-                                                    <button
+                                                    {/* <button
                                                         type="button"
                                                         onClick={
                                                             openExportDialogBPKP
@@ -1452,7 +1449,7 @@ export default function Sidebar() {
                                                                 BPKP
                                                             </div>
                                                         )}
-                                                    </button>
+                                                    </button> */}
                                                     
                                                 </div>
                                                 </div>
