@@ -1403,7 +1403,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             //     'risk_registers.osd1_probabilitas',
             //     'risk_registers.osd1_controllability'
             // )
-            ->whereIn('risk_gradings.name',['Extreme','High','Moderate'])
+            ->whereIn('risk_gradings.name',['Extreme','High'])
             ->where('tipe_id', 1)
             ->where($whosLogin)
             ->orderBy('Peringkat1', 'ASC');

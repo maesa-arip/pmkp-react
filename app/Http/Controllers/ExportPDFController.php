@@ -103,7 +103,7 @@ class ExportPDFController extends Controller
         $pdf->setPaper('letter')->setOrientation('portrait');
         return $pdf->stream('mutu_indikator'.$startDate.'.pdf');
     }
-    public function printFormInvestigasiSederhana(Request $request, $code)
+    public function printIkpForm(Request $request, $code)
     {
         $whosLogin = auth()->user()->can('lihat semua data ikp') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $data = IkpPasien::query()->with('penanggung')->with('jenis_insiden')->with('tipe_insiden')
@@ -132,6 +132,43 @@ class ExportPDFController extends Controller
         $IkpPenanggung = IkpPenanggung::get();
         $IkpLokasi = IkpLokasi::get();
         $IkpPenindak = IkpPenindak::get();
+        // return view('PDF/FormInvestigasiSederhana', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
+        $pdf = PDF::loadView('PDF/FormIKP', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('page-width', '215.9')->setOption('page-height', '330')->setOrientation('portrait');
+        return $pdf->stream('mutu_indikator.pdf');
+    }
+    public function printFormInvestigasiSederhana(Request $request, $code)
+    {
+        $whosLogin = auth()->user()->can('lihat semua data ikp') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $data = IkpPasien::query()->with('penanggung')->with('jenis_insiden')->with('tipe_insiden')
+        ->with('spesialisasi')
+        ->with('dampak')
+        ->with('probabilitas')
+        ->with('pelapor')
+        ->with('grup_layanan')
+        ->with('lokasi')
+        ->with('penindak')
+        ->with('riskgrading')
+        ->with('pic')
+        ->with('ikp_hasil')
+        ->with('kronologis')
+        ->with('hasil_grading')
+        ->with('jenis_insiden')
+        ->where('code',$code)
+        ->where($whosLogin)->first();
+        // dd($data);
+        $IkpJenisInsiden = IkpJenisInsiden::get();
+        $IkpTipeInsiden = IkpTipeInsiden::get();
+        $IkpSpesialisasi = IkpSpesialisasi::get();
+        $IkpDampak = IkpDampak::get();
+        $IkpProbabilitas = IkpProbabilitas::get();
+        $IkpPelapor = IkpPelapor::get();
+        $IkpGrupLayanan = IkpGruplayanan::get();
+        $IkpPenanggung = IkpPenanggung::get();
+        $IkpLokasi = IkpLokasi::get();
+        $IkpPenindak = IkpPenindak::get();
+        // dd($data);
         // return view('PDF/FormInvestigasiSederhana', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
         $pdf = PDF::loadView('PDF/FormInvestigasiSederhana', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
         $pdf->setOption('enable-local-file-access', true);

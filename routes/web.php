@@ -170,6 +170,7 @@ Route::middleware('auth')->group(function () {
 
     Route::match(['GET', 'POST'], '/print-pdsa', [ExportPDFController::class, 'printPDSA'])->name('export.printPDSA');
     Route::match(['GET', 'POST'], '/print-mutu-indikator', [ExportPDFController::class, 'printMutuIndikator'])->name('export.printMutuIndikator');
+    Route::match(['GET', 'POST'], '/print-ikp-form/{code}', [ExportPDFController::class, 'printIkpForm'])->name('export.printIkpForm');
     Route::match(['GET', 'POST'], '/print-investigasi-sederhana/{code}', [ExportPDFController::class, 'printFormInvestigasiSederhana'])->name('export.printFormInvestigasiSederhana');
     // Route::match(['GET', 'POST'], '/riskregisterklinisbpkp', [ExportController::class, 'riskregisterklinisbpkp']);
     // Route::match(['GET', 'POST'], '/riskregisternonklinisbpkp', [ExportController::class, 'riskregisternonklinisbpkp']);

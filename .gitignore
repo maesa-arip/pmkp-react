@@ -3,6 +3,7 @@
 # /public/build
 /public/hot
 /resources/views/PDF
+/config/snappy.php
 /public/storage
 /storage/*.key
 /vendor

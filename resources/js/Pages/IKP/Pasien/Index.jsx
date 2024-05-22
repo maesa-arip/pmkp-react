@@ -150,6 +150,7 @@ export default function Index(props) {
     ] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [isOpenPrintDialog, setIsOpenPrintDialog] = useState(false);
+    const [isOpenPrintHasilDialog, setIsOpenPrintHasilDialog] = useState(false);
     const [state, setState] = useState([]);
 
     const openAddDialog = () => {
@@ -188,14 +189,22 @@ export default function Index(props) {
         setEditingRow(row);
         setIsOpenPrintDialog(true);
     };
+    const openPrintHasilDialog = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenPrintHasilDialog(true);
+    };
 
     const printIkpPasien = (row) => {
         setState(row);
-        window.open(route("export.printFormInvestigasiSederhana", state.code));
+        window.open(route("export.printIkpForm", state.code));
         setIsOpenPrintDialog(false);
-        // router.get(route("export.printFormInvestigasiSederhana", state.id), {
-        //     onSuccess: () => setIsOpenDestroyDialog(false),
-        // });
+
+    };
+    const printIkpHasilPasien = (row) => {
+        setState(row);
+        window.open(route("export.printFormInvestigasiSederhana", state.code));
+        setIsOpenPrintHasilDialog(false);
     };
     return (
         <>
@@ -260,11 +269,22 @@ export default function Index(props) {
                     Print
                 </SecondaryButton>
             </DestroyModal>
+            <DestroyModal
+                isOpenDestroyDialog={isOpenPrintHasilDialog}
+                setIsOpenDestroyDialog={setIsOpenPrintHasilDialog}
+                size="max-w-4xl"
+                title="Print Hasil Investigasi"
+                warning="Yakin print data ini ?"
+            >
+                <SecondaryButton className="ml-2" onClick={printIkpHasilPasien}>
+                    Print
+                </SecondaryButton>
+            </DestroyModal>
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between mb-2">
                         <div className="w-2/3">
-                            <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
+                            <div className="flex items-center justify-start mt-2 mb-0 mr-4 overflow-auto whitespace-nowrap gap-x-1">
                                 <ThirdButton
                                     type="button"
                                     color="sky"
@@ -425,7 +445,7 @@ export default function Index(props) {
                                 </ThirdButton>
                                 <ThirdButton
                                     color={
-                                        selectedRow === null ? "gray" : "yellow"
+                                        selectedRow === null ? "gray" : "teal"
                                     }
                                     type="button"
                                     className={`${
@@ -445,6 +465,52 @@ export default function Index(props) {
                                     disabled={selectedRow === null}
                                 >
                                     Print Laporan_IKP
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" />
+                                        <path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" />
+                                        <path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+                                        <path d="M8 11h4" />
+                                        <path d="M8 15h3" />
+                                        <path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" />
+                                        <path d="M18.5 19.5l2.5 2.5" />
+                                    </svg>
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "sky"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedIkp =
+                                                IkpPasien[selectedRow];
+                                            openPrintHasilDialog(selectedIkp);
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    Print Hasil Investigasi
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search"
