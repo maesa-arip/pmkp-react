@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+{{-- <link href="/var/www/pmkp-react/public/css/app.css" rel="stylesheet" type="text/css" /> --}}
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<link href='http://fonts.googleapis.com/css?family=Times' rel='stylesheet' type='text/css'>
+
     <title>Mutu Indikator</title>
 </head>
 <style>
@@ -14,6 +18,7 @@
         font-family: "Times New Roman", Times, serif;
         font-size: 19px;
     }
+
 
     table,
     th,
@@ -130,7 +135,7 @@
                     <td></td>
                     <td></td>
                     <td class="flex text-right">
-                        @if ($data->umur_tahun == 0 && $data->umur_bulan <= 1)√ @else {!! $rectangle !!} @endif
+                        @if ($data->umur_tahun == 0 && $data->umur_bulan <= 1)v @else {!! $rectangle !!} @endif
                         </td>
                     <td></td>
                     <td>0-1 bulan</td>
@@ -140,40 +145,40 @@
                     <td></td>
                     <td>@if ($data->umur_tahun == 0 && $data->umur_bulan > 1)√ @else {!! $rectangle !!} @endif</td>
                     <td></td>
-                    <td>> 1 bulan – 1 tahun</td>
+                    <td>> 1 bulan - 1 tahun</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td class="flex text-right">@if ($data->umur_tahun >= 1 && $data->umur_tahun <= 5)√ @else {!! $rectangle !!} @endif</td>
+                    <td class="flex text-right">@if ($data->umur_tahun >= 1 && $data->umur_tahun <= 5)v @else {!! $rectangle !!} @endif</td>
                     <td></td>
-                    <td>> 1 tahun – 5 tahun</td>
+                    <td>> 1 tahun - 5 tahun</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td class="flex text-right">@if ($data->umur_tahun > 5 && $data->umur_tahun <= 15)√ @else {!! $rectangle !!} @endif</td>
+                    <td class="flex text-right">@if ($data->umur_tahun > 5 && $data->umur_tahun <= 15)v @else {!! $rectangle !!} @endif</td>
                     <td></td>
-                    <td>> 5 tahun – 15 tahun</td>
+                    <td>> 5 tahun - 15 tahun</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td class="flex text-right">@if ($data->umur_tahun > 15 && $data->umur_tahun <= 30)√ @else {!! $rectangle !!} @endif</td>
+                    <td class="flex text-right">@if ($data->umur_tahun > 15 && $data->umur_tahun <= 30)v @else {!! $rectangle !!} @endif</td>
                     <td></td>
-                    <td>> 15 tahun – 30 tahun</td>
+                    <td>> 15 tahun - 30 tahun</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td class="flex text-right">@if ($data->umur_tahun > 30 && $data->umur_tahun <= 65)√ @else {!! $rectangle !!} @endif</td>
+                    <td class="flex text-right">@if ($data->umur_tahun > 30 && $data->umur_tahun <= 65)v @else {!! $rectangle !!} @endif</td>
                     <td></td>
-                    <td>> 30 tahun – 65tahun</td>
+                    <td>> 30 tahun - 65tahun</td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td class="flex text-right">@if ($data->umur_tahun > 65)√ @else {!! $rectangle !!} @endif</td>
+                    <td class="flex text-right">@if ($data->umur_tahun > 65)v @else {!! $rectangle !!} @endif</td>
                     <td></td>
                     <td>> 65 tahun</td>
                 </tr>
@@ -214,7 +219,7 @@
                     <td rowspan="1" class="px-1 py-1 font-normal ">:</td>
                     <td rowspan="1" class="px-1 py-1 font-normal ">
                         @if ($data->jeniskelamin == 1)
-                            √
+                            v
                         @else
                             {!! $rectangle !!}
                         @endif
@@ -224,7 +229,7 @@
                     </td>
                     <td class="pl-10">
                         @if ($data->jeniskelamin == 2)
-                            √
+                            v
                         @else
                             {!! $rectangle !!}
                         @endif
@@ -273,7 +278,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_penanggung_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -286,7 +291,7 @@
                             {{-- <td></td> --}}
                             <td>
                                 @if ($item->id == $data->ikp_penanggung_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -472,7 +477,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_jenis_insiden_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -495,7 +500,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td>√</td>
+                        <td>v</td>
                         <td rowspan="1" class="px-1 py-1 font-normal ">Kejadian Sentinel (Sentinel Event)</td>
                     </tr>
                     <tr>
@@ -528,7 +533,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_spesialisasi_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -555,7 +560,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_dampak_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -582,7 +587,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_probabilitas_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -609,7 +614,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_pelapor_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -634,7 +639,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_gruplayanan_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -720,7 +725,7 @@
                             <td></td>
                             <td>
                                 @if ($item->id == $data->ikp_pelapor_id)
-                                    √
+                                    v
                                 @else
                                     {!! $rectangle !!}
                                 @endif
@@ -744,7 +749,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td>√</td>
+                        <td>v</td>
                         <td rowspan="1" class="px-1 py-1 font-normal ">Tidak
                         </td>
                     </tr>
@@ -883,7 +888,7 @@
                     <td></td>
                     <td class="">
                         @if ($data->riskgrading->name_ikp == 'Rendah')
-                            √
+                            v
                         @else
                             {!! $rectangle !!}
                         @endif
@@ -894,7 +899,7 @@
                     </td>
                     <td class="pl-10">
                         @if ($data->riskgrading->name_ikp == 'Moderat')
-                            √
+                            v
                         @else
                             {!! $rectangle !!}
                         @endif
@@ -905,7 +910,7 @@
                     </td>
                     <td class="pl-10">
                         @if ($data->riskgrading->name_ikp == 'Tinggi')
-                            √
+                            v
                         @else
                             {!! $rectangle !!}
                         @endif
@@ -916,7 +921,7 @@
                     </td>
                     <td class="pl-10">
                         @if ($data->riskgrading->name_ikp == 'Ekstrim')
-                            √
+                            v
                         @else
                             {!! $rectangle !!}
                         @endif
@@ -992,7 +997,7 @@
                     <td class="" colspan="1"></td>
                     <td class="pr-4 " colspan="1">4.</td>
                     <td rowspan="1" colspan="4" class="px-1 font-normal ">Kejadian Sentinel (Sentinel
-                        Event) adalah “suatu KTD” yang mengakibatkan kematian atau cidera yang serius yang
+                        Event) adalah "suatu KTD" yang mengakibatkan kematian atau cidera yang serius yang
                         biasanya dipakai untuk kejadian yang sangat tidak diharapkan atau tidak dapat diterima.
                         Contoh : amputasi pada bagian tubuh yang salah.
                     </td>

@@ -1,0 +1,1 @@
+import{a as o}from"./app-5aa17113.js";import{P as t,M as m}from"./MyDocument-44ba55c9.js";import"./inheritsLoose-c4a937f7.js";import"./createClass-1dd8160f.js";function i(){return o(t,{document:o(m,{})})}export{i as default};

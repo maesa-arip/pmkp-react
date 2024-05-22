@@ -49,6 +49,7 @@ const DownIcon = () => (
 
 export default function Index(props) {
     const { data: IkpPasien, meta, filtered, attributes } = props.IkpPasien;
+    // console.log(IkpPasien)
     let ShouldMap = {
         IkpJenisInsiden: props.IkpJenisInsiden,
         IkpTipeInsiden: props.IkpTipeInsiden,
@@ -143,7 +144,10 @@ export default function Index(props) {
     const [editingRow, setEditingRow] = useState(null); // Use this state to track the row being edited
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
-    const [isOpenEditDialogHasilInvestigasi, setIsOpenEditDialogHasilInvestigasi] = useState(false);
+    const [
+        isOpenEditDialogHasilInvestigasi,
+        setIsOpenEditDialogHasilInvestigasi,
+    ] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [isOpenPrintDialog, setIsOpenPrintDialog] = useState(false);
     const [state, setState] = useState([]);
@@ -173,7 +177,7 @@ export default function Index(props) {
             onSuccess: () => setIsOpenDestroyDialog(false),
         });
     };
-    
+
     const openEditDialogHasilInvestigasi = (row) => {
         setState(row);
         setEditingRow(row);
@@ -259,7 +263,7 @@ export default function Index(props) {
             <div className="px-2 py-12 bg-white border rounded-xl">
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between mb-2">
-                        <div className="w-1/2">
+                        <div className="w-2/3">
                             <div className="flex items-center justify-start mt-2 mb-0 gap-x-1">
                                 <ThirdButton
                                     type="button"
@@ -289,9 +293,7 @@ export default function Index(props) {
                                 </ThirdButton>
                                 <ThirdButton
                                     color={
-                                        selectedRow === null
-                                            ? "gray"
-                                            : "blue"
+                                        selectedRow === null ? "gray" : "blue"
                                     }
                                     type="button"
                                     className={`${
@@ -387,13 +389,39 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedIkp =
                                                 IkpPasien[selectedRow];
-                                            openEditDialogHasilInvestigasi(selectedIkp);
+                                            openEditDialogHasilInvestigasi(
+                                                selectedIkp
+                                            );
                                         }
                                     }}
                                     disabled={selectedRow === null}
                                 >
                                     Hasil Investigasi
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search" width={24} height={24} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" /><path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" /><path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M8 11h4" /><path d="M8 15h3" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" />
+                                        <path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" />
+                                        <path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+                                        <path d="M8 11h4" />
+                                        <path d="M8 15h3" />
+                                        <path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" />
+                                        <path d="M18.5 19.5l2.5 2.5" />
+                                    </svg>
                                 </ThirdButton>
                                 <ThirdButton
                                     color={
@@ -410,18 +438,42 @@ export default function Index(props) {
                                         if (selectedRow !== null) {
                                             const selectedIkp =
                                                 IkpPasien[selectedRow];
-                                                openPrintDialog(selectedIkp);
+                                            openPrintDialog(selectedIkp);
                                             // printIkpPasien(selectedIkp);
                                         }
                                     }}
                                     disabled={selectedRow === null}
                                 >
-                                    Print
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search" width={24} height={24} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" /><path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" /><path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M8 11h4" /><path d="M8 15h3" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>
+                                    Print Laporan_IKP
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4 ml-2 icon icon-tabler icon-tabler-report-search"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2}
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path
+                                            stroke="none"
+                                            d="M0 0h24v24H0z"
+                                            fill="none"
+                                        />
+                                        <path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" />
+                                        <path d="M18 12v-5a2 2 0 0 0 -2 -2h-2" />
+                                        <path d="M8 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+                                        <path d="M8 11h4" />
+                                        <path d="M8 15h3" />
+                                        <path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" />
+                                        <path d="M18.5 19.5l2.5 2.5" />
+                                    </svg>
                                 </ThirdButton>
                             </div>
                         </div>
-                        <div className="w-1/2">
+                        <div className="w-1/3">
                             <div className="flex items-center justify-end mt-2 mb-0 gap-x-1">
                                 <select
                                     name="load"
@@ -515,7 +567,7 @@ export default function Index(props) {
                                             <DownIcon />
                                         )}
                                 </Table.Th>
-                                
+
                                 <Table.Th
                                     onClick={() => sort("ikp_penanggung_id")}
                                 >
@@ -572,19 +624,26 @@ export default function Index(props) {
                                         <Badge>{meta.from + index}</Badge>
                                     </Table.Td>
                                     <Table.Td>
-                                        {moment(IkpPasien.tanggal_insiden).format("DD-MM-YYYY")} ({moment(IkpPasien.tanggal_insiden).format("hh:mm")})
+                                        {moment(
+                                            IkpPasien.tanggal_insiden
+                                        ).format("DD-MM-YYYY")}{" "}
+                                        (
+                                        {moment(
+                                            IkpPasien.tanggal_insiden
+                                        ).format("hh:mm")}
+                                        )
                                     </Table.Td>
                                     <Table.Td className="whitespace-nowrap">
-                                        {moment(IkpPasien.created_at).format("DD-MM-YYYY")}
+                                        {moment(IkpPasien.created_at).format(
+                                            "DD-MM-YYYY"
+                                        )}
                                     </Table.Td>
-                                    <Table.Td>
-                                        {IkpPasien.lokasi_name}
-                                    </Table.Td>
+                                    <Table.Td>{IkpPasien.lokasi_name}</Table.Td>
                                     <Table.Td>
                                         {IkpPasien.jenis_insiden?.name}
                                     </Table.Td>
                                     <Table.Td>{IkpPasien.insiden}</Table.Td>
-                                    
+
                                     <Table.Td>
                                         {IkpPasien.penanggung?.name}
                                     </Table.Td>
@@ -592,7 +651,14 @@ export default function Index(props) {
                                         {IkpPasien.riskgrading?.name_ikp}
                                     </Table.Td>
                                     <Table.Td>
-                                        {IkpPasien.hasil_grading ? IkpPasien.hasil_grading?.name_ikp : 'Belum Investigasi'}
+                                        {IkpPasien.hasil_grading
+                                            ? IkpPasien.ikp_hasil
+                                                ? IkpPasien.hasil_grading
+                                                      ?.name_ikp
+                                                : "Belum Investigasi"
+                                            : IkpPasien.ikp_hasil
+                                            ? "Sudah Investigasi Belum Grading"
+                                            : "Belum Investigasi"}
                                     </Table.Td>
                                     {/* <Table.Td>
                                         <Dropdown>
