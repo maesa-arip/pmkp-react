@@ -361,6 +361,7 @@ export default function Index(props) {
                                             <Badge>{meta.from + index}</Badge>
                                         </Table.Td>
                                         <Table.Td rowSpan={2}>
+                                            {/* {MutuUnit.mutu_indikator.standar} {MutuUnit.capaian} */}
                                             {(MutuUnit.mutu_indikator
                                                 .operator === "=" &&
                                                 MutuUnit.capaian >=

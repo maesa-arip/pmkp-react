@@ -232,8 +232,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select(
             DB::raw("
                 CASE
-                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
-                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
             END AS Kode"),
             DB::raw("'C' AS 'UC/C'"))
             ->selectRaw(
@@ -437,8 +437,8 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'indikator_fitur4s.tujuan as Indikator',
                 DB::raw("
                 CASE
-                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
-                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
             END AS Kode"),
                 'risk_categories.name as Kategori Risiko',
                 'risk_registers.resiko as Penyataan Risiko',
@@ -781,8 +781,8 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'indikator_fitur4s.tujuan as Indikator',
                 DB::raw("
                 CASE
-                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
-                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
             END AS Kode"),
                 'risk_categories.name as Kategori Risiko',
                 'risk_registers.resiko as Penyataan Risiko',

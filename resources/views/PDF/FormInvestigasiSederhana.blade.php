@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 <link href='http://fonts.googleapis.com/css?family=Times' rel='stylesheet' type='text/css'>
 
-    <title>Mutu Indikator</title>
+    <title>Form Investigasi Sederhana</title>
 </head>
 <style>
     .times {

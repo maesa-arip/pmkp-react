@@ -50,7 +50,7 @@ class FormatLARSDHPNonKlinisExport implements WithMultipleSheets
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -60,14 +60,16 @@ class FormatLARSDHPNonKlinisExport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            new Sheet1($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet2($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet3($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet4($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet5($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet6($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet7($this->startDate, $this->endDate, $this->userId,$this->currently_id),
-            new Sheet8($this->startDate, $this->endDate, $this->userId,$this->currently_id),
+            new Sheet1($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            new Sheet2($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            new Sheet3($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            new Sheet4($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            // new Sheet5($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            // new Sheet6($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            // new Sheet7($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            // new Sheet8($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            // new Sheet9($this->startDate, $this->endDate, $this->userId, $this->currently_id),
+            // new Sheet10($this->startDate, $this->endDate, $this->userId, $this->currently_id),
         ];
     }
 }
@@ -83,7 +85,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -115,14 +117,14 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $subquery->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $subquery->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
@@ -228,7 +230,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -276,8 +278,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         GROUP_CONCAT(sa.name) as picsname,
         risk_registers.sebab,
         CASE
-                WHEN risk_registers.risk_category_id = 5 THEN CONCAT("RSO.", RIGHT(YEAR(risk_registers.tgl_register), 2),".02.B.37.",risk_registers.id)
-                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT("ROO.", RIGHT(YEAR(risk_registers.tgl_register), 2),".02.B.37.",risk_registers.id)
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT("RSO.", RIGHT(YEAR(risk_registers.tgl_register), 2),".02.43.",risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT("ROO.", RIGHT(YEAR(risk_registers.tgl_register), 2),".02.43.",risk_registers.id)
             END AS Kode,
         risk_registers.resiko,
         risk_registers.dampak,
@@ -346,14 +348,14 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $subquery->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $subquery->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
@@ -408,11 +410,11 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB','SUMBER IDENTIFIKASI','JENIS INSIDEN','TIPE INSIDEN'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB', 'SUMBER IDENTIFIKASI', 'JENIS INSIDEN', 'TIPE INSIDEN'],
 
-            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB','SUMBER IDENTIFIKASI','JENIS INSIDEN','TIPE INSIDEN'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB', 'SUMBER IDENTIFIKASI', 'JENIS INSIDEN', 'TIPE INSIDEN'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)','(31)','(32)','(33)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)', '(31)', '(32)', '(33)'],
         ];
     }
     public function columnWidths(): array
@@ -714,98 +716,98 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     }
                 }
 
-                // KOLOM K
-                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional->addCondition(5);
-                $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
-                $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditionalStyles);
+                // // KOLOM K
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeO)->setConditionalStyles($conditionalStyles);
 
-                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional2->addCondition(4);
-                $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
-                $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional2Styles);
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional2Styles);
 
-                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional3->addCondition(3);
-                $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
-                $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional3Styles);
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional3Styles);
 
-                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
-                $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional4Styles);
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional4Styles);
 
-                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
-                $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional5Styles);
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional5Styles);
 
 
-                // KOLOM L
-                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional->addCondition(5);
-                $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
-                $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditionalStyles);
+                // // KOLOM L
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeP)->setConditionalStyles($conditionalStyles);
 
-                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional2->addCondition(4);
-                $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
-                $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional2Styles);
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional2Styles);
 
-                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional3->addCondition(3);
-                $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
-                $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional3Styles);
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional3Styles);
 
-                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
-                $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional4Styles);
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional4Styles);
 
-                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
-                $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional5Styles);
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional5Styles);
 
                 // KOLOM O
                 // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
@@ -847,96 +849,96 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
 
                 // KOLOM T
-                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional->addCondition(5);
-                $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
-                $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditionalStyles);
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeX)->setConditionalStyles($conditionalStyles);
 
-                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional2->addCondition(4);
-                $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
-                $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional2Styles);
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional2Styles);
 
-                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional3->addCondition(3);
-                $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
-                $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional3Styles);
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional3Styles);
 
-                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
-                $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional4Styles);
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional4Styles);
 
-                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
-                $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional5Styles);
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional5Styles);
 
-                // KOLOM U
-                $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional->addCondition(5);
-                $conditional->getStyle()->applyFromArray($styleST);
-                $conditionalStyles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
-                $conditionalStyles[] = $conditional;
-                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditionalStyles);
+                // // KOLOM U
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeY)->setConditionalStyles($conditionalStyles);
 
-                $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional2->addCondition(4);
-                $conditional2->getStyle()->applyFromArray($styleT);
-                $conditional2Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
-                $conditional2Styles[] = $conditional2;
-                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional2Styles);
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional2Styles);
 
-                $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional3->addCondition(3);
-                $conditional3->getStyle()->applyFromArray($styleM);
-                $conditional3Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
-                $conditional3Styles[] = $conditional3;
-                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional3Styles);
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional3Styles);
 
-                $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
-                $conditional4Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
-                $conditional4Styles[] = $conditional4;
-                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional4Styles);
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional4Styles);
 
-                $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
-                $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
-                $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
-                $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
-                $conditional5Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
-                $conditional5Styles[] = $conditional5;
-                $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional5Styles);
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional5Styles);
 
                 // KOLOM W
                 // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
@@ -1074,7 +1076,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -1092,8 +1094,8 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->select(
                 DB::raw("
                 CASE
-                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
-                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
             END AS Kode"),
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
@@ -1103,14 +1105,14 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $query->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
@@ -1154,11 +1156,11 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         $data = $query->get();
         $dataGraph = [['Dampak', 'Probabilitas']];
@@ -1271,7 +1273,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             null, // majorUnit
             1, // minorUnit
         );
-        
+
         $title = new Title('RISK ASSESSMENT HEATMAP');
         $xAxisLabel = new Title('DAMPAK');
         $yAxisLabel = new Title('PROBABILITAS');
@@ -1369,7 +1371,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -1404,23 +1406,29 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             //     'risk_registers.osd1_probabilitas',
             //     'risk_registers.osd1_controllability'
             // )
-            ->whereIn('risk_gradings.name_nonklinis_pergub',['EKSTRIM','TINGGI','SEDANG'])
+            ->whereIn('risk_gradings.name_nonklinis_pergub', ['EKSTRIM', 'TINGGI', 'SEDANG'])
             ->where('tipe_id', 2)
             ->where($whosLogin)
             ->orderBy('Peringkat1', 'ASC');
-        if (!empty($this->startDate) && !empty($this->endDate)) {
-            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        // if (!empty($this->startDate) && !empty($this->endDate)) {
+        //     $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+        //         ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+        // }
+        if ($query && !empty($this->startDate) && !empty($this->endDate)) {
+            $startDate = Carbon::parse($this->startDate)->startOfDay();
+            $endDate = Carbon::parse($this->endDate)->endOfDay();
+            
+            $query->whereBetween('risk_registers.tgl_register', [$startDate, $endDate]);
         }
-        if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+        if ($query && !empty($this->currently_id)) {
+            if ($this->currently_id['id'] < 3) {
                 $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
-            if ($this->currently_id['id'] == 3) {
-                $query->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+            if ($query && $this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
-        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+        if ($query && !empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
             $query->whereIn('risk_registers.user_id', $userIds);
         }
@@ -1438,9 +1446,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'KATEGORI RISIKO', 'PERNYATAAN RISIKO', 'AKAR MASALAH (PENYEBAB UTAMA RISIKO)', 'DAMPAK (D)', 'PROBABILITAS (P)', 'CONTROLLABILITY (Pengendalian)', 'SCORING', 'RANGKING','PEMILIK RISIKO','PERINGKAT RISIKO'],
+            ['No', 'KATEGORI RISIKO', 'PERNYATAAN RISIKO', 'AKAR MASALAH (PENYEBAB UTAMA RISIKO)', 'DAMPAK (D)', 'PROBABILITAS (P)', 'CONTROLLABILITY (Pengendalian)', 'SCORING', 'RANGKING', 'PEMILIK RISIKO', 'PERINGKAT RISIKO'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8) (5x6x7)', '(9)','(10)','(11)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8) (5x6x7)', '(9)', '(10)', '(11)'],
         ];
     }
     public function columnWidths(): array
@@ -1683,7 +1691,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional3Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
                 $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional3Styles);
-                
+
                 $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
@@ -1824,7 +1832,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -1882,14 +1890,14 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $subquery->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $subquery->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
@@ -2120,7 +2128,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -2145,14 +2153,14 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $subquery->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $subquery->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
@@ -2368,7 +2376,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -2384,21 +2392,21 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->select(DB::raw("
             CASE
-                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
-                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.B.37.',risk_registers.id)
+                WHEN risk_registers.risk_category_id = 5 THEN CONCAT('RSO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
+                WHEN risk_registers.risk_category_id <> 5 THEN CONCAT('ROO.', RIGHT(YEAR(risk_registers.tgl_register), 2),'.02.43.',risk_registers.id)
             END AS Kode"), 'risk_registers.denum', 'risk_registers.num', DB::raw('risk_registers.num / risk_registers.denum * 100 AS `Waktu`'), DB::raw("'' AS 'Jumlah'"), 'risk_registers.target_waktu')
-        ->where('tipe_id', 2)    
-        ->where($whosLogin);
+            ->where('tipe_id', 2)
+            ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $query->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
@@ -2440,7 +2448,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
 
         $data = $query->get();
@@ -2618,7 +2626,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     protected $userId;
     protected $currently_id;
 
-    public function __construct($startDate, $endDate, $userId,$currently_id)
+    public function __construct($startDate, $endDate, $userId, $currently_id)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -2635,7 +2643,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
             ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'),'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as aksi', 'risk_registers.output', 'indikator_fitur4s.name', DB::raw(
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as aksi', 'risk_registers.output', 'indikator_fitur4s.name', DB::raw(
                 '
                 CASE
                     WHEN risk_registers.realisasi_id = 1 THEN "Sudah Tercapai"
@@ -2644,24 +2652,42 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 END AS `PerluPenanganan`'
             ), 'waktu_implementasis.name as waktu_implementasi', 'users.name as pemilik_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name_nonklinis_pergub as grading')
             ->where('tipe_id', 2)
-            ->orderBy('Peringkat','ASC')
+            ->orderBy('Peringkat', 'ASC')
             ->where($whosLogin);
+        // if (!empty($this->startDate) && !empty($this->endDate)) {
+        //     $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+        //         ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
+        // }
+        // if (!empty($this->currently_id)) {
+        //     if ($this->currently_id['id'] < 3) {
+        //         $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+        //     }
+        //     if ($this->currently_id['id'] == 3) {
+        //         $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
+        //     }
+        // }
+        // if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+        //     $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+        //     $query->whereIn('risk_registers.user_id', $userIds);
+        // }
         if (!empty($this->startDate) && !empty($this->endDate)) {
             $query->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay());
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
         }
         if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] <3) {
+            if ($this->currently_id['id'] < 3) {
                 $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
             }
             if ($this->currently_id['id'] == 3) {
-                $query->whereIn('risk_registers.concatdp1', [15,23,24,25,32,33,34,35,42,43,44,45,51,52,53,54,5]);
+                $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
             }
         }
         if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
             $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
             $query->whereIn('risk_registers.user_id', $userIds);
         }
+        $this->data = $query->get();
+        return $query;
 
 
 
@@ -2675,10 +2701,10 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No','Prioritas Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Status Risiko', 'Status Risiko'],
+            ['No', 'Prioritas Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Status Risiko', 'Status Risiko'],
 
-            ['No','Prioritas Risiko', 'Aksi pengendalian', 'Output', 'Target', 'Realisasi', 'Waktu Implementasi', 'Penanggung jawab', 'Trend (naik/ turun)', 'Level Risiko'],
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)','(10)'],
+            ['No', 'Prioritas Risiko', 'Aksi pengendalian', 'Output', 'Target', 'Realisasi', 'Waktu Implementasi', 'Penanggung jawab', 'Trend (naik/ turun)', 'Level Risiko'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)'],
         ];
     }
     public function columnWidths(): array
@@ -2839,6 +2865,941 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->mergeCells('I1:J1');
                 $event->sheet->getDelegate()->getStyle('I1:J1')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->getStyle('I2:J2')->applyFromArray($styleHeader);
+            },
+        ];
+    }
+}
+class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+{
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    protected $data;
+    protected $startDate;
+    protected $endDate;
+    protected $userId;
+    protected $currently_id;
+
+    public function __construct($startDate, $endDate, $userId, $currently_id)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->userId = $userId;
+        $this->currently_id = $currently_id;
+    }
+    public function query()
+    {
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+
+        $query = RiskRegister::query()
+            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->select(
+                'risk_categories.id as kategori_id',
+                // '1',
+                'risk_categories.name as kategori',
+                'users.name as pemilik_risiko',
+                DB::raw('COUNT(risk_registers.id) as jumlah_risiko'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name = "Extreme" THEN 1 ELSE 0 END) as extreme'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name = "High" THEN 1 ELSE 0 END) as high'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name = "Moderate" THEN 1 ELSE 0 END) as moderate'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name = "Low" THEN 1 ELSE 0 END) as low'),
+            )
+            // ->whereIn('risk_gradings.name_nonklinis_pergub', ['EKSTRIM', 'TINGGI', 'SEDANG', 'RENDAH'])
+            ->where('tipe_id', 1)
+            ->where($whosLogin)
+            ->groupBy('risk_categories.id', 'risk_categories.name', 'users.name')
+            ->orderBy('risk_categories.name', 'ASC')
+            ->orderBy('users.name', 'ASC');
+
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
+        }
+
+        if (!empty($this->currently_id)) {
+            if ($this->currently_id['id'] < 3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            } else if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
+            }
+        }
+
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $query->whereIn('risk_registers.user_id', $userIds);
+        }
+
+        $this->data = $query->get();
+        return $query;
+    }
+
+    public function title(): string
+    {
+        return 'REKAPAN KLINIS';
+    }
+    public function headings(): array
+    {
+        return [
+            ['No', 'KATEGORI RISIKO', 'PEMILIK RISIKO', 'JUMLAH RISIKO', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX',  'JUMLAH KATEGORI RISIKO'],
+            ['No', 'KATEGORI RISIKO', 'PEMILIK RISIKO', 'JUMLAH RISIKO', 'EXTREME', 'HIGH', 'MODERATE', 'LOW', 'JUMLAH KATEGORI RISIKO'],
+
+            // ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)'],
+        ];
+    }
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 4,
+            'B' => 20,
+            'C' => 45,
+            'D' => 15,
+            'E' => 12,
+            'F' => 18,
+            'G' => 18,
+            'H' => 9,
+            'I' => 12,
+        ];
+    }
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
+                $event->sheet->getDelegate()->getRowDimension(2)->setRowHeight(30);
+                $highestRow = $event->sheet->getHighestRow();
+                $highestColumn = $event->sheet->getHighestColumn();
+                $range = 'A1:' . $highestColumn . $highestRow;
+                $rangeA = 'A3:' . 'A' . $highestRow;
+                $rangeE = 'E3:' . 'E' . $highestRow;
+                $rangeF = 'F3:' . 'F' . $highestRow;
+                // $rangeK = 'K3:' . 'K' . $highestRow;
+                $rangeDI = 'D3:' . 'I' . $highestRow;
+
+                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                    ],
+                    'alignment' => [
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+                $styleHeader = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FCE4D6',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FCE4D6',
+                            // 'argb' => 'FFFFFFFF',
+                            // 'argb' => 'FFFFFFFF',
+                        ],
+                    ],
+                ];
+                $styleHeader2 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'D8D8D8',
+                        ],
+                        'endColor' => [
+                            'argb' => 'D8D8D8',
+                        ],
+                    ],
+                ];
+                $styleHeader3 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFD966',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FFD966',
+                        ],
+                    ],
+                ];
+                $styleHeader4 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '92D050',
+                        ],
+                        'endColor' => [
+                            'argb' => '92D050',
+                        ],
+                    ],
+                ];
+                $styleStandar = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                ];
+                $styleST = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FF0D0D',
+                        ],
+                    ],
+                ];
+                $styleT = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFC000',
+                        ],
+                    ],
+                ];
+                $styleM = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFFF00',
+                        ],
+                    ],
+                ];
+                $styleR = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '00B0F0',
+                        ],
+                    ],
+                ];
+                $styleSR = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '00B050',
+                        ],
+                    ],
+                ];
+                // // KOLOM K
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional->addCondition(14);
+                // $conditional->setText('EKSTRIM');
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditionalStyles);
+
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional2->addCondition(9);
+                // $conditional2->setText('TINGGI');
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional2Styles);
+
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional3->addCondition(4);
+                // $conditional3->setText('SEDANG');
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional3Styles);
+
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional5->addCondition(1);
+                // $conditional5->setText('SANGAT RENDAH');
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional5Styles);
+
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional4->addCondition(2);
+                // $conditional4->setText('RENDAH');
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional4Styles);
+
+                // // KOLOM E
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditionalStyles);
+
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional2Styles);
+
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional3Styles);
+
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional4Styles);
+
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional5Styles);
+
+                // // KOLOM F
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditionalStyles);
+
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional2Styles);
+
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional3Styles);
+
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional4Styles);
+
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional5Styles);
+
+
+                $event->sheet->getDelegate()->getStyle('A1:I2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('A1:A2');
+                // $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('B1:B2');
+                // $event->sheet->getDelegate()->getStyle('B1:B2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('C1:C2');
+                // $event->sheet->getDelegate()->getStyle('C1:C2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('D1:D2');
+                // $event->sheet->getDelegate()->getStyle('D1:D2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('E1:I1');
+                // $event->sheet->getDelegate()->getStyle('E1:I1')->applyFromArray($styleHeader);
+
+                // $event->sheet->getDelegate()->mergeCells('J1:J2');
+                // $event->sheet->getDelegate()->getStyle('J1:J2')->applyFromArray($styleHeader);
+
+
+                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                ]);
+                $event->sheet->getDelegate()->getStyle($rangeDI)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                ]);
+            },
+        ];
+    }
+}
+
+class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+{
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    protected $data;
+    protected $startDate;
+    protected $endDate;
+    protected $userId;
+    protected $currently_id;
+
+    public function __construct($startDate, $endDate, $userId, $currently_id)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->userId = $userId;
+        $this->currently_id = $currently_id;
+    }
+    public function query()
+    {
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+
+        $query = RiskRegister::query()
+            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->select(
+                'risk_categories.id as kategori_id',
+                // '1',
+                'risk_categories.name as kategori',
+                'users.name as pemilik_risiko',
+                DB::raw('COUNT(risk_registers.id) as jumlah_risiko'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name_nonklinis_pergub = "EKSTRIM" THEN 1 ELSE 0 END) as extreme'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name_nonklinis_pergub = "TINGGI" THEN 1 ELSE 0 END) as high'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name_nonklinis_pergub = "SEDANG" THEN 1 ELSE 0 END) as moderate'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name_nonklinis_pergub = "RENDAH" THEN 1 ELSE 0 END) as low'),
+                DB::raw('SUM(CASE WHEN risk_gradings.name_nonklinis_pergub = "SANGAT RENDAH" THEN 1 ELSE 0 END) as verylow')
+            )
+            // ->whereIn('risk_gradings.name_nonklinis_pergub', ['EKSTRIM', 'TINGGI', 'SEDANG', 'RENDAH'])
+            ->where('tipe_id', 2)
+            ->where($whosLogin)
+            ->groupBy('risk_categories.id', 'risk_categories.name', 'users.name')
+            ->orderBy('risk_categories.name', 'ASC')
+            ->orderBy('users.name', 'ASC');
+
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $query->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
+        }
+
+        if (!empty($this->currently_id)) {
+            if ($this->currently_id['id'] < 3) {
+                $query->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            } else if ($this->currently_id['id'] == 3) {
+                $query->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
+            }
+        }
+
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $query->whereIn('risk_registers.user_id', $userIds);
+        }
+
+        $this->data = $query->get();
+        return $query;
+    }
+
+    public function title(): string
+    {
+        return 'REKAPAN NON KLINIS';
+    }
+    public function headings(): array
+    {
+        return [
+            ['No', 'KATEGORI RISIKO', 'PEMILIK RISIKO', 'JUMLAH RISIKO', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH PERINGKAT RISIKO/GRADING MATRIX', 'JUMLAH KATEGORI RISIKO'],
+            ['No', 'KATEGORI RISIKO', 'PEMILIK RISIKO', 'JUMLAH RISIKO', 'EXTREME', 'HIGH', 'MODERATE', 'LOW', 'VERY LOW', 'JUMLAH KATEGORI RISIKO'],
+
+            // ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)'],
+        ];
+    }
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 4,
+            'B' => 20,
+            'C' => 45,
+            'D' => 15,
+            'E' => 12,
+            'F' => 18,
+            'G' => 30,
+            'H' => 9,
+            'I' => 12,
+            'J' => 20,
+        ];
+    }
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
+                $event->sheet->getDelegate()->getRowDimension(2)->setRowHeight(30);
+                $highestRow = $event->sheet->getHighestRow();
+                $highestColumn = $event->sheet->getHighestColumn();
+                $range = 'A1:' . $highestColumn . $highestRow;
+                $rangeA = 'A3:' . 'A' . $highestRow;
+                $rangeE = 'E3:' . 'E' . $highestRow;
+                $rangeF = 'F3:' . 'F' . $highestRow;
+                // $rangeK = 'K3:' . 'K' . $highestRow;
+                $rangeDI = 'D3:' . 'I' . $highestRow;
+
+                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                    ],
+                    'alignment' => [
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+                $styleHeader = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FCE4D6',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FCE4D6',
+                            // 'argb' => 'FFFFFFFF',
+                            // 'argb' => 'FFFFFFFF',
+                        ],
+                    ],
+                ];
+                $styleHeader2 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'D8D8D8',
+                        ],
+                        'endColor' => [
+                            'argb' => 'D8D8D8',
+                        ],
+                    ],
+                ];
+                $styleHeader3 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFD966',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FFD966',
+                        ],
+                    ],
+                ];
+                $styleHeader4 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '92D050',
+                        ],
+                        'endColor' => [
+                            'argb' => '92D050',
+                        ],
+                    ],
+                ];
+                $styleStandar = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                ];
+                $styleST = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FF0D0D',
+                        ],
+                    ],
+                ];
+                $styleT = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFC000',
+                        ],
+                    ],
+                ];
+                $styleM = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFFF00',
+                        ],
+                    ],
+                ];
+                $styleR = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '00B0F0',
+                        ],
+                    ],
+                ];
+                $styleSR = [
+                    $styleStandar,
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '00B050',
+                        ],
+                    ],
+                ];
+                // // KOLOM K
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional->addCondition(14);
+                // $conditional->setText('EKSTRIM');
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditionalStyles);
+
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional2->addCondition(9);
+                // $conditional2->setText('TINGGI');
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional2Styles);
+
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional3->addCondition(4);
+                // $conditional3->setText('SEDANG');
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional3Styles);
+
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional5->addCondition(1);
+                // $conditional5->setText('SANGAT RENDAH');
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional5Styles);
+
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CONTAINSTEXT);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
+                // // $conditional4->addCondition(2);
+                // $conditional4->setText('RENDAH');
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional4Styles);
+
+                // // KOLOM E
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditionalStyles);
+
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional2Styles);
+
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional3Styles);
+
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional4Styles);
+
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional5Styles);
+
+                // // KOLOM F
+                // $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional->addCondition(5);
+                // $conditional->getStyle()->applyFromArray($styleST);
+                // $conditionalStyles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditionalStyles[] = $conditional;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditionalStyles);
+
+                // $conditional2 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional2->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional2->addCondition(4);
+                // $conditional2->getStyle()->applyFromArray($styleT);
+                // $conditional2Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional2Styles[] = $conditional2;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional2Styles);
+
+                // $conditional3 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional3->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional3->addCondition(3);
+                // $conditional3->getStyle()->applyFromArray($styleM);
+                // $conditional3Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional3Styles[] = $conditional3;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional3Styles);
+
+                // $conditional4 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional4->addCondition(2);
+                // $conditional4->getStyle()->applyFromArray($styleR);
+                // $conditional4Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional4Styles[] = $conditional4;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional4Styles);
+
+                // $conditional5 = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                // $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
+                // $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
+                // $conditional5->addCondition(1);
+                // $conditional5->getStyle()->applyFromArray($styleSR);
+                // $conditional5Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
+                // $conditional5Styles[] = $conditional5;
+                // $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional5Styles);
+
+
+                $event->sheet->getDelegate()->getStyle('A1:J2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('A1:A2');
+                // $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('B1:B2');
+                // $event->sheet->getDelegate()->getStyle('B1:B2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('C1:C2');
+                // $event->sheet->getDelegate()->getStyle('C1:C2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('D1:D2');
+                // $event->sheet->getDelegate()->getStyle('D1:D2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('E1:I1');
+                // $event->sheet->getDelegate()->getStyle('E1:I1')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('J1:J2');
+                // $event->sheet->getDelegate()->getStyle('J1:J2')->applyFromArray($styleHeader);
+
+
+                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                ]);
+                $event->sheet->getDelegate()->getStyle($rangeDI)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    ],
+                ]);
             },
         ];
     }
