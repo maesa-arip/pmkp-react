@@ -134,6 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/fgdinherent', [RiskRegisterKlinisController::class,'fgdinherent'])->name('riskregister.fgdinherent');
     Route::put('/fgdresidual', [RiskRegisterKlinisController::class,'fgdresidual'])->name('riskregister.fgdresidual');
     Route::put('/fgdtreated', [RiskRegisterKlinisController::class,'fgdtreated'])->name('riskregister.fgdtreated');
+    Route::put('/fgdactual', [RiskRegisterKlinisController::class,'fgdactual'])->name('riskregister.fgdactual');
     Route::apiResource('riskRegisterKlinisPengendalian', RiskRegisterKlinisPengendalianController::class);
     Route::apiResource('klinisOpsiPengendalian', RiskRegisterKlinisOpsiPengendalianController::class);
     Route::apiResource('riskRegisterKlinisOsd2', RiskRegisterKlinisOsd2Controller::class);

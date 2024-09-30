@@ -87,6 +87,10 @@ class RiskRegister extends Model
     {
         return $this->hasOne(FgdTreated::class);
     }
+    public function fgdactual()
+    {
+        return $this->hasOne(FgdActual::class);
+    }
     public function requestupdate()
     {
         return $this->hasOne(RequestUpdate::class);

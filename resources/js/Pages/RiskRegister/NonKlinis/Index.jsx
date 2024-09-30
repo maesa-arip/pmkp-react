@@ -14,6 +14,7 @@ import EditFormulirRCA from "../KlinisFormulirRCA/Edit";
 import EditFGDInherent from "../KlinisFGDInherent/Edit";
 import EditFGDResidual from "../KlinisFGDResidual/Edit";
 import EditFGDTreated from "../KlinisFGDTreated/Edit";
+import EditFGDActual from "../KlinisFGDActual/Edit";
 import Pagination from "@/Components/Pagination";
 import Table from "@/Components/Table";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons";
@@ -217,6 +218,11 @@ export default function Index(props) {
         setEditingRow(row);
         setIsOpenEditDialogFGDTreated(true);
     };
+    const openEditDialogFGDActual = (row) => {
+        setState(row);
+        setEditingRow(row);
+        setIsOpenEditDialogFGDActual(true);
+    };
 
     const [isOpenAddDialog, setIsOpenAddDialog] = useState(false);
     const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
@@ -229,6 +235,8 @@ export default function Index(props) {
     const [isOpenEditDialogFGDResidual, setIsOpenEditDialogFGDResidual] =
         useState(false);
     const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] =
+        useState(false);
+    const [isOpenEditDialogFGDActual, setIsOpenEditDialogFGDActual] =
         useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [state, setState] = useState([]);
@@ -323,6 +331,19 @@ export default function Index(props) {
                     ShouldMap={ShouldMap}
                     isOpenEditDialog={isOpenEditDialogFGDTreated}
                     setIsOpenEditDialog={setIsOpenEditDialogFGDTreated}
+                />
+            </EditModal>
+            <EditModal
+                isOpenEditDialog={isOpenEditDialogFGDActual}
+                setIsOpenEditDialog={setIsOpenEditDialogFGDActual}
+                size="max-w-6xl"
+                title="Edit FGD Actual Risk Register Non Klinis"
+            >
+                <EditFGDActual
+                    model={state}
+                    ShouldMap={ShouldMap}
+                    isOpenEditDialog={isOpenEditDialogFGDActual}
+                    setIsOpenEditDialog={setIsOpenEditDialogFGDActual}
                 />
             </EditModal>
             <DestroyModal
@@ -549,6 +570,29 @@ export default function Index(props) {
                                     disabled={selectedRow === null}
                                 >
                                     FGD Treated
+                                </ThirdButton>
+                                <ThirdButton
+                                    color={
+                                        selectedRow === null ? "gray" : "teal"
+                                    }
+                                    type="button"
+                                    className={`${
+                                        selectedRow === null
+                                            ? "cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                    onClick={() => {
+                                        if (selectedRow !== null) {
+                                            const selectedRisk =
+                                                riskRegisterKlinis[selectedRow];
+                                            openEditDialogFGDActual(
+                                                selectedRisk
+                                            );
+                                        }
+                                    }}
+                                    disabled={selectedRow === null}
+                                >
+                                    FGD Actual
                                 </ThirdButton>
                                 <ThirdButton
                                     color={

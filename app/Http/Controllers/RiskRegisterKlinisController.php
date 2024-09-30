@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
 use App\Models\Efektif;
+use App\Models\FgdActual;
 use App\Models\FgdInherent;
 use App\Models\FgdResidual;
 use App\Models\FgdTreated;
@@ -59,6 +60,7 @@ class RiskRegisterKlinisController extends Controller
             ->with('fgdinherent')
             ->with('fgdresidual')
             ->with('fgdtreated')
+            ->with('fgdactual')
             ->where($whosLogin);
             // dd($riskRegisterKlinis);
         $riskRegisterCount = $riskRegisterKlinis->count();
@@ -482,6 +484,64 @@ class RiskRegisterKlinisController extends Controller
             'message' => 'Data FGD Treated berhasil disimpan',
         ]);
     }
+    public function fgdactual(Request $request)
+    {
+        $this->validate($request, [
+            'dampak_responden1' => 'required|numeric|min:1|max:5',
+            'dampak_responden2' => 'required|numeric|min:1|max:5',
+            'dampak_responden3' => 'required|numeric|min:1|max:5',
+            'dampak_responden4' => 'required|numeric|min:1|max:5',
+            'dampak_responden5' => 'required|numeric|min:1|max:5',
+            'dampak_responden6' => 'required|numeric|min:1|max:5',
+
+
+            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
+            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
+
+        ]);
+        $atrributes = ([
+            'dampak_responden1' => $request->dampak_responden1,
+            'dampak_responden2' => $request->dampak_responden2,
+            'dampak_responden3' => $request->dampak_responden3,
+            'dampak_responden4' => $request->dampak_responden4,
+            'dampak_responden5' => $request->dampak_responden5,
+            'dampak_responden6' => $request->dampak_responden6,
+            'dampak_responden7' => $request->dampak_responden7,
+            'dampak_responden8' => $request->dampak_responden8,
+
+            'probabilitas_responden1' => $request->probabilitas_responden1,
+            'probabilitas_responden2' => $request->probabilitas_responden2,
+            'probabilitas_responden3' => $request->probabilitas_responden3,
+            'probabilitas_responden4' => $request->probabilitas_responden4,
+            'probabilitas_responden5' => $request->probabilitas_responden5,
+            'probabilitas_responden6' => $request->probabilitas_responden6,
+            'probabilitas_responden7' => $request->probabilitas_responden7,
+            'probabilitas_responden8' => $request->probabilitas_responden8,
+        ]);
+        FgdActual::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
+        $riskRegisterKlinis = RiskRegister::find($request->id);
+        $this->validate($request, [
+            'osd4_dampak' => 'required',
+            'osd4_probabilitas' => 'required',
+        ]);
+        $request->merge([
+            'concatdp4' => $request->osd4_dampak . $request->osd4_probabilitas,
+        ]);
+        $riskRegisterKlinis->update([
+            'osd4_dampak' => $request->osd4_dampak,
+            'osd4_probabilitas' => $request->osd4_probabilitas,
+            'concatdp4' => $request->concatdp4,
+        ]);
+        return back()->with([
+            'type' => 'success',
+            'message' => 'Data FGD Actual berhasil disimpan',
+        ]);
+    }
+
     public function requestupdatestatus(Request $request)
     {
         $this->validate($request, [
@@ -527,6 +587,7 @@ class RiskRegisterKlinisController extends Controller
         $fgdInherent = FgdInherent::where('risk_register_id', $id);
         $fgdResidual = FgdResidual::where('risk_register_id', $id);
         $fgdTreated = FgdTreated::where('risk_register_id', $id);
+        $fgdActual = FgdActual::where('risk_register_id', $id);
         $formulirRca = FormulirRca::where('risk_register_id', $id);
         $history = RiskRegisterHistory::where('risk_register_id', $id);
         $riskRegister = RiskRegister::find($id);
@@ -534,6 +595,7 @@ class RiskRegisterKlinisController extends Controller
         $fgdInherent->delete();
         $fgdResidual->delete();
         $fgdTreated->delete();
+        $fgdActual->delete();
         $history->delete();
         $riskRegister->delete();
         return back()->with([

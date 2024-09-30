@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
 use App\Models\Efektif;
+use App\Models\FgdActual;
 use App\Models\FgdInherent;
 use App\Models\FgdResidual;
 use App\Models\FgdTreated;
@@ -56,6 +57,7 @@ class RiskRegisterNonKlinisController extends Controller
             ->with('fgdinherent')
             ->with('fgdresidual')
             ->with('fgdtreated')
+            ->with('fgdactual')
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('efektif_id','=',0)->count();
@@ -278,6 +280,7 @@ class RiskRegisterNonKlinisController extends Controller
         $fgdInherent = FgdInherent::where('risk_register_id',$id);
         $fgdResidual = FgdResidual::where('risk_register_id',$id);
         $fgdTreated = FgdTreated::where('risk_register_id',$id);
+        $fgdActual = FgdActual::where('risk_register_id',$id);
         $formulirRca = FormulirRca::where('risk_register_id',$id);
         $history = RiskRegisterHistory::where('risk_register_id',$id);
         $riskRegister = RiskRegister::find($id);
@@ -285,6 +288,7 @@ class RiskRegisterNonKlinisController extends Controller
         $fgdInherent->delete();
         $fgdResidual->delete();
         $fgdTreated->delete();
+        $fgdActual->delete();
         $history->delete();
         $riskRegister->delete();
         return back()->with([
