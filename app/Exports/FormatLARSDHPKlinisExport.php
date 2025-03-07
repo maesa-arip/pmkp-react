@@ -1787,7 +1787,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FF0D0D',
+                            'argb' => 'FF0D0D', //Merah
                         ],
                     ],
                 ];
@@ -1797,7 +1797,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FFFF00',
+                            'argb' => 'FFC000', // Orange
                         ],
                     ],
                 ];
@@ -1807,7 +1807,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => '00B050',
+                            'argb' => 'FFFF00', // Kuning
                         ],
                     ],
                 ];
@@ -1817,7 +1817,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => '00B0F0',
+                            'argb' => '00B0F0', // Biru
                         ],
                     ],
                 ];
@@ -1827,7 +1827,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => '00B050',
+                            'argb' => '00B050', //Hijau
                         ],
                     ],
                 ];
@@ -1959,7 +1959,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
                 // $conditional5->addCondition(1);
                 $conditional5->setText('SANGAT RENDAH');
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional5Styles);
