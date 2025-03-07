@@ -135,6 +135,8 @@ class RiskRegisterNonKlinisController extends Controller
         $this->validate($request, [
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
+            
+            'kronologi' => 'required_if:risk_category_id,6',
             'tgl_register' => 'required',
             'sebab' => 'required',
             'currently_id' => 'required',

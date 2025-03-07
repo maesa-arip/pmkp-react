@@ -62,7 +62,7 @@ class RiskRegisterKlinisController extends Controller
             ->with('fgdtreated')
             ->with('fgdactual')
             ->where($whosLogin);
-            // dd($riskRegisterKlinis);
+        // dd($riskRegisterKlinis);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id', '=', 0)->count();
         $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id', '=', 0)->count();
@@ -154,6 +154,7 @@ class RiskRegisterKlinisController extends Controller
         $this->validate($request, [
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
+            'kronologi' => 'required_if:risk_category_id,6',
             'tgl_register' => 'required',
             'sebab' => 'required',
             'currently_id' => 'required',
@@ -182,7 +183,7 @@ class RiskRegisterKlinisController extends Controller
             'pihak_terkena' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
-        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
+        $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         // dd($encodedPic);
         $tgl_selesai = $date->addDays($request->target_waktu);
         $osd1_controllability = ControlValue::where('id', $request->osd1_controllability)->pluck('value');
@@ -197,15 +198,19 @@ class RiskRegisterKlinisController extends Controller
             'osd1_controllability' => $osd1_controllability[0],
         ]);
 
-
         $risk = RiskRegister::create($request->except('name'));
+        $kode_risiko_prefix = ($risk->risk_category_id == 5) ? 'RSO' : 'ROO';
+        $tahun_register = Carbon::parse($risk->tgl_register)->format('y');
+        $risk->kode_risiko = "{$kode_risiko_prefix}.{$tahun_register}.02.43.{$risk->id}";
+        $risk->save();
+        // dd($kode_risiko_prefix,$tahun_register,$risk->kode_risiko,$risk->save());
 
         $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $risk->id, 'currently_id' => $request->currently_id]);
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();
         // Notification::send($user, new RiskRegisterNewNotification($risk));
-            
+
         return back()->with([
             'type' => 'success',
             'message' => 'Data Risk Register Klinis berhasil disimpan',
@@ -247,7 +252,7 @@ class RiskRegisterKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
-        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
+        $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         // $osd1_dampak = ImpactValue::where('id', $request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id', $request->osd1_probabilitas)->pluck('value');
         $osd1_controllability = ControlValue::where('id', $request->osd1_controllability)->pluck('value');
@@ -573,7 +578,7 @@ class RiskRegisterKlinisController extends Controller
         ]);
         // dd($request->all());
         RequestUpdate::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-        RiskRegister::where('id',$request->id)->update(['currently_id' => $request->currently_id]);
+        RiskRegister::where('id', $request->id)->update(['currently_id' => $request->currently_id]);
         return back()->with([
             'type' => 'success',
             'message' => 'Status Berhasil dirubah',

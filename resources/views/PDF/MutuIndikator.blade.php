@@ -38,7 +38,7 @@
     <p class="flex mb-4 font-serif font-semibold text-right">Form......../KPMKP/2018</p>
     <p class="flex mb-4 font-serif font-semibold text-center mx-36">PENGUMPULAN DATA INDIKATOR MUTU DAN KESELAMATAN
         PASIEN RSUD BALI MANDARA PROVINSI BALI</p>
-    <p class="ml-4 font-serif font-semibold uppercase">{{ $first->mutu_indikator->location->name }}</p>
+    {{-- <p class="ml-4 font-serif font-semibold uppercase">{{ $first->mutu_indikator?->location->name }}</p> --}}
     <p class="ml-4 font-serif font-semibold uppercase">BULAN :
         {{ \Carbon\Carbon::parse($first->tanggal_mutu)->isoFormat('MMMM Y') }}</p>
 

@@ -664,6 +664,8 @@ export default function Index(props) {
                         <Table.Thead>
                             <Table.Tr>
                                 <Table.Th>#</Table.Th>
+                                <Table.Th>Status</Table.Th>
+                                <Table.Th>Kode Risiko</Table.Th>
                                 <Table.Th onClick={() => sort("tgl_register")}>
                                     Tanggal Register
                                     {params.field == "tgl_register" &&
@@ -902,6 +904,12 @@ export default function Index(props) {
                                         <Table.Td>
                                             <Badge>{meta.from + index}</Badge>
                                         </Table.Td>
+                                        <Table.Td className="whitespace-nowrap">
+                                                                                    <Badge color="gray">{riskregisterklinis1.is_risiko_lama == 1 ? 'Risiko Lama' : 'Risiko Baru'}</Badge>
+                                                                                </Table.Td>
+                                                                                <Table.Td className="whitespace-nowrap">
+                                                                                    {riskregisterklinis1.kode_risiko}
+                                                                                </Table.Td>
                                         <Table.Td className="whitespace-nowrap">
                                             {riskregisterklinis1.tgl_register}
                                         </Table.Td>

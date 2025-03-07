@@ -97,6 +97,7 @@ class ExportPDFController extends Controller
         // }
         $data = $dataRaw->get();
         $first = $dataRaw->first();
+        // dd($data);
         // return view('PDF/MutuIndikator', ['data' => $data,'startDate'=>$startDate,'first'=>$first]);
         $pdf = PDF::loadView('PDF/MutuIndikator', ['data' => $data,'startDate'=>$startDate,'first'=>$first]);
         $pdf->setOption('enable-local-file-access', true);

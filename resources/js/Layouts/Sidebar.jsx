@@ -87,7 +87,7 @@ export default function Sidebar() {
     // };
 
     return (
-        <div className="col-span-12 col-start-1 py-4 antialiased text-gray-800 lg:px-4 lg:pb-0 lg:pt-4 lg:col-span-2 lg:block">
+        <div className="col-span-12 col-start-1 py-2 antialiased text-gray-800 lg:pr-2 lg:pb-0 lg:pt-2 lg:col-span-2 lg:block">
             <div className="top-0 left-0 flex flex-col w-full h-full bg-white border rounded-xl ">
                 <ExportModal
                     isOpenExportDialog={isOpenExportDialogLarsDHPKlinis}

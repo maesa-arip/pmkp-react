@@ -385,6 +385,23 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
+                            {data.risk_category_id === 6 && (<div className="col-span-12">
+                                                            <InputLabel for="kronologi" value="Kronologi" />
+                                                            <TextAreaInput
+                                                                id="kronologi"
+                                                                value={data.kronologi}
+                                                                handleChange={(e) =>
+                                                                    setData("kronologi", e.target.value)
+                                                                }
+                                                                // onChange={onChange}
+                                                                type="text"
+                                                                className="block w-full mt-1"
+                                                            />
+                                                            <InputError
+                                                                message={errors.kronologi}
+                                                                className="mt-2"
+                                                            />
+                                                        </div>)}
                             <div className="col-span-12">
                                 <InputLabel
                                     for="Kategori Risiko"
@@ -406,6 +423,7 @@ export default function Form({
                                     className="mt-2"
                                 />
                             </div>
+
                             <div className="col-span-4">
                                 <InputLabel
                                     for="Sumber Identifikasi"
