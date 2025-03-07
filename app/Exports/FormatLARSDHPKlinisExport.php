@@ -769,7 +769,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FF0D0D',
+                            'argb' => 'FF0D0D', //Merah
                         ],
                     ],
                 ];
@@ -779,7 +779,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FFC000',
+                            'argb' => 'FFC000', // Orange
                         ],
                     ],
                 ];
@@ -789,7 +789,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FFFF00',
+                            'argb' => 'FFFF00', // Kuning
                         ],
                     ],
                 ];
@@ -799,7 +799,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => '00B0F0',
+                            'argb' => '00B0F0', // Biru
                         ],
                     ],
                 ];
@@ -809,7 +809,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => '00B050',
+                            'argb' => '00B050', //Hijau
                         ],
                     ],
                 ];
@@ -830,7 +830,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     }
                 }
 
-                // KOLOM K
+                // KOLOM O
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
@@ -862,7 +862,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4->getStyle()->applyFromArray($styleSR);
                 $conditional4Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
                 $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional4Styles);
@@ -871,13 +871,13 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeO)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional5Styles);
 
 
-                // KOLOM L
+                // KOLOM P
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
@@ -909,7 +909,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4->getStyle()->applyFromArray($styleSR);
                 $conditional4Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
                 $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional4Styles);
@@ -918,7 +918,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeP)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeP)->setConditionalStyles($conditional5Styles);
@@ -939,7 +939,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
                 // $conditional2->addCondition(9);
                 $conditional2->setText('HIGH');
-                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2->getStyle()->applyFromArray($styleM);
                 $conditional2Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
                 $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional2Styles);
@@ -949,7 +949,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
                 // $conditional3->addCondition(4);
                 $conditional3->setText('MODERATE');
-                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3->getStyle()->applyFromArray($styleSR);
                 $conditional3Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
                 $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional3Styles);
@@ -959,7 +959,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
                 // $conditional5->addCondition(1);
                 $conditional5->setText('SANGAT RENDAH');
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeAA)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeAA)->setConditionalStyles($conditional5Styles);
@@ -1013,7 +1013,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 // $event->sheet->getStyle($rangeO)->setConditionalStyles($conditional4Styles);
 
 
-                // KOLOM T
+                // KOLOM X
                 $conditional = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
                 $conditional->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
@@ -1045,7 +1045,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4->getStyle()->applyFromArray($styleSR);
                 $conditional4Styles = $event->sheet->getStyle($rangeX)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
                 $event->sheet->getStyle($rangeX)->setConditionalStyles($conditional4Styles);
@@ -1091,7 +1091,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4->getStyle()->applyFromArray($styleSR);
                 $conditional4Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
                 $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional4Styles);
@@ -1100,7 +1100,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeY)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeY)->setConditionalStyles($conditional5Styles);
@@ -1863,7 +1863,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4->getStyle()->applyFromArray($styleSR);
                 $conditional4Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
                 $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional4Styles);
@@ -1872,7 +1872,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeE)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeE)->setConditionalStyles($conditional5Styles);
@@ -1910,7 +1910,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional4->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional4->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional4->addCondition(2);
-                $conditional4->getStyle()->applyFromArray($styleR);
+                $conditional4->getStyle()->applyFromArray($styleSR);
                 $conditional4Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
                 $conditional4Styles[] = $conditional4;
                 $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional4Styles);
@@ -1919,7 +1919,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional5->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_CELLIS);
                 $conditional5->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_EQUAL);
                 $conditional5->addCondition(1);
-                $conditional5->getStyle()->applyFromArray($styleSR);
+                $conditional5->getStyle()->applyFromArray($styleR);
                 $conditional5Styles = $event->sheet->getStyle($rangeF)->getConditionalStyles();
                 $conditional5Styles[] = $conditional5;
                 $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional5Styles);
@@ -1939,7 +1939,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional2->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
                 // $conditional2->addCondition(9);
                 $conditional2->setText('HIGH');
-                $conditional2->getStyle()->applyFromArray($styleT);
+                $conditional2->getStyle()->applyFromArray($styleM);
                 $conditional2Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
                 $conditional2Styles[] = $conditional2;
                 $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional2Styles);
@@ -1949,7 +1949,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $conditional3->setOperatorType(\PhpOffice\PhpSpreadsheet\Style\Conditional::OPERATOR_CONTAINSTEXT);
                 // $conditional3->addCondition(4);
                 $conditional3->setText('MODERATE');
-                $conditional3->getStyle()->applyFromArray($styleM);
+                $conditional3->getStyle()->applyFromArray($styleSR);
                 $conditional3Styles = $event->sheet->getStyle($rangeK)->getConditionalStyles();
                 $conditional3Styles[] = $conditional3;
                 $event->sheet->getStyle($rangeK)->setConditionalStyles($conditional3Styles);

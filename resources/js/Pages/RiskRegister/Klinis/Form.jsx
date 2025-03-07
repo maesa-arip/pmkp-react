@@ -317,7 +317,7 @@ export default function Form({
                                 />
                             </div>
                             {data.risk_category_id === 6 && (<div className="col-span-12">
-                                <InputLabel for="kronologi" value="Kronologi" />
+                                <InputLabel for="kronologi" value="Skenario (Wajib untuk risiko fraud)" />
                                 <TextAreaInput
                                     id="kronologi"
                                     value={data.kronologi}
