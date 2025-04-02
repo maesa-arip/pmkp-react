@@ -46,6 +46,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         rencana_pengendalian: model.rencana_pengendalian,
         jenis_sebab_id: model.jenis_sebab_id,
         pihak_terkena: model.pihak_terkena,
+        kronologi: model.kronologi,
        
     });
     const closeButton = (e) => setIsOpenEditDialog(false);
