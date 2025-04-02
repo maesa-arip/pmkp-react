@@ -15,7 +15,7 @@ class RiskRegister extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['sebab', 'risiko','dampak','pernyataan_risiko','osd1_dampak','osd1_probabilitas','osd2_dampak','osd2_probabilitas','osd2_controllability']);
+        ->logOnly(['sebab', 'risiko','dampak','kronologi','pernyataan_risiko','osd1_dampak','osd1_probabilitas','osd2_dampak','osd2_probabilitas','osd2_controllability']);
         // Chain fluent methods for configuration options
     }
     public function risk_category()
