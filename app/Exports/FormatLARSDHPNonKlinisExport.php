@@ -111,7 +111,8 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'indikator_fitur4s.name as indikator, ' .
                     'users.name as pemilik_name, ' .
                     'risk_categories.name as kategori_risiko, ' .
-                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
+                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`,'.
+                    'risk_registers.kode_risiko' 
             )
             ->where('tipe_id', 2)
             ->where($whosLogin);
@@ -132,7 +133,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $subquery->whereIn('risk_registers.user_id', $userIds);
         }
         $query = DB::query()
-            ->select('Peringkat', 'sasaran', 'program', 'kegiatan', 'tujuan', 'indikator', 'pemilik_name', 'kategori_risiko')
+            ->select('Peringkat', 'sasaran', 'program', 'kegiatan', 'tujuan', 'indikator', 'pemilik_name', 'kategori_risiko','kode_risiko')
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
 
@@ -146,7 +147,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['NO', 'SASARAN STRATEGIS', 'PROGRAM', 'KEGIATAN', 'TUJUAN KEGIATAN (S.M.A.R.T)-', 'INDIKATOR', 'PEMILIK RISIKO', 'KATEGORI RISIKO'],
+            ['NO', 'SASARAN STRATEGIS', 'PROGRAM', 'KEGIATAN', 'TUJUAN KEGIATAN (S.M.A.R.T)-', 'INDIKATOR', 'PEMILIK RISIKO', 'KATEGORI RISIKO','KODE RISIKO'],
         ];
     }
     public function columnWidths(): array
@@ -160,6 +161,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'F' => 65,
             'G' => 30,
             'H' => 30,
+            'I' => 30,
         ];
     }
     public function registerEvents(): array
@@ -214,7 +216,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],
                 ]);
-                $event->sheet->getDelegate()->getStyle('A1:H1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A1:I1')->applyFromArray($styleHeader);
             },
         ];
     }
@@ -324,7 +326,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             WHEN risk_registers.is_risiko_lama = 1 THEN "Risiko Lama"
             WHEN risk_registers.is_risiko_lama = 0 THEN "Risiko Baru"
             ELSE ""
-        END AS `status_risiko`
+        END AS `status_risiko`,
+        risk_categories.name as kategori_risiko
     ')
             ->groupBy(
                 'risk_registers.id',
@@ -370,7 +373,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd4_dampak',
                 'osd4_probabilitas',
                 'risk_registers.osd4_inherent',
-                'grading4.name'
+                'grading4.name',
+                'risk_categories.name'
             )
             ->where('tipe_id', 2)
             ->where($whosLogin);
@@ -439,7 +443,8 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'osd4_inherent',
                 'grading4_name',
                 'kronologi',
-                'status_risiko'
+                'status_risiko',
+                'kategori_risiko'
             )
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
@@ -453,11 +458,11 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB', 'SUMBER IDENTIFIKASI', 'JENIS INSIDEN', 'TIPE INSIDEN','RISIKO TREATED', 'RISIKO TREATED', 'RISIKO TREATED', 'RISIKO TREATED','RISIKO ACTUAL', 'RISIKO ACTUAL', 'RISIKO ACTUAL', 'RISIKO ACTUAL','SKENARIO','STATUS RISIKO'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', 'IDENTIFIKASI RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'ANALISA RISIKO INHERENT', 'EVALUASI RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'RISIKO RESIDUAL', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB', 'SUMBER IDENTIFIKASI', 'JENIS INSIDEN', 'TIPE INSIDEN','RISIKO TREATED', 'RISIKO TREATED', 'RISIKO TREATED', 'RISIKO TREATED','RISIKO ACTUAL', 'RISIKO ACTUAL', 'RISIKO ACTUAL', 'RISIKO ACTUAL','SKENARIO','STATUS RISIKO','KATEGORI_RISIKO'],
 
-            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB', 'SUMBER IDENTIFIKASI', 'JENIS INSIDEN', 'TIPE INSIDEN','DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO','DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO','SKENARIO','STATUS RISIKO'],
+            ['No', 'TANGGAL REGISTER', 'SASARAN STRATEGIS', 'PROGRAM', 'NAMA KEGIATAN (PROSES BISNIS)', 'TUJUAN KEGIATAN*)', 'INDIKATOR', 'PIC UNIT TERKAIT', 'SEBAB', 'KODE RISIKO', 'RISIKO', 'DAMPAK', 'PERNYATAAN RISIKO', ' PENGENDALIAN YANG SUDAH ADA SAAT INI', 'DAMPAK', 'PROBABILITAS', 'CONCAT (D & P)', 'SKOR', 'PERINGKAT RISIKO', 'APAKAH PERLU PENANGANAN RISIKO ?', 'OPSI TEKNIK PENGENDALIAN RISIKO', 'URAIAN PENANGANAN RISIKO', 'PEMBIAYAAN RISIKO', 'DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO', 'PEMILIK RISIKO', 'TARGET WAKTU', 'JENIS PENYEBAB', 'SUMBER IDENTIFIKASI', 'JENIS INSIDEN', 'TIPE INSIDEN','DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO','DAMPAK', 'PROBABILITAS', 'SKOR', 'PERINGKAT RISIKO','SKENARIO','STATUS RISIKO','KATEGORI_RISIKO'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)', '(31)', '(32)', '(33)', '(34)', '(35)', '(36)', '(37)', '(38)', '(39)', '(40)', '(41)','(42)','(43)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)', '(14)', '(15)', '(16)', '(17)', '(18)', '(19)', '(20)', '(21)', '(22)', '(23)', '(24)', '(25)', '(26)', '(27)', '(28)', '(29)', '(30)', '(31)', '(32)', '(33)', '(34)', '(35)', '(36)', '(37)', '(38)', '(39)', '(40)', '(41)','(42)','(43)','(44)'],
         ];
     }
     public function columnWidths(): array
@@ -506,6 +511,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'AO' => 12,
             'AP' => 15,
             'AQ' => 15,
+            'AR' => 17,
         ];
     }
     public function registerEvents(): array
@@ -1043,7 +1049,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
 
 
-                $event->sheet->getDelegate()->getStyle('A3:AQ3')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->getStyle('A3:AR3')->applyFromArray($styleHeader2);
 
                 // $event->sheet->getDelegate()->getStyle($rangeE)->applyFromArray([
                 //     'alignment' => [
@@ -1130,6 +1136,9 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     $event->sheet->getDelegate()->getStyle('AP1:AP2')->applyFromArray($styleHeader);
                     $event->sheet->getDelegate()->mergeCells('AQ1:AQ2');
                     $event->sheet->getDelegate()->getStyle('AQ1:AQ2')->applyFromArray($styleHeader);
+
+                    $event->sheet->getDelegate()->mergeCells('AR1:AR2');
+                    $event->sheet->getDelegate()->getStyle('AR1:AR2')->applyFromArray($styleHeader);
                 
             },
         ];
@@ -1462,6 +1471,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat1`'),
                 'users.name',
                 'risk_gradings.name_nonklinis_pergub as grading_name',
+                'risk_registers.kode_risiko',
             )
             // ->groupBy(
             //     'risk_registers.pernyataan_risiko',
@@ -1511,9 +1521,9 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'KATEGORI RISIKO', 'PERNYATAAN RISIKO', 'AKAR MASALAH (PENYEBAB UTAMA RISIKO)', 'DAMPAK (D)', 'PROBABILITAS (P)', 'CONTROLLABILITY (Pengendalian)', 'SCORING', 'RANGKING', 'PEMILIK RISIKO', 'PERINGKAT RISIKO'],
+            ['No', 'KATEGORI RISIKO', 'PERNYATAAN RISIKO', 'AKAR MASALAH (PENYEBAB UTAMA RISIKO)', 'DAMPAK (D)', 'PROBABILITAS (P)', 'CONTROLLABILITY (Pengendalian)', 'SCORING', 'RANGKING', 'PEMILIK RISIKO', 'PERINGKAT RISIKO','KODE_RISIKO'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8) (5x6x7)', '(9)', '(10)', '(11)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8) (5x6x7)', '(9)', '(10)', '(11)','(12)'],
         ];
     }
     public function columnWidths(): array
@@ -1530,6 +1540,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'I' => 12,
             'J' => 20,
             'K' => 20,
+            'L' => 25,
         ];
     }
     public function registerEvents(): array
@@ -1870,7 +1881,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getStyle($rangeF)->setConditionalStyles($conditional5Styles);
 
 
-                $event->sheet->getDelegate()->getStyle('A1:K2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A1:L2')->applyFromArray($styleHeader);
 
                 $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
                     'alignment' => [
@@ -1932,7 +1943,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     'waktu_pengendalians.name as waktu, ' .
                     'jenis_pengendalians.name as jenis_pengendalian, ' .
                     'users.name as pemilik, ' .
-                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'
+                    'row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`,'.
+                    'risk_registers.kode_risiko' 
             )
             // ->groupBy(
             //     'indikator_fitur3s.name',
@@ -1983,7 +1995,8 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'kegiatan',
                 'waktu',
                 'jenis_pengendalian',
-                'pemilik'
+                'pemilik',
+                'kode_risiko'
             )
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
@@ -2000,11 +2013,11 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['NO', 'KEGIATAN', 'SASARAN', 'Risiko yang akan ditangani (Prioritas)', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'Pengendalian yang sudah ada', 'Pengendalian yang sudah ada', 'Pengendalian yang sudah ada', 'Rencana pengendalian', 'Rencana pengendalian', 'Rencana pengendalian', 'Pemilik Risiko'],
+            ['NO', 'KEGIATAN', 'SASARAN', 'Risiko yang akan ditangani (Prioritas)', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'ALTERNATIF TEKNIK PENANGANAN RISIKO', 'Pengendalian yang sudah ada', 'Pengendalian yang sudah ada', 'Pengendalian yang sudah ada', 'Rencana pengendalian', 'Rencana pengendalian', 'Rencana pengendalian', 'Pemilik Risiko','Kode Risiko'],
 
-            ['NO', 'KEGIATAN', 'SASARAN', 'Risiko yang akan ditangani (Prioritas)', 'Opsi Teknik Penanganan Risiko', 'Uraian Penanganan Risiko', 'Pengendalian yang sudah ada', 'Efektif/ kurang efektif', 'Pengendalian yang harus ada', 'Kegiatan', 'Waktu', 'Jenis: Detektif (D), Preventif (P), Korektif (K),', 'Pemilik Risiko'],
+            ['NO', 'KEGIATAN', 'SASARAN', 'Risiko yang akan ditangani (Prioritas)', 'Opsi Teknik Penanganan Risiko', 'Uraian Penanganan Risiko', 'Pengendalian yang sudah ada', 'Efektif/ kurang efektif', 'Pengendalian yang harus ada', 'Kegiatan', 'Waktu', 'Jenis: Detektif (D), Preventif (P), Korektif (K),', 'Pemilik Risiko','Kode Risiko'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)', '(13)','(14)'],
 
         ];
     }
@@ -2023,6 +2036,256 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'J' => 45,
             'K' => 12,
             'L' => 13,
+            'M' => 20,
+            'N' => 20,
+        ];
+    }
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
+                $highestRow = $event->sheet->getHighestRow();
+                $highestColumn = $event->sheet->getHighestColumn();
+                $range = 'A1:' . $highestColumn . $highestRow;
+                $rangeA = 'A1:' . 'A' . $highestRow;
+                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                    ],
+                    'alignment' => [
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+                $styleHeader = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FCE4D6',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FCE4D6',
+                            // 'argb' => 'FFFFFFFF',
+                            // 'argb' => 'FFFFFFFF',
+                        ],
+                    ],
+                ];
+                $styleHeader2 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FCE4D6',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FCE4D6',
+                        ],
+                    ],
+                ];
+                $styleHeader3 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => 'FFFF00',
+                        ],
+                        'endColor' => [
+                            'argb' => 'FFFF00',
+                        ],
+                    ],
+                ];
+                $styleHeader4 = [
+                    'font' => [
+                        'bold' => true,
+                        'size' => 11,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                        'rotation' => 90,
+                        'startColor' => [
+                            'argb' => '92D050',
+                        ],
+                        'endColor' => [
+                            'argb' => '92D050',
+                        ],
+                    ],
+                ];
+                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                    ],
+                ]);
+                $event->sheet->getDelegate()->getStyle('A3:N3')->applyFromArray($styleHeader2);
+                $event->sheet->getDelegate()->mergeCells('A1:A2');
+                $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('B1:B2');
+                $event->sheet->getDelegate()->getStyle('B1:B2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('C1:C2');
+                $event->sheet->getDelegate()->getStyle('C1:C2')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->mergeCells('D1:D2');
+                $event->sheet->getDelegate()->getStyle('D1:D2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('E1:F1');
+                $event->sheet->getDelegate()->getStyle('E1:F1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('E2:G2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('G1:I1');
+                $event->sheet->getDelegate()->getStyle('G1:I1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('H2:I2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('J1:L1');
+                $event->sheet->getDelegate()->getStyle('J1:L1')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('J2:L2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('M1:M2');
+                $event->sheet->getDelegate()->getStyle('M1:M2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('N1:N2');
+                $event->sheet->getDelegate()->getStyle('N1:N2')->applyFromArray($styleHeader);
+            },
+        ];
+    }
+}
+class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
+{
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    protected $data;
+    protected $startDate;
+    protected $endDate;
+    protected $userId;
+    protected $currently_id;
+
+    public function __construct($startDate, $endDate, $userId, $currently_id)
+    {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->userId = $userId;
+        $this->currently_id = $currently_id;
+    }
+    public function query()
+    {
+        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $subquery = RiskRegister::query()
+            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
+            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
+            ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
+            ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
+            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur3s.sasaran_strategis_id')
+            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
+            ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
+            ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'indikator_fitur3s.name', 'indikator_fitur1s.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.rencana_pengendalian as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name', \DB::raw("GROUP_CONCAT(pics.name) as picsname"),'risk_registers.kode_risiko')->groupBy("risk_registers.id")
+            ->where('tipe_id', 2)
+            ->where($whosLogin);
+        if (!empty($this->startDate) && !empty($this->endDate)) {
+            $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
+                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
+        }
+        if (!empty($this->currently_id)) {
+            if ($this->currently_id['id'] < 3) {
+                $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
+            }
+            if ($this->currently_id['id'] == 3) {
+                $subquery->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
+            }
+        }
+        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
+            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
+            $subquery->whereIn('risk_registers.user_id', $userIds);
+        }
+        $query = DB::query()
+            ->select('Peringkat', 'name', 'sasaran_name', 'pernyataan_risiko', 'rencana', 'realisasi', 'belum_tertangani', 'usulan_perbaikan', 'target_waktu', 'waktu', 'pemilik_name', 'picsname','kode_risiko')
+            ->fromSub($subquery, 'sub')
+            ->orderBy('sub.Peringkat', 'ASC');
+        $this->data = $query->get();
+        return $query;
+    }
+    public function title(): string
+    {
+        return 'PEMANTAUAN PENGENDALIAN RISIKO';
+    }
+    public function headings(): array
+    {
+        return [
+            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Penanganan', 'Penanganan', 'Penanganan', 'Usulan Perbaikan', 'Waktu Pemantauan', 'Waktu Pemantauan', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko','Kode Risiko'],
+
+            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Rencana (Pengendalian yg harus ada)', 'Realisasi (Kegiatan Rencana Pengendalian )', 'Yang belum tertangani', 'Usulan Perbaikan', 'Rencana', 'Realisasi', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko','Kode Risiko'],
+
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)','(13)'],
+
+        ];
+    }
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 4,
+            'B' => 45,
+            'C' => 45,
+            'D' => 65,
+            'E' => 45,
+            'F' => 45,
+            'G' => 20,
+            'H' => 36,
+            'I' => 20,
+            'J' => 12,
+            'K' => 20,
+            'L' => 20,
             'M' => 20,
         ];
     }
@@ -2092,10 +2355,10 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
                         'rotation' => 90,
                         'startColor' => [
-                            'argb' => 'FCE4D6',
+                            'argb' => 'FFFFFFFF',
                         ],
                         'endColor' => [
-                            'argb' => 'FCE4D6',
+                            'argb' => 'FFFFFFFF',
                         ],
                     ],
                 ];
@@ -2155,251 +2418,6 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ]);
                 $event->sheet->getDelegate()->getStyle('A3:M3')->applyFromArray($styleHeader2);
-                $event->sheet->getDelegate()->mergeCells('A1:A2');
-                $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('B1:B2');
-                $event->sheet->getDelegate()->getStyle('B1:B2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('C1:C2');
-                $event->sheet->getDelegate()->getStyle('C1:C2')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->mergeCells('D1:D2');
-                $event->sheet->getDelegate()->getStyle('D1:D2')->applyFromArray($styleHeader);
-
-                $event->sheet->getDelegate()->mergeCells('E1:F1');
-                $event->sheet->getDelegate()->getStyle('E1:F1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('E2:G2')->applyFromArray($styleHeader);
-
-                $event->sheet->getDelegate()->mergeCells('G1:I1');
-                $event->sheet->getDelegate()->getStyle('G1:I1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('H2:I2')->applyFromArray($styleHeader);
-
-                $event->sheet->getDelegate()->mergeCells('J1:L1');
-                $event->sheet->getDelegate()->getStyle('J1:L1')->applyFromArray($styleHeader);
-                $event->sheet->getDelegate()->getStyle('J2:L2')->applyFromArray($styleHeader);
-
-                $event->sheet->getDelegate()->mergeCells('M1:M2');
-                $event->sheet->getDelegate()->getStyle('M1:M2')->applyFromArray($styleHeader);
-            },
-        ];
-    }
-}
-class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, WithTitle
-{
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    protected $data;
-    protected $startDate;
-    protected $endDate;
-    protected $userId;
-    protected $currently_id;
-
-    public function __construct($startDate, $endDate, $userId, $currently_id)
-    {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->userId = $userId;
-        $this->currently_id = $currently_id;
-    }
-    public function query()
-    {
-        $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $subquery = RiskRegister::query()
-            ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
-            ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
-            ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
-            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur3s.sasaran_strategis_id')
-            ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
-            ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
-            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'indikator_fitur3s.name', 'indikator_fitur1s.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.rencana_pengendalian as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name', \DB::raw("GROUP_CONCAT(pics.name) as picsname"))->groupBy("risk_registers.id")
-            ->where('tipe_id', 2)
-            ->where($whosLogin);
-        if (!empty($this->startDate) && !empty($this->endDate)) {
-            $subquery->where('risk_registers.tgl_register', '>=', $this->startDate)
-                ->where('risk_registers.tgl_register', '<=', Carbon::parse($this->endDate)->addDay(1));
-        }
-        if (!empty($this->currently_id)) {
-            if ($this->currently_id['id'] < 3) {
-                $subquery->where('risk_registers.currently_id', '=', $this->currently_id['id']);
-            }
-            if ($this->currently_id['id'] == 3) {
-                $subquery->whereIn('risk_registers.concatdp1', [15, 23, 24, 25, 32, 33, 34, 35, 42, 43, 44, 45, 51, 52, 53, 54, 55]);
-            }
-        }
-        if (!empty($this->userId) && auth()->user()->can('lihat data semua risk register')) {
-            $userIds = !empty($this->userId) ? array_map('intval', explode(',', $this->userId)) : [];
-            $subquery->whereIn('risk_registers.user_id', $userIds);
-        }
-        $query = DB::query()
-            ->select('Peringkat', 'name', 'sasaran_name', 'pernyataan_risiko', 'rencana', 'realisasi', 'belum_tertangani', 'usulan_perbaikan', 'target_waktu', 'waktu', 'pemilik_name', 'picsname')
-            ->fromSub($subquery, 'sub')
-            ->orderBy('sub.Peringkat', 'ASC');
-        $this->data = $query->get();
-        return $query;
-    }
-    public function title(): string
-    {
-        return 'PEMANTAUAN PENGENDALIAN RISIKO';
-    }
-    public function headings(): array
-    {
-        return [
-            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Penanganan', 'Penanganan', 'Penanganan', 'Usulan Perbaikan', 'Waktu Pemantauan', 'Waktu Pemantauan', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko'],
-
-            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Rencana (Pengendalian yg harus ada)', 'Realisasi (Kegiatan Rencana Pengendalian )', 'Yang belum tertangani', 'Usulan Perbaikan', 'Rencana', 'Realisasi', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko'],
-
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)'],
-
-        ];
-    }
-    public function columnWidths(): array
-    {
-        return [
-            'A' => 4,
-            'B' => 45,
-            'C' => 45,
-            'D' => 65,
-            'E' => 45,
-            'F' => 45,
-            'G' => 20,
-            'H' => 36,
-            'I' => 20,
-            'J' => 12,
-            'K' => 20,
-            'L' => 20,
-        ];
-    }
-    public function registerEvents(): array
-    {
-        return [
-            AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getRowDimension(1)->setRowHeight(30);
-                $highestRow = $event->sheet->getHighestRow();
-                $highestColumn = $event->sheet->getHighestColumn();
-                $range = 'A1:' . $highestColumn . $highestRow;
-                $rangeA = 'A1:' . 'A' . $highestRow;
-                $event->sheet->getDelegate()->getStyle($range)->getAlignment()->setWrapText(true);
-                $event->sheet->getDelegate()->getStyle($range)->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000'],
-                        ],
-                    ],
-                    'alignment' => [
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-                $styleHeader = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => 'FCE4D6',
-                        ],
-                        'endColor' => [
-                            'argb' => 'FCE4D6',
-                            // 'argb' => 'FFFFFFFF',
-                            // 'argb' => 'FFFFFFFF',
-                        ],
-                    ],
-                ];
-                $styleHeader2 = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => 'FFFFFFFF',
-                        ],
-                        'endColor' => [
-                            'argb' => 'FFFFFFFF',
-                        ],
-                    ],
-                ];
-                $styleHeader3 = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => 'FFFF00',
-                        ],
-                        'endColor' => [
-                            'argb' => 'FFFF00',
-                        ],
-                    ],
-                ];
-                $styleHeader4 = [
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                    'borders' => [
-                        'outline' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
-                        'rotation' => 90,
-                        'startColor' => [
-                            'argb' => '92D050',
-                        ],
-                        'endColor' => [
-                            'argb' => '92D050',
-                        ],
-                    ],
-                ];
-                $event->sheet->getDelegate()->getStyle($rangeA)->applyFromArray([
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_LEFT,
-                    ],
-                ]);
-                $event->sheet->getDelegate()->getStyle('A3:K3')->applyFromArray($styleHeader2);
 
                 $event->sheet->getDelegate()->mergeCells('A1:A2');
                 $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
@@ -2426,6 +2444,9 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
                 $event->sheet->getDelegate()->mergeCells('L1:L2');
                 $event->sheet->getDelegate()->getStyle('L1:L2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('M1:M2');
+                $event->sheet->getDelegate()->getStyle('M1:M2')->applyFromArray($styleHeader);
             },
         ];
     }
@@ -2711,7 +2732,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     WHEN risk_registers.realisasi_id = 2 THEN "Sudah Tercapai"
                     ELSE ""
                 END AS `PerluPenanganan`'
-            ), 'waktu_implementasis.name as waktu_implementasi', 'users.name as pemilik_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name_nonklinis_pergub as grading')
+            ), 'waktu_implementasis.name as waktu_implementasi', 'users.name as pemilik_name', DB::raw("'Turun' AS 'tren'"), 'risk_gradings.name_nonklinis_pergub as grading','risk_registers.kode_risiko')
             ->where('tipe_id', 2)
             ->orderBy('Peringkat', 'ASC')
             ->where($whosLogin);
@@ -2762,10 +2783,10 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Prioritas Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Status Risiko', 'Status Risiko'],
+            ['No', 'Prioritas Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Penanganan Risiko', 'Status Risiko', 'Status Risiko','Kode Risiko'],
 
-            ['No', 'Prioritas Risiko', 'Aksi pengendalian', 'Output', 'Target', 'Realisasi', 'Waktu Implementasi', 'Penanggung jawab', 'Trend (naik/ turun)', 'Level Risiko'],
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)'],
+            ['No', 'Prioritas Risiko', 'Aksi pengendalian', 'Output', 'Target', 'Realisasi', 'Waktu Implementasi', 'Penanggung jawab', 'Trend (naik/ turun)', 'Level Risiko','Kode Risiko'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)','(11)'],
         ];
     }
     public function columnWidths(): array
@@ -2781,6 +2802,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'H' => 20,
             'I' => 20,
             'J' => 15,
+            'K' => 20,
         ];
     }
     public function registerEvents(): array
@@ -2912,7 +2934,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                     ],
                 ]);
 
-                $event->sheet->getDelegate()->getStyle('A3:J3')->applyFromArray($styleHeader);
+                $event->sheet->getDelegate()->getStyle('A3:K3')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->mergeCells('A1:A2');
                 $event->sheet->getDelegate()->getStyle('A1:A2')->applyFromArray($styleHeader);
 
@@ -2926,6 +2948,10 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 $event->sheet->getDelegate()->mergeCells('I1:J1');
                 $event->sheet->getDelegate()->getStyle('I1:J1')->applyFromArray($styleHeader);
                 $event->sheet->getDelegate()->getStyle('I2:J2')->applyFromArray($styleHeader);
+
+
+                $event->sheet->getDelegate()->mergeCells('K1:K2');
+                $event->sheet->getDelegate()->getStyle('K1:K2')->applyFromArray($styleHeader);
             },
         ];
     }

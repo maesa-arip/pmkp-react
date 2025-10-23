@@ -159,7 +159,14 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         // dd($request->all());
 
+        // $risk = RiskRegister::create($request->except('name'));
+        
         $risk = RiskRegister::create($request->except('name'));
+        $kode_risiko_prefix = ($risk->risk_category_id == 5) ? 'RSO' : 'ROO';
+        $tahun_register = Carbon::parse($risk->tgl_register)->format('y');
+        $risk->kode_risiko = "{$kode_risiko_prefix}.{$tahun_register}.02.43.{$risk->id}";
+        $risk->save();
+        // dd($risk,$risk->kode_risiko);
         // dd($risk->id);
 
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$risk->id, 'currently_id'=>$request->currently_id]);

@@ -187,7 +187,12 @@ class RiskRegisterNonKlinisController extends Controller
             // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
 
-        $risk = RiskRegister::create($request->except('name'));
+        // $risk = RiskRegister::create($request->except('name'));
+         $risk = RiskRegister::create($request->except('name'));
+        $kode_risiko_prefix = ($risk->risk_category_id == 5) ? 'RSO' : 'ROO';
+        $tahun_register = Carbon::parse($risk->tgl_register)->format('y');
+        $risk->kode_risiko = "{$kode_risiko_prefix}.{$tahun_register}.02.43.{$risk->id}";
+        $risk->save();
 
         $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$risk->id, 'currently_id'=>$request->currently_id]);
         // $user = User::whereHas('roles', function ($query) {
