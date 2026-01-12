@@ -2230,7 +2230,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_pengendalians', 'waktu_pengendalians.id', 'risk_registers.waktu_pengendalian_id')
             ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
-            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'indikator_fitur3s.name', 'indikator_fitur1s.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.rencana_pengendalian as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu', 'users.name as pemilik_name', \DB::raw("GROUP_CONCAT(pics.name) as picsname"),'risk_registers.kode_risiko')->groupBy("risk_registers.id")
+            ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'indikator_fitur3s.name', 'indikator_fitur1s.name as sasaran_name',  'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_harus_ada as rencana', 'risk_registers.rencana_pengendalian as realisasi', 'risk_registers.belum_tertangani', 'risk_registers.usulan_perbaikan',  DB::raw("CONCAT(risk_registers.target_waktu, ' Hari') AS target_waktu"), 'waktu_pengendalians.name as waktu','risk_registers.kendala', 'users.name as pemilik_name', \DB::raw("GROUP_CONCAT(pics.name) as picsname"),'risk_registers.kode_risiko')->groupBy("risk_registers.id")
             ->where('tipe_id', 2)
             ->where($whosLogin);
         if (!empty($this->startDate) && !empty($this->endDate)) {
@@ -2250,7 +2250,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             $subquery->whereIn('risk_registers.user_id', $userIds);
         }
         $query = DB::query()
-            ->select('Peringkat', 'name', 'sasaran_name', 'pernyataan_risiko', 'rencana', 'realisasi', 'belum_tertangani', 'usulan_perbaikan', 'target_waktu', 'waktu', 'pemilik_name', 'picsname','kode_risiko')
+            ->select('Peringkat', 'name', 'sasaran_name', 'pernyataan_risiko', 'rencana', 'realisasi', 'belum_tertangani', 'usulan_perbaikan', 'target_waktu', 'waktu','kendala', 'pemilik_name', 'picsname','kode_risiko')
             ->fromSub($subquery, 'sub')
             ->orderBy('sub.Peringkat', 'ASC');
         $this->data = $query->get();
@@ -2263,11 +2263,11 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     public function headings(): array
     {
         return [
-            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Penanganan', 'Penanganan', 'Penanganan', 'Usulan Perbaikan', 'Waktu Pemantauan', 'Waktu Pemantauan', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko','Kode Risiko'],
+            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Penanganan', 'Penanganan', 'Penanganan', 'Usulan Perbaikan', 'Waktu Pemantauan', 'Waktu Pemantauan','Kendala', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko','Kode Risiko'],
 
-            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Rencana (Pengendalian yg harus ada)', 'Realisasi (Kegiatan Rencana Pengendalian )', 'Yang belum tertangani', 'Usulan Perbaikan', 'Rencana', 'Realisasi', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko','Kode Risiko'],
+            ['No', 'Kegiatan', 'Sasaran', 'Risiko (Prioritas)', 'Rencana (Pengendalian yg harus ada)', 'Realisasi (Kegiatan Rencana Pengendalian )', 'Yang belum tertangani', 'Usulan Perbaikan', 'Rencana', 'Realisasi','Kendala', 'Penanggung Jawab Pemantauan', 'Penanggung Jawab Risiko','Kode Risiko'],
 
-            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)','(13)'],
+            ['(1)', '(2)', '(3)', '(4)', '(5)', '(6)', '(7)', '(8)', '(9)', '(10)', '(11)', '(12)','(13)','(14)'],
 
         ];
     }
@@ -2287,6 +2287,7 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             'K' => 20,
             'L' => 20,
             'M' => 20,
+            'N' => 20,
         ];
     }
     public function registerEvents(): array
@@ -2447,6 +2448,9 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
 
                 $event->sheet->getDelegate()->mergeCells('M1:M2');
                 $event->sheet->getDelegate()->getStyle('M1:M2')->applyFromArray($styleHeader);
+
+                $event->sheet->getDelegate()->mergeCells('N1:N2');
+                $event->sheet->getDelegate()->getStyle('N1:N2')->applyFromArray($styleHeader);
             },
         ];
     }
