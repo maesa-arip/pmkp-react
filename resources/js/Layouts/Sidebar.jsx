@@ -626,6 +626,15 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                     >
                                         Jenis Sebab
                                     </Link>
+                                    <Link
+                                        href={route("riskGradings.index")}
+                                        onClick={closeSidebar}
+                                        className={getSubNavClasses(
+                                            routeName.startsWith("riskGradings"),
+                                        )}
+                                    >
+                                        Aturan Grading
+                                    </Link>
                                 </div>
                             )}
 

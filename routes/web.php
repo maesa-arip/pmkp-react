@@ -32,6 +32,7 @@ use App\Http\Controllers\ProbabilityValueController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RCAController;
 use App\Http\Controllers\RiskCategoryController;
+use App\Http\Controllers\RiskGradingController;
 use App\Http\Controllers\RiskRegisterKlinisController;
 use App\Http\Controllers\RiskRegisterKlinisOpsiPengendalianController;
 use App\Http\Controllers\RiskRegisterKlinisOsd2Controller;
@@ -83,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
     Route::Resource('riskCategories', RiskCategoryController::class);
+    Route::apiResource('riskGradings', RiskGradingController::class);
     Route::Resource('opsiPengendalians', OpsiPengendalianController::class);
     Route::Resource('identificationSources', IdentificationSourceController::class);
     Route::apiResource('locations', LocationController::class);
