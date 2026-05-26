@@ -43,7 +43,7 @@ function Inputs() {
                                 value={x.firstName}
                                 onChange={(e) => handleInputChange(e, i)}
                                 type="datetime-local"
-                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             />
                         </div>
                         <div className="col-span-9">
@@ -58,7 +58,7 @@ function Inputs() {
                                 onChange={(e) => handleInputChange(e, i)}
                                 rows={5}
                                 type="text"
-                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             />
                         </div>
                         <div className="col-span-1">

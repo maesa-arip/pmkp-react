@@ -36,14 +36,14 @@ export default function UpdatePasswordForm({ className }) {
     };
 
     // Styling Helpers
-    const inputClass = "block w-full text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all shadow-sm placeholder:text-slate-400 mt-1.5";
+    const inputClass = "block w-full text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all shadow-sm placeholder:text-slate-400 mt-1.5";
     const labelClass = "text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400";
 
     return (
         <section className={className}>
             <header className="px-6 py-5 border-b bg-slate-50/50 dark:bg-transparent border-slate-100 dark:border-slate-800/80">
                 <div className="flex items-center">
-                    <KeyIcon className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
+                    <KeyIcon className="w-5 h-5 mr-2 text-indigo-500 dark:text-indigo-400" />
                     <div>
                         <h2 className="text-base font-bold text-slate-900 dark:text-white">Ubah Kata Sandi</h2>
                         <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -98,7 +98,7 @@ export default function UpdatePasswordForm({ className }) {
                 <div className="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
                     <button 
                         disabled={processing}
-                        className="inline-flex justify-center items-center px-6 py-2.5 text-sm font-bold text-white transition-colors bg-blue-600 rounded-xl shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex justify-center items-center px-6 py-2.5 text-sm font-bold text-white transition-colors bg-indigo-600 rounded-xl shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Simpan Sandi
                     </button>

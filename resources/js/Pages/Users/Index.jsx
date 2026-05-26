@@ -122,7 +122,7 @@ export default function Index(props) {
                 
                 {/* --- HEADER --- */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
                     <div className="relative z-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
                         <div className="space-y-1.5">
                             <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-50">Manajemen Pengguna</h2>
@@ -219,7 +219,7 @@ export default function Index(props) {
                                                     <div className="flex flex-wrap gap-2">
                                                         {person.roles && person.roles.length > 0 ? (
                                                             person.roles.map((role, idx) => (
-                                                                <span key={idx} className="px-2.5 py-1 text-[10px] font-bold tracking-widest text-blue-700 bg-blue-50 border border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30 uppercase rounded-md shadow-sm">
+                                                                <span key={idx} className="px-2.5 py-1 text-[10px] font-bold tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30 uppercase rounded-md shadow-sm">
                                                                     {role.name}
                                                                 </span>
                                                             ))
@@ -306,7 +306,7 @@ export default function Index(props) {
                                 <div className="flex flex-wrap gap-2">
                                     {state.roles && state.roles.length > 0 ? (
                                         state.roles.map((role, idx) => (
-                                            <span key={idx} className="px-3 py-1.5 text-xs font-bold tracking-widest text-blue-700 bg-blue-50 border border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30 uppercase rounded-lg shadow-sm">
+                                            <span key={idx} className="px-3 py-1.5 text-xs font-bold tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30 uppercase rounded-lg shadow-sm">
                                                 {role.name}
                                             </span>
                                         ))

@@ -46,7 +46,7 @@ export default function Dashboard(props) {
         { id: 2, user: 'Suster Rina', action: 'Memperbarui status perbaikan pada insiden IGD', time: '5 jam yang lalu', type: 'info', icon: <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-sky-500" /> },
         { id: 3, user: 'Budi (Teknisi)', action: 'Melaporkan kerusakan panel listrik utama', time: '1 hari yang lalu', type: 'warning', icon: <ShieldExclamationIcon className="w-4 h-4 text-amber-500" /> },
         { id: 4, user: 'Admin Risiko', action: 'Memverifikasi dan memberikan grading risiko', time: '1 hari yang lalu', type: 'success', icon: <CheckBadgeIcon className="w-4 h-4 text-emerald-500" /> },
-        { id: 5, user: 'dr. Sarah', action: 'Mengunggah dokumen investigasi RCA', time: '2 hari yang lalu', type: 'document', icon: <DocumentTextIcon className="w-4 h-4 text-blue-500" /> },
+        { id: 5, user: 'dr. Sarah', action: 'Mengunggah dokumen investigasi RCA', time: '2 hari yang lalu', type: 'document', icon: <DocumentTextIcon className="w-4 h-4 text-indigo-500" /> },
     ];
 
     // Data Matriks 5x5 (Probabilitas x Dampak)
@@ -124,7 +124,7 @@ export default function Dashboard(props) {
                 
                 {/* --- HEADER --- */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-indigo-600"></div>
                     <div className="relative z-10 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                         <div className="space-y-1.5">
                             <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-50">
@@ -302,7 +302,7 @@ export default function Dashboard(props) {
                                                 act.type === 'info' ? 'bg-sky-50 border-sky-200 dark:bg-sky-500/10 dark:border-sky-500/20' :
                                                 act.type === 'warning' ? 'bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20' :
                                                 act.type === 'success' ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20' :
-                                                'bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20'
+                                                'bg-indigo-50 border-indigo-200 dark:bg-indigo-500/10 dark:border-indigo-500/20'
                                             }`}>
                                                 {act.icon}
                                             </div>

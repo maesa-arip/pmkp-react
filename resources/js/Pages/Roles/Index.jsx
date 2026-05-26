@@ -24,7 +24,7 @@ import Edit from "./Edit";
 const SortIcon = ({ field, currentField, direction }) => {
     const isActive = field === currentField;
     return (
-        <svg className={`w-3.5 h-3.5 ml-1.5 transition-colors ${isActive ? 'text-blue-500 dark:text-blue-400' : 'text-slate-300 dark:text-slate-600 group-hover:text-slate-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className={`w-3.5 h-3.5 ml-1.5 transition-colors ${isActive ? 'text-indigo-500 dark:text-indigo-400' : 'text-slate-300 dark:text-slate-600 group-hover:text-slate-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             {isActive && direction === "desc" 
                 ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /> 
                 : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />}
@@ -123,7 +123,7 @@ export default function Index(props) {
                 
                 {/* --- HEADER --- */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-violet-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-600"></div>
                     <div className="relative z-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
                         <div className="space-y-1.5">
                             <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-50">Manajemen Peran (Roles)</h2>
@@ -132,15 +132,15 @@ export default function Index(props) {
                         <div className="flex flex-col items-center w-full gap-3 sm:flex-row md:w-auto">
                             <div className="flex items-center w-full gap-2 sm:w-auto">
                                 <span className="hidden mr-1 text-xs font-semibold lg:block text-slate-500">Tampilkan:</span>
-                                <select name="load" onChange={onChange} value={params.load} className="h-10 px-4 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl appearance-none cursor-pointer dark:bg-[#1e293b] dark:text-slate-200 dark:border-slate-700 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm">
+                                <select name="load" onChange={onChange} value={params.load} className="h-10 px-4 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl appearance-none cursor-pointer dark:bg-[#1e293b] dark:text-slate-200 dark:border-slate-700 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all shadow-sm">
                                     {pageNumber.map((page, index) => <option key={index}>{page}</option>)}
                                 </select>
                                 <div className="relative flex-1 sm:w-56 md:w-72">
                                     <MagnifyingGlassIcon className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
-                                    <input type="text" name="q" placeholder="Cari nama role..." onChange={onChange} value={params.q || ''} className="h-10 w-full pl-10 pr-4 text-sm font-medium text-slate-900 bg-slate-50 border border-slate-200 rounded-xl dark:text-slate-100 dark:bg-[#1e293b] dark:border-slate-700 hover:border-blue-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm placeholder:text-slate-400" />
+                                    <input type="text" name="q" placeholder="Cari nama role..." onChange={onChange} value={params.q || ''} className="h-10 w-full pl-10 pr-4 text-sm font-medium text-slate-900 bg-slate-50 border border-slate-200 rounded-xl dark:text-slate-100 dark:bg-[#1e293b] dark:border-slate-700 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all shadow-sm placeholder:text-slate-400" />
                                 </div>
                             </div>
-                            <button onClick={() => triggerModal(setIsOpenAddDialog)} className="inline-flex items-center justify-center w-full h-10 px-5 text-sm font-bold text-white transition-colors bg-blue-600 shadow-sm shrink-0 sm:w-auto rounded-xl hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50">
+                            <button onClick={() => triggerModal(setIsOpenAddDialog)} className="inline-flex items-center justify-center w-full h-10 px-5 text-sm font-bold text-white transition-colors bg-indigo-600 shadow-sm shrink-0 sm:w-auto rounded-xl hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50">
                                 <PlusIcon className="w-4 h-4 mr-2" /> Tambah Role
                             </button>
                         </div>
@@ -186,11 +186,11 @@ export default function Index(props) {
                                         const isSelected = selectedRow === index;
                                         
                                         return (
-                                            <tr key={index} onClick={() => onSelectRow(index)} className={`group transition-colors duration-200 cursor-pointer ${isSelected ? "bg-blue-50/50 dark:bg-white/[0.04]" : "bg-white dark:bg-[#0f172a] hover:bg-slate-50/80 dark:hover:bg-[#161f33]"}`}>
+                                            <tr key={index} onClick={() => onSelectRow(index)} className={`group transition-colors duration-200 cursor-pointer ${isSelected ? "bg-indigo-50/50 dark:bg-white/[0.04]" : "bg-white dark:bg-[#0f172a] hover:bg-slate-50/80 dark:hover:bg-[#161f33]"}`}>
                                                 
-                                                <td className={`px-5 py-5 align-middle sticky left-0 bg-clip-padding border-r border-slate-100 dark:border-slate-800/80 transition-colors duration-200 shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_10px_-4px_rgba(0,0,0,0.5)] ${isSelected ? "bg-blue-50 dark:bg-[#1e293b]" : "bg-white dark:bg-[#0f172a] group-hover:bg-slate-50 dark:group-hover:bg-[#161f33]"} ${isModalOpen || showDrawer ? 'z-0' : 'z-10'}`}>
+                                                <td className={`px-5 py-5 align-middle sticky left-0 bg-clip-padding border-r border-slate-100 dark:border-slate-800/80 transition-colors duration-200 shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_10px_-4px_rgba(0,0,0,0.5)] ${isSelected ? "bg-indigo-50 dark:bg-[#1e293b]" : "bg-white dark:bg-[#0f172a] group-hover:bg-slate-50 dark:group-hover:bg-[#161f33]"} ${isModalOpen || showDrawer ? 'z-0' : 'z-10'}`}>
                                                     <div className="flex items-center gap-4">
-                                                        <div className="flex items-center justify-center w-10 h-10 text-blue-700 bg-blue-100 border border-blue-200 rounded-xl dark:bg-blue-500/20 dark:border-blue-500/30 dark:text-blue-400 shrink-0">
+                                                        <div className="flex items-center justify-center w-10 h-10 text-indigo-700 bg-indigo-100 border border-indigo-200 rounded-xl dark:bg-indigo-500/20 dark:border-indigo-500/30 dark:text-indigo-400 shrink-0">
                                                             <ShieldCheckIcon className="w-5 h-5" />
                                                         </div>
                                                         <div className="flex flex-col overflow-hidden">
@@ -223,7 +223,7 @@ export default function Index(props) {
 
                                                 <td className="px-5 py-4 text-center align-middle">
                                                     <div className="relative inline-block text-left" onClick={(e) => e.stopPropagation()}>
-                                                        <button onClick={() => toggleDropdown(role.id)} className="p-2 transition-colors rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                                                        <button onClick={() => toggleDropdown(role.id)} className="p-2 transition-colors rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                                                             <EllipsisVerticalIcon className="w-5 h-5" />
                                                         </button>
                                                         
@@ -231,7 +231,7 @@ export default function Index(props) {
                                                             <div className="absolute right-0 z-[100] w-48 mt-2 origin-top-right bg-white border border-slate-200 rounded-xl shadow-lg dark:bg-[#1e293b] dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-slate-100 dark:divide-slate-700/80">
                                                                 <div className="py-1">
                                                                     <button onClick={() => { openEdit(role); setOpenDropdownId(null); }} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:text-slate-300 group">
-                                                                        <PencilSquareIcon className="w-4 h-4 mr-2 text-blue-500 transition-transform dark:text-blue-400 group-hover:scale-110" /> Edit Role
+                                                                        <PencilSquareIcon className="w-4 h-4 mr-2 text-indigo-500 transition-transform dark:text-indigo-400 group-hover:scale-110" /> Edit Role
                                                                     </button>
                                                                 </div>
                                                                 <div className="py-1">
@@ -277,8 +277,8 @@ export default function Index(props) {
                         <div className="flex-1 p-6 overflow-y-auto space-y-7 custom-scrollbar bg-slate-50/50 dark:bg-transparent">
                             {/* Profile Info */}
                             <div className="flex flex-col items-center justify-center py-6 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 shadow-sm rounded-2xl relative overflow-hidden">
-                                <div className="absolute top-0 left-0 right-0 h-1.5 bg-blue-500"></div>
-                                <div className="flex items-center justify-center w-16 h-16 mb-4 text-blue-600 bg-blue-100 border-2 border-blue-200 shadow-sm rounded-2xl dark:bg-blue-500/20 dark:border-blue-500/30 dark:text-blue-400">
+                                <div className="absolute top-0 left-0 right-0 h-1.5 bg-indigo-500"></div>
+                                <div className="flex items-center justify-center w-16 h-16 mb-4 text-indigo-600 bg-indigo-100 border-2 border-indigo-200 shadow-sm rounded-2xl dark:bg-indigo-500/20 dark:border-indigo-500/30 dark:text-indigo-400">
                                     <ShieldCheckIcon className="w-8 h-8" />
                                 </div>
                                 <h2 className="text-2xl font-black tracking-wide text-center uppercase text-slate-900 dark:text-white">{state.name}</h2>
@@ -308,7 +308,7 @@ export default function Index(props) {
                         
                         {/* Drawer Footer Actions */}
                         <div className="flex flex-col gap-3 p-5 bg-white border-t shrink-0 border-slate-100 dark:border-slate-800 dark:bg-[#0f172a]">
-                             <button onClick={() => openEdit(state)} className="flex items-center justify-center w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-blue-500/50">
+                             <button onClick={() => openEdit(state)} className="flex items-center justify-center w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500/50">
                                 <PencilSquareIcon className="w-4 h-4 mr-2" /> Edit Peran & Akses
                              </button>
                              <button onClick={() => openDestroy(state)} className="flex items-center justify-center w-full py-2.5 bg-white dark:bg-transparent text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm font-bold rounded-xl transition-colors shadow-sm dark:shadow-none">

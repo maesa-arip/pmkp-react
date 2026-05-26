@@ -13,7 +13,7 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
                 
                 {/* --- HEADER --- */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-indigo-600"></div>
                     <div className="relative z-10 flex items-center">
                         <div className="flex items-center justify-center w-12 h-12 mr-4 border rounded-full shadow-sm bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400 shrink-0 border-sky-200 dark:border-sky-500/30">
                             <UserCircleIcon className="w-7 h-7" />

@@ -340,7 +340,7 @@ export default function Form({
                 <div className={`${sectionCardClass} relative z-[70]`}>
                     <div className={sectionHeaderClass}>
                         <div className="flex items-center">
-                            <ClockIcon className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
+                            <ClockIcon className="w-5 h-5 mr-2 text-indigo-500 dark:text-indigo-400" />
                             <div>
                                 <h3 className="text-base font-bold text-slate-900 dark:text-white">Kronologi Kejadian</h3>
                                 <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">Ceritakan urutan waktu dan kronologis kejadian insiden.</p>
@@ -350,10 +350,10 @@ export default function Form({
                     
                     <div className="relative z-10 flex flex-col gap-4 p-6 bg-slate-50/50 dark:bg-transparent rounded-b-2xl">
                         {inputFields.map((input, index) => (
-                            <div key={index} className="relative p-5 bg-white border shadow-sm dark:bg-[#1e293b] border-slate-200 dark:border-slate-700 rounded-xl group transition-all hover:border-blue-300 dark:hover:border-blue-500/50">
+                            <div key={index} className="relative p-5 bg-white border shadow-sm dark:bg-[#1e293b] border-slate-200 dark:border-slate-700 rounded-xl group transition-all hover:border-indigo-300 dark:hover:border-indigo-500/50">
                                 
                                 {/* Timeline Badge Number */}
-                                <div className="absolute flex items-center justify-center w-6 h-6 text-xs font-black text-white bg-blue-500 rounded-full shadow -top-3 -left-3 ring-4 ring-white dark:ring-[#0f172a]">
+                                <div className="absolute flex items-center justify-center w-6 h-6 text-xs font-black text-white bg-indigo-500 rounded-full shadow -top-3 -left-3 ring-4 ring-white dark:ring-[#0f172a]">
                                     {index + 1}
                                 </div>
 
@@ -396,7 +396,7 @@ export default function Form({
                         ))}
 
                         <div className="flex justify-center mt-2">
-                            <button type="button" onClick={addFields} className="inline-flex items-center px-4 py-2 text-xs font-bold text-blue-600 transition-colors bg-white border border-blue-200 border-dashed rounded-lg shadow-sm hover:bg-blue-50 dark:bg-transparent dark:border-blue-500/30 dark:text-blue-400 dark:hover:bg-blue-500/10">
+                            <button type="button" onClick={addFields} className="inline-flex items-center px-4 py-2 text-xs font-bold text-indigo-600 transition-colors bg-white border border-indigo-200 border-dashed rounded-lg shadow-sm hover:bg-indigo-50 dark:bg-transparent dark:border-indigo-500/30 dark:text-indigo-400 dark:hover:bg-indigo-500/10">
                                 <PlusIcon className="w-4 h-4 mr-1.5" /> Tambah Kronologi
                             </button>
                         </div>
