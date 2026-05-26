@@ -121,6 +121,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         "IkpLokasi",
         "IkpPenindak",
         "MutuKategori",
+        "riskRegisterCopy",
     ].some((prefix) => routeName.startsWith(prefix));
 
     const [openMenu, setOpenMenu] = useState(() => {
@@ -134,6 +135,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
             isActive("riskregister.verificationadminpriority")
         )
             return "verifikasi-prioritas";
+        if (isMasterRoute) return "data-master";
         if (routeName.startsWith("riskRegister")) return "data-risiko";
         if (isActive("rca.sedangterjadi") || isActive("rca.risikoprioritas"))
             return "formulir-rca";
@@ -142,7 +144,6 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
             !routeName.startsWith("MutuKategori")
         )
             return "data-mutu";
-        if (isMasterRoute) return "data-master";
         if (
             routeName.startsWith("users") ||
             routeName.startsWith("roles") ||
@@ -365,7 +366,10 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                     </AccordionItem>
                     <AccordionItem
                         id="data-risiko"
-                        active={routeName.startsWith("riskRegister")}
+                        active={
+                            routeName.startsWith("riskRegister") &&
+                            !routeName.startsWith("riskRegisterCopy")
+                        }
                         title="Register Risiko"
                         icon={FolderOpenIcon}
                     >
@@ -387,17 +391,6 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                         >
                             Risiko Non Klinis
                         </Link>
-                        {canSeeRiskCopy && (
-                            <Link
-                                href={route("riskRegisterCopy.index")}
-                                onClick={closeSidebar}
-                                className={getSubNavClasses(
-                                    routeName.startsWith("riskRegisterCopy"),
-                                )}
-                            >
-                                Copy Risk Register
-                            </Link>
-                        )}
                     </AccordionItem>
                     <AccordionItem
                         id="formulir-rca"
@@ -548,7 +541,8 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 canSeeValueMaster ||
                 canSeeIkpMaster ||
                 canSeeMutuMaster ||
-                canSeeAccessMaster) && (
+                canSeeAccessMaster ||
+                canSeeRiskCopy) && (
                 <div>
                     <SectionLabel title="Pengaturan Master" />
                     <div className="space-y-1.5">
@@ -558,100 +552,115 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                             title="Data Master"
                             icon={CircleStackIcon}
                         >
-                            {canSeeRiskMaster && (
+                            {(canSeeRiskMaster || canSeeRiskCopy) && (
                                 <div className="mb-4">
                                     <SubSectionLabel title="Master Risiko" />
-                                    <Link
-                                        href={route("opsiPengendalians.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith(
-                                                "opsiPengendalians",
-                                            ),
-                                        )}
-                                    >
-                                        Opsi Pengendalian
-                                    </Link>
-                                    <Link
-                                        href={route("riskCategories.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith(
-                                                "riskCategories",
-                                            ),
-                                        )}
-                                    >
-                                        Kategori Risiko
-                                    </Link>
-                                    <Link
-                                        href={route(
-                                            "identificationSources.index",
-                                        )}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith(
-                                                "identificationSources",
-                                            ),
-                                        )}
-                                    >
-                                        Sumber Identifikasi
-                                    </Link>
-                                    <Link
-                                        href={route("locations.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith("locations"),
-                                        )}
-                                    >
-                                        Lokasi Insiden
-                                    </Link>
-                                    <Link
-                                        href={route("riskVarieties.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith(
-                                                "riskVarieties",
-                                            ),
-                                        )}
-                                    >
-                                        Jenis Insiden
-                                    </Link>
-                                    <Link
-                                        href={route("riskTypes.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith("riskTypes"),
-                                        )}
-                                    >
-                                        Tipe Insiden
-                                    </Link>
-                                    <Link
-                                        href={route("pics.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith("pics"),
-                                        )}
-                                    >
-                                        PIC / Penangung Jawab
-                                    </Link>
-                                    <Link
-                                        href={route("jenisSebabs.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith("jenisSebabs"),
-                                        )}
-                                    >
-                                        Jenis Sebab
-                                    </Link>
-                                    <Link
-                                        href={route("riskGradings.index")}
-                                        onClick={closeSidebar}
-                                        className={getSubNavClasses(
-                                            routeName.startsWith("riskGradings"),
-                                        )}
-                                    >
-                                        Aturan Grading
-                                    </Link>
+                                    {canSeeRiskMaster && (
+                                        <>
+                                            <Link
+                                                href={route("opsiPengendalians.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith(
+                                                        "opsiPengendalians",
+                                                    ),
+                                                )}
+                                            >
+                                                Opsi Pengendalian
+                                            </Link>
+                                            <Link
+                                                href={route("riskCategories.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith(
+                                                        "riskCategories",
+                                                    ),
+                                                )}
+                                            >
+                                                Kategori Risiko
+                                            </Link>
+                                            <Link
+                                                href={route(
+                                                    "identificationSources.index",
+                                                )}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith(
+                                                        "identificationSources",
+                                                    ),
+                                                )}
+                                            >
+                                                Sumber Identifikasi
+                                            </Link>
+                                            <Link
+                                                href={route("locations.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith("locations"),
+                                                )}
+                                            >
+                                                Lokasi Insiden
+                                            </Link>
+                                            <Link
+                                                href={route("riskVarieties.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith(
+                                                        "riskVarieties",
+                                                    ),
+                                                )}
+                                            >
+                                                Jenis Insiden
+                                            </Link>
+                                            <Link
+                                                href={route("riskTypes.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith("riskTypes"),
+                                                )}
+                                            >
+                                                Tipe Insiden
+                                            </Link>
+                                            <Link
+                                                href={route("pics.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith("pics"),
+                                                )}
+                                            >
+                                                PIC / Penangung Jawab
+                                            </Link>
+                                            <Link
+                                                href={route("jenisSebabs.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith("jenisSebabs"),
+                                                )}
+                                            >
+                                                Jenis Sebab
+                                            </Link>
+                                            <Link
+                                                href={route("riskGradings.index")}
+                                                onClick={closeSidebar}
+                                                className={getSubNavClasses(
+                                                    routeName.startsWith("riskGradings"),
+                                                )}
+                                            >
+                                                Aturan Grading
+                                            </Link>
+                                        </>
+                                    )}
+                                    {canSeeRiskCopy && (
+                                        <Link
+                                            href={route("riskRegisterCopy.index")}
+                                            onClick={closeSidebar}
+                                            className={getSubNavClasses(
+                                                routeName.startsWith("riskRegisterCopy"),
+                                            )}
+                                        >
+                                            Copy Risk Register
+                                        </Link>
+                                    )}
                                 </div>
                             )}
 

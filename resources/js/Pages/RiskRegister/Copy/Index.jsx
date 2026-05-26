@@ -1,15 +1,13 @@
 import App from "@/Layouts/App";
 import { Head, router, useForm } from "@inertiajs/react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-    ArrowPathIcon,
     ClipboardDocumentCheckIcon,
     DocumentDuplicateIcon,
     FunnelIcon,
 } from "@heroicons/react/24/outline";
-
-const selectClass =
-    "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-[#0f172a] dark:text-slate-100";
+import ComboboxPage from "@/Components/ComboboxPage";
+import DestroyModal from "@/Components/Modal/DestroyModal";
 
 const inputClass =
     "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-[#0f172a] dark:text-slate-100";
@@ -23,12 +21,25 @@ const Field = ({ label, children }) => (
     </label>
 );
 
-const OptionList = ({ items }) =>
-    items.map((item) => (
-        <option key={item.id} value={item.id}>
-            {item.name}
-        </option>
-    ));
+const withAllOption = (label, items = []) => [{ id: "", name: label }, ...items];
+
+const SelectField = ({ label, value, onChange, options }) => {
+    const normalizedOptions = options || [];
+    const selected =
+        normalizedOptions.find((item) => String(item.id) === String(value)) ||
+        normalizedOptions[0] ||
+        { id: "", name: "-" };
+
+    return (
+        <Field label={label}>
+            <ComboboxPage
+                ShouldMap={normalizedOptions}
+                selected={selected}
+                onChange={(item) => onChange(item?.id ?? "")}
+            />
+        </Field>
+    );
+};
 
 const StatCard = ({ label, value, tone = "slate" }) => {
     const styles = {
@@ -51,6 +62,8 @@ const StatCard = ({ label, value, tone = "slate" }) => {
 
 export default function Index({ filters, preview, options }) {
     const [isExecuting, setIsExecuting] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const hasMounted = useRef(false);
     const { data, setData } = useForm({
         source_year: filters.source_year || 2025,
         target_year: filters.target_year || 2026,
@@ -73,19 +86,35 @@ export default function Index({ filters, preview, options }) {
         [data],
     );
 
-    const refreshPreview = (event) => {
-        event.preventDefault();
-        router.get(route("riskRegisterCopy.index"), queryData, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+    useEffect(() => {
+        if (!hasMounted.current) {
+            hasMounted.current = true;
+            return;
+        }
+
+        const timeout = window.setTimeout(() => {
+            router.get(route("riskRegisterCopy.index"), queryData, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            });
+        }, 350);
+
+        return () => window.clearTimeout(timeout);
+    }, [queryData]);
+
+    const updateFilter = (field, value) => {
+        setData(field, value);
     };
 
     const executeCopy = () => {
         setIsExecuting(true);
         router.post(route("riskRegisterCopy.store"), queryData, {
             preserveScroll: true,
-            onFinish: () => setIsExecuting(false),
+            onFinish: () => {
+                setIsExecuting(false);
+                setIsConfirmOpen(false);
+            },
         });
     };
 
@@ -111,7 +140,7 @@ export default function Index({ filters, preview, options }) {
                         </div>
                         <button
                             type="button"
-                            onClick={executeCopy}
+                            onClick={() => setIsConfirmOpen(true)}
                             disabled={isExecuting || (preview?.eligible || 0) < 1}
                             className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-600 px-5 text-sm font-black text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
@@ -121,6 +150,24 @@ export default function Index({ filters, preview, options }) {
                     </div>
                 </div>
 
+                <DestroyModal
+                    title="Konfirmasi Copy Risk Register"
+                    warning={`Eksekusi akan membuat ${preview?.eligible || 0} data baru dari tahun ${data.source_year} ke ${data.target_year}. Data tahun tujuan yang sudah ada tidak akan ditimpa.`}
+                    isOpenDestroyDialog={isConfirmOpen}
+                    setIsOpenDestroyDialog={setIsConfirmOpen}
+                    size="max-w-lg"
+                >
+                    <button
+                        type="button"
+                        onClick={executeCopy}
+                        disabled={isExecuting || (preview?.eligible || 0) < 1}
+                        className="inline-flex w-full items-center justify-center rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    >
+                        <DocumentDuplicateIcon className="mr-2 h-4 w-4" />
+                        {isExecuting ? "Menyalin..." : "Ya, Eksekusi Copy"}
+                    </button>
+                </DestroyModal>
+
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                     <StatCard label="Data Sumber" value={preview?.source_total} />
                     <StatCard label="Siap Dicopy" value={preview?.eligible} tone="emerald" />
@@ -128,10 +175,7 @@ export default function Index({ filters, preview, options }) {
                     <StatCard label="Padanan 2026 Manual" value={preview?.equivalent_target} tone="amber" />
                 </div>
 
-                <form
-                    onSubmit={refreshPreview}
-                    className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#0f172a]"
-                >
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#0f172a]">
                     <div className="mb-5 flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                             <FunnelIcon className="h-5 w-5" />
@@ -153,7 +197,7 @@ export default function Index({ filters, preview, options }) {
                                 min="2000"
                                 max="2100"
                                 value={data.source_year}
-                                onChange={(e) => setData("source_year", e.target.value)}
+                                onChange={(e) => updateFilter("source_year", e.target.value)}
                                 className={inputClass}
                             />
                         </Field>
@@ -163,124 +207,91 @@ export default function Index({ filters, preview, options }) {
                                 min="2000"
                                 max="2100"
                                 value={data.target_year}
-                                onChange={(e) => setData("target_year", e.target.value)}
+                                onChange={(e) => updateFilter("target_year", e.target.value)}
                                 className={inputClass}
                             />
                         </Field>
-                        <Field label="Jenis Register">
-                            <select
-                                value={data.tipe_id}
-                                onChange={(e) => setData("tipe_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua</option>
-                                <option value="1">Klinis</option>
-                                <option value="2">Non Klinis</option>
-                            </select>
-                        </Field>
-                        <Field label="Status">
-                            <select
-                                value={data.currently_id}
-                                onChange={(e) => setData("currently_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua Status</option>
-                                <option value="1">Sedang Terjadi Saja</option>
-                                <option value="2">Tidak Sedang Terjadi Saja</option>
-                            </select>
-                        </Field>
-                        <Field label="User Pembuat">
-                            <select
-                                value={data.user_id}
-                                onChange={(e) => setData("user_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua User</option>
-                                <OptionList items={options.users || []} />
-                            </select>
-                        </Field>
-                        <Field label="Unit / PIC">
-                            <select
-                                value={data.pic_id}
-                                onChange={(e) => setData("pic_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua Unit</option>
-                                <OptionList items={options.pics || []} />
-                            </select>
-                        </Field>
-                        <Field label="Kategori Risiko">
-                            <select
-                                value={data.risk_category_id}
-                                onChange={(e) => setData("risk_category_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua Kategori</option>
-                                <OptionList items={options.riskCategories || []} />
-                            </select>
-                        </Field>
-                        <Field label="Tipe Risiko">
-                            <select
-                                value={data.risk_type_id}
-                                onChange={(e) => setData("risk_type_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua Tipe</option>
-                                <OptionList items={options.riskTypes || []} />
-                            </select>
-                        </Field>
-                        <Field label="Jenis Risiko">
-                            <select
-                                value={data.risk_variety_id}
-                                onChange={(e) => setData("risk_variety_id", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="">Semua Jenis</option>
-                                <OptionList items={options.riskVarieties || []} />
-                            </select>
-                        </Field>
-                        <Field label="Sumber Identifikasi">
-                            <select
-                                value={data.identification_source_id}
-                                onChange={(e) =>
-                                    setData("identification_source_id", e.target.value)
-                                }
-                                className={selectClass}
-                            >
-                                <option value="">Semua Sumber</option>
-                                <OptionList items={options.identificationSources || []} />
-                            </select>
-                        </Field>
-                        <Field label="Prioritas">
-                            <select
-                                value={data.priority_scope}
-                                onChange={(e) => setData("priority_scope", e.target.value)}
-                                className={selectClass}
-                            >
-                                <option value="all">Semua Risiko</option>
-                                <option value="priority">Risiko Prioritas</option>
-                                <option value="bpkp">Prioritas BPKP</option>
-                            </select>
-                        </Field>
+                        <SelectField
+                            label="Jenis Register"
+                            value={data.tipe_id}
+                            onChange={(value) => updateFilter("tipe_id", value)}
+                            options={[
+                                { id: "", name: "Semua" },
+                                { id: "1", name: "Klinis" },
+                                { id: "2", name: "Non Klinis" },
+                            ]}
+                        />
+                        <SelectField
+                            label="Status"
+                            value={data.currently_id}
+                            onChange={(value) => updateFilter("currently_id", value)}
+                            options={[
+                                { id: "", name: "Semua Status" },
+                                { id: "1", name: "Sedang Terjadi Saja" },
+                                { id: "2", name: "Tidak Sedang Terjadi Saja" },
+                            ]}
+                        />
+                        <SelectField
+                            label="User Pembuat"
+                            value={data.user_id}
+                            onChange={(value) => updateFilter("user_id", value)}
+                            options={withAllOption("Semua User", options.users)}
+                        />
+                        <SelectField
+                            label="Unit / PIC"
+                            value={data.pic_id}
+                            onChange={(value) => updateFilter("pic_id", value)}
+                            options={withAllOption("Semua Unit", options.pics)}
+                        />
+                        <SelectField
+                            label="Kategori Risiko"
+                            value={data.risk_category_id}
+                            onChange={(value) => updateFilter("risk_category_id", value)}
+                            options={withAllOption("Semua Kategori", options.riskCategories)}
+                        />
+                        <SelectField
+                            label="Tipe Risiko"
+                            value={data.risk_type_id}
+                            onChange={(value) => updateFilter("risk_type_id", value)}
+                            options={withAllOption("Semua Tipe", options.riskTypes)}
+                        />
+                        <SelectField
+                            label="Jenis Risiko"
+                            value={data.risk_variety_id}
+                            onChange={(value) => updateFilter("risk_variety_id", value)}
+                            options={withAllOption("Semua Jenis", options.riskVarieties)}
+                        />
+                        <SelectField
+                            label="Sumber Identifikasi"
+                            value={data.identification_source_id}
+                            onChange={(value) =>
+                                updateFilter("identification_source_id", value)
+                            }
+                            options={withAllOption(
+                                "Semua Sumber",
+                                options.identificationSources,
+                            )}
+                        />
+                        <SelectField
+                            label="Prioritas"
+                            value={data.priority_scope}
+                            onChange={(value) => updateFilter("priority_scope", value)}
+                            options={[
+                                { id: "all", name: "Semua Risiko" },
+                                { id: "priority", name: "Risiko Prioritas" },
+                                { id: "bpkp", name: "Prioritas BPKP" },
+                            ]}
+                        />
                     </div>
 
-                    <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mt-6 flex items-start gap-3 border-t border-slate-100 pt-5 text-sm font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                        <ClipboardDocumentCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-500" />
                         <div className="flex items-start gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-                            <ClipboardDocumentCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-500" />
-                            <span>
-                                Preview wajib dicek sebelum eksekusi. Tombol eksekusi hanya akan
-                                membuat data baru, bukan mengubah data target yang sudah ada.
-                            </span>
+                            Preview otomatis diperbarui setiap filter berubah. Tombol eksekusi
+                            hanya membuat data baru, bukan mengubah data target yang sudah ada.
                         </div>
-                        <button
-                            type="submit"
-                            className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                        >
-                            <ArrowPathIcon className="mr-2 h-4 w-4" />
-                            Refresh Preview
-                        </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );
