@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\RiskRegister;
+use App\Models\RiskGrading;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -430,7 +431,10 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
             ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 'sasaran_strategis.name as Nama Konteks(Proses Bisnis)',
@@ -770,9 +774,18 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->leftJoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
             ->leftJoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->leftjoin('risk_gradings as risk_grading2', 'risk_grading2.kode', 'risk_registers.concatdp2')
-            ->leftjoin('risk_gradings as risk_grading3', 'risk_grading3.kode', 'risk_registers.concatdp3')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
+            ->leftjoin("risk_gradings as risk_grading2", function ($join) {
+                $join->on("risk_grading2.kode", "=", "risk_registers.concatdp2")
+                    ->whereRaw("risk_grading2.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
+            ->leftjoin("risk_gradings as risk_grading3", function ($join) {
+                $join->on("risk_grading3.kode", "=", "risk_registers.concatdp3")
+                    ->whereRaw("risk_grading3.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->leftjoin("pics", \DB::raw("FIND_IN_SET(pics.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'),
@@ -1293,7 +1306,10 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `No Urut`'),
                 'risk_registers.resiko as Penyataan Risiko',

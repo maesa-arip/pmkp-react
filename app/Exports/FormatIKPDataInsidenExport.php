@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\IKP\IkpPasien;
 use App\Models\RiskRegister;
+use App\Models\RiskGrading;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -62,7 +63,10 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $whosLogin = auth()->user()->can('lihat semua data ikp') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
 
         $query = IkpPasien::query()
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'ikp_pasiens.concatdp')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "ikp_pasiens.concatdp")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(ikp_pasiens.tanggal_insiden), YEAR(ikp_pasiens.created_at), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->leftjoin('ikp_jenis_insidens', 'ikp_jenis_insidens.id', 'ikp_pasiens.ikp_jenis_insiden_id')
             ->leftjoin('ikp_tipe_insidens', 'ikp_tipe_insidens.id', 'ikp_pasiens.ikp_tipe_insiden_id')
             ->leftjoin('ikp_hasils', 'ikp_hasils.ikp_pasien_id', 'ikp_pasiens.id')

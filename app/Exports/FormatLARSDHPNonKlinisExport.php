@@ -7,6 +7,7 @@ use App\Models\IndikatorFitur1;
 use App\Models\IndikatorFitur2;
 use App\Models\IndikatorFitur3;
 use App\Models\RiskRegister;
+use App\Models\RiskGrading;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -262,10 +263,22 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->leftJoin('jenis_sebabs', 'jenis_sebabs.id', 'risk_registers.jenis_sebab_id')
-            ->leftJoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
-            ->leftJoin('risk_gradings AS grading2', 'grading2.kode', 'risk_registers.concatdp2')
-            ->leftJoin('risk_gradings AS grading3', 'grading3.kode', 'risk_registers.concatdp3')
-            ->leftJoin('risk_gradings AS grading4', 'grading4.kode', 'risk_registers.concatdp4')
+            ->leftJoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
+            ->leftJoin("risk_gradings AS grading2", function ($join) {
+                $join->on("grading2.kode", "=", "risk_registers.concatdp2")
+                    ->whereRaw("grading2.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
+            ->leftJoin("risk_gradings AS grading3", function ($join) {
+                $join->on("grading3.kode", "=", "risk_registers.concatdp3")
+                    ->whereRaw("grading3.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
+            ->leftJoin("risk_gradings AS grading4", function ($join) {
+                $join->on("grading4.kode", "=", "risk_registers.concatdp4")
+                    ->whereRaw("grading4.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->leftJoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
             ->leftJoin('pembiayaan_risikos', 'pembiayaan_risikos.id', 'risk_registers.pembiayaan_risiko_id')
             ->leftjoin("pics as sa", \DB::raw("FIND_IN_SET(sa.id,risk_registers.pic_id)"), ">", \DB::raw("'0'"))
@@ -1458,7 +1471,10 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = RiskRegister::query()
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Nomor`'),
                 'risk_categories.name as kategori',
@@ -2728,7 +2744,10 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftjoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
             ->leftjoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `Peringkat`'), 'risk_registers.pernyataan_risiko', 'risk_registers.pengendalian_risiko as aksi', 'risk_registers.output', 'indikator_fitur4s.name', DB::raw(
                 '
                 CASE
@@ -2985,7 +3004,10 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = RiskRegister::query()
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->select(
                 'risk_categories.id as kategori_id',
                 // '1',
@@ -3452,7 +3474,10 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
         $query = RiskRegister::query()
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('users', 'users.id', 'risk_registers.user_id')
-            ->leftjoin('risk_gradings', 'risk_gradings.kode', 'risk_registers.concatdp1')
+            ->leftjoin("risk_gradings", function ($join) {
+                $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
+                    ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
+            })
             ->select(
                 'risk_categories.id as kategori_id',
                 // '1',
