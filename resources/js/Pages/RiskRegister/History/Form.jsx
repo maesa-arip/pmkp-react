@@ -76,8 +76,11 @@ export default function Form({
                             <div className="relative pb-4 ml-3 space-y-8 border-l-2 sm:ml-4 border-slate-200 dark:border-slate-800/80">
                                 {histories.map((history, index) => {
                                     // Logika penentuan status & visual timeline
-                                    const isBaruDibuat = history.created_at === model?.created_at;
+                                    const isBaruDibuat = history.event_type === "created" || history.created_at === model?.created_at;
+                                    const isStatusChanged = history.event_type === "status_changed" || !history.event_type;
                                     const isKejadian = history.currently_id === 1;
+                                    const snapshot = history.snapshot || {};
+                                    const pernyataanRisiko = snapshot.pernyataan_risiko || history.pernyataan_risiko || model?.pernyataan_risiko;
                                     
                                     let statusConfig = {
                                         color: "bg-slate-500",
@@ -95,7 +98,7 @@ export default function Form({
                                             title: "RISIKO BARU DIBUAT",
                                             user: history.user?.name || model?.user_name || "Sistem"
                                         };
-                                    } else if (isKejadian) {
+                                    } else if (isStatusChanged && isKejadian) {
                                         statusConfig = {
                                             color: "bg-rose-500",
                                             badgeBg: "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30",
@@ -103,7 +106,7 @@ export default function Form({
                                             title: "SEDANG TERJADI / KEJADIAN",
                                             user: history.user?.name || model?.user_name || "Sistem"
                                         };
-                                    } else if (!isKejadian && !isBaruDibuat) {
+                                    } else if (isStatusChanged && !isKejadian && !isBaruDibuat) {
                                         statusConfig = {
                                             color: "bg-emerald-500",
                                             badgeBg: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30",
@@ -132,7 +135,7 @@ export default function Form({
                                                 </div>
                                                 
                                                 <p className="mt-2 mb-5 text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
-                                                    {history.pernyataan_risiko || model?.pernyataan_risiko}
+                                                    {pernyataanRisiko}
                                                 </p>
                                                 
                                                 <div className="pt-3 border-t border-slate-100 dark:border-slate-700/80 text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center">

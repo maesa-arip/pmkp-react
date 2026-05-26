@@ -205,7 +205,7 @@ class RiskRegisterKlinisController extends Controller
         $risk->save();
         // dd($kode_risiko_prefix,$tahun_register,$risk->kode_risiko,$risk->save());
 
-        $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $risk->id, 'currently_id' => $request->currently_id]);
+        RiskRegisterHistory::recordForRisk($risk, RiskRegisterHistory::EVENT_CREATED);
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();
@@ -275,12 +275,12 @@ class RiskRegisterKlinisController extends Controller
                 'type' => 'error',
                 'message' => 'Tidak bisa rubah status tidak sedang terjadi, silakan rubah di menu "Request Perubahan Status"',
             ]);
-            // $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => $riskRegisterKlinis->currently_id]);
         }
-        if ($riskRegisterKlinis->currently_id == 2 && $request->currently_id == 1) {
-            $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => 1]);
-        }
+        $shouldRecordStatusChange = $riskRegisterKlinis->currently_id == 2 && $request->currently_id == 1;
         $riskRegisterKlinis->update($request->except('home'));
+        if ($shouldRecordStatusChange) {
+            RiskRegisterHistory::recordForRisk($riskRegisterKlinis->refresh(), RiskRegisterHistory::EVENT_STATUS_CHANGED);
+        }
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();
@@ -578,7 +578,12 @@ class RiskRegisterKlinisController extends Controller
         ]);
         // dd($request->all());
         RequestUpdate::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-        RiskRegister::where('id', $request->id)->update(['currently_id' => $request->currently_id]);
+        $riskRegister = RiskRegister::findOrFail($request->id);
+        $oldCurrentlyId = $riskRegister->currently_id;
+        $riskRegister->update(['currently_id' => $request->currently_id]);
+        if ((int) $oldCurrentlyId !== (int) $riskRegister->currently_id) {
+            RiskRegisterHistory::recordForRisk($riskRegister, RiskRegisterHistory::EVENT_STATUS_CHANGED);
+        }
         return back()->with([
             'type' => 'success',
             'message' => 'Status Berhasil dirubah',

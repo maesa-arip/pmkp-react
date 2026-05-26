@@ -64,11 +64,11 @@ class RiskRegister extends Model
     }
     public function risk_register_histories()
     {
-        return $this->hasMany(RiskRegisterHistory::class);
+        return $this->hasMany(RiskRegisterHistory::class)->with('user')->oldest();
     }
     public function riskRegisterHistories()
     {
-        return $this->hasMany(RiskRegisterHistory::class);
+        return $this->hasMany(RiskRegisterHistory::class)->with('user')->oldest();
     }
     public function formulirrca()
     {
