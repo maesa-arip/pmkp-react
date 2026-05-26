@@ -16,7 +16,7 @@ class RiskGradingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'kode' => $this->kode,
+            'kode' => (string) $this->kode,
             'tahun' => $this->tahun,
             'name' => $this->name,
             'warna' => $this->warna,

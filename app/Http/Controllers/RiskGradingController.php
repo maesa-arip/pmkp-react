@@ -101,6 +101,12 @@ class RiskGradingController extends Controller
 
     private function validateRiskGrading(Request $request, ?RiskGrading $riskGrading = null): array
     {
+        $request->merge([
+            'tahun' => $request->tahun ? (int) $request->tahun : null,
+            'kode' => $request->kode !== null ? (string) $request->kode : null,
+            'warna' => $request->warna ?: null,
+        ]);
+
         return $request->validate([
             'tahun' => ['required', 'integer', 'digits:4', 'min:2000', 'max:2100'],
             'kode' => [

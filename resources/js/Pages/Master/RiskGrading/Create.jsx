@@ -3,7 +3,7 @@ import React from "react";
 import Form from "./Form";
 
 export default function Create({ setIsOpenAddDialog }) {
-    const { data, setData, post, reset, errors } = useForm({
+    const { data, setData, post, reset, errors, transform } = useForm({
         tahun: new Date().getFullYear(),
         kode: "",
         warna: "",
@@ -18,8 +18,8 @@ export default function Create({ setIsOpenAddDialog }) {
 
     const onSubmit = (e) => {
         e.preventDefault();
+        transform((data) => ({ ...data, kode: String(data.kode || "") }));
         post(route("riskGradings.store"), {
-            data,
             onSuccess: () => {
                 reset();
                 setIsOpenAddDialog(false);

@@ -3,9 +3,9 @@ import React, { useEffect } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model }) {
-    const { data, setData, put, reset, errors } = useForm({
+    const { data, setData, put, reset, errors, transform } = useForm({
         tahun: model.tahun || "",
-        kode: model.kode || "",
+        kode: model.kode ? String(model.kode) : "",
         warna: model.warna || "",
         name: model.name || "",
         name_nonklinis: model.name_nonklinis || "",
@@ -18,8 +18,8 @@ export default function Edit({ setIsOpenEditDialog, model }) {
 
     const onSubmit = (e) => {
         e.preventDefault();
+        transform((data) => ({ ...data, kode: String(data.kode || "") }));
         put(route("riskGradings.update", model.id), {
-            data,
             onSuccess: () => {
                 reset();
                 setIsOpenEditDialog(false);
@@ -30,7 +30,7 @@ export default function Edit({ setIsOpenEditDialog, model }) {
     useEffect(() => {
         setData({
             tahun: model.tahun || "",
-            kode: model.kode || "",
+            kode: model.kode ? String(model.kode) : "",
             warna: model.warna || "",
             name: model.name || "",
             name_nonklinis: model.name_nonklinis || "",
