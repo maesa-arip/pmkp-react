@@ -32,10 +32,34 @@ const GradingBadge = ({ value, color }) => (
     </div>
 );
 
+const KodeBadge = ({ value }) => {
+    const digits = String(value || "").replace(/\D/g, "");
+    const dampak = digits.charAt(0) || "-";
+    const probabilitas = digits.charAt(1) || "-";
+
+    return (
+        <div className="space-y-1">
+            <span className="inline-flex items-center rounded-md bg-slate-900 px-2.5 py-1 text-xs font-bold text-white dark:bg-white dark:text-slate-900">
+                {value || "-"}
+            </span>
+            <div className="text-[11px] leading-tight text-slate-500 dark:text-slate-400">
+                <div>Dampak {dampak}</div>
+                <div>Probabilitas {probabilitas}</div>
+            </div>
+        </div>
+    );
+};
+
 export default function Index(props) {
     const columns = [
         { key: "tahun", label: "Tahun", sortField: "tahun", className: "w-[120px]" },
-        { key: "kode", label: "Kode", sortField: "kode", className: "w-[110px]" },
+        {
+            key: "kode",
+            label: "Kode",
+            sortField: "kode",
+            className: "w-[130px]",
+            render: (row) => <KodeBadge value={row.kode} />,
+        },
         {
             key: "name",
             label: "Klinis",

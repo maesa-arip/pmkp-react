@@ -102,8 +102,8 @@ class RiskGradingController extends Controller
     private function validateRiskGrading(Request $request, ?RiskGrading $riskGrading = null): array
     {
         $request->merge([
-            'tahun' => $request->tahun ? (int) $request->tahun : null,
-            'kode' => $request->kode !== null ? (string) $request->kode : null,
+            'tahun' => $riskGrading ? (int) $riskGrading->tahun : ($request->tahun ? (int) $request->tahun : null),
+            'kode' => $riskGrading ? (string) $riskGrading->kode : ($request->kode !== null ? (string) $request->kode : null),
             'warna' => $request->warna ?: null,
             'warna_klinis' => $request->warna_klinis ?: null,
             'warna_nonklinis' => $request->warna_nonklinis ?: null,
@@ -120,6 +120,7 @@ class RiskGradingController extends Controller
                 'required',
                 'string',
                 'max:10',
+                'regex:/^[1-5]{2}$/',
                 Rule::unique('risk_gradings', 'kode')
                     ->where(fn ($query) => $query->where('tahun', $request->tahun))
                     ->ignore($riskGrading?->id),
@@ -136,6 +137,7 @@ class RiskGradingController extends Controller
             'warna_bpkp' => $colorRules,
             'name_bpkp' => ['required', 'string', 'max:255'],
         ], [
+            'kode.regex' => 'Kode harus berupa gabungan Dampak dan Probabilitas, contoh 11 sampai 55.',
             'kode.unique' => 'Kode grading sudah ada untuk tahun yang sama.',
             'warna.regex' => 'Warna harus format hex, contoh #dc2626.',
             'warna_klinis.regex' => 'Warna klinis harus format hex, contoh #dc2626.',

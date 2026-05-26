@@ -58,6 +58,7 @@ export default function Edit({ setIsOpenEditDialog, model }) {
                 setData={setData}
                 submit="Update"
                 closeButton={closeButton}
+                lockIdentity
             />
         </form>
     );
