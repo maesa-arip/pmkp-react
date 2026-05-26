@@ -8,10 +8,15 @@ export default function Create({ setIsOpenAddDialog }) {
         kode: "",
         warna: "",
         name: "",
+        warna_klinis: "",
         name_nonklinis: "",
+        warna_nonklinis: "",
         name_nonklinis_pergub: "",
+        warna_nonklinis_pergub: "",
         name_ikp: "",
+        warna_ikp: "",
         name_bpkp: "",
+        warna_bpkp: "",
     });
 
     const closeButton = () => setIsOpenAddDialog(false);

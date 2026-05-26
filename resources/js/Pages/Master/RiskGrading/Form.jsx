@@ -17,6 +17,64 @@ const colorOptions = [
 export default function Form({ errors, submit, data, setData, closeButton }) {
     const update = (field, value) => setData(field, value);
 
+    const ColorInput = ({ id, value, error }) => (
+        <>
+            <div className="flex items-center gap-2 mt-1">
+                <input
+                    id={id}
+                    value={value || "#64748b"}
+                    onChange={(e) => update(id, e.target.value)}
+                    type="color"
+                    className="w-12 h-10 p-1 bg-white border rounded-lg cursor-pointer border-slate-300 dark:bg-slate-900 dark:border-slate-700"
+                />
+                <TextInput
+                    id={`${id}_text`}
+                    value={value || ""}
+                    handleChange={(e) => update(id, e.target.value)}
+                    type="text"
+                    placeholder="#dc2626"
+                    className="block w-full"
+                />
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+                {colorOptions.map((option) => (
+                    <button
+                        key={`${id}-${option.value}`}
+                        type="button"
+                        onClick={() => update(id, option.value)}
+                        className={`h-7 w-7 rounded-lg border transition-transform hover:scale-105 ${
+                            value === option.value
+                                ? "border-slate-900 ring-2 ring-sky-500/40 dark:border-white"
+                                : "border-slate-200 dark:border-slate-700"
+                        }`}
+                        style={{ backgroundColor: option.value }}
+                        title={option.label}
+                    />
+                ))}
+            </div>
+            <InputError message={error} className="mt-2" />
+        </>
+    );
+
+    const GradingInput = ({ nameId, colorId, label, className = "col-span-12 sm:col-span-6" }) => (
+        <div className={className}>
+            <InputLabel for={nameId} value={label} />
+            <TextInput
+                id={nameId}
+                value={data[nameId]}
+                handleChange={(e) => update(nameId, e.target.value)}
+                type="text"
+                className="block w-full mt-1"
+            />
+            <InputError message={errors[nameId]} className="mt-2" />
+
+            <div className="mt-3">
+                <InputLabel for={colorId} value={`Warna ${label.replace("Nama Grading ", "")}`} />
+                <ColorInput id={colorId} value={data[colorId]} error={errors[colorId]} />
+            </div>
+        </div>
+    );
+
     return (
         <>
             <div className="px-4 py-5 bg-white dark:bg-[#0f172a] sm:p-6">
@@ -47,103 +105,11 @@ export default function Form({ errors, submit, data, setData, closeButton }) {
                         <InputError message={errors.kode} className="mt-2" />
                     </div>
 
-                    <div className="col-span-12 sm:col-span-4">
-                        <InputLabel for="warna" value="Warna" />
-                        <div className="flex items-center gap-2 mt-1">
-                            <input
-                                id="warna"
-                                value={data.warna || "#64748b"}
-                                onChange={(e) => update("warna", e.target.value)}
-                                type="color"
-                                className="w-12 h-10 p-1 bg-white border rounded-lg cursor-pointer border-slate-300 dark:bg-slate-900 dark:border-slate-700"
-                            />
-                            <TextInput
-                                id="warna_text"
-                                value={data.warna || ""}
-                                handleChange={(e) => update("warna", e.target.value)}
-                                type="text"
-                                placeholder="#dc2626"
-                                className="block w-full"
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                            {colorOptions.map((option) => (
-                                <button
-                                    key={option.value}
-                                    type="button"
-                                    onClick={() => update("warna", option.value)}
-                                    className={`h-7 w-7 rounded-lg border transition-transform hover:scale-105 ${
-                                        data.warna === option.value
-                                            ? "border-slate-900 ring-2 ring-sky-500/40 dark:border-white"
-                                            : "border-slate-200 dark:border-slate-700"
-                                    }`}
-                                    style={{ backgroundColor: option.value }}
-                                    title={option.label}
-                                />
-                            ))}
-                        </div>
-                        <InputError message={errors.warna} className="mt-2" />
-                    </div>
-
-                    <div className="col-span-12 sm:col-span-6">
-                        <InputLabel for="name" value="Nama Grading Klinis" />
-                        <TextInput
-                            id="name"
-                            value={data.name}
-                            handleChange={(e) => update("name", e.target.value)}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError message={errors.name} className="mt-2" />
-                    </div>
-
-                    <div className="col-span-12 sm:col-span-6">
-                        <InputLabel for="name_nonklinis" value="Nama Grading Non Klinis" />
-                        <TextInput
-                            id="name_nonklinis"
-                            value={data.name_nonklinis}
-                            handleChange={(e) => update("name_nonklinis", e.target.value)}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError message={errors.name_nonklinis} className="mt-2" />
-                    </div>
-
-                    <div className="col-span-12 sm:col-span-6">
-                        <InputLabel for="name_nonklinis_pergub" value="Nama Grading Non Klinis Pergub" />
-                        <TextInput
-                            id="name_nonklinis_pergub"
-                            value={data.name_nonklinis_pergub}
-                            handleChange={(e) => update("name_nonklinis_pergub", e.target.value)}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError message={errors.name_nonklinis_pergub} className="mt-2" />
-                    </div>
-
-                    <div className="col-span-12 sm:col-span-3">
-                        <InputLabel for="name_ikp" value="Nama Grading IKP" />
-                        <TextInput
-                            id="name_ikp"
-                            value={data.name_ikp}
-                            handleChange={(e) => update("name_ikp", e.target.value)}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError message={errors.name_ikp} className="mt-2" />
-                    </div>
-
-                    <div className="col-span-12 sm:col-span-3">
-                        <InputLabel for="name_bpkp" value="Nama Grading BPKP" />
-                        <TextInput
-                            id="name_bpkp"
-                            value={data.name_bpkp}
-                            handleChange={(e) => update("name_bpkp", e.target.value)}
-                            type="text"
-                            className="block w-full mt-1"
-                        />
-                        <InputError message={errors.name_bpkp} className="mt-2" />
-                    </div>
+                    <GradingInput nameId="name" colorId="warna_klinis" label="Nama Grading Klinis" />
+                    <GradingInput nameId="name_nonklinis" colorId="warna_nonklinis" label="Nama Grading Non Klinis" />
+                    <GradingInput nameId="name_nonklinis_pergub" colorId="warna_nonklinis_pergub" label="Nama Grading Non Klinis Pergub" />
+                    <GradingInput nameId="name_ikp" colorId="warna_ikp" label="Nama Grading IKP" />
+                    <GradingInput nameId="name_bpkp" colorId="warna_bpkp" label="Nama Grading BPKP" />
                 </div>
             </div>
             <div className="px-4 py-3 bg-slate-50 dark:bg-slate-900/60 sm:px-6 sm:flex sm:flex-row-reverse">

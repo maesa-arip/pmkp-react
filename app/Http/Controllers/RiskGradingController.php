@@ -105,7 +105,14 @@ class RiskGradingController extends Controller
             'tahun' => $request->tahun ? (int) $request->tahun : null,
             'kode' => $request->kode !== null ? (string) $request->kode : null,
             'warna' => $request->warna ?: null,
+            'warna_klinis' => $request->warna_klinis ?: null,
+            'warna_nonklinis' => $request->warna_nonklinis ?: null,
+            'warna_nonklinis_pergub' => $request->warna_nonklinis_pergub ?: null,
+            'warna_ikp' => $request->warna_ikp ?: null,
+            'warna_bpkp' => $request->warna_bpkp ?: null,
         ]);
+
+        $colorRules = ['nullable', 'regex:/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', 'max:20'];
 
         return $request->validate([
             'tahun' => ['required', 'integer', 'digits:4', 'min:2000', 'max:2100'],
@@ -117,15 +124,25 @@ class RiskGradingController extends Controller
                     ->where(fn ($query) => $query->where('tahun', $request->tahun))
                     ->ignore($riskGrading?->id),
             ],
-            'warna' => ['nullable', 'regex:/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', 'max:20'],
+            'warna' => $colorRules,
+            'warna_klinis' => $colorRules,
             'name' => ['required', 'string', 'max:255'],
+            'warna_nonklinis' => $colorRules,
             'name_nonklinis' => ['required', 'string', 'max:255'],
+            'warna_nonklinis_pergub' => $colorRules,
             'name_nonklinis_pergub' => ['required', 'string', 'max:255'],
+            'warna_ikp' => $colorRules,
             'name_ikp' => ['required', 'string', 'max:255'],
+            'warna_bpkp' => $colorRules,
             'name_bpkp' => ['required', 'string', 'max:255'],
         ], [
             'kode.unique' => 'Kode grading sudah ada untuk tahun yang sama.',
             'warna.regex' => 'Warna harus format hex, contoh #dc2626.',
+            'warna_klinis.regex' => 'Warna klinis harus format hex, contoh #dc2626.',
+            'warna_nonklinis.regex' => 'Warna non klinis harus format hex, contoh #dc2626.',
+            'warna_nonklinis_pergub.regex' => 'Warna non klinis pergub harus format hex, contoh #dc2626.',
+            'warna_ikp.regex' => 'Warna IKP harus format hex, contoh #dc2626.',
+            'warna_bpkp.regex' => 'Warna BPKP harus format hex, contoh #dc2626.',
         ]);
     }
 
