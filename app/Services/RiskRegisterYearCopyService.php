@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\RiskRegister;
-use App\Models\RiskRegisterHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -114,7 +113,6 @@ class RiskRegisterYearCopyService
                     $newRisk->kode_risiko = "{$prefix}.{$yearCode}.02.43.{$newRisk->id}";
                     $newRisk->save();
 
-                    RiskRegisterHistory::recordForRisk($newRisk, RiskRegisterHistory::EVENT_COPIED_FROM_PREVIOUS_YEAR);
                     $copied++;
                 }
             });

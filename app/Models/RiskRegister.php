@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -69,6 +70,41 @@ class RiskRegister extends Model
     public function riskRegisterHistories()
     {
         return $this->hasMany(RiskRegisterHistory::class)->with('user')->oldest();
+    }
+    public function copiedFromRiskRegister()
+    {
+        return $this->belongsTo(self::class, 'copied_from_risk_register_id');
+    }
+    public function effectiveRiskRegisterHistories(): EloquentCollection
+    {
+        $ownHistories = $this->relationLoaded('risk_register_histories')
+            ? $this->risk_register_histories
+            : $this->risk_register_histories()->get();
+
+        if (!$this->copied_from_risk_register_id) {
+            return $ownHistories;
+        }
+
+        $sourceRisk = $this->relationLoaded('copiedFromRiskRegister')
+            ? $this->copiedFromRiskRegister
+            : $this->copiedFromRiskRegister()->first();
+
+        if (!$sourceRisk) {
+            return $ownHistories;
+        }
+
+        $sourceHistories = $sourceRisk->relationLoaded('risk_register_histories')
+            ? $sourceRisk->risk_register_histories
+            : $sourceRisk->risk_register_histories()->get();
+
+        $postCopyHistories = $ownHistories->reject(
+            fn ($history) => $history->event_type === RiskRegisterHistory::EVENT_COPIED_FROM_PREVIOUS_YEAR
+        );
+
+        return $sourceHistories
+            ->merge($postCopyHistories)
+            ->sortBy('created_at')
+            ->values();
     }
     public function formulirrca()
     {

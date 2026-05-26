@@ -14,6 +14,12 @@ class RiskRegisterResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $data = parent::toArray($request);
+
+        if ($this->resource->relationLoaded('risk_register_histories')) {
+            $data['risk_register_histories'] = $this->effectiveRiskRegisterHistories()->values();
+        }
+
+        return $data;
     }
 }
