@@ -3,24 +3,25 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
-import ComboboxPage from "@/Components/ComboboxPage";
 import React from "react";
 
 const colorOptions = [
-    { label: "Merah", value: "#dc2626", text: "text-white" },
-    { label: "Oranye", value: "#f97316", text: "text-white" },
-    { label: "Kuning", value: "#facc15", text: "text-slate-900" },
-    { label: "Hijau", value: "#16a34a", text: "text-white" },
-    { label: "Biru", value: "#2563eb", text: "text-white" },
-    { label: "Abu", value: "#64748b", text: "text-white" },
-];
-
-const scoreOptions = [
-    { id: "1", value: "1", name: "Nilai 1" },
-    { id: "2", value: "2", name: "Nilai 2" },
-    { id: "3", value: "3", name: "Nilai 3" },
-    { id: "4", value: "4", name: "Nilai 4" },
-    { id: "5", value: "5", name: "Nilai 5" },
+    {
+        label: "Sangat Rendah",
+        shortLabel: "SR",
+        value: "#16a34a",
+        text: "text-white",
+    },
+    { label: "Rendah", shortLabel: "R", value: "#38bdf8", text: "text-slate-950" },
+    { label: "Sedang", shortLabel: "S", value: "#facc15", text: "text-slate-950" },
+    { label: "Tinggi", shortLabel: "T", value: "#f97316", text: "text-white" },
+    {
+        label: "Sangat Tinggi",
+        shortLabel: "ST",
+        value: "#dc2626",
+        text: "text-white",
+    },
+    { label: "Ekstrim", shortLabel: "E", value: "#991b1b", text: "text-white" },
 ];
 
 const gradingFields = [
@@ -70,11 +71,6 @@ const getCodeParts = (kode) => {
     };
 };
 
-const emptyScore = { id: "", value: "", name: "Pilih" };
-
-const getSelectedScore = (value) =>
-    scoreOptions.find((option) => option.id === String(value || "")) || emptyScore;
-
 const gradingValueFields = [
     "name",
     "warna_klinis",
@@ -88,63 +84,203 @@ const gradingValueFields = [
     "warna_bpkp",
 ];
 
+const impactHeaders = [
+    { value: "1", label: "Tidak Signifikan" },
+    { value: "2", label: "Minor" },
+    { value: "3", label: "Moderat" },
+    { value: "4", label: "Mayor" },
+    { value: "5", label: "Katastropik" },
+];
+
+const probabilityRows = [
+    { value: "5", label: "Sangat sering terjadi" },
+    { value: "4", label: "Sering terjadi" },
+    { value: "3", label: "Mungkin terjadi" },
+    { value: "2", label: "Jarang terjadi" },
+    { value: "1", label: "Sangat jarang terjadi" },
+];
+
+const defaultMatrixColor = (score) => {
+    if (score >= 16) return colorOptions[5];
+    if (score >= 10) return colorOptions[4];
+    if (score >= 8) return colorOptions[3];
+    if (score >= 5) return colorOptions[2];
+    if (score >= 3) return colorOptions[1];
+
+    return colorOptions[0];
+};
+
+const getReadableTextColor = (hexColor) => {
+    const hex = String(hexColor || "").replace("#", "");
+    const normalized =
+        hex.length === 3
+            ? hex
+                  .split("")
+                  .map((char) => `${char}${char}`)
+                  .join("")
+            : hex;
+
+    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
+        return "text-slate-950";
+    }
+
+    const r = parseInt(normalized.slice(0, 2), 16);
+    const g = parseInt(normalized.slice(2, 4), 16);
+    const b = parseInt(normalized.slice(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+    return luminance > 0.62 ? "text-slate-950" : "text-white";
+};
+
+const getMatrixCellStyle = (kode, latestRiskGradings) => {
+    const latest = latestRiskGradings?.[kode];
+    const score = Number(kode.charAt(0)) * Number(kode.charAt(1));
+    const color = latest?.warna_klinis || defaultMatrixColor(score).value;
+
+    return {
+        color,
+        label: latest?.name || defaultMatrixColor(score).label,
+    };
+};
+
 const ColorInput = ({ id, value, error, update }) => {
-    const selectedColor = value || "#64748b";
+    const selectedOption = colorOptions.find((option) => option.value === value);
+    const selectedColor = value || "#e2e8f0";
 
     return (
         <div>
-            <div className="grid grid-cols-12 gap-3 mt-1">
-                <label
-                    htmlFor={id}
-                    className="col-span-12 sm:col-span-4 flex min-h-[42px] items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 dark:border-slate-700 dark:bg-slate-900"
-                >
-                    <span
-                        className="block h-8 w-8 shrink-0 rounded-md border border-white shadow-sm"
-                        style={{ backgroundColor: selectedColor }}
-                    />
-                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        {value || "Belum diatur"}
-                    </span>
-                </label>
-
-                <div className="col-span-12 sm:col-span-8 flex items-center gap-2">
-                    <input
-                        id={id}
-                        value={selectedColor}
-                        onChange={(e) => update(id, e.target.value)}
-                        type="color"
-                        className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-slate-300 bg-white p-1 dark:border-slate-700 dark:bg-slate-900"
-                    />
-                    <TextInput
-                        id={`${id}_text`}
-                        value={value || ""}
-                        handleChange={(e) => update(id, e.target.value)}
-                        type="text"
-                        placeholder="#dc2626"
-                        className="block w-full"
-                    />
+            <div className="mt-1 flex min-h-[44px] items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 dark:border-slate-700 dark:bg-slate-900">
+                <span
+                    className="block h-8 w-8 shrink-0 rounded-md border border-white shadow-sm"
+                    style={{ backgroundColor: selectedColor }}
+                />
+                <div>
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                        {selectedOption?.label || "Belum dipilih"}
+                    </div>
+                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                        {value || "Klik salah satu warna di bawah"}
+                    </div>
                 </div>
             </div>
 
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {colorOptions.map((option) => (
                     <button
                         key={`${id}-${option.value}`}
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => update(id, option.value)}
-                        className={`flex h-9 items-center justify-center rounded-md border px-2 text-xs font-bold transition ${
+                        className={`flex min-h-[44px] items-center gap-2 rounded-md border px-3 text-left text-xs font-black transition ${
                             value === option.value
                                 ? "border-slate-900 ring-2 ring-sky-500/40 dark:border-white"
                                 : "border-slate-200 dark:border-slate-700"
                         } ${option.text}`}
                         style={{ backgroundColor: option.value }}
                     >
-                        {option.label}
+                        <span
+                            className="flex h-6 w-8 shrink-0 items-center justify-center rounded border border-white/60 bg-white/20 text-[10px]"
+                        >
+                            {option.shortLabel}
+                        </span>
+                        <span className="leading-tight">{option.label}</span>
                     </button>
                 ))}
             </div>
+
             <InputError message={error} className="mt-2" />
+        </div>
+    );
+};
+
+const RiskMatrixPicker = ({
+    dampak,
+    probabilitas,
+    latestRiskGradings,
+    lockIdentity,
+    onPick,
+}) => {
+    const selectedKode = dampak && probabilitas ? `${dampak}${probabilitas}` : "";
+
+    return (
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 py-3 text-center dark:border-slate-700 dark:bg-slate-900/70">
+                <div className="text-sm font-black text-slate-900 dark:text-white">
+                    Matriks Analisa Risiko
+                </div>
+                <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    Kolom = Dampak/Konsekuensi, baris = Frekuensi/Likelihood
+                </div>
+            </div>
+
+            <div className="overflow-x-auto">
+                <div className="min-w-[780px]">
+                    <div className="grid grid-cols-[160px_repeat(5,minmax(110px,1fr))]">
+                        <div className="flex min-h-[76px] items-center justify-center border-b border-r border-slate-300 bg-slate-100 px-3 text-center text-xs font-black uppercase text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                            Frekuensi / Likelihood
+                        </div>
+                        {impactHeaders.map((impact) => (
+                            <div
+                                key={impact.value}
+                                className="flex min-h-[76px] flex-col items-center justify-center border-b border-r border-slate-300 bg-slate-50 px-3 text-center dark:border-slate-700 dark:bg-slate-900/80"
+                            >
+                                <span className="text-xs font-bold leading-tight text-slate-700 dark:text-slate-200">
+                                    {impact.label}
+                                </span>
+                                <span className="mt-1 text-lg font-black text-slate-900 dark:text-white">
+                                    {impact.value}
+                                </span>
+                            </div>
+                        ))}
+
+                        {probabilityRows.map((probability) => (
+                            <React.Fragment key={probability.value}>
+                                <div className="flex min-h-[86px] flex-col items-center justify-center border-b border-r border-slate-300 bg-slate-50 px-3 text-center dark:border-slate-700 dark:bg-slate-900/80">
+                                    <span className="text-xs font-bold leading-tight text-slate-700 dark:text-slate-200">
+                                        {probability.label}
+                                    </span>
+                                    <span className="mt-1 text-lg font-black text-slate-900 dark:text-white">
+                                        {probability.value}
+                                    </span>
+                                </div>
+                                {impactHeaders.map((impact) => {
+                                    const kode = `${impact.value}${probability.value}`;
+                                    const score = Number(impact.value) * Number(probability.value);
+                                    const cell = getMatrixCellStyle(kode, latestRiskGradings);
+                                    const isSelected = kode === selectedKode;
+
+                                    return (
+                                        <button
+                                            key={kode}
+                                            type="button"
+                                            disabled={lockIdentity}
+                                            onClick={() => onPick(impact.value, probability.value)}
+                                            className={`relative flex min-h-[86px] flex-col items-center justify-center border-b border-r border-slate-300 px-2 text-center transition dark:border-slate-700 ${
+                                                lockIdentity
+                                                    ? "cursor-not-allowed"
+                                                    : "hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                                            } ${
+                                                isSelected
+                                                    ? "z-10 ring-4 ring-sky-500 ring-offset-2"
+                                                    : ""
+                                            } ${getReadableTextColor(cell.color)}`}
+                                            style={{ backgroundColor: cell.color }}
+                                        >
+                                            <span className="text-sm font-black leading-tight">
+                                                {cell.label}
+                                            </span>
+                                            <span className="mt-1 text-2xl font-black">{score}</span>
+                                            <span className="text-[10px] font-bold opacity-80">
+                                                Kode {kode}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
@@ -187,12 +323,6 @@ const GradingInput = ({ field, data, errors, update }) => (
     </section>
 );
 
-const LockedScore = ({ label, value }) => (
-    <div className="mt-1 flex min-h-[42px] items-center rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-        {label} {value || "-"}
-    </div>
-);
-
 export default function Form({
     errors,
     submit,
@@ -208,9 +338,7 @@ export default function Form({
     const dampak = data.dampak || codeParts.dampak;
     const probabilitas = data.probabilitas || codeParts.probabilitas;
 
-    const updateCodePart = (field, value) => {
-        const nextDampak = field === "dampak" ? value : dampak;
-        const nextProbabilitas = field === "probabilitas" ? value : probabilitas;
+    const updateMatrixCell = (nextDampak, nextProbabilitas) => {
         const nextKode = nextDampak && nextProbabilitas ? `${nextDampak}${nextProbabilitas}` : "";
         const latest = nextKode ? latestRiskGradings[nextKode] : null;
         const nextData = {
@@ -254,28 +382,16 @@ export default function Form({
 
                             <div className="col-span-12 sm:col-span-3">
                                 <InputLabel for="dampak" value="Dampak" />
-                                {lockIdentity ? (
-                                    <LockedScore label="Dampak" value={dampak} />
-                                ) : (
-                                    <ComboboxPage
-                                        ShouldMap={scoreOptions}
-                                        selected={getSelectedScore(dampak)}
-                                        onChange={(option) => updateCodePart("dampak", option.id)}
-                                    />
-                                )}
+                                <div className="mt-1 flex min-h-[42px] items-center rounded-lg border border-slate-200 bg-white px-3 text-lg font-black text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                                    {dampak || "-"}
+                                </div>
                             </div>
 
                             <div className="col-span-12 sm:col-span-3">
                                 <InputLabel for="probabilitas" value="Probabilitas" />
-                                {lockIdentity ? (
-                                    <LockedScore label="Probabilitas" value={probabilitas} />
-                                ) : (
-                                    <ComboboxPage
-                                        ShouldMap={scoreOptions}
-                                        selected={getSelectedScore(probabilitas)}
-                                        onChange={(option) => updateCodePart("probabilitas", option.id)}
-                                    />
-                                )}
+                                <div className="mt-1 flex min-h-[42px] items-center rounded-lg border border-slate-200 bg-white px-3 text-lg font-black text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                                    {probabilitas || "-"}
+                                </div>
                             </div>
 
                             <div className="col-span-12 sm:col-span-3">
@@ -297,7 +413,7 @@ export default function Form({
                                 <InputError message={errors.kode} className="mt-1" />
                                 {!lockIdentity && latestRiskGradingYear && (
                                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                        Nama grading dan warna otomatis mengikuti data tahun terakhir ({latestRiskGradingYear}) jika kode tersedia.
+                                        Klik kotak pada matriks. Nama grading dan warna otomatis mengikuti data tahun terakhir ({latestRiskGradingYear}) jika kode tersedia.
                                     </p>
                                 )}
                                 {lockIdentity && (
@@ -305,6 +421,16 @@ export default function Form({
                                         Tahun dan kode dikunci saat edit agar relasi transaksi tetap konsisten.
                                     </p>
                                 )}
+                            </div>
+
+                            <div className="col-span-12">
+                                <RiskMatrixPicker
+                                    dampak={dampak}
+                                    probabilitas={probabilitas}
+                                    latestRiskGradings={latestRiskGradings}
+                                    lockIdentity={lockIdentity}
+                                    onPick={updateMatrixCell}
+                                />
                             </div>
                         </div>
                     </div>
