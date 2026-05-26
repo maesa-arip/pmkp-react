@@ -32,7 +32,6 @@ use App\Models\WaktuImplementasi;
 use App\Models\WaktuPengendalian;
 use App\Notifications\RiskRegisterEditNotification;
 use App\Notifications\RiskRegisterNewNotification;
-use App\Services\RiskRegisterYearCopyService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,26 +41,6 @@ use Inertia\Inertia;
 class RiskRegisterKlinisController extends Controller
 {
     public $loadDefault = 10;
-
-    public function copyYear(Request $request, RiskRegisterYearCopyService $copyService)
-    {
-        $validated = $request->validate([
-            'source_year' => 'required|integer|min:2000|max:2100',
-            'target_year' => 'required|integer|min:2000|max:2100|gt:source_year',
-        ]);
-
-        $result = $copyService->copy(
-            (int) $validated['source_year'],
-            (int) $validated['target_year'],
-            1
-        );
-
-        return back()->with([
-            'type' => $result['type'],
-            'message' => $result['message'],
-        ]);
-    }
-
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];

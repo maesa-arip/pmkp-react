@@ -33,6 +33,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RCAController;
 use App\Http\Controllers\RiskCategoryController;
 use App\Http\Controllers\RiskGradingController;
+use App\Http\Controllers\RiskRegisterCopyController;
 use App\Http\Controllers\RiskRegisterKlinisController;
 use App\Http\Controllers\RiskRegisterKlinisOpsiPengendalianController;
 use App\Http\Controllers\RiskRegisterKlinisOsd2Controller;
@@ -118,7 +119,8 @@ Route::middleware('auth')->group(function () {
     // Route::get('/print-table/{code}',[ExportPDFController::class,'printTable'])->name('ExportPDF.printTable');
     // Route::get('/print-pdsa/{code}',[ExportPDFController::class,'printPDSA'])->name('ExportPDF.printPDSA');
 
-    Route::post('/riskRegisterKlinis/copy-year', [RiskRegisterKlinisController::class, 'copyYear'])->name('riskRegisterKlinis.copyYear');
+    Route::get('/riskRegisterCopy', [RiskRegisterCopyController::class, 'index'])->name('riskRegisterCopy.index');
+    Route::post('/riskRegisterCopy', [RiskRegisterCopyController::class, 'store'])->name('riskRegisterCopy.store');
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
     Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');
@@ -142,7 +144,6 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('klinisOpsiPengendalian', RiskRegisterKlinisOpsiPengendalianController::class);
     Route::apiResource('riskRegisterKlinisOsd2', RiskRegisterKlinisOsd2Controller::class);
 
-    Route::post('/riskRegisterNonKlinis/copy-year', [RiskRegisterNonKlinisController::class, 'copyYear'])->name('riskRegisterNonKlinis.copyYear');
     Route::apiResource('riskRegisterNonKlinis', RiskRegisterNonKlinisController::class);
     
     Route::get('export/riskregisterklinis', [ExportController::class, 'riskregisterklinis'])->name('export.riskregisterklinis');

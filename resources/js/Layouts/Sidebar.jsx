@@ -49,6 +49,11 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     const canSeeIkpMaster = hasPermission("lihat data master ikp");
     const canSeeMutuMaster = hasPermission("lihat data master mutu");
     const canSeeAccessMaster = hasPermission("atur hak akses");
+    const canSeeRiskCopy = hasPermission(
+        "lihat data semua risk register",
+        "atur data master manajemen risiko",
+        "atur hak akses",
+    );
 
     // console.log("Permissions:", permission_name); // Debug: Cek permissions yang diterima
     const closeSidebar = () => {
@@ -382,6 +387,17 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                         >
                             Risiko Non Klinis
                         </Link>
+                        {canSeeRiskCopy && (
+                            <Link
+                                href={route("riskRegisterCopy.index")}
+                                onClick={closeSidebar}
+                                className={getSubNavClasses(
+                                    routeName.startsWith("riskRegisterCopy"),
+                                )}
+                            >
+                                Copy Risk Register
+                            </Link>
+                        )}
                     </AccordionItem>
                     <AccordionItem
                         id="formulir-rca"

@@ -16,8 +16,7 @@ import {
     PlusIcon, 
     MagnifyingGlassIcon,
     ClockIcon,
-    ArrowRightIcon,
-    DocumentDuplicateIcon
+    ArrowRightIcon
 } from "@heroicons/react/24/outline";
 
 import Create from "./Create";
@@ -125,10 +124,8 @@ export default function Index(props) {
     const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] = useState(false);
     const [isOpenEditDialogFGDActual, setIsOpenEditDialogFGDActual] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
-    const [isOpenCopyYearDialog, setIsOpenCopyYearDialog] = useState(false);
-    const [isCopyingYear, setIsCopyingYear] = useState(false);
 
-    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog || isOpenCopyYearDialog;
+    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog;
 
     const reload = useCallback(debounce((query) => { router.get(route(route().current()), { ...pickBy(query), page: query.page }, { preserveState: true, preserveScroll: true }); }, 150), []);
     useEffect(() => { if (!isInitialRender) reload(params); else setIsInitialRender(false); }, [params]);
@@ -157,17 +154,6 @@ export default function Index(props) {
     };
 
     const destroyriskregisterklinis1 = () => { router.delete(route("riskRegisterKlinis.destroy", state.id), { onSuccess: () => setIsOpenDestroyDialog(false) }); };
-    const copyYearRiskRegisters = () => {
-        setIsCopyingYear(true);
-        router.post(route("riskRegisterKlinis.copyYear"), {
-            source_year: 2025,
-            target_year: 2026,
-        }, {
-            preserveScroll: true,
-            onSuccess: () => setIsOpenCopyYearDialog(false),
-            onFinish: () => setIsCopyingYear(false),
-        });
-    };
 
     const stopPropagation = (e) => e.stopPropagation();
 
@@ -185,16 +171,6 @@ export default function Index(props) {
             <EditModal isOpenEditDialog={isOpenEditDialogFGDTreated} setIsOpenEditDialog={setIsOpenEditDialogFGDTreated} size="max-w-6xl" title="Edit FGD Treated"><EditFGDTreated model={state} ShouldMap={ShouldMap} isOpenEditDialog={isOpenEditDialogFGDTreated} setIsOpenEditDialog={setIsOpenEditDialogFGDTreated} /></EditModal>
             <EditModal isOpenEditDialog={isOpenEditDialogFGDActual} setIsOpenEditDialog={setIsOpenEditDialogFGDActual} size="max-w-6xl" title="Edit FGD Actual"><EditFGDActual model={state} ShouldMap={ShouldMap} isOpenEditDialog={isOpenEditDialogFGDActual} setIsOpenEditDialog={setIsOpenEditDialogFGDActual} /></EditModal>
             <DestroyModal isOpenDestroyDialog={isOpenDestroyDialog} setIsOpenDestroyDialog={setIsOpenDestroyDialog} size="max-w-md" title="Hapus Risk Register" warning="Tindakan ini tidak dapat dibatalkan."><DangerButton className="w-full ml-2" onClick={destroyriskregisterklinis1}>Hapus Permanen</DangerButton></DestroyModal>
-            <DestroyModal isOpenDestroyDialog={isOpenCopyYearDialog} setIsOpenDestroyDialog={setIsOpenCopyYearDialog} size="max-w-lg" title="Salin Risiko Klinis 2025 ke 2026" warning="Sistem akan menyalin risiko klinis tahun 2025 yang belum ada di 2026. Data 2026 yang sudah ada tidak akan ditimpa dan risiko yang sudah pernah disalin akan dilewati.">
-                <button
-                    type="button"
-                    disabled={isCopyingYear}
-                    onClick={copyYearRiskRegisters}
-                    className="inline-flex justify-center items-center w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white transition-all bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {isCopyingYear ? "Menyalin..." : "Salin Sekarang"}
-                </button>
-            </DestroyModal>
 
             <div className="flex flex-col gap-6 mx-auto">
                 
@@ -221,9 +197,6 @@ export default function Index(props) {
                             </div>
                             <button onClick={() => triggerModal(setIsOpenAddDialog)} className="inline-flex items-center justify-center h-10 px-5 text-sm font-bold text-white transition-colors shadow-sm rounded-xl bg-sky-600 hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 shrink-0">
                                 <PlusIcon className="w-4 h-4 mr-2" /> Tambah Baru
-                            </button>
-                            <button onClick={() => setIsOpenCopyYearDialog(true)} className="inline-flex items-center justify-center h-10 px-5 text-sm font-bold transition-colors border shadow-sm rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-[#1e293b] dark:text-slate-200 dark:hover:bg-slate-800 shrink-0">
-                                <DocumentDuplicateIcon className="w-4 h-4 mr-2" /> Salin 2025 ke 2026
                             </button>
                         </div>
                     </div>
