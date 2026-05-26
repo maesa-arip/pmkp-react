@@ -11,7 +11,7 @@ export default function Guest({ children }) {
                 {/* Glow Biru/Sky di Kiri Atas */}
                 <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-400/20 dark:bg-sky-600/10 blur-[120px]"></div>
                 {/* Glow Indigo di Kanan Bawah */}
-                <div className="absolute top-[60%] -right-[10%] w-[40%] h-[50%] rounded-full bg-indigo-400/20 dark:bg-indigo-600/10 blur-[120px]"></div>
+                <div className="absolute top-[60%] -right-[10%] w-[40%] h-[50%] rounded-full bg-blue-400/20 dark:bg-blue-600/10 blur-[120px]"></div>
             </div>
 
             {/* --- LOGO APLIKASI --- */}

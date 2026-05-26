@@ -21,7 +21,7 @@ export default function Sidebar() {
                             <li>
                                 <span
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -48,7 +48,7 @@ export default function Sidebar() {
                                 <Link
                                     href={route("users.index")}
                                     // active={route().current("users.index")}
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -77,7 +77,7 @@ export default function Sidebar() {
                             {/* <li>
                                 <a
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -98,7 +98,7 @@ export default function Sidebar() {
                                     <span className="ml-2 text-sm tracking-wide truncate">
                                         Inbox
                                     </span>
-                                    <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-indigo-500 bg-indigo-50 rounded-full">
+                                    <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">
                                         New
                                     </span>
                                 </a>
@@ -106,7 +106,7 @@ export default function Sidebar() {
                             {/* <li>
                                 <a
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -132,7 +132,7 @@ export default function Sidebar() {
                             <li>
                                 <Link
                                     href={route("dashboard")}
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -171,7 +171,7 @@ export default function Sidebar() {
                             <li>
                                 <a
                                     href={route('export.riskregisterklinislarsdhp') } 
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -197,7 +197,7 @@ export default function Sidebar() {
                             <li>
                                 <a
                                     href={route('export.riskregisterklinisfitur4') } 
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -224,7 +224,7 @@ export default function Sidebar() {
                                 <a
                                     // href="/export/riskregisterklinispdf?download=pdf"
                                     href={route('export.riskregisterklinisbpkp') } 
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -251,7 +251,7 @@ export default function Sidebar() {
                                 <a
                                     // href="/export/riskregisterklinispdf?download=pdf"
                                     href={route('export.riskregisternonklinisbpkp') } 
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -277,7 +277,7 @@ export default function Sidebar() {
                             {/* <li>
                                 <a
                                     href={route('export.riskregisterklinis') } 
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -310,7 +310,7 @@ export default function Sidebar() {
                             <li>
                                 <span
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -336,7 +336,7 @@ export default function Sidebar() {
                             <li>
                                 <span
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -369,7 +369,7 @@ export default function Sidebar() {
                             <li>
                                 <span
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -395,7 +395,7 @@ export default function Sidebar() {
                             {/* <li>
                                 <a
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg
@@ -427,7 +427,7 @@ export default function Sidebar() {
                             <li>
                                 <span
                                     href="#"
-                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-indigo-500"
+                                    className="relative flex flex-row items-center pr-6 text-gray-600 border-l-4 border-transparent h-11 focus:outline-none hover:bg-gray-50 hover:text-gray-800 hover:border-blue-500"
                                 >
                                     <span className="inline-flex items-center justify-center ml-4">
                                         <svg

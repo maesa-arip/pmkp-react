@@ -136,7 +136,7 @@ export default function Form({
                         
                         <div className="flex flex-col">
                             <label htmlFor="study" className={labelClass}>
-                                <span className="inline-flex px-1.5 py-0.5 mr-1 text-[10px] font-black text-indigo-600 bg-indigo-50 border border-indigo-200 rounded dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400">S</span> 
+                                <span className="inline-flex px-1.5 py-0.5 mr-1 text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-200 rounded dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400">S</span> 
                                 Study (Pembelajaran / Evaluasi)
                             </label>
                             <TextAreaInput 

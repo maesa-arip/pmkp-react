@@ -41,7 +41,7 @@ export default forwardRef(function TextInputWithError(
                     name={name}
                     id={id}
                     value={value}
-                    className={`border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full mt-1 ${className}`}
+                    className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm block w-full mt-1 ${className}`}
                     ref={input}
                     readOnly={readOnly}
                     autoComplete={autoComplete}

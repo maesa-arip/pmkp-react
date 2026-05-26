@@ -10,7 +10,7 @@ export default function ListBoxPage({ ShouldMap, selected, onChange, name }) {
             onChange={onChange}
             name={name}
         >
-            <Listbox.Button className="flex justify-between w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <Listbox.Button className="flex justify-between w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <span className="block truncate">{selected.name}</span>
                 <span className="inset-y-0 right-0 flex items-center justify-between pointer-events-none">
                     <svg

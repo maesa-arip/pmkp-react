@@ -14,7 +14,7 @@ export default forwardRef(function TextAreaInput(
 
     const focusClassName = readOnly
         ? 'border-gray-200 focus:border-gray-200 focus:ring-gray-200'
-        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500';
+        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500';
 
     return (
         <div className="flex flex-col items-start">
@@ -26,7 +26,7 @@ export default forwardRef(function TextAreaInput(
                 value={value}
                 className={`rounded-md shadow-sm ${focusClassName} ${className}`}
                 // className={
-                //     `border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm ` +
+                //     `border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm ` +
                 //     className
                 // }
                 ref={input}

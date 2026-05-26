@@ -311,7 +311,7 @@ export default function Form({
                                     id="tgl_register"
                                     name="tgl_register"
                                     autoComplete="off"
-                                    className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                     onChange={(date) => {
                                         setTglRegister(date);
                                         const d = new Date(

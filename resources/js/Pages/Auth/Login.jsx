@@ -52,7 +52,7 @@ export default function Login({ status, canResetPassword }) {
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl shadow-2xl relative overflow-hidden">
                     
                     {/* Top Accent Line */}
-                    <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-sky-500 via-blue-600 to-blue-600"></div>
 
                     <div className="p-8 mt-2 sm:p-10">
                         

@@ -164,7 +164,7 @@ export default function Index(props) {
                 
                 {/* --- HEADER --- */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-indigo-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600"></div>
                     <div className="relative z-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
                         <div className="space-y-1.5">
                             <div className="inline-flex items-center px-2.5 py-1 mb-2 text-[10px] font-black tracking-widest uppercase rounded-md bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30">

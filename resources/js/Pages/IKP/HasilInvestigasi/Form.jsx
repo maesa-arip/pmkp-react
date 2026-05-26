@@ -116,7 +116,7 @@ export default function Form({
                 <div className={`${sectionCardClass} relative z-[60]`}>
                     <div className={sectionHeaderClass}>
                         <div className="flex items-center">
-                            <MagnifyingGlassIcon className="w-5 h-5 mr-2 text-indigo-500 dark:text-indigo-400" />
+                            <MagnifyingGlassIcon className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
                             <div>
                                 <h3 className="text-base font-bold text-slate-900 dark:text-white">Formulir Investigasi Sederhana</h3>
                                 <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">Analisis penyebab, akar masalah, dan rekomendasi perbaikan.</p>

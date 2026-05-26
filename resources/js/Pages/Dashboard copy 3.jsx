@@ -63,7 +63,7 @@ export default function Dashboard(props) {
             case 'created': return { icon: <PlusCircleIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />, bg: "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20" };
             case 'updated': return { icon: <PencilSquareIcon className="w-4 h-4 text-sky-600 dark:text-sky-400" />, bg: "bg-sky-50 dark:bg-sky-500/10 border-sky-200 dark:border-sky-500/20" };
             case 'deleted': return { icon: <TrashIcon className="w-4 h-4 text-rose-600 dark:text-rose-400" />, bg: "bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20" };
-            case 'verified': return { icon: <CheckBadgeIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />, bg: "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20" };
+            case 'verified': return { icon: <CheckBadgeIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />, bg: "bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20" };
             default: return { icon: <DocumentTextIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />, bg: "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10" };
         }
     };

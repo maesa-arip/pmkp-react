@@ -191,7 +191,7 @@ export default function Index(props) {
                 
                 {/* --- HEADER --- */}
                 <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-indigo-600"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600"></div>
                     <div className="relative z-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
                         <div className="space-y-1.5">
                             <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-50">Capaian Mutu Unit</h2>
@@ -203,7 +203,7 @@ export default function Index(props) {
                                 <button onClick={openExportDialogPDSA} className="inline-flex items-center justify-center w-full sm:w-auto h-10 px-4 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-sky-600 dark:bg-[#1e293b] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-sky-400 transition-colors shadow-sm">
                                     <PrinterIcon className="w-4 h-4 mr-1.5" /> Print PDSA
                                 </button>
-                                <button onClick={openExportDialogMutuIndikator} className="inline-flex items-center justify-center w-full sm:w-auto h-10 px-4 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-indigo-600 dark:bg-[#1e293b] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-indigo-400 transition-colors shadow-sm">
+                                <button onClick={openExportDialogMutuIndikator} className="inline-flex items-center justify-center w-full sm:w-auto h-10 px-4 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-blue-600 dark:bg-[#1e293b] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 transition-colors shadow-sm">
                                     <DocumentChartBarIcon className="w-4 h-4 mr-1.5" /> Print Indikator
                                 </button>
                             </div>
@@ -373,7 +373,7 @@ export default function Index(props) {
                                                                     {/* PDSA Logic: Hanya muncul jika TIDAK Tercapai */}
                                                                     {!isTercapai && (
                                                                         <div className="py-1">
-                                                                            <button onClick={() => triggerModal(setIsOpenEditDialogFormulirPDSA, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-indigo-600 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-500/10 dark:text-indigo-400 group">
+                                                                            <button onClick={() => triggerModal(setIsOpenEditDialogFormulirPDSA, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-blue-600 transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/10 dark:text-blue-400 group">
                                                                                 <DocumentChartBarIcon className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" /> 
                                                                                 {item.mutu_pdsa ? "Edit PDSA" : "Buat Laporan PDSA"}
                                                                             </button>
@@ -517,7 +517,7 @@ export default function Index(props) {
                              
                              {/* Tombol PDSA Hanya Muncul Jika Belum Tercapai (Perlu PDSA) */}
                              {!stateIsTercapai && (
-                                <button onClick={() => triggerModal(setIsOpenEditDialogFormulirPDSA)} className="flex items-center justify-center w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500/50">
+                                <button onClick={() => triggerModal(setIsOpenEditDialogFormulirPDSA)} className="flex items-center justify-center w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-blue-500/50">
                                     <DocumentChartBarIcon className="w-4 h-4 mr-2" /> {state.mutu_pdsa ? "Edit Laporan PDSA" : "Buat Laporan PDSA"}
                                 </button>
                              )}
