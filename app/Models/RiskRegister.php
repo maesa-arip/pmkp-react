@@ -75,6 +75,10 @@ class RiskRegister extends Model
     {
         return $this->belongsTo(self::class, 'copied_from_risk_register_id');
     }
+    public function copiedRiskRegisterCopies()
+    {
+        return $this->hasMany(self::class, 'copied_from_risk_register_id');
+    }
     public function effectiveRiskRegisterHistories(): EloquentCollection
     {
         $ownHistories = $this->relationLoaded('risk_register_histories')
@@ -97,6 +101,12 @@ class RiskRegister extends Model
             ? $sourceRisk->risk_register_histories
             : $sourceRisk->risk_register_histories()->get();
 
+        if ($sourceHistories->isEmpty()) {
+            $sourceHistories = new EloquentCollection([
+                $this->sourceRegisteredHistory($sourceRisk),
+            ]);
+        }
+
         $postCopyHistories = $ownHistories->reject(
             fn ($history) => $history->event_type === RiskRegisterHistory::EVENT_COPIED_FROM_PREVIOUS_YEAR
         );
@@ -105,6 +115,38 @@ class RiskRegister extends Model
             ->merge($postCopyHistories)
             ->sortBy('created_at')
             ->values();
+    }
+    private function sourceRegisteredHistory(self $sourceRisk): RiskRegisterHistory
+    {
+        $history = new RiskRegisterHistory();
+        $history->forceFill([
+            'id' => "source-{$sourceRisk->id}",
+            'risk_register_id' => $sourceRisk->id,
+            'currently_id' => $sourceRisk->currently_id,
+            'user_id' => $sourceRisk->user_id,
+            'event_type' => RiskRegisterHistory::EVENT_SOURCE_REGISTERED,
+            'created_at' => $sourceRisk->created_at,
+            'updated_at' => $sourceRisk->updated_at,
+            'snapshot' => [
+                'kode_risiko' => $sourceRisk->kode_risiko,
+                'pernyataan_risiko' => $sourceRisk->pernyataan_risiko,
+                'sebab' => $sourceRisk->sebab,
+                'currently_id' => $sourceRisk->currently_id,
+                'tipe_id' => $sourceRisk->tipe_id,
+                'risk_category_id' => $sourceRisk->risk_category_id,
+                'source_risk_register_id' => $sourceRisk->id,
+                'source_kode_risiko' => $sourceRisk->kode_risiko,
+                'source_year' => $sourceRisk->tgl_register
+                    ? date('Y', strtotime($sourceRisk->tgl_register))
+                    : null,
+            ],
+        ]);
+
+        if ($sourceRisk->relationLoaded('user')) {
+            $history->setRelation('user', $sourceRisk->user);
+        }
+
+        return $history;
     }
     public function formulirrca()
     {

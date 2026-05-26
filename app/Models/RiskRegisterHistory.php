@@ -12,6 +12,7 @@ class RiskRegisterHistory extends Model
     public const EVENT_CREATED = 'created';
     public const EVENT_STATUS_CHANGED = 'status_changed';
     public const EVENT_COPIED_FROM_PREVIOUS_YEAR = 'copied_from_previous_year';
+    public const EVENT_SOURCE_REGISTERED = 'source_registered';
 
     protected $fillable = [
         'risk_register_id',

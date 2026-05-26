@@ -76,7 +76,9 @@ export default function Form({
                             <div className="relative pb-4 ml-3 space-y-8 border-l-2 sm:ml-4 border-slate-200 dark:border-slate-800/80">
                                 {histories.map((history, index) => {
                                     // Logika penentuan status & visual timeline
-                                    const isBaruDibuat = history.event_type === "created" || history.created_at === model?.created_at;
+                                    const isCopiedRisk = Boolean(model?.copied_from_risk_register_id);
+                                    const isSourceRegistered = history.event_type === "source_registered";
+                                    const isBaruDibuat = !isCopiedRisk && (history.event_type === "created" || history.created_at === model?.created_at);
                                     const isStatusChanged = history.event_type === "status_changed" || !history.event_type;
                                     const isKejadian = history.currently_id === 1;
                                     const snapshot = history.snapshot || {};
@@ -90,7 +92,23 @@ export default function Form({
                                         user: history.user?.name || model?.user_name || "Sistem"
                                     };
 
-                                    if (isBaruDibuat) {
+                                    if (isSourceRegistered) {
+                                        statusConfig = {
+                                            color: "bg-sky-500",
+                                            badgeBg: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/30",
+                                            icon: <SparklesIcon className="w-4 h-4 text-white" />,
+                                            title: "RIWAYAT RISIKO ASAL",
+                                            user: history.user?.name || model?.user_name || "Sistem"
+                                        };
+                                    } else if (isCopiedRisk && history.event_type === "created") {
+                                        statusConfig = {
+                                            color: "bg-sky-500",
+                                            badgeBg: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/30",
+                                            icon: <SparklesIcon className="w-4 h-4 text-white" />,
+                                            title: "DIBUAT DI TAHUN ASAL",
+                                            user: history.user?.name || model?.user_name || "Sistem"
+                                        };
+                                    } else if (isBaruDibuat) {
                                         statusConfig = {
                                             color: "bg-sky-500",
                                             badgeBg: "bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/30",
