@@ -142,6 +142,10 @@ export default function Index(props) {
             columns={columns}
             Create={Create}
             Edit={Edit}
+            createProps={{
+                latestRiskGradings: props.latestRiskGradings || {},
+                latestRiskGradingYear: props.latestRiskGradingYear,
+            }}
         />
     );
 }

@@ -3,6 +3,7 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
+import ComboboxPage from "@/Components/ComboboxPage";
 import React from "react";
 
 const colorOptions = [
@@ -14,7 +15,13 @@ const colorOptions = [
     { label: "Abu", value: "#64748b", text: "text-white" },
 ];
 
-const scoreOptions = ["1", "2", "3", "4", "5"];
+const scoreOptions = [
+    { id: "1", value: "1", name: "Nilai 1" },
+    { id: "2", value: "2", name: "Nilai 2" },
+    { id: "3", value: "3", name: "Nilai 3" },
+    { id: "4", value: "4", name: "Nilai 4" },
+    { id: "5", value: "5", name: "Nilai 5" },
+];
 
 const gradingFields = [
     {
@@ -62,6 +69,24 @@ const getCodeParts = (kode) => {
         probabilitas: digits.charAt(1) || "",
     };
 };
+
+const emptyScore = { id: "", value: "", name: "Pilih" };
+
+const getSelectedScore = (value) =>
+    scoreOptions.find((option) => option.id === String(value || "")) || emptyScore;
+
+const gradingValueFields = [
+    "name",
+    "warna_klinis",
+    "name_nonklinis",
+    "warna_nonklinis",
+    "name_nonklinis_pergub",
+    "warna_nonklinis_pergub",
+    "name_ikp",
+    "warna_ikp",
+    "name_bpkp",
+    "warna_bpkp",
+];
 
 const ColorInput = ({ id, value, error, update }) => {
     const selectedColor = value || "#64748b";
@@ -162,14 +187,46 @@ const GradingInput = ({ field, data, errors, update }) => (
     </section>
 );
 
-export default function Form({ errors, submit, data, setData, closeButton, lockIdentity = false }) {
+const LockedScore = ({ label, value }) => (
+    <div className="mt-1 flex min-h-[42px] items-center rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+        {label} {value || "-"}
+    </div>
+);
+
+export default function Form({
+    errors,
+    submit,
+    data,
+    setData,
+    closeButton,
+    lockIdentity = false,
+    latestRiskGradings = {},
+    latestRiskGradingYear = null,
+}) {
     const update = (field, value) => setData(field, value);
-    const { dampak, probabilitas } = getCodeParts(data.kode);
+    const codeParts = getCodeParts(data.kode);
+    const dampak = data.dampak || codeParts.dampak;
+    const probabilitas = data.probabilitas || codeParts.probabilitas;
 
     const updateCodePart = (field, value) => {
         const nextDampak = field === "dampak" ? value : dampak;
         const nextProbabilitas = field === "probabilitas" ? value : probabilitas;
-        update("kode", nextDampak && nextProbabilitas ? `${nextDampak}${nextProbabilitas}` : "");
+        const nextKode = nextDampak && nextProbabilitas ? `${nextDampak}${nextProbabilitas}` : "";
+        const latest = nextKode ? latestRiskGradings[nextKode] : null;
+        const nextData = {
+            ...data,
+            dampak: nextDampak,
+            probabilitas: nextProbabilitas,
+            kode: nextKode,
+        };
+
+        if (!lockIdentity && latest) {
+            gradingValueFields.forEach((name) => {
+                nextData[name] = latest[name] || "";
+            });
+        }
+
+        setData(nextData);
     };
 
     return (
@@ -197,38 +254,28 @@ export default function Form({ errors, submit, data, setData, closeButton, lockI
 
                             <div className="col-span-12 sm:col-span-3">
                                 <InputLabel for="dampak" value="Dampak" />
-                                <select
-                                    id="dampak"
-                                    value={dampak}
-                                    onChange={(e) => updateCodePart("dampak", e.target.value)}
-                                    disabled={lockIdentity}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:disabled:bg-slate-800"
-                                >
-                                    <option value="">Pilih Dampak</option>
-                                    {scoreOptions.map((score) => (
-                                        <option key={`dampak-${score}`} value={score}>
-                                            Dampak {score}
-                                        </option>
-                                    ))}
-                                </select>
+                                {lockIdentity ? (
+                                    <LockedScore label="Dampak" value={dampak} />
+                                ) : (
+                                    <ComboboxPage
+                                        ShouldMap={scoreOptions}
+                                        selected={getSelectedScore(dampak)}
+                                        onChange={(option) => updateCodePart("dampak", option.id)}
+                                    />
+                                )}
                             </div>
 
                             <div className="col-span-12 sm:col-span-3">
                                 <InputLabel for="probabilitas" value="Probabilitas" />
-                                <select
-                                    id="probabilitas"
-                                    value={probabilitas}
-                                    onChange={(e) => updateCodePart("probabilitas", e.target.value)}
-                                    disabled={lockIdentity}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:disabled:bg-slate-800"
-                                >
-                                    <option value="">Pilih Probabilitas</option>
-                                    {scoreOptions.map((score) => (
-                                        <option key={`probabilitas-${score}`} value={score}>
-                                            Probabilitas {score}
-                                        </option>
-                                    ))}
-                                </select>
+                                {lockIdentity ? (
+                                    <LockedScore label="Probabilitas" value={probabilitas} />
+                                ) : (
+                                    <ComboboxPage
+                                        ShouldMap={scoreOptions}
+                                        selected={getSelectedScore(probabilitas)}
+                                        onChange={(option) => updateCodePart("probabilitas", option.id)}
+                                    />
+                                )}
                             </div>
 
                             <div className="col-span-12 sm:col-span-3">
@@ -248,6 +295,11 @@ export default function Form({ errors, submit, data, setData, closeButton, lockI
 
                             <div className="col-span-12">
                                 <InputError message={errors.kode} className="mt-1" />
+                                {!lockIdentity && latestRiskGradingYear && (
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                        Nama grading dan warna otomatis mengikuti data tahun terakhir ({latestRiskGradingYear}) jika kode tersedia.
+                                    </p>
+                                )}
                                 {lockIdentity && (
                                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                                         Tahun dan kode dikunci saat edit agar relasi transaksi tetap konsisten.

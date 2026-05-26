@@ -3,9 +3,13 @@ import React, { useEffect } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model }) {
+    const kode = model.kode ? String(model.kode) : "";
+
     const { data, setData, put, reset, errors, transform } = useForm({
         tahun: model.tahun || "",
-        kode: model.kode ? String(model.kode) : "",
+        dampak: kode.charAt(0) || "",
+        probabilitas: kode.charAt(1) || "",
+        kode,
         warna: model.warna || "",
         name: model.name || "",
         warna_klinis: model.warna_klinis || "",
@@ -33,9 +37,13 @@ export default function Edit({ setIsOpenEditDialog, model }) {
     };
 
     useEffect(() => {
+        const kode = model.kode ? String(model.kode) : "";
+
         setData({
             tahun: model.tahun || "",
-            kode: model.kode ? String(model.kode) : "",
+            dampak: kode.charAt(0) || "",
+            probabilitas: kode.charAt(1) || "",
+            kode,
             warna: model.warna || "",
             name: model.name || "",
             warna_klinis: model.warna_klinis || "",

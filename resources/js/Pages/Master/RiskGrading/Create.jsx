@@ -2,9 +2,15 @@ import { useForm } from "@inertiajs/react";
 import React from "react";
 import Form from "./Form";
 
-export default function Create({ setIsOpenAddDialog }) {
+export default function Create({
+    setIsOpenAddDialog,
+    latestRiskGradings = {},
+    latestRiskGradingYear = null,
+}) {
     const { data, setData, post, reset, errors, transform } = useForm({
         tahun: new Date().getFullYear(),
+        dampak: "",
+        probabilitas: "",
         kode: "",
         warna: "",
         name: "",
@@ -34,7 +40,15 @@ export default function Create({ setIsOpenAddDialog }) {
 
     return (
         <form onSubmit={onSubmit}>
-            <Form {...{ errors, data, setData, submit: "Simpan", closeButton }} />
+            <Form
+                errors={errors}
+                data={data}
+                setData={setData}
+                submit="Simpan"
+                closeButton={closeButton}
+                latestRiskGradings={latestRiskGradings}
+                latestRiskGradingYear={latestRiskGradingYear}
+            />
         </form>
     );
 }

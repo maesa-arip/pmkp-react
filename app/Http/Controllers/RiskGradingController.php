@@ -15,6 +15,7 @@ class RiskGradingController extends Controller
     public function index(Request $request)
     {
         $riskGradings = RiskGrading::query();
+        $latestYear = RiskGrading::max('tahun');
 
         if ($request->q) {
             $riskGradings->where(function ($query) use ($request) {
@@ -50,7 +51,30 @@ class RiskGradingController extends Controller
             ],
         ]);
 
-        return inertia('Master/RiskGrading/Index', ['riskGradings' => $riskGradings]);
+        $latestRiskGradings = RiskGrading::query()
+            ->when($latestYear, fn ($query) => $query->where('tahun', $latestYear))
+            ->orderBy('kode')
+            ->get()
+            ->keyBy(fn ($riskGrading) => (string) $riskGrading->kode)
+            ->map(fn ($riskGrading) => [
+                'kode' => (string) $riskGrading->kode,
+                'name' => $riskGrading->name,
+                'warna_klinis' => $riskGrading->warna_klinis,
+                'name_nonklinis' => $riskGrading->name_nonklinis,
+                'warna_nonklinis' => $riskGrading->warna_nonklinis,
+                'name_nonklinis_pergub' => $riskGrading->name_nonklinis_pergub,
+                'warna_nonklinis_pergub' => $riskGrading->warna_nonklinis_pergub,
+                'name_ikp' => $riskGrading->name_ikp,
+                'warna_ikp' => $riskGrading->warna_ikp,
+                'name_bpkp' => $riskGrading->name_bpkp,
+                'warna_bpkp' => $riskGrading->warna_bpkp,
+            ]);
+
+        return inertia('Master/RiskGrading/Index', [
+            'riskGradings' => $riskGradings,
+            'latestRiskGradings' => $latestRiskGradings,
+            'latestRiskGradingYear' => $latestYear,
+        ]);
     }
 
     public function store(Request $request)
