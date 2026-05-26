@@ -11,6 +11,7 @@ class RiskRegisterHistory extends Model
 
     public const EVENT_CREATED = 'created';
     public const EVENT_STATUS_CHANGED = 'status_changed';
+    public const EVENT_COPIED_FROM_PREVIOUS_YEAR = 'copied_from_previous_year';
 
     protected $fillable = [
         'risk_register_id',
@@ -38,6 +39,9 @@ class RiskRegisterHistory extends Model
                 'currently_id' => $currentlyId ?? $riskRegister->currently_id,
                 'tipe_id' => $riskRegister->tipe_id,
                 'risk_category_id' => $riskRegister->risk_category_id,
+                'copied_from_risk_register_id' => $riskRegister->copied_from_risk_register_id,
+                'copied_from_year' => $riskRegister->copied_from_year,
+                'copied_to_year' => $riskRegister->copied_to_year,
             ],
         ]);
     }
