@@ -58,20 +58,15 @@ class MutuUnitController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'mutu_indikator_id' => 'required',
-            'tanggal_mutu' => 'required|string|max:255',
-            'num' => 'required|string|max:255',
-            'denum' => 'required|string|max:255',
+            'mutu_indikator_id' => 'required|exists:mutu_indikators,id',
+            'tanggal_mutu' => 'required|date',
+            'num' => 'required|numeric|min:0',
+            'denum' => 'required|numeric|min:0',
         ]);
-        $MutuIndikator = MutuIndikator::where('id',$request->mutu_indikator_id)->first();
-        if ($MutuIndikator->penyebut == '%') {
-            $penyebut  = 100;
-        }
-        if ($MutuIndikator->penyebut == '‰') {
-            $penyebut  = 1000;
-        }
+
+        $MutuIndikator = MutuIndikator::findOrFail($validated['mutu_indikator_id']);
         $validated['tanggal_mutu'] = Carbon::parse($validated['tanggal_mutu'])->format('Y-m-d');
-        $validated['capaian'] =  $request->num / $request->denum * $penyebut;
+        $validated['capaian'] = $this->calculateCapaian((float) $validated['num'], (float) $validated['denum'], $MutuIndikator->penyebut);
         $validated['code'] =  Str::random(8);
         MutuUnit::create($validated);
         return back()->with([
@@ -82,13 +77,15 @@ class MutuUnitController extends Controller
     public function update(Request $request, MutuUnit $MutuUnit)
     {
         $validated = $request->validate([
-            'mutu_indikator_id' => 'required',
-            'tanggal_mutu' => 'required|string|max:255',
-            'num' => 'required|string|max:255',
-            'denum' => 'required|string|max:255',
+            'mutu_indikator_id' => 'required|exists:mutu_indikators,id',
+            'tanggal_mutu' => 'required|date',
+            'num' => 'required|numeric|min:0',
+            'denum' => 'required|numeric|min:0',
         ]);
+
+        $MutuIndikator = MutuIndikator::findOrFail($validated['mutu_indikator_id']);
         $validated['tanggal_mutu'] = Carbon::parse($validated['tanggal_mutu'])->format('Y-m-d');
-        $validated['capaian'] =  $request->num / $request->denum * 100;
+        $validated['capaian'] = $this->calculateCapaian((float) $validated['num'], (float) $validated['denum'], $MutuIndikator->penyebut);
         $MutuUnit->update($validated);
         return back()->with([
             'type' => 'success',
@@ -124,6 +121,21 @@ class MutuUnitController extends Controller
     // {
     //     return inertia('MUTU/Export/ViewDocument');
     // }
+
+    private function calculateCapaian(float $num, float $denum, ?string $satuan): ?float
+    {
+        if ($denum == 0.0) {
+            return null;
+        }
+
+        $multiplier = match ($satuan) {
+            '%' => 100,
+            '‰' => 1000,
+            default => 1,
+        };
+
+        return round(($num / $denum) * $multiplier, 2);
+    }
     // public function exportpdf()
     // {
     //     $html = '<h1>Your PDF Content</h1>'; // Replace this with your HTML content

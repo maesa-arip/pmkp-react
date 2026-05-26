@@ -223,7 +223,9 @@
                         <td class="col-nd">N</td>
                         <td class="col-measure-text">{{ $item->mutu_indikator->num_name }}</td>
                         <td class="col-score">{{ $item->num }}</td>
-                        <td class="col-achievement" rowspan="2">{{ $item->capaian }}{{ $item->mutu_indikator->penyebut }}</td>
+                        <td class="col-achievement" rowspan="2">
+                            {{ $item->capaian === null ? 'N/A' : $item->capaian . $item->mutu_indikator->penyebut }}
+                        </td>
                         <td class="col-standard" rowspan="2">
                             @if ($item->mutu_indikator->operator != '=')
                                 {{ $item->mutu_indikator->operator }}

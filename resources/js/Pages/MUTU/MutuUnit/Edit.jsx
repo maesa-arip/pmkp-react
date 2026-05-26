@@ -6,11 +6,11 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     const safeModel = model || {};
 
     const { data, setData, put, reset, errors } = useForm({
-        mutu_indikator_id: safeModel.mutu_indikator_id || "",
-        tanggal_mutu: safeModel.tanggal_mutu || "",
-        num: safeModel.num || "",
-        denum: safeModel.denum || "",
-        capaian: safeModel.capaian || "",
+        mutu_indikator_id: safeModel.mutu_indikator_id ?? "",
+        tanggal_mutu: safeModel.tanggal_mutu ?? "",
+        num: safeModel.num ?? "",
+        denum: safeModel.denum ?? "",
+        capaian: safeModel.capaian ?? "",
     });
 
     const closeButton = (e) => {

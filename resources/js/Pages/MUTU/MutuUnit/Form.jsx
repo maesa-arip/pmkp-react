@@ -117,6 +117,8 @@ export default function Form({
                                 value={data.num}
                                 handleChange={(e) => setData("num", e.target.value)}
                                 type="number"
+                                min="0"
+                                step="any"
                                 className={inputClass}
                                 placeholder="0"
                             />
@@ -134,6 +136,8 @@ export default function Form({
                                 value={data.denum}
                                 handleChange={(e) => setData("denum", e.target.value)}
                                 type="number"
+                                min="0"
+                                step="any"
                                 className={inputClass}
                                 placeholder="0"
                             />

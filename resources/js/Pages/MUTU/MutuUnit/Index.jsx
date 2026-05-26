@@ -115,6 +115,16 @@ export default function Index(props) {
 
     const isModalOpen = isOpenEditDialog || isOpenEditDialogFormulirPDSA;
 
+    const isCapaianTerhitung = (item) => {
+        if (!item || item.capaian === null || item.capaian === undefined || item.capaian === "") return false;
+        return Number.isFinite(parseFloat(item.capaian));
+    };
+
+    const formatCapaian = (item) => {
+        if (!isCapaianTerhitung(item)) return "N/A";
+        return `${item.capaian} ${item.mutu_indikator?.penyebut || ""}`.trim();
+    };
+
     // Logic Baris Terpilih
     const onSelectRow = (index) => {
         if (selectedRow === index && showDrawer) {
@@ -137,6 +147,7 @@ export default function Index(props) {
     // Helper Boolean (Apakah Capaian Tercapai atau Perlu PDSA)
     const checkIsTercapai = (item) => {
         if (!item || !item.mutu_indikator) return false;
+        if (!isCapaianTerhitung(item)) return false;
         const op = item.mutu_indikator.operator;
         const cap = parseFloat(item.capaian);
         const std = parseFloat(item.mutu_indikator.standar);
@@ -149,6 +160,7 @@ export default function Index(props) {
         return false;
     };
 
+    const stateIsTerhitung = isCapaianTerhitung(state);
     const stateIsTercapai = checkIsTercapai(state);
 
     // CRUD Actions
@@ -283,6 +295,7 @@ export default function Index(props) {
                                     {MutuUnit.map((item, index) => {
                                         const isSelected = selectedRow === index;
                                         const isTercapai = checkIsTercapai(item);
+                                        const isTerhitung = isCapaianTerhitung(item);
 
                                         return (
                                             <Fragment key={index}>
@@ -327,14 +340,18 @@ export default function Index(props) {
                                                         <div className="flex flex-col items-center gap-2.5">
                                                             <div className="flex flex-col items-center bg-slate-50 dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden w-full">
                                                                 <div className="bg-slate-100 dark:bg-slate-800 w-full py-1 text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">Aktual</div>
-                                                                <div className="py-1.5 font-black text-sm text-slate-900 dark:text-white">{item.capaian} {item.mutu_indikator.penyebut}</div>
+                                                                <div className="py-1.5 font-black text-sm text-slate-900 dark:text-white">{formatCapaian(item)}</div>
                                                                 <div className="w-full border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1e293b] py-1 px-2 text-[10px] font-medium text-slate-500 dark:text-slate-400">
                                                                     Target: {item.mutu_indikator.operator == '=' ? '' : item.mutu_indikator.operator} {item.mutu_indikator.standar}{item.mutu_indikator.penyebut}
                                                                 </div>
                                                             </div>
 
                                                             {/* Evaluasi Status (Badge) */}
-                                                            {isTercapai ? (
+                                                            {!isTerhitung ? (
+                                                                <span className="inline-flex items-center px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded bg-slate-50 text-slate-600 border border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/30 w-full justify-center">
+                                                                    Tidak Dihitung
+                                                                </span>
+                                                            ) : isTercapai ? (
                                                                 <span className="inline-flex items-center px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30 w-full justify-center">
                                                                     Tercapai
                                                                 </span>
@@ -371,7 +388,7 @@ export default function Index(props) {
                                                                 <div className="absolute right-0 z-[100] w-48 mt-2 origin-top-right bg-white border border-slate-200 rounded-xl shadow-lg dark:bg-[#1e293b] dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-slate-100 dark:divide-slate-700/80">
                                                                     
                                                                     {/* PDSA Logic: Hanya muncul jika TIDAK Tercapai */}
-                                                                    {!isTercapai && (
+                                                                    {isTerhitung && !isTercapai && (
                                                                         <div className="py-1">
                                                                             <button onClick={() => triggerModal(setIsOpenEditDialogFormulirPDSA, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-indigo-600 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-500/10 dark:text-indigo-400 group">
                                                                                 <DocumentChartBarIcon className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" /> 
@@ -465,7 +482,7 @@ export default function Index(props) {
                                 <div className="grid grid-cols-2 gap-3 pl-2 text-center">
                                     <div className="p-3 border rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                                         <p className="text-[10px] font-bold uppercase text-slate-400 mb-1">Capaian Aktual</p>
-                                        <p className="text-xl font-black text-slate-900 dark:text-white">{state.capaian} {state.mutu_indikator?.penyebut}</p>
+                                        <p className="text-xl font-black text-slate-900 dark:text-white">{formatCapaian(state)}</p>
                                     </div>
                                     <div className="p-3 border rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                                         <p className="text-[10px] font-bold uppercase text-slate-400 mb-1">Target Mutu</p>
@@ -516,7 +533,7 @@ export default function Index(props) {
                         <div className="flex flex-col gap-2.5 p-5 bg-white border-t shrink-0 border-slate-100 dark:border-slate-800 dark:bg-[#0f172a]">
                              
                              {/* Tombol PDSA Hanya Muncul Jika Belum Tercapai (Perlu PDSA) */}
-                             {!stateIsTercapai && (
+                             {stateIsTerhitung && !stateIsTercapai && (
                                 <button onClick={() => triggerModal(setIsOpenEditDialogFormulirPDSA)} className="flex items-center justify-center w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500/50">
                                     <DocumentChartBarIcon className="w-4 h-4 mr-2" /> {state.mutu_pdsa ? "Edit Laporan PDSA" : "Buat Laporan PDSA"}
                                 </button>
