@@ -101,6 +101,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         "riskTypes",
         "pics",
         "jenisSebabs",
+        "riskGradings",
         "impactValues",
         "probabilityValues",
         "controlValues",
