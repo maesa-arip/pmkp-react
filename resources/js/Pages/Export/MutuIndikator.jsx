@@ -11,12 +11,10 @@ import { InformationCircleIcon, ArrowPathIcon } from "@heroicons/react/24/outlin
 export default function MutuIndikator({ setIsOpenAddDialog }) {
     const { data, setData, post, reset, errors, processing } = useForm({
         startDate: "",
-        endDate: "",
         userId: "",
     });
     const closeButton = (e) => setIsOpenAddDialog(false);
     const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
     const [userId, setUserId] = useState(null);
     const [loadingLars, setLoadingLars] = useState(false);
     
@@ -25,10 +23,28 @@ export default function MutuIndikator({ setIsOpenAddDialog }) {
         month: 'long',
     };
 
+    const buildPayload = () => ({ startDate: data.startDate, userId });
+
+    const buildPreviewUrl = () => {
+        const url = "/print-mutu-indikator";
+        const params = new URLSearchParams();
+
+        if (data.startDate) params.append("startDate", data.startDate);
+        if (userId) params.append("userId", userId);
+
+        const queryString = params.toString();
+
+        return queryString ? `${url}?${queryString}` : url;
+    };
+
+    const previewPdf = () => {
+        window.open(buildPreviewUrl(), "_blank");
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        const url = "/print-mutu-indikator";
-        const payload = { startDate, endDate, userId };
+        const url = "/print-mutu-indikator?download=1";
+        const payload = buildPayload();
         setLoadingLars(true);
         
         const formattedStartDate = data.startDate ? new Date(data.startDate).toLocaleDateString("en-CA", formatDate) : '';
@@ -62,12 +78,12 @@ export default function MutuIndikator({ setIsOpenAddDialog }) {
             
             <div className="flex items-start gap-3 p-4 text-sm font-medium border shadow-sm text-amber-700 bg-amber-50 border-amber-200 rounded-xl dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30">
                 <InformationCircleIcon className="w-5 h-5 shrink-0 mt-0.5" />
-                <p>Pilih rentang bulan untuk di-export. Kosongkan jika ingin menarik seluruh data dari awal sampai sekarang.</p>
+                <p>Pilih bulan yang ingin di-export. Kosongkan jika ingin menarik seluruh data dari awal sampai sekarang.</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6">
                 <div className="flex flex-col gap-1.5">
-                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="startDate" value="Bulan Mulai" />
+                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="startDate" value="Bulan" />
                     <DatePicker
                         dateFormat="MMMM yyyy"
                         selected={startDate}
@@ -75,29 +91,11 @@ export default function MutuIndikator({ setIsOpenAddDialog }) {
                         id="startDate"
                         name="startDate"
                         autoComplete="off"
-                        placeholderText="Pilih Bulan Mulai"
+                        placeholderText="Pilih Bulan"
                         className={inputClass}
                         onChange={(date) => {
                             setStartDate(date);
-                            if(date) setData("startDate", new Date(date).toLocaleDateString("en-CA"));
-                        }}
-                    />
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="endDate" value="Bulan Akhir" />
-                    <DatePicker
-                        dateFormat="MMMM yyyy"
-                        selected={endDate}
-                        showMonthYearPicker
-                        id="endDate"
-                        name="endDate"
-                        autoComplete="off"
-                        placeholderText="Pilih Bulan Akhir"
-                        className={inputClass}
-                        onChange={(date) => {
-                            setEndDate(date);
-                            if(date) setData("endDate", new Date(date).toLocaleDateString("en-CA"));
+                            setData("startDate", date ? new Date(date).toLocaleDateString("en-CA") : "");
                         }}
                     />
                 </div>
@@ -130,12 +128,17 @@ export default function MutuIndikator({ setIsOpenAddDialog }) {
                 </SecondaryButton>
                 {loadingLars ? (
                     <button disabled className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white transition-all bg-sky-600 rounded-xl opacity-70 cursor-not-allowed">
-                        <ArrowPathIcon className="w-4 h-4 mr-2 animate-spin" /> Sedang Mengekspor...
+                        <ArrowPathIcon className="w-4 h-4 mr-2 animate-spin" /> Sedang Mengunduh...
                     </button>
                 ) : (
-                    <PrimaryButton className="justify-center py-2.5 bg-sky-600 hover:bg-sky-700 focus:ring-sky-500">
-                        Export PDF
-                    </PrimaryButton>
+                    <>
+                        <SecondaryButton type="button" onClick={previewPdf} className="justify-center py-2.5">
+                            Preview PDF
+                        </SecondaryButton>
+                        <PrimaryButton className="justify-center py-2.5 bg-sky-600 hover:bg-sky-700 focus:ring-sky-500">
+                            Download PDF
+                        </PrimaryButton>
+                    </>
                 )}
             </div>
         </form>

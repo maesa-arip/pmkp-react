@@ -38,6 +38,17 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     const permission_name = permissionNames
         ? permissionNames.map((p) => p.name)
         : [];
+    const hasPermission = (...names) =>
+        names.some((name) => permission_name.indexOf(name) > -1);
+    const canSeeRiskMaster = hasPermission(
+        "lihat data master manajemen risiko",
+        "atur data master manajemen risiko",
+        "edit data master manajemen risiko",
+    );
+    const canSeeValueMaster = hasPermission("atur nilai", "atur data nilai");
+    const canSeeIkpMaster = hasPermission("lihat data master ikp");
+    const canSeeMutuMaster = hasPermission("lihat data master mutu");
+    const canSeeAccessMaster = hasPermission("atur hak akses");
 
     // console.log("Permissions:", permission_name); // Debug: Cek permissions yang diterima
     const closeSidebar = () => {
@@ -516,13 +527,11 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
             </div>
 
             {/* SECTION: MASTER DATA */}
-            {(permission_name.indexOf("lihat data master manajemen risiko") >
-                -1 ||
-                permission_name.indexOf("atur data master manajemen risiko") >
-                    -1 ||
-                permission_name.indexOf("atur nilai") > -1 ||
-                permission_name.indexOf("lihat data master ikp") > -1 ||
-                permission_name.indexOf("lihat data master mutu") > -1) && (
+            {(canSeeRiskMaster ||
+                canSeeValueMaster ||
+                canSeeIkpMaster ||
+                canSeeMutuMaster ||
+                canSeeAccessMaster) && (
                 <div>
                     <SectionLabel title="Pengaturan Master" />
                     <div className="space-y-1.5">
@@ -532,9 +541,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                             title="Data Master"
                             icon={CircleStackIcon}
                         >
-                            {permission_name.indexOf(
-                                "edit data master manajemen risiko",
-                            ) > -1 && (
+                            {canSeeRiskMaster && (
                                 <div className="mb-4">
                                     <SubSectionLabel title="Master Risiko" />
                                     <Link
@@ -622,8 +629,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                 </div>
                             )}
 
-                            {permission_name.indexOf("atur data nilai") >
-                                -1 && (
+                            {canSeeValueMaster && (
                                 <div className="pt-1 mb-4">
                                     <SubSectionLabel title="Master Nilai" />
                                     <Link
@@ -662,8 +668,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                 </div>
                             )}
 
-                            {permission_name.indexOf("lihat data master ikp") >
-                                -1 && (
+                            {canSeeIkpMaster && (
                                 <div className="pt-1 mb-4">
                                     <SubSectionLabel title="Master IKP" />
                                     <Link
@@ -771,8 +776,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                 </div>
                             )}
 
-                            {permission_name.indexOf("lihat data master mutu") >
-                                -1 && (
+                            {canSeeMutuMaster && (
                                 <div className="pt-1">
                                     <SubSectionLabel title="Master Mutu" />
                                     <Link
@@ -790,7 +794,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                             )}
                         </AccordionItem>
 
-                        {permission_name.indexOf("atur hak akses") > -1 && (
+                        {canSeeAccessMaster && (
                             <AccordionItem
                                 id="akses-sistem"
                                 active={
