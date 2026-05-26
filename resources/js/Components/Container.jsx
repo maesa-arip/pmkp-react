@@ -2,7 +2,10 @@ import React from 'react'
 
 export default function Container({children}) {
     return (
-      <div className="px-2 mx-auto bg-white">{children}</div>
-      
+        // Menghapus bg-white agar transparan dan menyesuaikan dengan tema global (App.jsx)
+        // Jika Anda tetap ingin ada warna dasarnya, gunakan: bg-white dark:bg-[#020817]
+        <div className="px-1 mx-auto bg-transparent">
+            {children}
+        </div>
     )
-  }
+}

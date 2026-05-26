@@ -1,40 +1,50 @@
 import { useForm } from '@inertiajs/react';
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import Form from './Form';
 
-export default function Edit({ setIsOpenEditDialog, model,roles, setEnabled }) {
+export default function Edit({ setIsOpenEditDialog, model }) {
+    const safeModel = model || {};
+
     const { data, setData, put, reset, errors } = useForm({
-        name: model.name,
+        name: safeModel.name || "",
     });
-    // console.log(roles)
-   
-    const closeButton = (e) => setIsOpenEditDialog(false);
+    
+    const closeButton = (e) => {
+        if(e) e.preventDefault();
+        setIsOpenEditDialog(false);
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("permissions.update", model.id), {
+        if (!safeModel.id) return;
+
+        put(route("permissions.update", safeModel.id), {
             data,
             onSuccess: () => {
-                reset(), setIsOpenEditDialog(false);
+                reset(); 
+                setIsOpenEditDialog(false);
             },
         });
     };
+
     useEffect(() => {
+        if(!model) return;
         setData({
-            ...data,
             name: model.name,
         });
     }, [model]);
-  return (
-    <form onSubmit={onSubmit}>
+
+    if (!model || !model.id) return null;
+
+    return (
+        <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
             <Form
                 errors={errors}
                 data={data}
-                model={model}
-                roles={roles}
                 setData={setData}
-                submit={"Update"}
-                closeButton = {closeButton}
+                submit={"Simpan Perubahan"}
+                closeButton={closeButton}
             />
         </form>
-  )
+    );
 }

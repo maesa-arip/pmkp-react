@@ -1,13 +1,12 @@
 import { useForm, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
-import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
-import TextInput from "@/Components/TextInput";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ComboboxMultipleWithOutSemuaUnit from "@/Components/ComboboxMultipleWithOutSemuaUnit";
+import { InformationCircleIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 export default function IKPDataInsiden({ setIsOpenAddDialog }) {
     const { data, setData, post, reset, errors, processing } = useForm({
@@ -22,21 +21,16 @@ export default function IKPDataInsiden({ setIsOpenAddDialog }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         const url = "/ikpdatainsiden";
-        const data = { startDate, endDate,userId };
+        const payload = { startDate, endDate, userId };
         setLoadingLars(true);
 
         axios
-            .post(url, data, { responseType: "blob" })
+            .post(url, payload, { responseType: "blob" })
             .then((response) => {
-                const downloadUrl = window.URL.createObjectURL(
-                    new Blob([response.data])
-                );
+                const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = downloadUrl;
-                link.setAttribute(
-                    "download",
-                    "Form IKP Data Insiden.xlsx"
-                );
+                link.setAttribute("download", "Form IKP Data Insiden.xlsx");
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
@@ -48,137 +42,90 @@ export default function IKPDataInsiden({ setIsOpenAddDialog }) {
                 setLoadingLars(false);
             });
     };
-    const { users } = usePage().props;
-    const { auth, permissionNames } = usePage().props;
-    const permission_name = permissionNames
-        ? permissionNames.map((permission) => permission.name)
-        : "null";
+
+    const { users, auth, permissionNames } = usePage().props;
+    const permission_name = permissionNames ? permissionNames.map((p) => p.name) : [];
+
+    const inputClass = "w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-xl focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-slate-900 dark:text-white transition-all shadow-sm outline-none placeholder:text-slate-400";
+
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="px-4 py-5 bg-white sm:p-6">
-                <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-12 px-3 py-4 text-base font-semibold text-gray-700 rounded shadow">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="justify-center inline w-6 h-6 mr-3 -mt-1 text-center text-white rounded-full bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 icon icon-tabler icon-tabler-info-circle"
-                            width={24}
-                            height={24}
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <circle cx={12} cy={12} r={9} />
-                            <line x1={12} y1={8} x2="12.01" y2={8} />
-                            <polyline points="11 12 12 12 12 16 13 16" />
-                        </svg>
-                        Kosongkan Tanggal dan Langsung Tekan Export Jika Ingin Export Data Dari Awal
-                        Sampai Sekarang.
-                    </div>
-                    <div className="col-span-6">
-                        <InputLabel className={"text-base font-semibold"}  for="startDate" value="Start Date" />
-                        <DatePicker
-                            dateFormat="dd-MM-yyyy"
-                            value={data.startDate}
-                            id="startDate"
-                            name="startDate"
-                            autoComplete="off"
-                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                            onChange={(date) => {
-                                setStartDate(date);
-                                const d = new Date(date).toLocaleDateString(
-                                    "en-CA"
-                                );
-                                setData("startDate", d);
-                            }}
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-2">
+            
+            <div className="flex items-start gap-3 p-4 text-sm font-medium border shadow-sm text-amber-700 bg-amber-50 border-amber-200 rounded-xl dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30">
+                <InformationCircleIcon className="w-5 h-5 shrink-0 mt-0.5" />
+                <p>Kosongkan Tanggal dan langsung tekan Export jika ingin menarik seluruh data dari awal sampai sekarang.</p>
+            </div>
 
-                    <div className="col-span-6">
-                        <InputLabel className={"text-base font-semibold"} for="endDate" value="End Date" />
-                        <DatePicker
-                            dateFormat="dd-MM-yyyy"
-                            value={data.endDate}
-                            id="endDate"
-                            name="endDate"
-                            autoComplete="off"
-                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                            onChange={(date) => {
-                                setEndDate(date);
-                                const d = new Date(date).toLocaleDateString(
-                                    "en-CA"
-                                );
-                                setData("endDate", d);
-                            }}
-                        />
-                    </div>
-                    {permission_name.indexOf("lihat semua data ikp") >
-                        -1 && (
-                        
-                            
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="flex flex-col gap-1.5">
+                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="startDate" value="Tanggal Mulai" />
+                    <DatePicker
+                        dateFormat="dd-MM-yyyy"
+                        selected={startDate}
+                        id="startDate"
+                        name="startDate"
+                        autoComplete="off"
+                        placeholderText="Pilih Tanggal Mulai"
+                        className={inputClass}
+                        onChange={(date) => {
+                            setStartDate(date);
+                            if(date) setData("startDate", new Date(date).toLocaleDateString("en-CA"));
+                        }}
+                    />
+                </div>
 
-                            <div className="col-span-12">
-                            
-                                <InputLabel
-                                    className={"text-base font-semibold"}
-                                    for="Pilih Unit"
-                                    value="Pilih Unit"
-                                />
-                                <div className="col-span-12 px-3 py-4 mb-2 text-base font-semibold text-gray-700 border rounded">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="justify-center inline w-6 h-6 mr-3 -mt-1 text-center text-white rounded-full bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 icon icon-tabler icon-tabler-info-circle"
-                                    width={24}
-                                    height={24}
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={2}
-                                    stroke="currentColor"
-                                    fill="none"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path
-                                        stroke="none"
-                                        d="M0 0h24v24H0z"
-                                        fill="none"
-                                    />
-                                    <circle cx={12} cy={12} r={9} />
-                                    <line x1={12} y1={8} x2="12.01" y2={8} />
-                                    <polyline points="11 12 12 12 12 16 13 16" />
-                                </svg>
-                                Kosongkan dan Langsung Tekan Export Jika Ingin Menarik Semua Unit.
-                            </div>
-                                <ComboboxMultipleWithOutSemuaUnit
-                                    ShouldMap={users}
-                                    name={"userId"}
-                                    onChange={(selectedIdsString) => {
-                                        setUserId(selectedIdsString);
-                                        setData("userId", selectedIdsString);
-                                    }}
-                                    defaultValues={[]}
-                                />
-                            </div>
-                        
-                    )}
+                <div className="flex flex-col gap-1.5">
+                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="endDate" value="Tanggal Akhir" />
+                    <DatePicker
+                        dateFormat="dd-MM-yyyy"
+                        selected={endDate}
+                        id="endDate"
+                        name="endDate"
+                        autoComplete="off"
+                        placeholderText="Pilih Tanggal Akhir"
+                        className={inputClass}
+                        onChange={(date) => {
+                            setEndDate(date);
+                            if(date) setData("endDate", new Date(date).toLocaleDateString("en-CA"));
+                        }}
+                    />
                 </div>
             </div>
-            <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+            <div className="grid grid-cols-1 gap-6">
+                {permission_name.indexOf("lihat semua data ikp") > -1 && (
+                    <div className="flex flex-col gap-1.5 p-5 border rounded-2xl bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10">
+                        <InputLabel className="mb-2 text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" value="Filter Unit (Opsional)" />
+                        <div className="flex items-start gap-2 mb-3 text-xs font-medium text-sky-700 dark:text-sky-400">
+                            <InformationCircleIcon className="w-4 h-4 shrink-0 mt-0.5" />
+                            <p>Kosongkan bagian ini jika ingin menarik data dari Semua Unit.</p>
+                        </div>
+                        <ComboboxMultipleWithOutSemuaUnit
+                            ShouldMap={users}
+                            name={"userId"}
+                            onChange={(selectedIdsString) => {
+                                setUserId(selectedIdsString);
+                                setData("userId", selectedIdsString);
+                            }}
+                            defaultValues={[]}
+                        />
+                    </div>
+                )}
+            </div>
+
+            <div className="flex flex-col-reverse justify-end gap-3 pt-4 mt-2 border-t sm:flex-row border-slate-100 dark:border-slate-800">
+                <SecondaryButton onClick={closeButton} className="justify-center py-2.5">
+                    Batal
+                </SecondaryButton>
                 {loadingLars ? (
-                    <button
-                        className="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md cursor-not-allowed hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        disabled={true}
-                    >
-                        Exporting...
+                    <button disabled className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white transition-all bg-sky-600 rounded-xl opacity-70 cursor-not-allowed">
+                        <ArrowPathIcon className="w-4 h-4 mr-2 animate-spin" /> Sedang Mengekspor...
                     </button>
                 ) : (
-                    <PrimaryButton>Export</PrimaryButton>
+                    <PrimaryButton className="justify-center py-2.5 bg-sky-600 hover:bg-sky-700 focus:ring-sky-500">
+                        Export Data
+                    </PrimaryButton>
                 )}
-                <SecondaryButton className="mx-2" onClick={closeButton}>
-                    Close
-                </SecondaryButton>
             </div>
         </form>
     );

@@ -3,70 +3,88 @@ import React, { useEffect } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
+    // PENGAMANAN: Mencegah crash jika model tiba-tiba kosong
+    const safeModel = model || {};
+    const ikpHasil = safeModel.ikp_hasil || {};
+
     const { data, setData, put, reset, errors } = useForm({
-        penyebab: model.ikp_hasil?.penyebab,
-        akarmasalah: model.ikp_hasil?.akarmasalah,
-        rekomendasi: model.ikp_hasil?.rekomendasi,
-        pj1: model.ikp_hasil?.pj1,
-        tanggal_rekomendasi: model.ikp_hasil?.tanggal_rekomendasi,
-        tindakan: model.ikp_hasil?.tindakan,
-        pj2: model.ikp_hasil?.pj2,
-        tanggal_tindakan: model.ikp_hasil?.tanggal_tindakan,
-        nama: model.ikp_hasil?.nama,
-        verifikasi: model.ikp_hasil?.verifikasi,
-        tanggal_mulai_investigasi: model.ikp_hasil?.tanggal_mulai_investigasi,
-        tanggal_selesaii_investigasi: model.ikp_hasil?.tanggal_selesaii_investigasi,
-        investigasi_lengkap: model.ikp_hasil?.investigasi_lengkap,
-        tanggal_investigasi: model.ikp_hasil?.tanggal_investigasi,
-        investigasi_lanjut: model.ikp_hasil?.investigasi_lanjut,
-        ikp_dampak2_id: model.ikp_hasil?.ikp_dampak2_id,
-        ikp_probabilitas2_id: model.ikp_hasil?.ikp_probabilitas2_id,
-        tanggal_cek: model.ikp_hasil?.tanggal_cek,
-        tindak_lanjut: model.ikp_hasil?.tindak_lanjut,
+        penyebab: ikpHasil.penyebab || "",
+        akarmasalah: ikpHasil.akarmasalah || "",
+        rekomendasi: ikpHasil.rekomendasi || "",
+        pj1: ikpHasil.pj1 || "",
+        tanggal_rekomendasi: ikpHasil.tanggal_rekomendasi || "",
+        tindakan: ikpHasil.tindakan || "",
+        pj2: ikpHasil.pj2 || "",
+        tanggal_tindakan: ikpHasil.tanggal_tindakan || "",
+        nama: ikpHasil.nama || "",
+        verifikasi: ikpHasil.verifikasi ?? "",
+        tanggal_mulai_investigasi: ikpHasil.tanggal_mulai_investigasi || "",
+        tanggal_selesaii_investigasi: ikpHasil.tanggal_selesaii_investigasi || "",
+        investigasi_lengkap: ikpHasil.investigasi_lengkap ?? "",
+        tanggal_investigasi: ikpHasil.tanggal_investigasi || "",
+        investigasi_lanjut: ikpHasil.investigasi_lanjut ?? "",
+        ikp_dampak2_id: ikpHasil.ikp_dampak2_id || "",
+        ikp_probabilitas2_id: ikpHasil.ikp_probabilitas2_id || "",
+        tanggal_cek: ikpHasil.tanggal_cek || "",
+        tindak_lanjut: ikpHasil.tindak_lanjut || "",
     });
-    const closeButton = (e) => setIsOpenEditDialog(false);
+
+    const closeButton = (e) => {
+        if(e) e.preventDefault();
+        setIsOpenEditDialog(false);
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("ikppasien.hasilinvestigasi", model.id), {
+        if (!safeModel.id) return;
+
+        put(route("ikppasien.hasilinvestigasi", safeModel.id), {
             data,
             onSuccess: () => {
-                reset(), setIsOpenEditDialog(false);
+                reset();
+                setIsOpenEditDialog(false);
             },
         });
     };
+
     useEffect(() => {
+        if (!model) return;
+        const hasil = model.ikp_hasil || {};
         setData({
             ...data,
-            penyebab: model.ikp_hasil?.penyebab,
-            akarmasalah: model.ikp_hasil?.akarmasalah,
-            rekomendasi: model.ikp_hasil?.rekomendasi,
-            pj1: model.ikp_hasil?.pj1,
-            tanggal_rekomendasi: model.ikp_hasil?.tanggal_rekomendasi,
-            tindakan: model.ikp_hasil?.tindakan,
-            pj2: model.ikp_hasil?.pj2,
-            tanggal_tindakan: model.ikp_hasil?.tanggal_tindakan,
-            nama: model.ikp_hasil?.nama,
-            verifikasi: model.ikp_hasil?.verifikasi,
-            tanggal_mulai_investigasi: model.ikp_hasil?.tanggal_mulai_investigasi,
-            tanggal_selesaii_investigasi: model.ikp_hasil?.tanggal_selesaii_investigasi,
-            investigasi_lengkap: model.ikp_hasil?.investigasi_lengkap,
-            tanggal_investigasi: model.ikp_hasil?.tanggal_investigasi,
-            investigasi_lanjut: model.ikp_hasil?.investigasi_lanjut,
-            ikp_dampak2_id: model.ikp_hasil?.ikp_dampak2_id,
-            ikp_probabilitas2_id: model.ikp_hasil?.ikp_probabilitas2_id,
-            tanggal_cek: model.ikp_hasil?.tanggal_cek,
-            tindak_lanjut: model.ikp_hasil?.tindak_lanjut,
+            penyebab: hasil.penyebab || "",
+            akarmasalah: hasil.akarmasalah || "",
+            rekomendasi: hasil.rekomendasi || "",
+            pj1: hasil.pj1 || "",
+            tanggal_rekomendasi: hasil.tanggal_rekomendasi || "",
+            tindakan: hasil.tindakan || "",
+            pj2: hasil.pj2 || "",
+            tanggal_tindakan: hasil.tanggal_tindakan || "",
+            nama: hasil.nama || "",
+            verifikasi: hasil.verifikasi ?? "",
+            tanggal_mulai_investigasi: hasil.tanggal_mulai_investigasi || "",
+            tanggal_selesaii_investigasi: hasil.tanggal_selesaii_investigasi || "",
+            investigasi_lengkap: hasil.investigasi_lengkap ?? "",
+            tanggal_investigasi: hasil.tanggal_investigasi || "",
+            investigasi_lanjut: hasil.investigasi_lanjut ?? "",
+            ikp_dampak2_id: hasil.ikp_dampak2_id || "",
+            ikp_probabilitas2_id: hasil.ikp_probabilitas2_id || "",
+            tanggal_cek: hasil.tanggal_cek || "",
+            tindak_lanjut: hasil.tindak_lanjut || "",
         });
     }, [model]);
+
+    if (!model || !model.id) return null;
+
     return (
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
             <Form
                 errors={errors}
                 data={data}
                 setData={setData}
                 model={model}
                 ShouldMap={ShouldMap}
-                submit={"Update"}
+                submit={"Simpan Hasil Investigasi"}
                 closeButton={closeButton}
             />
         </form>

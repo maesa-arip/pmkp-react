@@ -1,106 +1,106 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
+// PASTIKAN PROPS INI DITANGKAP DI SINI
 export default function DestroyModal({
-    title,
-    children,
+    title = "Konfirmasi Hapus", // Fallback jika title tidak dikirim
+    warning = "Apakah Anda yakin? Tindakan ini tidak dapat dibatalkan.", // Fallback warning
+    size = "max-w-md", // Fallback size
     isOpenDestroyDialog,
     setIsOpenDestroyDialog,
-    warning = "Are you sure ? This action cannot be undone.",
-    size = "max-w-6xl",
+    children,
 }) {
     return (
-        <div>
-            <Transition appear show={isOpenDestroyDialog} as={Fragment}>
-                <Dialog
-                    as="div"
-                    className="relative z-10"
-                    open={isOpenDestroyDialog}
-                    onClose={() => {}}
+        <Transition appear show={isOpenDestroyDialog} as={Fragment}>
+            <Dialog
+                as="div"
+                className="relative z-[100]"
+                open={isOpenDestroyDialog}
+                onClose={() => setIsOpenDestroyDialog(false)}
+            >
+                {/* --- BACKDROP BLUR --- */}
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
                 >
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-black bg-opacity-25" />
-                    </Transition.Child>
+                    <div className="fixed inset-0 transition-opacity bg-slate-950/40 dark:bg-black/60 backdrop-blur-sm" />
+                </Transition.Child>
 
-                    <div className="fixed inset-0 overflow-y-auto">
-                        <div className="flex items-baseline justify-center min-h-full p-4 text-center">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
+                {/* --- MODAL POSITIONING --- */}
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-full p-4 text-center sm:p-0">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                            enterTo="opacity-100 translate-y-0 sm:scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        >
+                            <Dialog.Panel
+                                // PROP SIZE DIEKSEKUSI DI SINI
+                                className={`relative w-full text-left align-middle transition-all transform bg-white dark:bg-[#0f172a] shadow-2xl rounded-2xl border border-slate-200 dark:border-slate-800 sm:my-8 ${size}`}
                             >
-                                <Dialog.Panel
-                                    className={`relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full ${size}`}
-                                >
-                                    <div className="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
-                                            <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="w-6 h-6 text-red-600 icon icon-tabler icon-tabler-alert-triangle"
-                                                    width={24}
-                                                    height={24}
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth={2}
-                                                    stroke="currentColor"
-                                                    fill="none"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                >
-                                                    <path
-                                                        stroke="none"
-                                                        d="M0 0h24v24H0z"
-                                                        fill="none"
-                                                    />
-                                                    <path d="M12 9v2m0 4v.01" />
-                                                    <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
-                                                </svg>
+                                {/* PENANGKAL AUTO-FOCUS */}
+                                <button type="button" className="sr-only" autoFocus>
+                                    Tutup Modal
+                                </button>
+
+                                {/* --- MODAL BODY --- */}
+                                <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-6">
+                                    <div className="sm:flex sm:items-start">
+                                        <div className="flex items-center justify-center w-12 h-12 mx-auto border rounded-full shrink-0 bg-rose-100 dark:bg-rose-500/20 border-rose-200 dark:border-rose-500/30 sm:mx-0 sm:h-10 sm:w-10">
+                                            <ExclamationTriangleIcon 
+                                                className="w-6 h-6 text-rose-600 dark:text-rose-400 sm:w-5 sm:h-5" 
+                                                aria-hidden="true" 
+                                            />
+                                        </div>
+                                        <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                            
+                                            {/* PROP TITLE DIEKSEKUSI DI SINI */}
+                                            <Dialog.Title
+                                                as="h3"
+                                                className="text-lg font-black tracking-tight text-slate-900 dark:text-white"
+                                            >
+                                                {title}
+                                            </Dialog.Title>
+                                            
+                                            {/* PROP WARNING DIEKSEKUSI DI SINI */}
+                                            <div className="mt-2">
+                                                <p className="text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+                                                    {warning}
+                                                </p>
                                             </div>
-                                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                                <Dialog.Title
-                                                    as="h3"
-                                                    className="text-lg font-medium leading-6 text-gray-900"
-                                                >
-                                                    {title}
-                                                </Dialog.Title>
-                                                <div className="mt-2">
-                                                    <p className="text-sm text-gray-500">
-                                                        {warning}
-                                                    </p>
-                                                </div>
-                                            </div>
+
                                         </div>
                                     </div>
-                                    <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                        {children}
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                            onClick={() =>
-                                                setIsOpenDestroyDialog(false)
-                                            }
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
+                                </div>
+
+                                {/* --- MODAL FOOTER ACTIONS --- */}
+                                <div className="px-4 py-4 bg-slate-50 dark:bg-[#1e293b]/50 border-t border-slate-100 dark:border-slate-800/80 sm:px-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 rounded-b-2xl">
+                                    <button
+                                        type="button"
+                                        className="inline-flex justify-center items-center w-full px-6 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500/50 sm:w-auto"
+                                        onClick={() => setIsOpenDestroyDialog(false)}
+                                    >
+                                        Batal
+                                    </button>
+                                    
+                                    {/* PROP CHILDREN (TOMBOL HAPUS) DIEKSEKUSI DI SINI */}
+                                    {children}
+                                </div>
+                            </Dialog.Panel>
+                        </Transition.Child>
                     </div>
-                </Dialog>
-            </Transition>
-        </div>
+                </div>
+            </Dialog>
+        </Transition>
     );
 }
