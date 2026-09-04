@@ -1,0 +1,4 @@
+import{a as n,f as a}from"./app-733fd0d4.js";function s({meta:r}){return!r||!r.links||r.links.length<=3?null:n("ul",{className:"flex items-center gap-1.5 mt-4",children:r.links.map((e,i)=>{const l=e.active,t=e.url===null;return n("li",{children:n(a,{as:"button",disabled:t,href:e.url||"#",className:`
+                                flex items-center justify-center min-w-[2.25rem] h-9 px-3 text-sm font-medium rounded-lg transition-all duration-200 outline-none
+                                ${t?"text-gray-400 dark:text-zinc-600 cursor-not-allowed":l?"bg-blue-600 text-white shadow-sm ring-1 ring-blue-600":"bg-white dark:bg-[#09090b] text-gray-700 dark:text-zinc-300 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 hover:border-gray-300 dark:hover:border-white/20 focus:ring-2 focus:ring-blue-500/20"}
+                            `,dangerouslySetInnerHTML:{__html:e.label}})},i)})})}export{s as P};

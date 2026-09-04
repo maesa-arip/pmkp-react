@@ -17,7 +17,6 @@ use App\Models\Pic;
 use App\Models\ProbabilityValue;
 use App\Models\RiskCategory;
 use App\Models\RiskRegister;
-use App\Models\RiskRegisterHistory;
 use App\Models\RiskType;
 use App\Models\RiskVariety;
 use App\Models\User;
@@ -140,7 +139,6 @@ class RiskRegisterKlinisOsd2Controller extends Controller
         $riskRegisterKlinis = RiskRegister::find($id);
 
         $riskRegisterKlinis->update($request->except('home'));
-        $riskHistory = RiskRegisterHistory::create(['risk_register_id'=>$id, 'currently_id'=>$riskRegisterKlinis->currently_id]);
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();

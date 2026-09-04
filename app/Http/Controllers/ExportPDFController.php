@@ -23,6 +23,15 @@ use PDF; //import Fungsi PDF
 
 class ExportPDFController extends Controller
 {
+    private function responsePdf($pdf, string $filename, Request $request)
+    {
+        if ($request->boolean('download')) {
+            return $pdf->download($filename);
+        }
+
+        return $pdf->stream($filename);
+    }
+
     // public function printTable($code) {
     //     $dataDummy = [];
     //     $faker = Faker::create();
@@ -61,48 +70,86 @@ class ExportPDFController extends Controller
     // }
     public function printPDSA(Request $request){
         // dd($request->all());
-        $startDate = Carbon::parse($request->startDate)->addDay(1)->format('Y-m-d');
-        $endDate = Carbon::parse($request->endDate)->addDay(1)->format('Y-m-d');
+        $startDate = $request->filled('startDate')
+            ? Carbon::parse($request->startDate)->startOfMonth()->format('Y-m-d')
+            : null;
+        $endDate = $request->filled('endDate')
+            ? Carbon::parse($request->endDate)->endOfMonth()->format('Y-m-d')
+            : null;
         $data = MutuUnit::with('mutu_pdsa')->with('mutu_indikator.location')->whereHas('mutu_pdsa');
-        if (!empty($request->startDate) && !empty($request->endDate)) {
+        if ($startDate && $endDate) {
             $data->where('tanggal_mutu', '>=', $startDate)
                 ->where('tanggal_mutu', '<=', $endDate);
         }
-        if (!empty($request->userId)) {
-            $data->whereHas('mutu_indikator', function ($query) use ($request) {
-                $query->whereIn('location_id', [$request->userId]);
+        $locationIds = $this->locationIdsFromPicFilter($request->userId);
+        if (!empty($locationIds)) {
+            $data->whereHas('mutu_indikator', function ($query) use ($locationIds) {
+                $query->whereIn('location_id', $locationIds);
             });
         }
         $data = $data->get();
         // dd($data);
         $pdf = PDF::loadView('PDF/PDSA', ['data' => $data,'startDate'=>$startDate,'endDate'=>$endDate]);
         $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('margin-left', '20mm');
+        $pdf->setOption('margin-right', '10mm');
+        $pdf->setOption('margin-top', '10mm');
+        $pdf->setOption('margin-bottom', '10mm');
         $pdf->setPaper('letter')->setOrientation('portrait');
-        return $pdf->stream('mutu_pdsa'.$startDate.$endDate.'.pdf');
+        return $this->responsePdf($pdf, 'mutu_pdsa'.($startDate ?? '').($endDate ?? '').'.pdf', $request);
     }
     public function printMutuIndikator(Request $request){
-        $startDate = Carbon::parse($request->startDate)->addDay(1)->format('Y-m-d');
+        $startDate = $request->filled('startDate')
+            ? Carbon::parse($request->startDate)->startOfMonth()->format('Y-m-d')
+            : null;
         // $endDate = Carbon::parse($request->endDate)->addDay(1)->format('Y-m-d');
         $user = User::where('id',auth()->user()->id)->first();
         $pic = Pic::where('id',$user->pic_id)->first();
         $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? [['approved', 1]] : [['location_id', $pic->location_id]];
         $dataRaw = MutuUnit::query()->with('mutu_indikator.indikator_fitur4')->with('mutu_indikator.kategori')->with('mutu_indikator.location')->with('mutu_pdsa')->whereRelation('mutu_indikator',$whosLogin);
-        if (!empty($request->startDate)) {
-            $dataRaw->where('tanggal_mutu', '=', $startDate);
+        if ($startDate) {
+            $dataRaw->whereBetween('tanggal_mutu', [
+                Carbon::parse($startDate)->startOfMonth()->format('Y-m-d'),
+                Carbon::parse($startDate)->endOfMonth()->format('Y-m-d'),
+            ]);
         }
-        // if (!empty($request->userId)) {
-        //     $data->whereHas('mutu_indikator', function ($query) use ($request) {
-        //         $query->whereIn('location_id', [$request->userId]);
-        //     });
-        // }
+        $locationIds = $this->locationIdsFromPicFilter($request->userId);
+        if (!empty($locationIds)) {
+            $dataRaw->whereHas('mutu_indikator', function ($query) use ($locationIds) {
+                $query->whereIn('location_id', $locationIds);
+            });
+        }
         $data = $dataRaw->get();
-        $first = $dataRaw->first();
+        $first = $data->first();
         // dd($data);
         // return view('PDF/MutuIndikator', ['data' => $data,'startDate'=>$startDate,'first'=>$first]);
         $pdf = PDF::loadView('PDF/MutuIndikator', ['data' => $data,'startDate'=>$startDate,'first'=>$first]);
         $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('margin-left', '20mm');
+        $pdf->setOption('margin-right', '10mm');
+        $pdf->setOption('margin-top', '10mm');
+        $pdf->setOption('margin-bottom', '10mm');
         $pdf->setPaper('letter')->setOrientation('portrait');
-        return $pdf->stream('mutu_indikator'.$startDate.'.pdf');
+        return $this->responsePdf($pdf, 'mutu_indikator'.($startDate ?? '').'.pdf', $request);
+    }
+
+    private function locationIdsFromPicFilter($picIds): array
+    {
+        if (empty($picIds)) {
+            return [];
+        }
+
+        $ids = collect(is_array($picIds) ? $picIds : explode(',', (string) $picIds))
+            ->map(fn ($id) => (int) trim((string) $id))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return [];
+        }
+
+        return Pic::whereIn('id', $ids)->pluck('location_id')->filter()->unique()->values()->all();
     }
     public function printIkpForm(Request $request, $code)
     {
@@ -137,7 +184,7 @@ class ExportPDFController extends Controller
         $pdf = PDF::loadView('PDF/FormIKP', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
         $pdf->setOption('enable-local-file-access', true);
         $pdf->setOption('page-width', '215.9')->setOption('page-height', '330')->setOrientation('portrait');
-        return $pdf->stream('mutu_indikator.pdf');
+        return $this->responsePdf($pdf, 'form_ikp_'.$code.'.pdf', $request);
     }
     public function printFormInvestigasiSederhana(Request $request, $code)
     {
@@ -173,7 +220,11 @@ class ExportPDFController extends Controller
         // return view('PDF/FormInvestigasiSederhana', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
         $pdf = PDF::loadView('PDF/FormInvestigasiSederhana', ['data' => $data,'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak]);
         $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('margin-left', '20mm');
+        $pdf->setOption('margin-right', '10mm');
+        $pdf->setOption('margin-top', '10mm');
+        $pdf->setOption('margin-bottom', '10mm');
         $pdf->setOption('page-width', '215.9')->setOption('page-height', '330')->setOrientation('portrait');
-        return $pdf->stream('mutu_indikator.pdf');
+        return $this->responsePdf($pdf, 'form_investigasi_sederhana_'.$code.'.pdf', $request);
     }
 }

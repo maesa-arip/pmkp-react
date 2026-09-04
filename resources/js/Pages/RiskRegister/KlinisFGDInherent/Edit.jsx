@@ -3,94 +3,104 @@ import React, { useEffect } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
-    const { data, setData, put, reset, errors } = useForm({
-        id: model.id,
-        pernyataan_risiko: model.pernyataan_risiko,
-        osd1_dampak: model.osd1_dampak,
-        osd1_probabilitas: model.osd1_probabilitas,
-        concatdp1: model.concatdp1,
-        osd1_inherent: model.osd1_inherent,
-        dampak_responden1: model.fgdinherent?.dampak_responden1 ?? "",
-        dampak_responden2: model.fgdinherent?.dampak_responden2 ?? "",
-        dampak_responden3: model.fgdinherent?.dampak_responden3 ?? "",
-        dampak_responden4: model.fgdinherent?.dampak_responden4 ?? "",
-        dampak_responden5: model.fgdinherent?.dampak_responden5 ?? "",
-        dampak_responden6: model.fgdinherent?.dampak_responden6 ?? "",
-        dampak_responden7: model.fgdinherent?.dampak_responden7 ?? "",
-        dampak_responden8: model.fgdinherent?.dampak_responden8 ?? "",
+    // PENGAMANAN: Mencegah crash jika model tiba-tiba kosong saat modal transisi
+    const safeModel = model || {}; 
 
-        probabilitas_responden1:
-            model.fgdinherent?.probabilitas_responden1 ?? "",
-        probabilitas_responden2:
-            model.fgdinherent?.probabilitas_responden2 ?? "",
-        probabilitas_responden3:
-            model.fgdinherent?.probabilitas_responden3 ?? "",
-        probabilitas_responden4:
-            model.fgdinherent?.probabilitas_responden4 ?? "",
-        probabilitas_responden5:
-            model.fgdinherent?.probabilitas_responden5 ?? "",
-        probabilitas_responden6:
-            model.fgdinherent?.probabilitas_responden6 ?? "",
-        probabilitas_responden7:
-            model.fgdinherent?.probabilitas_responden7 ?? "",
-        probabilitas_responden8:
-            model.fgdinherent?.probabilitas_responden8 ?? "",
+    const { data, setData, put, reset, errors } = useForm({
+        id: safeModel.id || "",
+        tgl_register: safeModel.tgl_register || "",
+        pernyataan_risiko: safeModel.pernyataan_risiko || "",
+        sebab: safeModel.sebab || "",
+        dampak: safeModel.dampak || "",
+        resiko: safeModel.resiko || "", 
+        
+        dampak_responden1: safeModel.dampak_responden1 ?? "",
+        dampak_responden2: safeModel.dampak_responden2 ?? "",
+        dampak_responden3: safeModel.dampak_responden3 ?? "",
+        dampak_responden4: safeModel.dampak_responden4 ?? "",
+        dampak_responden5: safeModel.dampak_responden5 ?? "",
+        dampak_responden6: safeModel.dampak_responden6 ?? "",
+        dampak_responden7: safeModel.dampak_responden7 ?? "",
+        dampak_responden8: safeModel.dampak_responden8 ?? "",
+        
+        probabilitas_responden1: safeModel.probabilitas_responden1 ?? "",
+        probabilitas_responden2: safeModel.probabilitas_responden2 ?? "",
+        probabilitas_responden3: safeModel.probabilitas_responden3 ?? "",
+        probabilitas_responden4: safeModel.probabilitas_responden4 ?? "",
+        probabilitas_responden5: safeModel.probabilitas_responden5 ?? "",
+        probabilitas_responden6: safeModel.probabilitas_responden6 ?? "",
+        probabilitas_responden7: safeModel.probabilitas_responden7 ?? "",
+        probabilitas_responden8: safeModel.probabilitas_responden8 ?? "",
+        
+        osd1_dampak: safeModel.osd1_dampak ?? "",
+        osd1_probabilitas: safeModel.osd1_probabilitas ?? "",
     });
-    const closeButton = (e) => setIsOpenEditDialog(false);
+
+    const closeButton = (e) => {
+        if(e) e.preventDefault();
+        setIsOpenEditDialog(false);
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
-        put(route("riskregister.fgdinherent", model.id), {
+        if (!safeModel.id) return;
+        
+        // Memastikan route sesuai dengan route backend Anda
+        put(route("klinisfgdinherent.update", safeModel.id), {
             data,
             onSuccess: () => {
-                reset(), setIsOpenEditDialog(false);
+                reset();
+                setIsOpenEditDialog(false);
             },
         });
     };
+
     useEffect(() => {
+        if (!model) return;
         setData({
             ...data,
             id: model.id,
-            osd1_dampak: model.osd1_dampak,
-            osd1_probabilitas: model.osd1_probabilitas,
-            concatdp1: model.concatdp1,
-            osd1_inherent: model.osd1_inherent,
+            tgl_register: model.tgl_register,
             pernyataan_risiko: model.pernyataan_risiko,
-            dampak_responden1: model.fgdinherent?.dampak_responden1 ?? "",
-            dampak_responden2: model.fgdinherent?.dampak_responden2 ?? "",
-            dampak_responden3: model.fgdinherent?.dampak_responden3 ?? "",
-            dampak_responden4: model.fgdinherent?.dampak_responden4 ?? "",
-            dampak_responden5: model.fgdinherent?.dampak_responden5 ?? "",
-            dampak_responden6: model.fgdinherent?.dampak_responden6 ?? "",
-            dampak_responden7: model.fgdinherent?.dampak_responden7 ?? "",
-            dampak_responden8: model.fgdinherent?.dampak_responden8 ?? "",
-
-            probabilitas_responden1:
-                model.fgdinherent?.probabilitas_responden1 ?? "",
-            probabilitas_responden2:
-                model.fgdinherent?.probabilitas_responden2 ?? "",
-            probabilitas_responden3:
-                model.fgdinherent?.probabilitas_responden3 ?? "",
-            probabilitas_responden4:
-                model.fgdinherent?.probabilitas_responden4 ?? "",
-            probabilitas_responden5:
-                model.fgdinherent?.probabilitas_responden5 ?? "",
-            probabilitas_responden6:
-                model.fgdinherent?.probabilitas_responden6 ?? "",
-            probabilitas_responden7:
-                model.fgdinherent?.probabilitas_responden7 ?? "",
-            probabilitas_responden8:
-                model.fgdinherent?.probabilitas_responden8 ?? "",
+            sebab: model.sebab,
+            dampak: model.dampak,
+            resiko: model.resiko,
+            
+            dampak_responden1: model.dampak_responden1 ?? "",
+            dampak_responden2: model.dampak_responden2 ?? "",
+            dampak_responden3: model.dampak_responden3 ?? "",
+            dampak_responden4: model.dampak_responden4 ?? "",
+            dampak_responden5: model.dampak_responden5 ?? "",
+            dampak_responden6: model.dampak_responden6 ?? "",
+            dampak_responden7: model.dampak_responden7 ?? "",
+            dampak_responden8: model.dampak_responden8 ?? "",
+            
+            probabilitas_responden1: model.probabilitas_responden1 ?? "",
+            probabilitas_responden2: model.probabilitas_responden2 ?? "",
+            probabilitas_responden3: model.probabilitas_responden3 ?? "",
+            probabilitas_responden4: model.probabilitas_responden4 ?? "",
+            probabilitas_responden5: model.probabilitas_responden5 ?? "",
+            probabilitas_responden6: model.probabilitas_responden6 ?? "",
+            probabilitas_responden7: model.probabilitas_responden7 ?? "",
+            probabilitas_responden8: model.probabilitas_responden8 ?? "",
+            
+            osd1_dampak: model.osd1_dampak ?? "",
+            osd1_probabilitas: model.osd1_probabilitas ?? "",
         });
     }, [model]);
+
+    if (!model || !model.id) return null;
+
     return (
-        <form onSubmit={onSubmit}>
+        // FIX BUG: Class flex col, w-full, h-full murni (tanpa batasan max-h agar tidak terpotong)
+        <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
             <Form
                 errors={errors}
                 data={data}
                 model={model}
                 ShouldMap={ShouldMap}
                 setData={setData}
-                submit={"Simpan"}
+                submit={"Simpan Skor FGD"}
                 closeButton={closeButton}
             />
         </form>

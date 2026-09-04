@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'pic_id',
         'password',
     ];
 
@@ -45,5 +46,10 @@ class User extends Authenticatable
     public function risk_register()
     {
         return $this->hasMany(RiskRegister::class);
+    }
+
+    public function pic()
+    {
+        return $this->belongsTo(Pic::class);
     }
 }

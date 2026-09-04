@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\RiskRegister;
+use App\Models\RiskRegisterHistory;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -157,7 +158,7 @@ class RCAController extends Controller
 
         $risk = RiskRegister::create($request->except('name'));
 
-        $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $risk->id, 'currently_id' => $request->currently_id]);
+        RiskRegisterHistory::recordForRisk($risk, RiskRegisterHistory::EVENT_CREATED);
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();
@@ -221,7 +222,6 @@ class RCAController extends Controller
         $riskRegisterKlinis = RiskRegister::find($id);
 
         $riskRegisterKlinis->update($request->except('home'));
-        $riskHistory = RiskRegisterHistory::create(['risk_register_id' => $id, 'currently_id' => $riskRegisterKlinis->currently_id]);
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();

@@ -24,6 +24,7 @@ use App\Http\Controllers\JenisSebabController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MUTU\MutuIndikatorController;
 use App\Http\Controllers\MUTU\MutuKategoriController;
+use App\Http\Controllers\MUTU\MutuPenyebutController;
 use App\Http\Controllers\MUTU\MutuUnitController;
 use App\Http\Controllers\OpsiPengendalianController;
 use App\Http\Controllers\PermissionController;
@@ -32,6 +33,9 @@ use App\Http\Controllers\ProbabilityValueController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RCAController;
 use App\Http\Controllers\RiskCategoryController;
+use App\Http\Controllers\RiskGradingController;
+use App\Http\Controllers\RiskGradingSettingController;
+use App\Http\Controllers\RiskRegisterCopyController;
 use App\Http\Controllers\RiskRegisterKlinisController;
 use App\Http\Controllers\RiskRegisterKlinisOpsiPengendalianController;
 use App\Http\Controllers\RiskRegisterKlinisOsd2Controller;
@@ -83,6 +87,10 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
     Route::Resource('riskCategories', RiskCategoryController::class);
+    Route::get('riskGradingSettings', [RiskGradingSettingController::class, 'index'])->name('riskGradingSettings.index');
+    Route::put('riskGradingSettings', [RiskGradingSettingController::class, 'update'])->name('riskGradingSettings.update');
+    Route::post('riskGradings/copy-year', [RiskGradingController::class, 'copyYear'])->name('riskGradings.copyYear');
+    Route::apiResource('riskGradings', RiskGradingController::class);
     Route::Resource('opsiPengendalians', OpsiPengendalianController::class);
     Route::Resource('identificationSources', IdentificationSourceController::class);
     Route::apiResource('locations', LocationController::class);
@@ -107,6 +115,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('IkpPasien', IKPPasienController::class);
     Route::put('/hasilinvestigasi/{IkpPasien}',[IKPPasienController::class,'hasilinvestigasi'])->name('ikppasien.hasilinvestigasi');
     Route::apiResource('MutuKategori', MutuKategoriController::class);
+    Route::apiResource('MutuPenyebut', MutuPenyebutController::class);
     Route::apiResource('MutuIndikator', MutuIndikatorController::class);
     Route::put('/MutuIndikatorApproved/{MutuIndikator}',[MutuIndikatorController::class,'approved'])->name('MutuIndikator.approved');
     Route::apiResource('MutuUnit', MutuUnitController::class);
@@ -116,6 +125,8 @@ Route::middleware('auth')->group(function () {
     // Route::get('/print-table/{code}',[ExportPDFController::class,'printTable'])->name('ExportPDF.printTable');
     // Route::get('/print-pdsa/{code}',[ExportPDFController::class,'printPDSA'])->name('ExportPDF.printPDSA');
 
+    Route::get('/riskRegisterCopy', [RiskRegisterCopyController::class, 'index'])->name('riskRegisterCopy.index');
+    Route::post('/riskRegisterCopy', [RiskRegisterCopyController::class, 'store'])->name('riskRegisterCopy.store');
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
     Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');

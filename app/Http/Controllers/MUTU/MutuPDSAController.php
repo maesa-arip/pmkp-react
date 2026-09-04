@@ -20,7 +20,7 @@ class MutuPDSAController extends Controller
         $whosLogin = auth()->user()->can('lihat semua  data indikator mutu') ? [['approved', 1]] : [['location_id', $pic->location_id]];
         $MutuUnit = MutuUnit::query()->with('mutu_indikator.indikator_fitur4')->with('mutu_indikator.kategori')->with('mutu_indikator.location')->whereRelation('mutu_indikator',$whosLogin);
         if ($request->q) {
-            $MutuUnit->where('name','like','%'.$request->q.'%');
+            $this->applySearch($MutuUnit, $request->q);
         }
 
         if ($request->has(['field','direction'])) {
@@ -48,5 +48,34 @@ class MutuPDSAController extends Controller
         $whosLogin = auth()->user()->can('lihat semua  data indikator mutu') ? [['location_id', '<>', 0]] : [['location_id', $pic->location_id]];
         $MutuIndikator = MutuIndikator::query()->with('indikator_fitur4')->with('kategori')->with('location')->where($whosLogin)->where('approved',1)->get();
         return inertia('MUTU/MutuUnit/Index',['MutuUnit'=>$MutuUnit,'MutuIndikator'=>$MutuIndikator]);
+    }
+
+    private function applySearch($query, string $search): void
+    {
+        $keyword = '%' . $search . '%';
+
+        $query->where(function ($query) use ($keyword) {
+            $query->where('code', 'like', $keyword)
+                ->orWhere('tanggal_mutu', 'like', $keyword)
+                ->orWhere('num', 'like', $keyword)
+                ->orWhere('denum', 'like', $keyword)
+                ->orWhere('capaian', 'like', $keyword)
+                ->orWhereHas('mutu_indikator', function ($query) use ($keyword) {
+                    $query->where('num_name', 'like', $keyword)
+                        ->orWhere('denum_name', 'like', $keyword)
+                        ->orWhere('operator', 'like', $keyword)
+                        ->orWhere('penyebut', 'like', $keyword)
+                        ->orWhere('standar', 'like', $keyword)
+                        ->orWhereHas('indikator_fitur4', function ($query) use ($keyword) {
+                            $query->where('name', 'like', $keyword);
+                        })
+                        ->orWhereHas('kategori', function ($query) use ($keyword) {
+                            $query->where('name', 'like', $keyword);
+                        })
+                        ->orWhereHas('location', function ($query) use ($keyword) {
+                            $query->where('name', 'like', $keyword);
+                        });
+                });
+        });
     }
 }

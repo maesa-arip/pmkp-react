@@ -1,316 +1,264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-
-{{-- <link href="/var/www/pmkp-react/public/css/app.css" rel="stylesheet" type="text/css" /> --}}
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link href='http://fonts.googleapis.com/css?family=Times' rel='stylesheet' type='text/css'>
-
     <title>Form Investigasi Sederhana</title>
+    <style>
+        @page {
+            margin: 10mm 10mm 10mm 20mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #111827;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+
+        .letterhead {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin-bottom: 12px;
+        }
+
+        .heading {
+            margin-bottom: 14px;
+            border-top: 2px solid #111827;
+            border-bottom: 1px solid #111827;
+            padding: 8px 0 10px;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        .heading p {
+            margin: 0 0 3px;
+            font-weight: 700;
+        }
+
+        .heading .main-title {
+            margin-top: 8px;
+            font-size: 13pt;
+            text-transform: uppercase;
+        }
+
+        .meta {
+            width: 100%;
+            margin-bottom: 12px;
+            border-collapse: collapse;
+            page-break-inside: avoid;
+        }
+
+        .meta td {
+            padding: 3px 4px;
+            vertical-align: top;
+        }
+
+        .meta .label {
+            width: 150px;
+            font-weight: 700;
+        }
+
+        .meta .colon {
+            width: 12px;
+            font-weight: 700;
+        }
+
+        .section {
+            margin-bottom: 12px;
+            border-top: 1px solid #111827;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            margin: 0;
+            border-bottom: 1px solid #cbd5e1;
+            background: #f6f8fa;
+            padding: 6px 8px;
+            font-size: 11pt;
+            font-weight: 700;
+            page-break-after: avoid;
+        }
+
+        .section-body {
+            min-height: 38px;
+            padding: 8px 8px 2px;
+            white-space: pre-line;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .action-meta {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            border-top: 1px solid #d1d5db;
+            page-break-inside: avoid;
+        }
+
+        .action-meta td {
+            width: 50%;
+            border-right: 1px solid #d1d5db;
+            padding: 6px 8px;
+            vertical-align: top;
+        }
+
+        .action-meta td:last-child {
+            border-right: 0;
+        }
+
+        .grid {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            page-break-inside: auto;
+        }
+
+        .grid th,
+        .grid td {
+            border: 1px solid #1f2937;
+            padding: 7px 8px;
+            vertical-align: top;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .grid th {
+            background: #f3f6f8;
+            font-size: 11pt;
+            text-align: left;
+        }
+
+        .grid thead {
+            display: table-header-group;
+        }
+
+        .grid tr {
+            page-break-inside: auto;
+        }
+
+        .w-half {
+            width: 50%;
+        }
+
+        .w-quarter {
+            width: 25%;
+        }
+
+        .sign-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-top: 1px solid #111827;
+            border-left: 1px solid #111827;
+            page-break-inside: avoid;
+        }
+
+        .sign-table th,
+        .sign-table td {
+            border-right: 1px solid #111827;
+            border-bottom: 1px solid #111827;
+            padding: 7px 8px;
+            vertical-align: top;
+        }
+
+        .sign-table th {
+            background: #f3f6f8;
+            text-align: left;
+        }
+
+        .signature-space td {
+            height: 70px;
+        }
+    </style>
 </head>
-<style>
-    .times {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 19px;
-    }
-
-
-    table,
-    th,
-    td {
-        border: 1px solid white;
-    }
-</style>
 
 <body>
-    <img class="h-auto mx-auto"
-        src="data:image/jpeg;base64,{{ base64_encode(@file_get_contents(url(asset('Cop.jpeg')))) }}">
-    <p class="flex font-bold text-center times">Unit Keselamatan Pasien</p>
-    <p class="flex mb-4 font-bold text-center times"">RSUD
-        Bali Mandara Provinsi Bali</p>
-    <p class="flex font-bold text-center times ">"LEMBAR KERJA INVESTIGASI SEDERHANA"</p>
-    <p class="flex mb-4 font-bold text-center times ">( Untuk Bands Risiko Biru / Hijau )
-    </p>
-    @php
-        $rectangle = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4-none icon icon-tabler icon-tabler-rectangle-vertical" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" /></svg>';
-    @endphp
-    <div class="times">
+    <img class="letterhead" src="data:image/jpeg;base64,{{ base64_encode(@file_get_contents(public_path('Cop.jpeg'))) }}">
 
-        
-        <table class="px-4 mx-4">
-            <thead style="display: table-row-group;" class="">
+    <header class="heading">
+        <p>Unit Keselamatan Pasien</p>
+        <p>RSUD Bali Mandara Provinsi Bali</p>
+        <p class="main-title">Lembar Kerja Investigasi Sederhana</p>
+        <p>(Untuk Bands Risiko Biru / Hijau)</p>
+    </header>
+
+    <table class="meta">
+        <tbody>
+            <tr>
+                <td class="label">Jenis Insiden</td>
+                <td class="colon">:</td>
+                <td><strong>{{ $data->jenis_insiden->name }}</strong></td>
+            </tr>
+            <tr>
+                <td class="label">Tanggal Insiden</td>
+                <td class="colon">:</td>
+                <td><strong>{{ $data->tanggal_insiden }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <section class="section">
+        <h2 class="section-title">Penyebab Langsung Insiden</h2>
+        <div class="section-body">{{ $data->ikp_hasil?->penyebab ?: '-' }}</div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Penyebab yang Melatarbelakangi / Akar Masalah Insiden</h2>
+        <div class="section-body">{{ $data->ikp_hasil?->akarmasalah ?: '-' }}</div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Rekomendasi</h2>
+        <div class="section-body">{{ $data->ikp_hasil?->rekomendasi ?: '-' }}</div>
+        <table class="action-meta">
+            <tbody>
                 <tr>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-left text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1" style="width: 60px;"></div>
-                    </th>
-                    <th colspan="2" scope="col" class="px-1 py-1 text-left text-gray-800 ">
-                        <div class="flex cursor-pointer items-left gap-x-1" style="width: 190px;"></div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="cursor-pointer whitespace-nowrap gap-x-1">
-                        </div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
+                    <td><strong>Penanggung jawab:</strong> {{ $data->ikp_hasil?->pj1 ?: '-' }}</td>
+                    <td><strong>Tanggal:</strong> {{ $data->ikp_hasil?->tanggal_rekomendasi ?: '-' }}</td>
                 </tr>
-            </thead>
-            <tbody class="">
-                <tr>
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td colspan="2" class="px-1 py-1 font-normal "><b>Jenis Insiden</b></td>
-                    <td rowspan="1" class="px-1 py-1 font-normal "><b>:</b></td>
-                    <td rowspan="1" class="px-1 py-1 font-normal "><b>{{ $data->jenis_insiden->name }}</b></td>
-                </tr>
-                <tr>
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td colspan="2" class="px-1 py-1 font-normal "><b>Tanggal Insiden</b></td>
-                    <td rowspan="1" class="px-1 py-1 font-normal "><b>:</b></td>
-                    <td rowspan="1" class="px-1 py-1 font-normal "><b>{{ $data->tanggal_insiden }}</b></td>
-                    </td>
-                </tr>
-                
             </tbody>
         </table>
-        <table class="px-4 mx-4 mt-4 border">
-            <thead style="display: table-row-group;" class="border">
-                <tr>
-                    <th style="border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1" style="width: 60px;"></div>
-                    </th>
-                    <th style="border-top:1px solid black;border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-left text-gray-800">
-                        <div class="flex items-start font-normal cursor-pointer gap-x-1 text-bold"><b>Penyebab Langsung Insiden :</b>
-                        </div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="border divide">
-                
-                <tr>
-                    <td style="border-right:1px solid black;" rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td style="border:1px solid black;" class="w-full px-1 py-1 font-normal text-left">
-                        {{$data->ikp_hasil?->penyebab}}
-                    </td>
-                    {{-- <td style="border:1px solid black;" class="w-2/3 px-1 py-1 font-normal"></td> --}}
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                </tr>
-               
-                
-                
+    </section>
 
-
+    <section class="section">
+        <h2 class="section-title">Tindakan yang Akan Dilakukan</h2>
+        <div class="section-body">{{ $data->ikp_hasil?->tindakan ?: '-' }}</div>
+        <table class="action-meta">
+            <tbody>
+                <tr>
+                    <td><strong>Penanggung jawab:</strong> {{ $data->ikp_hasil?->pj2 ?: '-' }}</td>
+                    <td><strong>Tanggal:</strong> {{ $data->ikp_hasil?->tanggal_tindakan ?: '-' }}</td>
+                </tr>
             </tbody>
         </table>
-        <table class="px-4 mx-4 mt-4 border">
-            <thead style="display: table-row-group;" class="border">
-                <tr>
-                    <th style="border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1" style="width: 60px;"></div>
-                    </th>
-                    <th style="border-top:1px solid black;border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-left text-gray-800">
-                        <div class="flex items-start font-normal cursor-pointer gap-x-1 text-bold"><b>Penyebab yang melatar belakangi / akar masalah Insiden</b>
-                        </div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="border divide">
-                
-                <tr>
-                    <td style="border-right:1px solid black;" rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td style="border:1px solid black;" class="w-full px-1 py-1 font-normal text-left">
-                        {{$data->ikp_hasil?->akarmasalah}}
-                    </td>
-                    {{-- <td style="border:1px solid black;" class="w-2/3 px-1 py-1 font-normal"></td> --}}
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                </tr>
-               
-                
-                
+    </section>
 
-
-            </tbody>
-        </table>
-
-        <table class="px-4 mx-4 mt-4 border">
-            <thead style="display: table-row-group;" class="w-full border">
-                <tr>
-                    <th style="border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1" style="width: 60px;"></div>
-                    </th>
-                    <th style="border-right:1px solid black; border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Rekomendasi :</b>
-                        </div>
-                    </th>
-                    <th style="border-right:1px solid black; border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Penanggung jawab :</b>
-                        </div>
-                    </th>
-                    <th style="border-right:1px solid black; border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Tanggal :</b>
-                        </div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="w-full border divide">
-                
-                <tr class="w-full">
-                    <td style="border-right:1px solid black;" rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td style="border:1px solid black;" class="w-2/4 px-1 py-1 font-normal text-left">
-                        {{ $data->ikp_hasil?->rekomendasi }}
-                    </td>
-                    <td style="border:1px solid black;" class="w-1/4 px-1 py-1 font-normal text-left">{{ $data->ikp_hasil?->pj1 }}</td>
-                    <td style="border:1px solid black;" class="w-1/4 px-1 py-1 font-normal text-left">{{ $data->ikp_hasil?->tanggal_rekomendasi }}</td>
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                </tr>
-                
-                
-                
-
-
-            </tbody>
-        </table>
-        <table class="px-4 mx-4 mt-4 border">
-            <thead style="display: table-row-group;" class="border">
-                <tr>
-                    <th style="border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1" style="width: 60px;"></div>
-                    </th>
-                    <th style="border-right:1px solid black;border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Tindakan yang akan dilakukan :</b>
-                        </div>
-                    </th>
-                    <th style="border-right:1px solid black;border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Penanggung jawab :</b>
-                        </div>
-                    </th>
-                    <th style="border-right:1px solid black;border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Tanggal</b>
-                        </div>
-                    </th>
-                    <th colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="border divide">
-                
-                <tr>
-                    <td style="border-right:1px solid black;" rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td style="border:1px solid black;" class="w-2/4 px-1 py-1 font-normal text-left">
-                        {{ $data->ikp_hasil?->tindakan }}
-                    </td>
-                    <td style="border:1px solid black;" class="items-start w-1/4 px-1 py-1 font-normal text-left">{{ $data->ikp_hasil?->pj2 }}</td>
-                    <td style="border:1px solid black;" class="items-start w-1/4 px-1 py-1 font-normal text-left">{{ $data->ikp_hasil?->tanggal_tindakan }}</td>
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                </tr>
-                
-                
-                
-
-
-            </tbody>
-        </table>
-        <table class="px-4 mx-4 border">
-            <thead style="display: table-row-group;" class="border">
-                <tr>
-                    <th style="border-right:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1" style="width: 60px;"></div>
-                    </th>
-                    <th style="border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1"><b>Manager / Kepala Bagian / Kepala Unit</b>
-                        </div>
-                    </th>
-                    <th style="border-right:1px solid black;border-top:1px solid black;" colspan="1" scope="col"
-                        class="px-1 py-1 text-center text-gray-800">
-                        <div class="flex items-center font-normal text-left cursor-pointer gap-x-1">
-                        </div>
-                    </th>
-                    <th  colspan="1" scope="col" class="px-1 py-1 text-center text-gray-800 ">
-                        <div class="flex items-center cursor-pointer gap-x-1"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="border divide">
-                
-                <tr>
-                    <td style="border-right:1px solid black;" rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td  class="w-1/2 px-1 py-1 font-normal text-left">
-                        <b>Nama :</b> {{ $data->ikp_hasil?->nama }}
-                       
-                    </td>
-                    <td style="border-right:1px solid black;" class="w-1/2 px-1 py-1 font-normal text-right"><b>Tanggal mulai investigasi :</b> {{ $data->ikp_hasil?->tanggal_mulai_investigasi }}</td>
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                </tr>
-                <tr class="mb-4">
-                    <td style="border-right:1px solid black;" rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                    <td style="border-bottom:1px solid black;" class="w-1/2 px-1 py-1 mb-4 font-normal text-left">
-                        <b>Tanda Tangan :</b>
-                       
-                    </td>
-                    <td style="border-bottom:1px solid black;border-right:1px solid black;" class="w-1/2 px-1 py-1 mb-4 font-normal text-right"><b>Tanggal selesai investigasi :</b> {{ $data->ikp_hasil?->tanggal_mulai_investigasi }}</td>
-                    <td rowspan="1" class="px-1 py-1 font-normal ">
-                    </td>
-                </tr>
-                
-                
-                
-                
-
-
-            </tbody>
-        </table>
-       
-    </div>
+    <table class="sign-table">
+        <thead>
+            <tr>
+                <th colspan="2">Manager / Kepala Bagian / Kepala Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="w-half"><strong>Nama:</strong> {{ $data->ikp_hasil?->nama ?: '-' }}</td>
+                <td class="w-half"><strong>Tanggal mulai investigasi:</strong> {{ $data->ikp_hasil?->tanggal_mulai_investigasi ?: '-' }}</td>
+            </tr>
+            <tr class="signature-space">
+                <td><strong>Tanda Tangan:</strong></td>
+                <td><strong>Tanggal selesai investigasi:</strong> {{ $data->ikp_hasil?->tanggal_selesai_investigasi ?: $data->ikp_hasil?->tanggal_mulai_investigasi ?: '-' }}</td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>

@@ -8,6 +8,7 @@ use App\Models\IndikatorFitur3;
 use App\Models\IndikatorFitur4;
 use App\Models\MUTU\MutuIndikator;
 use App\Models\MUTU\MutuKategori;
+use App\Models\MUTU\MutuPenyebut;
 use App\Models\MUTU\MutuUnit;
 use App\Models\Pic;
 use App\Models\User;
@@ -50,7 +51,8 @@ class MutuIndikatorController extends Controller
         $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? $IndikatorFitur4 = IndikatorFitur4::orderBy('name', 'DESC')->get() : $IndikatorFitur4 = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orwhereJsonContains('location_id', 0)->orderBy('name', 'DESC')->get();
         // $IndikatorFitur4 = IndikatorFitur4::get();
         $IndikatorFitur3 = IndikatorFitur3::get();
-        return inertia('MUTU/MutuIndikator/Index',['MutuIndikator'=>$MutuIndikator,'MutuKategori'=>$MutuKategori,'IndikatorFitur3'=>$IndikatorFitur3,'IndikatorFitur4'=>$IndikatorFitur4]);
+        $MutuPenyebut = MutuPenyebut::orderBy('name')->get(['name as id', 'name']);
+        return inertia('MUTU/MutuIndikator/Index',['MutuIndikator'=>$MutuIndikator,'MutuKategori'=>$MutuKategori,'MutuPenyebut'=>$MutuPenyebut,'IndikatorFitur3'=>$IndikatorFitur3,'IndikatorFitur4'=>$IndikatorFitur4]);
     }
     public function store(Request $request)
     {
@@ -106,6 +108,7 @@ class MutuIndikatorController extends Controller
             'denum_name' => 'required|string|max:255',
             'standar' => 'required',
             'operator' => 'required',
+            'penyebut' => 'required|string|max:255',
         ]);
         // dd($validatedMutuIndikator);
         $MutuIndikator->update($validatedMutuIndikator);

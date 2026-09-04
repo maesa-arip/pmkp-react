@@ -1,525 +1,233 @@
-import ComboboxPage from "@/Components/ComboboxPage";
 import InputError from "@/Components/InputError";
-import InputLabel from "@/Components/InputLabel";
-import PrimaryButton from "@/Components/PrimaryButton";
-import RadioCard from "@/Components/RadioCard";
-import SecondaryButton from "@/Components/SecondaryButton";
 import TextAreaInput from "@/Components/TextAreaInput";
-import TextInput from "@/Components/TextInput";
-import TextInputWithError from "@/Components/TextInputWithError";
-import Tooltip from "@/Components/Tooltip";
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-// import DatePicker from "@/Components/DatePicker/DatePicker";
+import { DocumentTextIcon, CalculatorIcon } from "@heroicons/react/24/outline";
 
 export default function Form({
     errors,
     submit,
     data,
     setData,
-    ShouldMap,
     model,
     closeButton,
 }) {
-    const [dampakMode, setDampakMode] = useState("");
-    const [probabilitasMode, setProbabilitasMode] = useState("");
+    const [dampakMode, setDampakMode] = useState(data.osd2_dampak || "");
+    const [probabilitasMode, setProbabilitasMode] = useState(data.osd2_probabilitas || "");
 
-    // Watch for changes in dampak_responden values and compute the mode
-    useEffect(() => {
-        setData({
-            ...data,
-            ["osd2_dampak"]: data.osd2_dampak,
-            ["osd2_probabilitas"]: data.osd2_probabilitas
-        });
-    }, [])
-    
+    // Logika perhitungan Modus Dampak (Dioptimasi & Bug Typo Fix ke osd2)
     useEffect(() => {
         const dampakValues = [
-            data.dampak_responden1,
-            data.dampak_responden2,
-            data.dampak_responden3,
-            data.dampak_responden4,
-            data.dampak_responden5,
-            data.dampak_responden6,
-            data.dampak_responden7,
-            data.dampak_responden8,
+            data.dampak_responden1, data.dampak_responden2, data.dampak_responden3, data.dampak_responden4,
+            data.dampak_responden5, data.dampak_responden6, data.dampak_responden7, data.dampak_responden8,
         ];
-        const nonEmptyDampakValues = dampakValues.filter(
-            (value) => value !== ""
-        );
-        const frequencyMap = {};
-        let maxFrequency = 0;
+        const nonEmptyValues = dampakValues.filter((v) => v !== "" && v !== null && v !== undefined);
+        
         let modeValue = "";
+        if (nonEmptyValues.length > 0) {
+            const frequencyMap = {};
+            let maxFrequency = 0;
 
-        nonEmptyDampakValues.forEach((value) => {
-            if (!isNaN(value)) {
-                if (!frequencyMap[value]) {
-                    frequencyMap[value] = 1;
-                } else {
-                    frequencyMap[value]++;
+            nonEmptyValues.forEach((value) => {
+                const numVal = Number(value);
+                if (!isNaN(numVal)) {
+                    frequencyMap[numVal] = (frequencyMap[numVal] || 0) + 1;
+                    if (frequencyMap[numVal] > maxFrequency) {
+                        maxFrequency = frequencyMap[numVal];
+                        modeValue = numVal.toString();
+                    }
                 }
-
-                if (frequencyMap[value] > maxFrequency) {
-                    maxFrequency = frequencyMap[value];
-                    modeValue = value;
-                }
-            }
-        });
+            });
+        }
+        
         setDampakMode(modeValue);
-        setData({
-            ...data,
-            ["osd2_dampak"]: modeValue
-        });
+        setData("osd2_dampak", modeValue);
     }, [
-        data.dampak_responden1,
-        data.dampak_responden2,
-        data.dampak_responden3,
-        data.dampak_responden4,
-        data.dampak_responden5,
-        data.dampak_responden6,
-        data.dampak_responden7,
-        data.dampak_responden8,
+        data.dampak_responden1, data.dampak_responden2, data.dampak_responden3, data.dampak_responden4,
+        data.dampak_responden5, data.dampak_responden6, data.dampak_responden7, data.dampak_responden8,
     ]);
 
-    // Watch for changes in probabilitas_responden values and compute the mode
+    // Logika perhitungan Modus Probabilitas (Dioptimasi & Bug Typo Fix ke osd2)
     useEffect(() => {
-        const probabilitasValues = [
-            data.probabilitas_responden1,
-            data.probabilitas_responden2,
-            data.probabilitas_responden3,
-            data.probabilitas_responden4,
-            data.probabilitas_responden5,
-            data.probabilitas_responden6,
-            data.probabilitas_responden7,
-            data.probabilitas_responden8,
+        const probValues = [
+            data.probabilitas_responden1, data.probabilitas_responden2, data.probabilitas_responden3, data.probabilitas_responden4,
+            data.probabilitas_responden5, data.probabilitas_responden6, data.probabilitas_responden7, data.probabilitas_responden8,
         ];
-        const nonEmptyProbabilitasValues = probabilitasValues.filter(
-            (value) => value !== ""
-        );
-        const frequencyMap = {};
-        let maxFrequency = 0;
+        const nonEmptyValues = probValues.filter((v) => v !== "" && v !== null && v !== undefined);
+        
         let modeValue = "";
+        if (nonEmptyValues.length > 0) {
+            const frequencyMap = {};
+            let maxFrequency = 0;
 
-        nonEmptyProbabilitasValues.forEach((value) => {
-            if (!isNaN(value)) {
-                if (!frequencyMap[value]) {
-                    frequencyMap[value] = 1;
-                } else {
-                    frequencyMap[value]++;
+            nonEmptyValues.forEach((value) => {
+                const numVal = Number(value);
+                if (!isNaN(numVal)) {
+                    frequencyMap[numVal] = (frequencyMap[numVal] || 0) + 1;
+                    if (frequencyMap[numVal] > maxFrequency) {
+                        maxFrequency = frequencyMap[numVal];
+                        modeValue = numVal.toString();
+                    }
                 }
-                if (frequencyMap[value] > maxFrequency) {
-                    maxFrequency = frequencyMap[value];
-                    modeValue = value;
-                }
-            }
-        });
+            });
+        }
+        
         setProbabilitasMode(modeValue);
-        setData({
-            ...data,
-            ["osd2_probabilitas"]: modeValue
-        });
+        setData("osd2_probabilitas", modeValue);
     }, [
-        data.probabilitas_responden1,
-        data.probabilitas_responden2,
-        data.probabilitas_responden3,
-        data.probabilitas_responden4,
-        data.probabilitas_responden5,
-        data.probabilitas_responden6,
-        data.probabilitas_responden7,
-        data.probabilitas_responden8,
+        data.probabilitas_responden1, data.probabilitas_responden2, data.probabilitas_responden3, data.probabilitas_responden4,
+        data.probabilitas_responden5, data.probabilitas_responden6, data.probabilitas_responden7, data.probabilitas_responden8,
     ]);
+
+    // Reusable styling classes untuk tema Shadcn
+    const readOnlyInputClass = "block w-full text-sm font-medium text-slate-500 bg-slate-100 border border-slate-200 border-dashed rounded-lg dark:text-slate-400 dark:bg-slate-800/60 dark:border-slate-800 cursor-not-allowed shadow-inner focus:ring-0 focus:border-slate-200 dark:focus:border-slate-800";
+    const sectionCardClass = "bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/80 rounded-2xl flex flex-col shadow-sm relative";
+
+    // Komponen Field Input Responden
+    const RespondentField = ({ label, id, value, fieldName, error }) => (
+        <div className="flex flex-col gap-1.5 relative group">
+            <label htmlFor={id} className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                {label}
+            </label>
+            <input
+                id={id}
+                type="number"
+                min="1"
+                max="5"
+                value={value}
+                onChange={(e) => setData(fieldName, e.target.value)}
+                className="block w-full text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all outline-none px-3 py-2.5 text-center shadow-sm placeholder:font-normal placeholder:text-slate-300 dark:placeholder:text-slate-600"
+                placeholder="-"
+            />
+            {error && <p className="absolute -bottom-4 text-[10px] text-red-500 font-medium whitespace-nowrap">{error}</p>}
+        </div>
+    );
+
     return (
-        <>
-            <div className="px-4 py-5 bg-white sm:p-6">
-                <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-12 p-6 my-6 border-4 border-gray-200 rounded-lg ">
-                        <label
-                            htmlFor=""
-                            className="block mb-4 text-lg font-bold text-gray-700 "
-                        >
-                            Data Risiko
-                        </label>
-                        <div className="grid grid-cols-12 gap-6">
-                            <div className="col-span-12">
-                                <InputLabel
-                                    for="pernyataan risiko"
-                                    value="Pernyataan Risiko"
-                                />
-                                <TextAreaInput
-                                    id="pernyataan_risiko"
-                                    readOnly={true}
-                                    value={data.pernyataan_risiko ?? ""}
-                                    handleChange={(e) =>
-                                        setData(
-                                            "pernyataan_risiko",
-                                            e.target.value
-                                        )
-                                    }
-                                    // onChange={onChange}
-                                    type="text"
-                                    className="block w-full mt-1"
-                                />
-                                <InputError
-                                    message={errors.pernyataan_risiko}
-                                    className="mt-2"
-                                />
+        <div className="relative flex flex-col w-full h-full bg-slate-50/30 dark:bg-transparent">
+            
+            {/* Scrollable Content Area */}
+            <div className="flex-1 p-4 space-y-6 overflow-y-auto sm:p-6 custom-scrollbar">
+                
+                {/* --- CONTEXT BOX (Pernyataan Risiko Auto-Generated) --- */}
+                <div className={`${sectionCardClass} p-5 overflow-hidden`}>
+                    <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-sky-500"></div>
+                    <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 pl-2 mb-2">
+                        <DocumentTextIcon className="w-4 h-4 mr-1.5" />
+                        Konteks Risiko Residual
+                    </div>
+                    <div className="pl-2">
+                        <TextAreaInput 
+                            id="pernyataan_risiko" 
+                            readOnly={true} 
+                            value={data.pernyataan_risiko} 
+                            rows={3} 
+                            className={readOnlyInputClass} 
+                        />
+                        <InputError message={errors.pernyataan_risiko} className="mt-1" />
+                    </div>
+                </div>
+
+                {/* --- TWO COLUMN BENTO CARDS --- */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    
+                    {/* CARD 1: PENILAIAN DAMPAK RESIDUAL */}
+                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-sm">
+                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-transparent">
+                            <h3 className="text-base font-bold text-slate-900 dark:text-white">Skor Dampak (Residual)</h3>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">Penilaian setelah adanya kontrol/mitigasi.</p>
+                        </div>
+                        
+                        <div className="flex-1 p-6">
+                            <div className="grid grid-cols-4 gap-x-3 gap-y-5">
+                                <RespondentField label="R.1" id="d_r1" fieldName="dampak_responden1" value={data.dampak_responden1} error={errors.dampak_responden1} />
+                                <RespondentField label="R.2" id="d_r2" fieldName="dampak_responden2" value={data.dampak_responden2} error={errors.dampak_responden2} />
+                                <RespondentField label="R.3" id="d_r3" fieldName="dampak_responden3" value={data.dampak_responden3} error={errors.dampak_responden3} />
+                                <RespondentField label="R.4" id="d_r4" fieldName="dampak_responden4" value={data.dampak_responden4} error={errors.dampak_responden4} />
+                                
+                                <div className="col-span-4 my-0.5 border-t border-slate-200 border-dashed dark:border-slate-800"></div>
+
+                                <RespondentField label="R.5" id="d_r5" fieldName="dampak_responden5" value={data.dampak_responden5} error={errors.dampak_responden5} />
+                                <RespondentField label="R.6" id="d_r6" fieldName="dampak_responden6" value={data.dampak_responden6} error={errors.dampak_responden6} />
+                                <RespondentField label="R.7" id="d_r7" fieldName="dampak_responden7" value={data.dampak_responden7} error={errors.dampak_responden7} />
+                                <RespondentField label="R.8" id="d_r8" fieldName="dampak_responden8" value={data.dampak_responden8} error={errors.dampak_responden8} />
+                            </div>
+                        </div>
+
+                        {/* AUTO COMPUTED HIGHLIGHT BAR */}
+                        <div className="flex items-center justify-between p-5 border-t bg-sky-50 dark:bg-sky-500/5 border-sky-100 dark:border-sky-500/20">
+                            <div className="flex items-center">
+                                <CalculatorIcon className="w-5 h-5 mr-2 text-sky-600 dark:text-sky-400" />
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-sky-800 dark:text-sky-400">Nilai Modus</span>
+                            </div>
+                            <div className="px-4 py-1.5 bg-white dark:bg-[#020817] border border-sky-200 dark:border-sky-500/30 rounded-lg text-base font-black text-sky-700 dark:text-sky-400 shadow-sm">
+                                {dampakMode || "0"}
                             </div>
                         </div>
                     </div>
 
-                    <div className="col-span-12 p-6 my-6 border-4 rounded-lg border-cyan-200 ">
-                        <label
-                            htmlFor=""
-                            className="block mb-4 text-lg font-bold text-gray-700"
-                        >
-                            FGD Residual
-                        </label>
-                        <div className="grid grid-cols-12 gap-6">
-                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
-                                <label
-                                    htmlFor=""
-                                    className="block mb-4 text-lg font-bold text-gray-700"
-                                >
-                                    Dampak
-                                </label>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden1" value="Responden 1" />
-                                    <TextInput
-                                        id="dampak_responden1"
-                                        value={data.dampak_responden1}
-                                        handleChange={(e) =>
-                                            setData("dampak_responden1", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.dampak_responden1}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden2" value="Responden 2" />
-                                    <TextInput
-                                        id="dampak_responden2"
-                                        value={data.dampak_responden2}
-                                        handleChange={(e) =>
-                                            setData("dampak_responden2", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.dampak_responden2}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <TextInputWithError
-                                        label="Responden 3"
-                                        type="number"
-                                        id="dampak_responden3"
-                                        name="dampak_responden3"
-                                        value={data.dampak_responden3}
-                                        handleChange={(e) =>
-                                            setData(
-                                                "dampak_responden3",
-                                                e.target.value
-                                            )
-                                        }
-                                        message={errors.dampak_responden3}
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden4" value="Responden 4" />
-                                    <TextInput
-                                        id="dampak_responden4"
-                                        value={data.dampak_responden4}
-                                        handleChange={(e) =>
-                                            setData("dampak_responden4", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.dampak_responden4}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden5" value="Responden 5" />
-                                    <TextInput
-                                        id="dampak_responden5"
-                                        value={data.dampak_responden5}
-                                        handleChange={(e) =>
-                                            setData("dampak_responden5", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.dampak_responden5}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <TextInputWithError
-                                        label="Responden 6"
-                                        type="number"
-                                        id="dampak_responden6"
-                                        name="dampak_responden6"
-                                        value={data.dampak_responden6}
-                                        handleChange={(e) =>
-                                            setData(
-                                                "dampak_responden6",
-                                                e.target.value
-                                            )
-                                        }
-                                        message={errors.dampak_responden6}
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="dampak_responden7" value="Responden 7" />
-                                    <TextInput
-                                        id="dampak_responden7"
-                                        value={data.dampak_responden7}
-                                        handleChange={(e) =>
-                                            setData("dampak_responden7", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.dampak_responden7}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <TextInputWithError
-                                        label="Responden 8"
-                                        type="number"
-                                        id="dampak_responden8"
-                                        name="dampak_responden8"
-                                        value={data.dampak_responden8}
-                                        handleChange={(e) =>
-                                            setData(
-                                                "dampak_responden8",
-                                                e.target.value
-                                            )
-                                        }
-                                        message={errors.dampak_responden8}
-                                    />
-                                </div>
+                    {/* CARD 2: PENILAIAN PROBABILITAS RESIDUAL */}
+                    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-sm">
+                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-transparent">
+                            <h3 className="text-base font-bold text-slate-900 dark:text-white">Skor Probabilitas (Residual)</h3>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">Penilaian setelah adanya kontrol/mitigasi.</p>
+                        </div>
+                        
+                        <div className="flex-1 p-6">
+                            <div className="grid grid-cols-4 gap-x-3 gap-y-5">
+                                <RespondentField label="R.1" id="p_r1" fieldName="probabilitas_responden1" value={data.probabilitas_responden1} error={errors.probabilitas_responden1} />
+                                <RespondentField label="R.2" id="p_r2" fieldName="probabilitas_responden2" value={data.probabilitas_responden2} error={errors.probabilitas_responden2} />
+                                <RespondentField label="R.3" id="p_r3" fieldName="probabilitas_responden3" value={data.probabilitas_responden3} error={errors.probabilitas_responden3} />
+                                <RespondentField label="R.4" id="p_r4" fieldName="probabilitas_responden4" value={data.probabilitas_responden4} error={errors.probabilitas_responden4} />
+                                
+                                <div className="col-span-4 my-0.5 border-t border-slate-200 border-dashed dark:border-slate-800"></div>
+
+                                <RespondentField label="R.5" id="p_r5" fieldName="probabilitas_responden5" value={data.probabilitas_responden5} error={errors.probabilitas_responden5} />
+                                <RespondentField label="R.6" id="p_r6" fieldName="probabilitas_responden6" value={data.probabilitas_responden6} error={errors.probabilitas_responden6} />
+                                <RespondentField label="R.7" id="p_r7" fieldName="probabilitas_responden7" value={data.probabilitas_responden7} error={errors.probabilitas_responden7} />
+                                <RespondentField label="R.8" id="p_r8" fieldName="probabilitas_responden8" value={data.probabilitas_responden8} error={errors.probabilitas_responden8} />
                             </div>
-                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
-                                <label
-                                    htmlFor=""
-                                    className="block mb-4 text-lg font-bold text-gray-700"
-                                >
-                                    Probabilitas
-                                </label>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden1" value="Responden 1" />
-                                    <TextInput
-                                        id="probabilitas_responden1"
-                                        value={data.probabilitas_responden1}
-                                        handleChange={(e) =>
-                                            setData("probabilitas_responden1", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.probabilitas_responden1}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden2" value="Responden 2" />
-                                    <TextInput
-                                        id="probabilitas_responden2"
-                                        value={data.probabilitas_responden2}
-                                        handleChange={(e) =>
-                                            setData("probabilitas_responden2", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.probabilitas_responden2}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <TextInputWithError
-                                        label="Responden 3"
-                                        type="number"
-                                        id="probabilitas_responden3"
-                                        name="probabilitas_responden3"
-                                        value={data.probabilitas_responden3}
-                                        handleChange={(e) =>
-                                            setData(
-                                                "probabilitas_responden3",
-                                                e.target.value
-                                            )
-                                        }
-                                        message={errors.probabilitas_responden3}
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden4" value="Responden 4" />
-                                    <TextInput
-                                        id="probabilitas_responden4"
-                                        value={data.probabilitas_responden4}
-                                        handleChange={(e) =>
-                                            setData("probabilitas_responden4", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.probabilitas_responden4}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden5" value="Responden 5" />
-                                    <TextInput
-                                        id="probabilitas_responden5"
-                                        value={data.probabilitas_responden5}
-                                        handleChange={(e) =>
-                                            setData("probabilitas_responden5", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.probabilitas_responden5}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <TextInputWithError
-                                        label="Responden 6"
-                                        type="number"
-                                        id="probabilitas_responden6"
-                                        name="probabilitas_responden6"
-                                        value={data.probabilitas_responden6}
-                                        handleChange={(e) =>
-                                            setData(
-                                                "probabilitas_responden6",
-                                                e.target.value
-                                            )
-                                        }
-                                        message={errors.probabilitas_responden6}
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel for="probabilitas_responden7" value="Responden 7" />
-                                    <TextInput
-                                        id="probabilitas_responden7"
-                                        value={data.probabilitas_responden7}
-                                        handleChange={(e) =>
-                                            setData("probabilitas_responden7", e.target.value)
-                                        }
-                                        readOnly={false}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.probabilitas_responden7}
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div className="col-span-6 py-2">
-                                    <TextInputWithError
-                                        label="Responden 8"
-                                        type="number"
-                                        id="probabilitas_responden8"
-                                        name="probabilitas_responden8"
-                                        value={data.probabilitas_responden8}
-                                        handleChange={(e) =>
-                                            setData(
-                                                "probabilitas_responden8",
-                                                e.target.value
-                                            )
-                                        }
-                                        message={errors.probabilitas_responden8}
-                                    />
-                                </div>
+                        </div>
+
+                        {/* AUTO COMPUTED HIGHLIGHT BAR */}
+                        <div className="flex items-center justify-between p-5 border-t bg-sky-50 dark:bg-sky-500/5 border-sky-100 dark:border-sky-500/20">
+                            <div className="flex items-center">
+                                <CalculatorIcon className="w-5 h-5 mr-2 text-sky-600 dark:text-sky-400" />
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-sky-800 dark:text-sky-400">Nilai Modus</span>
+                            </div>
+                            <div className="px-4 py-1.5 bg-white dark:bg-[#020817] border border-sky-200 dark:border-sky-500/30 rounded-lg text-base font-black text-sky-700 dark:text-sky-400 shadow-sm">
+                                {probabilitasMode || "0"}
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
-                                <label
-                                    htmlFor=""
-                                    className="block mb-4 text-lg font-bold text-gray-700"
-                                >
-                                    Modus Dampak
-                                </label>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel
-                                        for="osd2_dampak"
-                                        value="Modus Dampak"
-                                    />
-                                    <TextInput
-                                        id="osd2_dampak"
-                                        value={dampakMode}
-                                        
-                                        readOnly={true}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.osd2_dampak}
-                                        className="mt-2"
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-span-6 p-6 my-6 border-4 rounded-lg">
-                                <label
-                                    htmlFor=""
-                                    className="block mb-4 text-lg font-bold text-gray-700"
-                                >
-                                    Modus Probabilitas
-                                </label>
-                                <div className="col-span-6 py-2">
-                                    <InputLabel
-                                        for="osd2_probabilitas"
-                                        value="Modus Probabilitas"
-                                    />
-                                    <TextInput
-                                        id="osd2_probabilitas"
-                                        value={probabilitasMode}
-                                        readOnly={true}
-                                        type="number"
-                                        className="block w-full mt-1"
-                                    />
-                                    <InputError
-                                        message={errors.osd2_probabilitas}
-                                        className="mt-2"
-                                    />
-                                </div>
-                            </div>
+
                 </div>
             </div>
 
-            <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <PrimaryButton>{submit}</PrimaryButton>
-                <SecondaryButton className="mx-2" onClick={closeButton}>
+            {/* --- ACTION FOOTER STICKY --- */}
+            <div className="shrink-0 p-4 sm:p-6 bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row-reverse justify-start gap-3 rounded-b-xl z-20 mt-auto">
+                <button 
+                    type="submit" 
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                >
+                    {submit}
+                </button>
+                <button 
+                    type="button" 
+                    onClick={closeButton} 
+                    className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none"
+                >
                     Batal
-                </SecondaryButton>
+                </button>
             </div>
-        </>
+            
+            <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+                :global(.dark) .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+                :global(.dark) .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+            `}</style>
+        </div>
     );
 }
