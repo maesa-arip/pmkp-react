@@ -42,6 +42,10 @@ class RiskRegisterNonKlinisController extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
+        $year = $request->integer('tahun', now()->year);
+        $whosLogin[] = ['tgl_register', '>=', "$year-01-01 00:00:00"];
+        $whosLogin[] = ['tgl_register', '<', ($year + 1).'-01-01 00:00:00'];
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 2)
             ->with('risk_category')
             ->with('identification_source')
@@ -58,11 +62,12 @@ class RiskRegisterNonKlinisController extends Controller
             ->with('fgdresidual')
             ->with('fgdtreated')
             ->with('fgdactual')
+            ->with(['risk_register_histories', 'copiedFromRiskRegister.risk_register_histories'])
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
-        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('efektif_id','=',0)->count();
-        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('opsi_pengendalian_id','=',0)->count();
-        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where('osd2_dampak','=',0)->count();
+        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where(fn ($q) => $q->whereNull('efektif_id')->orWhere('efektif_id', 0))->count();
+        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where(fn ($q) => $q->whereNull('opsi_pengendalian_id')->orWhere('opsi_pengendalian_id', 0))->count();
+        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where(fn ($q) => $q->whereNull('osd2_dampak')->orWhere('osd2_dampak', 0))->count();
         if ($request->q) {
             $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
         }
@@ -76,6 +81,7 @@ class RiskRegisterNonKlinisController extends Controller
                 'per_page' => 10,
             ],
             'filtered' => [
+                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,
@@ -153,11 +159,14 @@ class RiskRegisterNonKlinisController extends Controller
             'target_waktu' => 'required|numeric|min:1|not_in:0|in:90,180,365',
             // 'osd1_dampak' => 'required',
             // 'osd1_probabilitas' => 'required',
-            'osd1_controllability' => 'required',
-            'perlu_penanganan_id' => 'required',
             'pengendalian_risiko' => 'required',
             'efektif_id' => 'required',
             'pengendalian_harus_ada' => 'required',
+            'c_uc' => 'nullable',
+            'celah_pengendalian' => 'nullable',
+            'media_pengkomunikasian' => 'nullable',
+            'penyedia_informasi' => 'nullable',
+            'penerima_informasi' => 'nullable',
             'opsi_pengendalian_id' => 'required',
             'penanganan_risiko' => 'required',
             'pembiayaan_risiko_id' => 'required',
@@ -171,7 +180,6 @@ class RiskRegisterNonKlinisController extends Controller
         $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
         // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
-        $osd1_controllability = ControlValue::where('id',$request->osd1_controllability)->pluck('value');
         $request->merge([
             'user_id' => auth()->user()->id,
             'tipe_id' => 2,
@@ -182,19 +190,25 @@ class RiskRegisterNonKlinisController extends Controller
             'grading2' => 1,
             // 'osd1_dampak' => $osd1_dampak[0],
             // 'osd1_probabilitas' => $osd1_probabilitas[0],
-            'osd1_controllability' => $osd1_controllability[0],
             // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
             // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
 
         // $risk = RiskRegister::create($request->except('name'));
-         $risk = RiskRegister::create($request->except('name'));
+         $risk = RiskRegister::create($request->only([
+            ...RiskRegister::FORM_FIELDS,
+            'user_id',
+            'tipe_id',
+        ]));
         $kode_risiko_prefix = ($risk->risk_category_id == 5) ? 'RSO' : 'ROO';
         $tahun_register = Carbon::parse($risk->tgl_register)->format('y');
         $risk->kode_risiko = "{$kode_risiko_prefix}.{$tahun_register}.02.43.{$risk->id}";
         $risk->save();
 
         RiskRegisterHistory::recordForRisk($risk, RiskRegisterHistory::EVENT_CREATED);
+        if ((int) $risk->currently_id === 1) {
+            RiskRegisterHistory::recordForRisk($risk, RiskRegisterHistory::EVENT_STATUS_CHANGED);
+        }
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();
@@ -226,11 +240,14 @@ class RiskRegisterNonKlinisController extends Controller
             'target_waktu' => 'required|numeric|min:1|not_in:0|in:90,180,365',
             // 'osd1_dampak' => 'required',
             // 'osd1_probabilitas' => 'required',
-            'osd1_controllability' => 'required',
-            'perlu_penanganan_id' => 'required',
             'pengendalian_risiko' => 'required',
             'efektif_id' => 'required',
             'pengendalian_harus_ada' => 'required',
+            'c_uc' => 'nullable',
+            'celah_pengendalian' => 'nullable',
+            'media_pengkomunikasian' => 'nullable',
+            'penyedia_informasi' => 'nullable',
+            'penerima_informasi' => 'nullable',
             'opsi_pengendalian_id' => 'required',
             'penanganan_risiko' => 'required',
             'pembiayaan_risiko_id' => 'required',
@@ -244,14 +261,12 @@ class RiskRegisterNonKlinisController extends Controller
         $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
         // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
-        $osd1_controllability = ControlValue::where('id',$request->osd1_controllability)->pluck('value');
         $request->merge([
             'tgl_selesai' => $tgl_selesai,
             'waktudenumnum' => $request->target_waktu,
             'pic_id' => $encodedPic,
             // 'osd1_dampak' => $osd1_dampak[0],
             // 'osd1_probabilitas' => $osd1_probabilitas[0],
-            'osd1_controllability' => $osd1_controllability[0],
             // 'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
             // 'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
         ]);
@@ -263,10 +278,15 @@ class RiskRegisterNonKlinisController extends Controller
                 'message' => 'Tidak bisa rubah status tidak sedang terjadi, silakan rubah di menu "Request Perubahan Status"',
             ]);
         }
-        $shouldRecordStatusChange = $riskRegisterKlinis->currently_id == 2 && $request->currently_id == 1;
-        $riskRegisterKlinis->update($request->except('home'));
+        $shouldRecordStatusChange = $request->currently_id == 1;
+        $riskRegisterKlinis->update($request->only(RiskRegister::FORM_FIELDS));
         if ($shouldRecordStatusChange) {
-            RiskRegisterHistory::recordForRisk($riskRegisterKlinis->refresh(), RiskRegisterHistory::EVENT_STATUS_CHANGED);
+            RiskRegisterHistory::recordForRisk(
+                $riskRegisterKlinis->refresh(),
+                RiskRegisterHistory::EVENT_STATUS_CHANGED,
+                null,
+                ['dampak_kejadian' => $request->dampak_kejadian]
+            );
         }
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
@@ -289,14 +309,12 @@ class RiskRegisterNonKlinisController extends Controller
         $fgdTreated = FgdTreated::where('risk_register_id',$id);
         $fgdActual = FgdActual::where('risk_register_id',$id);
         $formulirRca = FormulirRca::where('risk_register_id',$id);
-        $history = RiskRegisterHistory::where('risk_register_id',$id);
         $riskRegister = RiskRegister::find($id);
 
         $fgdInherent->delete();
         $fgdResidual->delete();
         $fgdTreated->delete();
         $fgdActual->delete();
-        $history->delete();
         $riskRegister->delete();
         return back()->with([
             'type' => 'success',

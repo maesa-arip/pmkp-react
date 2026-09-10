@@ -19,7 +19,8 @@ class RiskRegisterResource extends JsonResource
         $data = parent::toArray($request);
 
         if ($this->resource->relationLoaded('risk_register_histories')) {
-            $data['risk_register_histories'] = $this->effectiveRiskRegisterHistories()->values();
+            $data['risk_register_histories'] = $this->risk_register_histories->values();
+            $data['source_risk_register_histories'] = $this->copiedFromRiskRegister?->risk_register_histories ?? [];
         }
 
         $settingKey = (int) $this->tipe_id === 2
@@ -31,14 +32,35 @@ class RiskRegisterResource extends JsonResource
             ? date('Y', strtotime($this->tgl_register))
             : RiskGrading::DEFAULT_TAHUN;
 
-        $grading = RiskGrading::query()
-            ->where('kode', $this->concatdp1)
+        $stageCodes = [
+            'inherent' => $this->concatdp1,
+            'residual' => $this->concatdp2,
+            'treated' => $this->concatdp3,
+            'actual' => $this->concatdp4,
+        ];
+        $gradings = RiskGrading::query()
             ->where('tahun', $year)
-            ->first();
+            ->get()
+            ->keyBy('kode');
+        $grading = $gradings->get($this->concatdp1);
+        $data['riskgrading'] = $grading;
 
         $data['risk_grading_setting'] = $settingValue;
         $data['risk_grading_display_name'] = $grading?->{$columns['name']};
         $data['risk_grading_display_color'] = $grading?->{$columns['color']};
+        // Keep matrix codes as object keys so resource filtering cannot reindex them.
+        $data['risk_grading_matrix'] = (object) $gradings->map(fn ($item) => [
+            'name' => $item->{$columns['name']},
+            'color' => $item->{$columns['color']},
+        ])->all();
+
+        foreach ($stageCodes as $stage => $code) {
+            $stageGrading = $gradings->get($code);
+            $data['risk_stage_gradings'][$stage] = [
+                'name' => $stageGrading?->{$columns['name']},
+                'color' => $stageGrading?->{$columns['color']},
+            ];
+        }
 
         return $data;
     }

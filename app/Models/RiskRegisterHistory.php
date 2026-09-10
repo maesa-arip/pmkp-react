@@ -26,24 +26,27 @@ class RiskRegisterHistory extends Model
         'snapshot' => 'array',
     ];
 
-    public static function recordForRisk(RiskRegister $riskRegister, string $eventType, ?int $currentlyId = null): self
+    public static function recordForRisk(RiskRegister $riskRegister, string $eventType, ?int $currentlyId = null, array $extraSnapshot = []): self
     {
         return self::create([
             'risk_register_id' => $riskRegister->id,
             'currently_id' => $currentlyId ?? $riskRegister->currently_id,
             'user_id' => auth()->id(),
             'event_type' => $eventType,
-            'snapshot' => [
+            'snapshot' => array_merge([
                 'kode_risiko' => $riskRegister->kode_risiko,
+                'periode_kinerja_id' => $riskRegister->periode_kinerja_id,
+                'indikator_snapshot' => $riskRegister->indikator_snapshot,
                 'pernyataan_risiko' => $riskRegister->pernyataan_risiko,
                 'sebab' => $riskRegister->sebab,
+                'dampak' => $riskRegister->dampak,
                 'currently_id' => $currentlyId ?? $riskRegister->currently_id,
                 'tipe_id' => $riskRegister->tipe_id,
                 'risk_category_id' => $riskRegister->risk_category_id,
                 'copied_from_risk_register_id' => $riskRegister->copied_from_risk_register_id,
                 'copied_from_year' => $riskRegister->copied_from_year,
                 'copied_to_year' => $riskRegister->copied_to_year,
-            ],
+            ], $extraSnapshot),
         ]);
     }
 

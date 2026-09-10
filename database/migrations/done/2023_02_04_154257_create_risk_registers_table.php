@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('risk_registers', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_risiko')->nullable();
             $table->tinyInteger('tipe_id');
+            $table->tinyInteger('currently_id')->default(1);
             // $table->tinyInteger('proses_id');
             $table->timestamp('tgl_register')->nullable();
             $table->timestamp('tgl_selesai')->nullable();
@@ -44,6 +46,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             // $table->tinyInteger('pengawasan_id');
             $table->text('target_waktu');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

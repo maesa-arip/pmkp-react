@@ -7,6 +7,7 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
         tgl_register: "",
         tgl_selesai: "",
         pernyataan_risiko: "",
+        c_uc: "",
         sebab: "",
         resiko: "",
         dampak: "",
@@ -15,7 +16,7 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
         grading: "",
         pengendalian_risiko: "",
         proses_id: "",
-        currently_id: "",
+        currently_id: 2,
         risk_category_id: "",
         identification_source_id: "",
         location_id: "",
@@ -23,14 +24,12 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
         risk_type_id: "",
         osd1_dampak: "",
         osd1_probabilitas: "",
-        osd1_controllability: "",
         osd2_dampak: "",
         osd2_probabilitas: "",
         osd2_controllability: "",
         pic_id: "",
         indikator_fitur4_id: "",
         pengawasan_id: "",
-        perlu_penanganan_id: "",
         opsi_pengendalian_id: "",
         pembiayaan_risiko_id: "",
         efektif_id: "",
@@ -45,6 +44,10 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
         waktu_implementasi_id: "",
         realisasi_id: "",
         pengendalian_harus_ada: "",
+        celah_pengendalian: "",
+        media_pengkomunikasian: "",
+        penyedia_informasi: "",
+        penerima_informasi: "",
         penanganan_risiko: "",
         rencana_pengendalian: "",
         jenis_sebab_id: "",
@@ -60,7 +63,6 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
     const onSubmit = (e) => {
         e.preventDefault();
         post(route("riskRegisterNonKlinis.store"), {
-            data,
             onSuccess: () => {
                 reset();
                 setIsOpenAddDialog(false);

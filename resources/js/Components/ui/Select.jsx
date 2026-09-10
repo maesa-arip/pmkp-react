@@ -18,7 +18,7 @@ const Select = ({
 
     return (
         <Listbox value={value} onChange={onChange} disabled={disabled}>
-            <div className={`relative ${className}`}>
+            <div className={`relative z-[100] ${className}`}>
                 <Listbox.Button
                     className={`relative h-10 w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-3 pr-10 text-left text-sm font-bold text-slate-900 shadow-sm transition focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-white ${buttonClassName}`}
                 >
@@ -36,7 +36,7 @@ const Select = ({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <Listbox.Options className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg focus:outline-none dark:border-slate-700 dark:bg-slate-900">
+                    <Listbox.Options className="absolute z-[999] mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg focus:outline-none dark:border-slate-700 dark:bg-slate-900">
                         {options.map((option) => (
                             <Listbox.Option
                                 key={option.value}

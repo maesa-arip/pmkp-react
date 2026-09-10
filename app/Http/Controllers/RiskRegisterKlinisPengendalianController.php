@@ -36,6 +36,10 @@ class RiskRegisterKlinisPengendalianController extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
+        $year = $request->integer('tahun', now()->year);
+        $whosLogin[] = ['tgl_register', '>=', "$year-01-01 00:00:00"];
+        $whosLogin[] = ['tgl_register', '<', ($year + 1).'-01-01 00:00:00'];
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 1)
             ->with('risk_category')
             ->with('identification_source')
@@ -47,9 +51,9 @@ class RiskRegisterKlinisPengendalianController extends Controller
             ->with('user')
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
-        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id','=',0)->count();
-        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id','=',0)->count();
-        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('osd2_dampak','=',0)->count();
+        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where(fn ($q) => $q->whereNull('efektif_id')->orWhere('efektif_id', 0))->count();
+        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where(fn ($q) => $q->whereNull('opsi_pengendalian_id')->orWhere('opsi_pengendalian_id', 0))->count();
+        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where(fn ($q) => $q->whereNull('osd2_dampak')->orWhere('osd2_dampak', 0))->count();
         if ($request->q) {
             $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
         }
@@ -63,6 +67,7 @@ class RiskRegisterKlinisPengendalianController extends Controller
                 'per_page' => 10,
             ],
             'filtered' => [
+                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,

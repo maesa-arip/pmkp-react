@@ -1,6 +1,8 @@
 import ComboboxPage from "@/Components/ComboboxPage";
 import ComboboxPageReadonly from "@/Components/ComboboxPageReadonly";
 import InputError from "@/Components/InputError";
+import FgdGradingPreview from "@/Components/FgdGradingPreview";
+import Select from "@/Components/ui/Select";
 import TextAreaInput from "@/Components/TextAreaInput";
 import React, { useEffect, useState } from "react";
 import { DocumentTextIcon, ChartPieIcon, CheckBadgeIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
@@ -116,6 +118,36 @@ export default function Form({
                             </div>
                             <InputError message={errors.osd2_probabilitas} className="mt-1" />
                         </div>
+                        <div className="col-span-12">
+                            <FgdGradingPreview
+                                dampak={data.osd2_dampak}
+                                probabilitas={data.osd2_probabilitas}
+                                matrix={model?.risk_grading_matrix}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="relative z-[25] grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="relative z-20 min-w-0" role="group" aria-labelledby="residual-done-label">
+                        <label id="residual-done-label" className={labelClass}>Upaya Pengendalian Sudah Dilakukan</label>
+                        <Select
+                            value={data.osd2_pengendalian_dilakukan}
+                            onChange={(value) => setData("osd2_pengendalian_dilakukan", value)}
+                            options={[{ value: 1, label: "Iya" }, { value: 0, label: "Tidak" }]}
+                            placeholder="Pilih Status Pelaksanaan"
+                        />
+                        <InputError message={errors.osd2_pengendalian_dilakukan} className="mt-1" />
+                    </div>
+                    <div className="relative z-10 min-w-0" role="group" aria-labelledby="residual-effective-label">
+                        <label id="residual-effective-label" className={labelClass}>Upaya Pengendalian Efektif</label>
+                        <Select
+                            value={data.osd2_pengendalian_efektif}
+                            onChange={(value) => setData("osd2_pengendalian_efektif", value)}
+                            options={[{ value: 1, label: "Efektif" }, { value: 0, label: "Tidak Efektif" }]}
+                            placeholder="Pilih Efektivitas Pengendalian"
+                        />
+                        <InputError message={errors.osd2_pengendalian_efektif} className="mt-1" />
                     </div>
                 </div>
 

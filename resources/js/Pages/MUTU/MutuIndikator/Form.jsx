@@ -17,6 +17,7 @@ export default function Form({
     ShouldMap,
     closeButton,
 }) {
+    const [year, setYear] = useState(model?.tahun || new Date().getFullYear());
     const defaultValue = [{ name: "" }];
 
     // --- STATES INIT ---
@@ -59,6 +60,7 @@ export default function Form({
             {/* Scrollable Content Area */}
             <div className="flex-1 p-4 space-y-6 overflow-y-auto sm:p-6 custom-scrollbar">
                 
+                <label className="block text-sm">Tahun indikator<select className="ml-3 rounded" disabled={!!model} value={year} onChange={e => { setYear(Number(e.target.value)); setData('indikator_fitur4_id', ''); setSelectedIndikatorFitur4(defaultValue[0]); }}>{[...new Set((ShouldMap.IndikatorFitur4 || []).map(x => x.tahun))].sort().map(y => <option key={y} value={y}>{y}</option>)}</select></label><p className="text-sm">Indikator baru dikelola melalui draft pada menu Indikator Tahunan.</p><InputError message={errors.IndikatorBaru} />
                 {/* --- SECTION 1: INFORMASI INDIKATOR MUTU --- */}
                 <div className={`${sectionCardClass} relative z-[50]`}>
                     <div className={sectionHeaderClass}>
@@ -79,7 +81,7 @@ export default function Form({
                                 <div className="relative flex flex-col col-span-12 md:col-span-12 z-[60]">
                                     <label className={labelClass}>Indikator Baru ?</label>
                                     <ComboboxPage
-                                        ShouldMap={ShouldMap.IndikatorBaru || []}
+                                        ShouldMap={(ShouldMap.IndikatorBaru || []).filter(x => Number(x.id) === 0)}
                                         selected={selectedIndikatorBaru}
                                         onChange={(e) => {
                                             setData({
@@ -98,7 +100,7 @@ export default function Form({
                             <div className="relative flex flex-col col-span-12 md:col-span-12 z-[59]">
                                 <label className={labelClass}>Pilih Indikator</label>
                                 <ComboboxPage
-                                    ShouldMap={ShouldMap.IndikatorFitur4 || []}
+                                    ShouldMap={(ShouldMap.IndikatorFitur4 || []).filter(x => x.tahun === year)}
                                     selected={selectedIndikatorFitur4}
                                     onChange={(e) => {
                                         setData({
@@ -148,7 +150,7 @@ export default function Form({
                                     <div className="relative flex flex-col col-span-12 md:col-span-12 z-[59]">
                                         <label className={labelClass}>Pilih Indikator</label>
                                         <ComboboxPage
-                                            ShouldMap={ShouldMap.IndikatorFitur4 || []}
+                                            ShouldMap={(ShouldMap.IndikatorFitur4 || []).filter(x => x.tahun === year)}
                                             selected={selectedIndikatorFitur4}
                                             onChange={(e) => {
                                                 setData({

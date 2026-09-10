@@ -1,7 +1,9 @@
+import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import DangerButton from "@/Components/DangerButton";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
+import RiskOccurrenceModal from "@/Components/Modal/RiskOccurrenceModal";
 import App from "@/Layouts/App";
 import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
@@ -17,6 +19,7 @@ import {
     MagnifyingGlassIcon,
     ClockIcon,
     ArrowLeftIcon,
+    ExclamationTriangleIcon,
     ArrowRightIcon
 } from "@heroicons/react/24/outline";
 
@@ -151,8 +154,9 @@ export default function Index(props) {
     const [isOpenEditDialogFGDTreated, setIsOpenEditDialogFGDTreated] = useState(false);
     const [isOpenEditDialogFGDActual, setIsOpenEditDialogFGDActual] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
+    const [isOpenOccurrenceDialog, setIsOpenOccurrenceDialog] = useState(false);
 
-    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog;
+    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog || isOpenOccurrenceDialog;
 
     const reload = useCallback(debounce((query) => { router.get(route(route().current()), { ...pickBy(query), page: query.page }, { preserveState: true, preserveScroll: true }); }, 150), []);
     useEffect(() => { if (!isInitialRender) reload(params); else setIsInitialRender(false); }, [params]);
@@ -181,6 +185,8 @@ export default function Index(props) {
     };
 
     const destroyriskregisterklinis1 = () => { router.delete(route("riskRegisterKlinis.destroy", state.id), { onSuccess: () => setIsOpenDestroyDialog(false) }); };
+    const isRiskOccurring = (item) => Number(item?.currently_id) === 1;
+    const statusBadgeClass = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30";
 
     const stopPropagation = (e) => e.stopPropagation();
     const scrollTable = (direction) => {
@@ -193,8 +199,19 @@ export default function Index(props) {
     return (
         <div className="relative min-h-screen p-0 font-sans bg-transparent dark:bg-transparent text-slate-900 dark:text-slate-100 sm:p-2">
             <Head title="Data Risk Register" />
+            <AnnualYearFilter value={params.tahun} onChange={tahun => setParams({ ...params, tahun, page: 1 })} />
             
             {/* --- Modals Configuration --- */}
+            {isOpenOccurrenceDialog && (
+                <RiskOccurrenceModal
+                    risk={state}
+                    updateRoute="riskRegisterKlinis.update"
+                    onClose={() => setIsOpenOccurrenceDialog(false)}
+                    onRecorded={(page) => setState((risk) =>
+                        page.props.riskRegisterKlinis.data.find((item) => item.id === risk.id) || { ...risk, currently_id: 1 }
+                    )}
+                />
+            )}
             <AddModal isOpenAddDialog={isOpenAddDialog} setIsOpenAddDialog={setIsOpenAddDialog} size="max-w-6xl" title="Tambah Risk Register Klinis"><Create ShouldMap={ShouldMap} isOpenAddDialog={isOpenAddDialog} setIsOpenAddDialog={setIsOpenAddDialog} /></AddModal>
             <EditModal isOpenEditDialog={isOpenEditDialog} setIsOpenEditDialog={setIsOpenEditDialog} size="max-w-6xl" title="Edit Risk Register Klinis"><Edit model={state} ShouldMap={ShouldMap} isOpenEditDialog={isOpenEditDialog} setIsOpenEditDialog={setIsOpenEditDialog} /></EditModal>
             <EditModal isOpenEditDialog={isOpenEditDialogOSDResidual} setIsOpenEditDialog={setIsOpenEditDialogOSDResidual} size="max-w-6xl" title="Edit OSD Residual"><EditOSDResidual model={state} ShouldMap={ShouldMap} isOpenEditDialog={isOpenEditDialogOSDResidual} setIsOpenEditDialog={setIsOpenEditDialogOSDResidual} /></EditModal>
@@ -360,7 +377,7 @@ export default function Index(props) {
                                                     <td className={`px-5 py-5 sticky left-0 bg-clip-padding border-r border-slate-200 dark:border-slate-800/80 transition-colors duration-200 shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_10px_-4px_rgba(0,0,0,0.5)] ${isSelected ? "bg-sky-50 dark:bg-[#1e293b]" : "bg-white dark:bg-[#0f172a] group-hover:bg-slate-50 dark:group-hover:bg-[#161f33]"} ${isModalOpen || showDrawer ? 'z-0' : 'z-10'} align-top`}>
                                                         <div className="flex flex-col gap-1.5">
                                                             <div className="flex items-center justify-between">
-                                                                <span className="font-bold tracking-tight text-slate-900 dark:text-white">{item.kode_risiko}</span>
+                                                                <span className="font-bold tracking-tight text-slate-900 dark:text-white">{item.kode_risiko}</span>{item.needs_review && <span className="ml-2 text-xs text-amber-700">Perlu review tahun ini</span>}
                                                                 <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 dark:text-slate-500 px-1.5 py-0.5 rounded">#{meta.from + index}</span>
                                                             </div>
                                                             <div className="flex flex-wrap gap-2 mt-1">
@@ -370,6 +387,11 @@ export default function Index(props) {
                                                                 <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${item.is_risiko_lama == 1 ? 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10' : 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/30'}`}>
                                                                     {item.is_risiko_lama == 1 ? 'Lama' : 'Baru'}
                                                                 </span>
+                                                                {isRiskOccurring(item) && (
+                                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold border ${statusBadgeClass}`}>
+                                                                        RISIKO SEDANG TERJADI
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center mt-2">
                                                                 <ClockIcon className="w-3.5 h-3.5 mr-1 opacity-70" />
@@ -466,7 +488,12 @@ export default function Index(props) {
                         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a]">
                             <div>
                                 <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">Detail & Aksi Risiko</h2>
-                                <p className="mt-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">{state.kode_risiko}</p>
+                                <p className="mt-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">{state.kode_risiko}</p>{state.needs_review && <div className="my-2 rounded bg-amber-50 p-3 text-sm text-amber-900">Hasil copy belum direview. Isi penilaian inherent, lalu <button className="underline" onClick={() => router.post(route('riskRegisterCopy.review', state.id), {}, { onSuccess: () => setState({ ...state, needs_review: false }) })}>tandai sudah direview</button>.</div>}{state.copied_from_risk_register_id && <p className="text-xs">Sumber: register #{state.copied_from_risk_register_id}, tahun {state.copied_from_year}. Evaluasi tahun sumber tetap berada pada register sumber.</p>}
+                                {isRiskOccurring(state) && (
+                                    <span className={`mt-2 inline-flex items-center rounded-md border px-2.5 py-1 text-[10px] font-bold ${statusBadgeClass}`}>
+                                        RISIKO SEDANG TERJADI
+                                    </span>
+                                )}
                             </div>
                             <button onClick={() => {setShowDrawer(false); setSelectedRow(null);}} className="p-2 transition-colors rounded-full bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none">
                                 <XMarkIcon className="w-5 h-5" />
@@ -480,6 +507,13 @@ export default function Index(props) {
                                     <label className="text-[10px] font-black uppercase text-sky-600 dark:text-sky-400 tracking-widest block mb-2">Pernyataan Risiko</label>
                                     <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-slate-200">{state.pernyataan_risiko || '-'}</p>
                                 </section>
+
+                                <div className="py-4 border-y border-slate-200 dark:border-slate-800">
+                                    <button type="button" onClick={() => setIsOpenOccurrenceDialog(true)} className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-bold text-rose-700 transition-colors border border-rose-200 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-500/20 focus:outline-none focus:ring-2 focus:ring-rose-500/50">
+                                        <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
+                                        Risiko Sedang Terjadi
+                                    </button>
+                                </div>
 
                                 <section className="p-5 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
                                     <div className="space-y-4">
@@ -505,19 +539,64 @@ export default function Index(props) {
                                 <h4 className="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-3 px-1">Penilaian (Scoring) & Evaluasi Lanjutan</h4>
                                 <div className="grid grid-cols-2 gap-2.5">
                                     <button onClick={() => triggerModal(setIsOpenEditDialogFGDInherent)} className="inline-flex items-center justify-between rounded-xl text-xs font-bold transition-colors border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] hover:bg-slate-50 hover:border-sky-300 dark:hover:bg-slate-800 dark:hover:border-sky-500/50 text-slate-700 dark:text-slate-300 p-3 shadow-sm">
-                                        FGD Inherent <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
+                                        <span className="flex min-w-0 flex-col items-start gap-2 text-left">
+                                            <span>FGD Inherent</span>
+                                            <span
+                                                style={getGradingColorStyle(state.risk_stage_gradings?.inherent?.color)}
+                                                className={`inline-flex max-w-full rounded-md px-2 py-1 text-[10px] font-bold leading-snug break-words ${getGradingStyle(state.risk_stage_gradings?.inherent?.name, state.risk_stage_gradings?.inherent?.color)}`}
+                                            >
+                                                {state.risk_stage_gradings?.inherent?.name || "Belum dinilai"}
+                                            </span>
+                                        </span>
+                                        <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
                                     </button>
                                     <button onClick={() => triggerModal(setIsOpenEditDialogFGDResidual)} className="inline-flex items-center justify-between rounded-xl text-xs font-bold transition-colors border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] hover:bg-slate-50 hover:border-sky-300 dark:hover:bg-slate-800 dark:hover:border-sky-500/50 text-slate-700 dark:text-slate-300 p-3 shadow-sm">
-                                        FGD Residual <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
+                                        <span className="flex min-w-0 flex-col items-start gap-2 text-left">
+                                            <span>FGD Residual</span>
+                                            <span
+                                                style={getGradingColorStyle(state.risk_stage_gradings?.residual?.color)}
+                                                className={`inline-flex max-w-full rounded-md px-2 py-1 text-[10px] font-bold leading-snug break-words ${getGradingStyle(state.risk_stage_gradings?.residual?.name, state.risk_stage_gradings?.residual?.color)}`}
+                                            >
+                                                {state.risk_stage_gradings?.residual?.name || "Belum dinilai"}
+                                            </span>
+                                        </span>
+                                        <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
                                     </button>
                                     <button onClick={() => triggerModal(setIsOpenEditDialogOSDResidual)} className="inline-flex items-center justify-between rounded-xl text-xs font-bold transition-colors border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] hover:bg-slate-50 hover:border-sky-300 dark:hover:bg-slate-800 dark:hover:border-sky-500/50 text-slate-700 dark:text-slate-300 p-3 shadow-sm">
-                                        OSD Residual <span className="bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-400 px-1.5 py-0.5 rounded text-[10px] ml-2">{riskRegisterOsd2Count}</span>
+                                        <span className="flex min-w-0 flex-col items-start gap-2 text-left">
+                                            <span>OSD Residual</span>
+                                            <span
+                                                style={getGradingColorStyle(state.risk_stage_gradings?.residual?.color)}
+                                                className={`inline-flex max-w-full rounded-md px-2 py-1 text-[10px] font-bold leading-snug break-words ${getGradingStyle(state.risk_stage_gradings?.residual?.name, state.risk_stage_gradings?.residual?.color)}`}
+                                            >
+                                                {state.risk_stage_gradings?.residual?.name || "Belum dinilai"}
+                                            </span>
+                                        </span>
+                                        <span className="bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-400 px-1.5 py-0.5 rounded text-[10px] ml-2">{riskRegisterOsd2Count}</span>
                                     </button>
                                     <button onClick={() => triggerModal(setIsOpenEditDialogFGDTreated)} className="inline-flex items-center justify-between rounded-xl text-xs font-bold transition-colors border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] hover:bg-slate-50 hover:border-sky-300 dark:hover:bg-slate-800 dark:hover:border-sky-500/50 text-slate-700 dark:text-slate-300 p-3 shadow-sm">
-                                        FGD Treated <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
+                                        <span className="flex min-w-0 flex-col items-start gap-2 text-left">
+                                            <span>FGD Treated</span>
+                                            <span
+                                                style={getGradingColorStyle(state.risk_stage_gradings?.treated?.color)}
+                                                className={`inline-flex max-w-full rounded-md px-2 py-1 text-[10px] font-bold leading-snug break-words ${getGradingStyle(state.risk_stage_gradings?.treated?.name, state.risk_stage_gradings?.treated?.color)}`}
+                                            >
+                                                {state.risk_stage_gradings?.treated?.name || "Belum dinilai"}
+                                            </span>
+                                        </span>
+                                        <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
                                     </button>
                                     <button onClick={() => triggerModal(setIsOpenEditDialogFGDActual)} className="inline-flex items-center justify-between rounded-xl text-xs font-bold transition-colors border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e293b] hover:bg-slate-50 hover:border-sky-300 dark:hover:bg-slate-800 dark:hover:border-sky-500/50 text-slate-700 dark:text-slate-300 p-3 shadow-sm">
-                                        FGD Actual <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
+                                        <span className="flex min-w-0 flex-col items-start gap-2 text-left">
+                                            <span>FGD Actual</span>
+                                            <span
+                                                style={getGradingColorStyle(state.risk_stage_gradings?.actual?.color)}
+                                                className={`inline-flex max-w-full rounded-md px-2 py-1 text-[10px] font-bold leading-snug break-words ${getGradingStyle(state.risk_stage_gradings?.actual?.name, state.risk_stage_gradings?.actual?.color)}`}
+                                            >
+                                                {state.risk_stage_gradings?.actual?.name || "Belum dinilai"}
+                                            </span>
+                                        </span>
+                                        <ArrowRightIcon className="w-3.5 h-3.5 opacity-50" />
                                     </button>
                                     <button onClick={() => triggerModal(setIsOpenEditDialogFormulirRCA)} className="inline-flex items-center justify-between p-3 text-xs font-bold transition-colors border shadow-sm rounded-xl border-sky-200 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 text-sky-700 dark:text-sky-400">
                                         Formulir RCA <DocumentTextIcon className="w-4 h-4 ml-2 opacity-70" />
@@ -527,11 +606,11 @@ export default function Index(props) {
                         </div>
                         
                         <div className="flex items-center justify-end gap-3 p-5 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a] shrink-0">
-                             <button onClick={() => triggerModal(setIsOpenDestroyDialog)} className="inline-flex items-center justify-center rounded-xl text-sm font-bold transition-colors bg-white dark:bg-transparent border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 px-5 py-2.5 shadow-sm dark:shadow-none w-1/3">
+                             <button onClick={() => triggerModal(setIsOpenDestroyDialog)} className="inline-flex flex-1 items-center justify-center rounded-xl text-sm font-bold transition-colors bg-white dark:bg-transparent border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 px-5 py-2.5 shadow-sm dark:shadow-none">
                                 Hapus
                              </button>
-                             <button onClick={() => triggerModal(setIsOpenEditDialog)} className="inline-flex items-center justify-center rounded-xl text-sm font-bold transition-colors bg-sky-600 text-white shadow-sm hover:bg-sky-700 px-5 py-2.5 w-2/3 focus:ring-2 focus:ring-sky-500/50 focus:outline-none">
-                                Edit General Data
+                             <button onClick={() => triggerModal(setIsOpenEditDialog)} className="inline-flex flex-1 items-center justify-center rounded-xl text-sm font-bold transition-colors bg-sky-600 text-white shadow-sm hover:bg-sky-700 px-5 py-2.5 focus:ring-2 focus:ring-sky-500/50 focus:outline-none">
+                                Edit
                              </button>
                         </div>
                     </div>

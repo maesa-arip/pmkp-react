@@ -35,6 +35,10 @@ class RiskRegisterKlinisOsd2Controller extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
+        $year = $request->integer('tahun', now()->year);
+        $whosLogin[] = ['tgl_register', '>=', "$year-01-01 00:00:00"];
+        $whosLogin[] = ['tgl_register', '<', ($year + 1).'-01-01 00:00:00'];
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 1)
             ->with('risk_category')
             ->with('identification_source')
@@ -46,9 +50,9 @@ class RiskRegisterKlinisOsd2Controller extends Controller
             ->with('user')
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
-        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('efektif_id','=',0)->count();
-        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('opsi_pengendalian_id','=',0)->count();
-        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where('osd2_dampak','=',0)->count();
+        $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where(fn ($q) => $q->whereNull('efektif_id')->orWhere('efektif_id', 0))->count();
+        $OpsiPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where(fn ($q) => $q->whereNull('opsi_pengendalian_id')->orWhere('opsi_pengendalian_id', 0))->count();
+        $riskRegisterOsd2Count = RiskRegister::query()->where($whosLogin)->where('tipe_id', 1)->where(fn ($q) => $q->whereNull('osd2_dampak')->orWhere('osd2_dampak', 0))->count();
         if ($request->q) {
             $riskRegisterKlinis->where('pernyataan_risiko', 'like', '%' . $request->q . '%');
         }
@@ -62,6 +66,7 @@ class RiskRegisterKlinisOsd2Controller extends Controller
                 'per_page' => 10,
             ],
             'filtered' => [
+                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,
@@ -114,9 +119,11 @@ class RiskRegisterKlinisOsd2Controller extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'osd2_dampak' => 'required|numeric|min:1|not_in:0',
-            'osd2_probabilitas' => 'required|numeric|min:1|not_in:0',
+        $attributes = $this->validate($request, [
+            'osd2_dampak' => 'required|integer|between:1,5',
+            'osd2_probabilitas' => 'required|integer|between:1,5',
+            'osd2_pengendalian_dilakukan' => 'required|boolean',
+            'osd2_pengendalian_efektif' => 'required|boolean',
             // 'osd2_controllability' => 'required|numeric|min:1|not_in:0',
             'belum_tertangani' => 'required',
             'usulan_perbaikan' => 'required',
@@ -126,19 +133,11 @@ class RiskRegisterKlinisOsd2Controller extends Controller
             'dokumen_pendukung' => 'required',
             'kendala' => 'required',
         ]);
-        $osd2_dampak = ImpactValue::where('id',$request->osd2_dampak)->pluck('value');
-        $osd2_probabilitas = ProbabilityValue::where('id',$request->osd2_probabilitas)->pluck('value');
-        // $osd2_controllability = ControlValue::where('id',$request->osd2_controllability)->pluck('value');
-        $request->merge([
-            'osd2_dampak' => $osd2_dampak[0],
-            'osd2_probabilitas' => $osd2_probabilitas[0],
-            // 'osd2_controllability' => $osd2_controllability[0],
-            'concatdp2' => $osd2_dampak[0] . $osd2_probabilitas[0],
-            'osd2_inherent' => $osd2_dampak[0] * $osd2_probabilitas[0],
-        ]);
-        $riskRegisterKlinis = RiskRegister::find($id);
-
-        $riskRegisterKlinis->update($request->except('home'));
+        // These read-only inputs contain FGD scores, not lookup-table IDs.
+        $attributes['concatdp2'] = $attributes['osd2_dampak'] . $attributes['osd2_probabilitas'];
+        $attributes['osd2_inherent'] = $attributes['osd2_dampak'] * $attributes['osd2_probabilitas'];
+        $riskRegisterKlinis = RiskRegister::findOrFail($id);
+        $riskRegisterKlinis->update($attributes);
         // $user = User::whereHas('roles', function ($query) {
         //     $query->where('name', 'super admin');
         // })->get();

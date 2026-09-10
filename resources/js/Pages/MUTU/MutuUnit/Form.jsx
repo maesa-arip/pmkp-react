@@ -63,7 +63,7 @@ export default function Form({
                         <div className="relative flex flex-col col-span-12 z-[60]">
                             <label className={labelClass}>Indikator Mutu</label>
                             <ComboboxPageIndikatorMutu
-                                ShouldMap={ShouldMap.MutuIndikator || []}
+                                ShouldMap={(ShouldMap.MutuIndikator || []).filter(x => Number(x.tahun) === Number(String(data.tanggal_mutu || new Date().getFullYear()).slice(0, 4)))}
                                 selected={selectedIndikator}
                                 onChange={(e) => {
                                     setData({ ...data, ["mutu_indikator_id"]: e.id });

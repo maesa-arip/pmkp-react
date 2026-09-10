@@ -1,4 +1,6 @@
 import InputError from "@/Components/InputError";
+import FgdGradingPreview from "@/Components/FgdGradingPreview";
+import Select from "@/Components/ui/Select";
 import TextAreaInput from "@/Components/TextAreaInput";
 import React, { useEffect, useState } from "react";
 import { DocumentTextIcon, CalculatorIcon } from "@heroicons/react/24/outline";
@@ -8,6 +10,7 @@ export default function Form({
     submit,
     data,
     setData,
+    ShouldMap,
     model,
     closeButton,
 }) {
@@ -200,6 +203,33 @@ export default function Form({
                         </div>
                     </div>
 
+                </div>
+                <FgdGradingPreview
+                    dampak={dampakMode}
+                    probabilitas={probabilitasMode}
+                    matrix={model?.risk_grading_matrix}
+                />
+                <div className="grid grid-cols-1 gap-6 pb-6 md:grid-cols-2">
+                    <div className="relative z-20 min-w-0" role="group" aria-labelledby="inherent-control-label">
+                        <label id="inherent-control-label" className="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">Controllability (Inherent)</label>
+                        <Select
+                            value={data.osd1_controllability}
+                            onChange={(value) => setData("osd1_controllability", value)}
+                            options={(ShouldMap?.controlValues || []).map((item) => ({ value: item.value, label: item.name }))}
+                            placeholder="Pilih Controllability"
+                        />
+                        <InputError message={errors.osd1_controllability} className="mt-1" />
+                    </div>
+                    <div className="relative z-10 min-w-0" role="group" aria-labelledby="inherent-handling-label">
+                        <label id="inherent-handling-label" className="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">Perlu Penanganan (sesuaikan dengan warna grading)</label>
+                        <Select
+                            value={data.perlu_penanganan_id}
+                            onChange={(value) => setData("perlu_penanganan_id", value)}
+                            options={(ShouldMap?.perluPenanganan || []).map((item) => ({ value: item.id, label: item.name }))}
+                            placeholder="Pilih Perlu Penanganan"
+                        />
+                        <InputError message={errors.perlu_penanganan_id} className="mt-1" />
+                    </div>
                 </div>
             </div>
 

@@ -73,14 +73,21 @@ use Inertia\Inertia;
 
 
 Route::middleware('auth')->group(function () {
+    Route::get('kinerja', [\App\Http\Controllers\PeriodeKinerjaController::class, 'index'])->name('kinerja.index');
+    Route::post('kinerja', [\App\Http\Controllers\PeriodeKinerjaController::class, 'store'])->name('kinerja.store');
+    Route::put('kinerja/{period}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'update'])->name('kinerja.update');
+    Route::post('kinerja/{period}/nodes/{level}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveNode'])->name('kinerja.nodes');
+    Route::post('kinerja-mapping', [\App\Http\Controllers\PeriodeKinerjaController::class, 'mapping'])->name('kinerja.mapping');
+    Route::get('kinerja/{period}/export', [\App\Http\Controllers\PeriodeKinerjaController::class, 'export'])->withoutMiddleware(\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class)->name('kinerja.export');
+    Route::get('kinerja-export/{export}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'archivedExport'])->withoutMiddleware(\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class)->name('kinerja.exportArchive');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/ ', [HomeController::class,'index'])->name('home');
-    Route::get('/dashboard ', [HomeController::class,'index'])->name('dashboard');
-    Route::get('/notifications ', [HomeController::class,'notifications'])->name('notifications');
-    Route::get('/requeststatus ', [HomeController::class,'requeststatus'])->name('requeststatus');
+    Route::get('/', [HomeController::class,'index'])->name('home');
+    Route::get('/dashboard', [HomeController::class,'index'])->name('dashboard');
+    Route::get('/notifications', [HomeController::class,'notifications'])->name('notifications');
+    Route::get('/requeststatus', [HomeController::class,'requeststatus'])->name('requeststatus');
     
     Route::Resource('users', UserController::class);
     // Route::Resource('casemix', CasemixController::class);
@@ -127,6 +134,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/riskRegisterCopy', [RiskRegisterCopyController::class, 'index'])->name('riskRegisterCopy.index');
     Route::post('/riskRegisterCopy', [RiskRegisterCopyController::class, 'store'])->name('riskRegisterCopy.store');
+    Route::post('/riskRegisterCopy/{risk}/review', [RiskRegisterCopyController::class, 'review'])->name('riskRegisterCopy.review');
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
     Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');

@@ -1,3 +1,4 @@
+import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import Container from "@/Components/Container";
 import DangerButton from "@/Components/DangerButton";
 import Dropdown from "@/Components/Dropdown";
@@ -177,6 +178,7 @@ export default function Index(props) {
     return (
         <>
             <Head title="Risk Register Klinis" />
+            <AnnualYearFilter value={params.tahun} onChange={tahun => setParams({ ...params, tahun, page: 1 })} />
             <AddModal
                 isOpenAddDialog={isOpenAddDialog}
                 setIsOpenAddDialog={setIsOpenAddDialog}

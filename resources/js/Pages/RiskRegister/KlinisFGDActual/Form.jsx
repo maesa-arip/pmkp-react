@@ -1,4 +1,5 @@
 import InputError from "@/Components/InputError";
+import FgdGradingPreview from "@/Components/FgdGradingPreview";
 import TextAreaInput from "@/Components/TextAreaInput";
 import React, { useEffect, useState } from "react";
 import { DocumentTextIcon, CalculatorIcon, LockClosedIcon } from "@heroicons/react/24/outline";
@@ -127,6 +128,12 @@ export default function Form({
                         <InputError message={errors.pernyataan_risiko} className="mt-1" />
                     </div>
                 </div>
+
+                <FgdGradingPreview
+                    dampak={dampakMode}
+                    probabilitas={probabilitasMode}
+                    matrix={model?.risk_grading_matrix}
+                />
 
                 {/* --- TWO COLUMN BENTO CARDS --- */}
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
