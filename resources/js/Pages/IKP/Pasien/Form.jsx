@@ -12,8 +12,7 @@ import {
     ShieldCheckIcon,
     PlusIcon,
     TrashIcon,
-    DocumentTextIcon,
-    ClipboardDocumentCheckIcon
+    DocumentTextIcon
 } from "@heroicons/react/24/outline";
 
 export default function Form({
@@ -45,8 +44,6 @@ export default function Form({
     const [selectedIkpProbabilitas, setSelectedIkpProbabilitas] = useState(() => model ? ShouldMap.IkpProbabilitas?.find((x) => x.id === model.ikp_probabilitas_id) || defaultValue[0] : defaultValue[0]);
     const [selectedIkpPenindak, setSelectedIkpPenindak] = useState(() => model ? ShouldMap.IkpPenindak?.find((x) => x.id === model.ikp_penindak_id) || defaultValue[0] : defaultValue[0]);
     const [selectedIkpTerjadiTempatLain, setSelectedIkpTerjadiTempatLain] = useState(() => model ? ShouldMap.IkpTerjadiTempatLain?.find((x) => x.id === model.terjadi_tempatlain) || defaultValue[0] : defaultValue[0]);
-    const [riskRegisterFilter, setRiskRegisterFilter] = useState("all");
-    const [selectedRiskUnit, setSelectedRiskUnit] = useState(null);
 
     // --- LOGIKA KRONOLOGIS DINAMIS (Dari Inputs.jsx) ---
     const [inputFields, setInputFields] = useState(model?.kronologis ?? [{ waktu: "", kronologi: "" }]);
@@ -73,132 +70,12 @@ export default function Form({
     const labelClass = "text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5 block";
     const sectionCardClass = "bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/80 rounded-2xl flex flex-col shadow-sm relative";
     const sectionHeaderClass = "px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-transparent rounded-t-2xl";
-    const riskRegisters = ShouldMap.riskRegisters || [];
-    const selectedRiskRegister = riskRegisters.find((risk) => Number(risk.id) === Number(data.risk_register_id)) || defaultValue[0];
-    const risksForFilter = (filter, unit) => {
-        if (!ShouldMap.canViewAllRisks || filter === "all") return riskRegisters;
-        if (!unit) return [];
-
-        return riskRegisters.filter((risk) => (risk.pic_ids || []).some(
-            (id) => Number(id) === 0 || Number(id) === Number(unit.id)
-        ));
-    };
-    const filteredRiskRegisters = risksForFilter(riskRegisterFilter, selectedRiskUnit);
-    const changeRiskFilter = (filter, unit = selectedRiskUnit) => {
-        setRiskRegisterFilter(filter);
-        setSelectedRiskUnit(unit);
-        if (!risksForFilter(filter, unit).some((risk) => Number(risk.id) === Number(data.risk_register_id))) {
-            setData("risk_register_id", "");
-        }
-    };
-
-    const riskRegisterSection = (
-        <div className={`${sectionCardClass} z-[100]`}>
-            <div className={sectionHeaderClass}>
-                <div className="flex items-center">
-                    <ClipboardDocumentCheckIcon className="w-5 h-5 mr-2 text-cyan-500 dark:text-cyan-400" />
-                    <div>
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white">Identifikasi Risiko</h3>
-                        <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">Hubungkan IKP dengan risk register bila kejadian berasal dari risiko yang sudah teridentifikasi.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="relative z-10 grid grid-cols-1 gap-5 p-6 md:grid-cols-12">
-                <div className="col-span-12">
-                    <label className="flex items-start gap-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        <input
-                            type="checkbox"
-                            checked={Boolean(data.risiko_teridentifikasi)}
-                            onChange={(e) => {
-                                setData({
-                                    ...data,
-                                    risiko_teridentifikasi: e.target.checked,
-                                    risk_register_id: e.target.checked ? data.risk_register_id : "",
-                                });
-                            }}
-                            className="w-4 h-4 mt-0.5 text-sky-600 border-slate-300 rounded focus:ring-sky-500"
-                        />
-                        <span>Masuk risiko yang teridentifikasi</span>
-                    </label>
-                    <InputError message={errors.risiko_teridentifikasi} className="mt-1" />
-                </div>
-
-                {data.risiko_teridentifikasi && (
-                    <>
-                        {ShouldMap.canViewAllRisks ? (
-                        <div className="relative col-span-12 md:col-span-5 z-[102]">
-                            <label className={labelClass}>Filter Risiko</label>
-                            <div className="inline-flex w-full p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                                <button
-                                    type="button"
-                                    onClick={() => changeRiskFilter("all")}
-                                    aria-pressed={riskRegisterFilter === "all"}
-                                    className={`flex-1 px-3 py-2 text-xs font-bold rounded-lg transition-colors ${riskRegisterFilter === "all" ? "bg-white text-sky-700 shadow-sm dark:bg-[#0f172a] dark:text-sky-300" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-                                >
-                                    Semua
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => changeRiskFilter("unit")}
-                                    aria-pressed={riskRegisterFilter === "unit"}
-                                    className={`flex-1 px-3 py-2 text-xs font-bold rounded-lg transition-colors ${riskRegisterFilter === "unit" ? "bg-white text-sky-700 shadow-sm dark:bg-[#0f172a] dark:text-sky-300" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-                                >
-                                    Unit Dipilih
-                                </button>
-                            </div>
-                            {riskRegisterFilter === "unit" && (
-                                <div className="mt-3">
-                                    <label className={labelClass}>Unit Risiko</label>
-                                    <ComboboxPage
-                                        ShouldMap={(ShouldMap.pics || []).filter((pic) => Number(pic.id) > 0)}
-                                        selected={selectedRiskUnit || { name: "Pilih unit" }}
-                                        onChange={(unit) => changeRiskFilter("unit", unit)}
-                                        name="risk_unit_filter"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                        ) : (
-                            <div className="col-span-12 md:col-span-5">
-                                <label className={labelClass}>Unit Risiko</label>
-                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                                    {ShouldMap.riskUnit?.name || "Akun belum memiliki unit"}
-                                </p>
-                            </div>
-                        )}
-
-                        <div className="relative col-span-12 md:col-span-7 z-[101]">
-                            <label className={labelClass}>Risk Register Terkait</label>
-                            <ComboboxPage
-                                key={`${riskRegisterFilter}-${selectedRiskUnit?.id || "all"}`}
-                                ShouldMap={filteredRiskRegisters}
-                                selected={selectedRiskRegister}
-                                onChange={(e) => {
-                                    setData({ ...data, risk_register_id: e.id });
-                                }}
-                            />
-                            {filteredRiskRegisters.length === 0 && (
-                                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                                    {ShouldMap.canViewAllRisks && riskRegisterFilter === "unit" && !selectedRiskUnit
-                                        ? "Belum ada unit dipilih."
-                                        : "Tidak ada risk register untuk unit ini."}
-                                </p>
-                            )}
-                            <InputError message={errors.risk_register_id} className="mt-1" />
-                        </div>
-                    </>
-                )}
-            </div>
-        </div>
-    );
 
     return (
         <div className="relative flex flex-col w-full h-full bg-slate-50/30 dark:bg-transparent">
             
             {/* Scrollable Content Area */}
             <div className="flex-1 p-4 space-y-6 overflow-y-auto sm:p-6 custom-scrollbar">
-                {riskRegisterSection}
                 
                 {/* --- BENTO 1: DATA PASIEN --- */}
                 <div className={`${sectionCardClass} relative z-[90]`}>
@@ -562,7 +439,6 @@ export default function Form({
                             />
                             <InputError message={errors.ikp_probabilitas_id} className="mt-1" />
                         </div>
-
                     </div>
                 </div>
 

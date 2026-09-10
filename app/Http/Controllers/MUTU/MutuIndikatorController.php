@@ -19,13 +19,10 @@ class MutuIndikatorController extends Controller
     public $loadDefault = 10;
     public function index(Request $request)
     {
-        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
-        $year = $request->integer('tahun', now()->year);
         $user = User::where('id',auth()->user()->id)->first();
         $pic = Pic::where('id',$user->pic_id)->first();
         $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? [['location_id', '<>', 0]] : [['location_id', $pic->location_id]];
         $MutuIndikator = MutuIndikator::query()->with('indikator_fitur4')->with('kategori')->with('location')->where($whosLogin);
-        $MutuIndikator->where('periode_kinerja_id', \App\Models\PeriodeKinerja::where('tahun', $year)->value('id'));
         if ($request->q) {
             $MutuIndikator->where('num_name','like','%'.$request->q.'%');
         }
@@ -41,7 +38,6 @@ class MutuIndikatorController extends Controller
                 'per_page' =>10,
             ],
             'filtered' => [
-                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,
@@ -60,7 +56,6 @@ class MutuIndikatorController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate(['IndikatorBaru' => 'required|in:0'], ['IndikatorBaru.in' => 'Buat indikator melalui draft pada menu Indikator Tahunan, lalu pilih indikator yang sudah aktif.']);
         $validatedMutuIndikator = $request->validate([
             'mutu_kategori_id' => 'required',
             'num_name' => 'required|string|max:255',
@@ -132,6 +127,8 @@ class MutuIndikatorController extends Controller
     }
     public function destroy(MutuIndikator $MutuIndikator)
     {
+        $MutuUnit = MutuUnit::where('mutu_indikator_id',$MutuIndikator->id);
+        $MutuUnit->delete();
         $MutuIndikator->delete();
         return back()->with([
             'type' => 'success',

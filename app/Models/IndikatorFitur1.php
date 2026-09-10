@@ -8,5 +8,4 @@ use Illuminate\Database\Eloquent\Model;
 class IndikatorFitur1 extends Model
 {
     use HasFactory;
-    use \App\Models\Concerns\HasAnnualIndicator;
 }

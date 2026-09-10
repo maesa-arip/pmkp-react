@@ -123,7 +123,6 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         "MutuKategori",
         "MutuPenyebut",
         "riskRegisterCopy",
-        "kinerja",
     ].some((prefix) => routeName.startsWith(prefix));
 
     const [openMenu, setOpenMenu] = useState(() => {
@@ -666,7 +665,6 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                             </Link>
                                         </>
                                     )}
-                                    {hasPermission("atur data master manajemen risiko", "atur hak akses") && <Link href={route("kinerja.index")} onClick={closeSidebar} className={getSubNavClasses(routeName.startsWith("kinerja"))}>Indikator Tahunan & Cascading</Link>}
                                     {canSeeRiskCopy && (
                                         <Link
                                             href={route("riskRegisterCopy.index")}

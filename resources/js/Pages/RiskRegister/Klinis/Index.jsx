@@ -1,4 +1,3 @@
-import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import DangerButton from "@/Components/DangerButton";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
@@ -199,7 +198,6 @@ export default function Index(props) {
     return (
         <div className="relative min-h-screen p-0 font-sans bg-transparent dark:bg-transparent text-slate-900 dark:text-slate-100 sm:p-2">
             <Head title="Data Risk Register" />
-            <AnnualYearFilter value={params.tahun} onChange={tahun => setParams({ ...params, tahun, page: 1 })} />
             
             {/* --- Modals Configuration --- */}
             {isOpenOccurrenceDialog && (
@@ -377,7 +375,7 @@ export default function Index(props) {
                                                     <td className={`px-5 py-5 sticky left-0 bg-clip-padding border-r border-slate-200 dark:border-slate-800/80 transition-colors duration-200 shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_10px_-4px_rgba(0,0,0,0.5)] ${isSelected ? "bg-sky-50 dark:bg-[#1e293b]" : "bg-white dark:bg-[#0f172a] group-hover:bg-slate-50 dark:group-hover:bg-[#161f33]"} ${isModalOpen || showDrawer ? 'z-0' : 'z-10'} align-top`}>
                                                         <div className="flex flex-col gap-1.5">
                                                             <div className="flex items-center justify-between">
-                                                                <span className="font-bold tracking-tight text-slate-900 dark:text-white">{item.kode_risiko}</span>{item.needs_review && <span className="ml-2 text-xs text-amber-700">Perlu review tahun ini</span>}
+                                                                <span className="font-bold tracking-tight text-slate-900 dark:text-white">{item.kode_risiko}</span>
                                                                 <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 dark:text-slate-500 px-1.5 py-0.5 rounded">#{meta.from + index}</span>
                                                             </div>
                                                             <div className="flex flex-wrap gap-2 mt-1">
@@ -488,7 +486,7 @@ export default function Index(props) {
                         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a]">
                             <div>
                                 <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">Detail & Aksi Risiko</h2>
-                                <p className="mt-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">{state.kode_risiko}</p>{state.needs_review && <div className="my-2 rounded bg-amber-50 p-3 text-sm text-amber-900">Hasil copy belum direview. Isi penilaian inherent, lalu <button className="underline" onClick={() => router.post(route('riskRegisterCopy.review', state.id), {}, { onSuccess: () => setState({ ...state, needs_review: false }) })}>tandai sudah direview</button>.</div>}{state.copied_from_risk_register_id && <p className="text-xs">Sumber: register #{state.copied_from_risk_register_id}, tahun {state.copied_from_year}. Evaluasi tahun sumber tetap berada pada register sumber.</p>}
+                                <p className="mt-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">{state.kode_risiko}</p>
                                 {isRiskOccurring(state) && (
                                     <span className={`mt-2 inline-flex items-center rounded-md border px-2.5 py-1 text-[10px] font-bold ${statusBadgeClass}`}>
                                         RISIKO SEDANG TERJADI

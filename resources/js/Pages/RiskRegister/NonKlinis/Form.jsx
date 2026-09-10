@@ -18,8 +18,6 @@ export default function Form({
     model,
     closeButton,
 }) {
-    const registerYear = data.tgl_register ? Number(String(data.tgl_register).slice(0, 4)) : new Date().getFullYear();
-    const annualOptions = (ShouldMap.indikatorFitur4s || []).filter(x => Number(x.tahun) === registerYear && (x.is_active || x.id === model?.indikator_fitur4_id));
     const defaultValue = [{ name: "" }];
     const picIdStrings = data.pic_id ? data.pic_id : ",";
     const picIdString = picIdStrings.replace(/['"]+/g, '');
@@ -81,7 +79,7 @@ export default function Form({
                     <div className="relative z-10 grid grid-cols-1 gap-6 p-6 md:grid-cols-12">
                         <div className="col-span-12 md:col-span-6 flex flex-col relative z-[60]">
                             <label className={labelClass}>Indikator</label>
-                            <ComboboxPage ShouldMap={annualOptions} selected={annualOptions.find(x => x.id === data.indikator_fitur4_id) || { name: "Pilih indikator tahun register" }} onChange={(e) => { setData({ ...data, ["indikator_fitur4_id"]: e.id }); setSelectedIndikatorFitur4(e); }} />
+                            <ComboboxPage ShouldMap={ShouldMap.indikatorFitur4s} selected={selectedIndikatorFitur4} onChange={(e) => { setData({ ...data, ["indikator_fitur4_id"]: e.id }); setSelectedIndikatorFitur4(e); }} />
                             <InputError message={errors.indikator_fitur4_id} className="mt-1" />
                         </div>
 
@@ -103,7 +101,7 @@ export default function Form({
                                     }
                                 }}
                             />
-                            <p className="text-xs text-slate-500">Pilihan indikator mengikuti tahun tanggal register ({registerYear}).</p><InputError message={errors.periode_kinerja_id} /><InputError message={errors.tgl_register} className="mt-1" />
+                            <InputError message={errors.tgl_register} className="mt-1" />
                         </div>
 
                         <div className="col-span-12 flex flex-col relative z-[55]">
@@ -199,7 +197,7 @@ export default function Form({
 
                         <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
                             <label className={labelClass}>C/UC</label>
-                            <Select value={data.c_uc || ""} onChange={(value) => setData("c_uc", value)} options={cUcOptions} placeholder="Pilih C/UC" />
+                            <Select className="z-[100]" value={data.c_uc || ""} onChange={(value) => setData("c_uc", value)} options={cUcOptions} placeholder="Pilih C/UC" />
                             <InputError message={errors.c_uc} className="mt-1" />
                         </div>
 
@@ -273,7 +271,7 @@ export default function Form({
 
                         <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
                             <label className={labelClass}>Celah Pengendalian</label>
-                            <Select value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} placeholder="Pilih celah pengendalian" />
+                            <Select className="z-[100]" value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} placeholder="Pilih celah pengendalian" />
                             <InputError message={errors.celah_pengendalian} className="mt-1" />
                         </div>
 

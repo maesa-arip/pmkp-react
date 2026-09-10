@@ -18,13 +18,9 @@ use App\Models\IKP\IkpProbabilitas;
 use App\Models\IKP\IkpSpesialisasi;
 use App\Models\IKP\IkpTipeInsiden;
 use App\Models\Pic;
-use App\Models\RiskRegister;
-use App\Models\RiskRegisterHistory;
-use App\Support\IkpRiskAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class IKPPasienController extends Controller
 {
@@ -47,7 +43,6 @@ class IKPPasienController extends Controller
             ->with('ikp_hasil')
             ->with('penindak')
             ->with('kronologis')
-            ->with('risk_register')
             ->where($whosLogin);
         if ($request->q) {
             $IkpPasien->whereRelation('tipe_insiden', 'name', 'like', '%'.$request->q.'%')
@@ -86,20 +81,7 @@ class IKPPasienController extends Controller
         $IkpPenindak = IkpPenindak::get();
         // $IkpKronologiPasien = IkpKronologiPasien::get();
         $pics = Pic::get();
-        $riskRegisters = RiskRegister::query()
-            ->where('tipe_id', 1)
-            ->latest()
-            ->get(['id', 'kode_risiko', 'pernyataan_risiko', 'currently_id', 'pic_id', 'tipe_id'])
-            ->filter(fn ($risk) => IkpRiskAccess::canSelect($request->user(), $risk))
-            ->map(fn ($risk) => [
-                'id' => $risk->id,
-                'name' => trim(($risk->kode_risiko ? "{$risk->kode_risiko} - " : '').$risk->pernyataan_risiko),
-                'currently_id' => $risk->currently_id,
-                'pic_id' => $risk->pic_id,
-                'pic_ids' => IkpRiskAccess::unitIds($risk->pic_id),
-            ])
-            ->values();
-        return inertia('IKP/Pasien/Index', ['IkpPasien' => $IkpPasien, 'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak, 'pics' => $pics, 'riskRegisters' => $riskRegisters, 'canViewAllRisks' => IkpRiskAccess::canViewAll($request->user()), 'riskUnit' => $request->user()->pic]);
+        return inertia('IKP/Pasien/Index', ['IkpPasien' => $IkpPasien, 'IkpJenisInsiden' => $IkpJenisInsiden, 'IkpTipeInsiden' => $IkpTipeInsiden, 'IkpSpesialisasi' => $IkpSpesialisasi, 'IkpDampak' => $IkpDampak, 'IkpProbabilitas' => $IkpProbabilitas, 'IkpPelapor' => $IkpPelapor, 'IkpGrupLayanan' => $IkpGrupLayanan, 'IkpPenanggung' => $IkpPenanggung, 'IkpLokasi' => $IkpLokasi, 'IkpPenindak' => $IkpPenindak, 'pics' => $pics]);
     }
     public function store(Request $request)
     {
@@ -130,13 +112,6 @@ class IKPPasienController extends Controller
             'ikp_penindak_id' => 'required',
             'terjadi_tempatlain' => 'required',
             'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1|max:255',
-            'risiko_teridentifikasi' => 'nullable|boolean',
-            'risk_register_id' => [
-                'nullable',
-                'integer',
-                $this->accessibleRiskRule($request),
-                Rule::requiredIf(fn () => $request->boolean('risiko_teridentifikasi')),
-            ],
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         // $validated = $validator->validated();
@@ -145,11 +120,8 @@ class IKPPasienController extends Controller
         $validated['pic_id'] = $encodedPic;
         $validated['code'] = $code;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
-        $validated['risiko_teridentifikasi'] = $request->boolean('risiko_teridentifikasi');
-        $validated['risk_register_id'] = $validated['risiko_teridentifikasi'] ? $request->risk_register_id : null;
         // dd($validated);
         $IkpPasien = IkpPasien::create($validated);
-        $this->markRiskAsOccurring($IkpPasien, true);
         foreach ($request->kronologis as $kronologis) {
             IkpKronologiPasien::create([
                 'ikp_pasien_id' => $IkpPasien->id,
@@ -194,24 +166,12 @@ class IKPPasienController extends Controller
             'ikp_penindak_id' => 'required',
             'terjadi_tempatlain' => 'required',
             'langkah_tempatlain' => 'required_if:terjadi_tempatlain,1|max:255',
-            'risiko_teridentifikasi' => 'nullable|boolean',
-            'risk_register_id' => [
-                'nullable',
-                'integer',
-                $this->accessibleRiskRule($request),
-                Rule::requiredIf(fn () => $request->boolean('risiko_teridentifikasi')),
-            ],
         ]);
         $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
         $validated['user_id'] = auth()->user()->id;
         $validated['pic_id'] = $encodedPic;
         $validated['concatdp'] = $request->ikp_dampak_id . $request->ikp_probabilitas_id;
-        $validated['risiko_teridentifikasi'] = $request->boolean('risiko_teridentifikasi');
-        $validated['risk_register_id'] = $validated['risiko_teridentifikasi'] ? $request->risk_register_id : null;
-        $shouldRecordLinkedRisk = !$IkpPasien->risiko_teridentifikasi
-            || (int) $IkpPasien->risk_register_id !== (int) $validated['risk_register_id'];
         $IkpPasien->update($validated);
-        $this->markRiskAsOccurring($IkpPasien->refresh(), $shouldRecordLinkedRisk);
         $IkpKronologiPasien = IkpKronologiPasien::where('ikp_pasien_id',$IkpPasien->id);
         $IkpKronologiPasien->delete();
         foreach ($request->kronologis as $kronologis) {
@@ -271,41 +231,5 @@ class IKPPasienController extends Controller
             'type' => 'success',
             'message' => 'Hhasil Investigasi berhasil disimpan',
         ]);
-    }
-
-    private function accessibleRiskRule(Request $request): \Closure
-    {
-        return function ($attribute, $value, $fail) use ($request) {
-            $risk = RiskRegister::find($value);
-
-            if (!$risk || !IkpRiskAccess::canSelect($request->user(), $risk)) {
-                $fail('Risk register tidak tersedia untuk unit Anda.');
-            }
-        };
-    }
-
-    private function markRiskAsOccurring(IkpPasien $ikpPasien, bool $recordIncident): void
-    {
-        if (!$ikpPasien->risiko_teridentifikasi || !$ikpPasien->risk_register_id) {
-            return;
-        }
-
-        $risk = RiskRegister::find($ikpPasien->risk_register_id);
-
-        if (!$risk) {
-            return;
-        }
-
-        $wasOccurring = (int) $risk->currently_id === 1;
-        $risk->update(['currently_id' => 1]);
-
-        if (!$wasOccurring || $recordIncident) {
-            RiskRegisterHistory::recordForRisk(
-                $risk->refresh(),
-                RiskRegisterHistory::EVENT_STATUS_CHANGED,
-                null,
-                ['dampak_kejadian' => $ikpPasien->insiden]
-            );
-        }
     }
 }

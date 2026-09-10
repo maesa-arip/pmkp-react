@@ -1,4 +1,3 @@
-import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import DangerButton from "@/Components/DangerButton";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
@@ -174,7 +173,6 @@ export default function Index(props) {
     return (
         <div className="relative min-h-screen p-0 font-sans bg-transparent dark:bg-transparent text-slate-900 dark:text-slate-100 sm:p-2">
             <Head title="Capaian Mutu Unit" />
-            <AnnualYearFilter value={params.tahun} onChange={tahun => setParams({ ...params, tahun, page: 1 })} />
             
             {/* --- MODALS --- */}
             <AddModal isOpenAddDialog={isOpenAddDialog} setIsOpenAddDialog={setIsOpenAddDialog} size="max-w-4xl" title="Tambah Capaian Mutu Unit">

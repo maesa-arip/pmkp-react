@@ -14,22 +14,6 @@ use Inertia\Inertia;
 
 class RiskRegisterCopyController extends Controller
 {
-    public function review(\App\Models\RiskRegister $risk)
-    {
-        abort_unless(auth()->user()->can('lihat data semua risk register') || (int) $risk->user_id === auth()->id(), 403);
-        \Illuminate\Support\Facades\DB::transaction(function () use ($risk) {
-            $risk = \App\Models\RiskRegister::whereKey($risk->id)->lockForUpdate()->firstOrFail();
-            if (!$risk->needs_review) return;
-            if (!in_array((int) $risk->osd1_dampak, range(1, 5), true) || !in_array((int) $risk->osd1_probabilitas, range(1, 5), true)) {
-                throw \Illuminate\Validation\ValidationException::withMessages(['review' => 'Lengkapi penilaian inherent tahun ini sebelum menandai sudah direview.']);
-            }
-            $risk->needs_review = false;
-            $risk->save();
-            \App\Models\RiskRegisterHistory::recordForRisk($risk, 'annual_review_completed');
-        });
-        return back()->with(['type' => 'success', 'message' => 'Review risiko tahun berjalan selesai.']);
-    }
-
     public function index(Request $request, RiskRegisterYearCopyService $copyService)
     {
         $this->authorizeAccess();
@@ -81,8 +65,8 @@ class RiskRegisterCopyController extends Controller
         ]);
 
         $copyMode = $validated['copy_mode'] ?? 'year';
-        $sourceYear = (int) ($validated['source_year'] ?? (now()->year - 1));
-        $targetYear = (int) ($validated['target_year'] ?? ($copyMode === 'unit' ? $sourceYear : now()->year));
+        $sourceYear = (int) ($validated['source_year'] ?? 2025);
+        $targetYear = (int) ($validated['target_year'] ?? ($copyMode === 'unit' ? $sourceYear : 2026));
 
         if ($copyMode === 'year') {
             abort_if($targetYear <= $sourceYear, 422, 'Tahun tujuan harus lebih besar dari tahun sumber.');
@@ -115,7 +99,6 @@ class RiskRegisterCopyController extends Controller
     private function options(): array
     {
         return [
-            'canManageIndicators' => auth()->user()->can('atur data master manajemen risiko') || auth()->user()->can('atur hak akses'),
             'users' => User::query()
                 ->select('id', 'name', 'pic_id')
                 ->with('pic:id,name')

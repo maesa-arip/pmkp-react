@@ -65,27 +65,35 @@ const getGradingRowStyle = (gradingName) => {
             return {
                 row: "text-white bg-red-500 hover:bg-red-600",
                 sticky: "text-white bg-red-500 group-hover:bg-red-600",
-                selected: "text-slate-900 bg-sky-100",
+                selected: "text-white bg-red-600",
             };
         case "TINGGI":
         case "HIGH":
             return {
                 row: "text-white bg-amber-500 hover:bg-amber-600",
                 sticky: "text-white bg-amber-500 group-hover:bg-amber-600",
-                selected: "text-slate-900 bg-sky-100",
+                selected: "text-white bg-amber-600",
             };
         case "MODERAT":
+        case "SEDANG":
         case "MODERATE":
+            return {
+                row: "text-white bg-amber-500 hover:bg-amber-600",
+                sticky: "text-white bg-amber-500 group-hover:bg-amber-600",
+                selected: "text-white bg-amber-600",
+            };
+        case "RENDAH":
+        case "LOW":
             return {
                 row: "text-white bg-green-500 hover:bg-green-600",
                 sticky: "text-white bg-green-500 group-hover:bg-green-600",
-                selected: "text-slate-900 bg-sky-100",
+                selected: "text-white bg-green-600",
             };
         default:
             return {
                 row: "text-white bg-sky-500 hover:bg-sky-600",
                 sticky: "text-white bg-sky-500 group-hover:bg-sky-600",
-                selected: "text-slate-900 bg-sky-100",
+                selected: "text-white bg-sky-600",
             };
     }
 };
@@ -105,9 +113,6 @@ export default function Index(props) {
         IkpPenanggung: props.IkpPenanggung,
         IkpLokasi: props.IkpLokasi,
         IkpPenindak: props.IkpPenindak,
-        riskRegisters: props.riskRegisters,
-        canViewAllRisks: props.canViewAllRisks,
-        riskUnit: props.riskUnit,
         pics: props.pics,
         IkpTerjadiTempatLain: [
             { id: 0, name: "Tidak" },
@@ -550,20 +555,10 @@ export default function Index(props) {
                                             getGradingRowStyle(
                                                 gradingAwalName,
                                             );
-                                        const rowTextClass = isSelected
-                                            ? "text-slate-900"
-                                            : "text-white";
-                                        const rowMutedTextClass =
-                                            isSelected
-                                                ? "text-slate-600"
-                                                : "text-white/85";
+                                        const rowTextClass = "text-white";
+                                        const rowMutedTextClass = "text-white/85";
                                         const rowBadgeClass =
-                                            isSelected
-                                                ? "bg-white text-slate-900 border-slate-200"
-                                                : "bg-white/20 text-white border-white/40 dark:bg-white/15 dark:text-white dark:border-white/30";
-                                        const rowIconClass = isSelected
-                                            ? "text-slate-900"
-                                            : "text-white";
+                                            "bg-white/20 text-white border-white/40 dark:bg-white/15 dark:text-white dark:border-white/30";
 
                                         return (
                                             <tr
@@ -577,18 +572,14 @@ export default function Index(props) {
                                                 <td
                                                     className={`px-5 py-4 text-center border-r border-slate-100 dark:border-slate-800/80 align-middle sticky left-0 bg-clip-padding ${isSelected ? gradingAwalRowClass.selected : gradingAwalRowClass.sticky} shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_10px_-4px_rgba(0,0,0,0.5)] ${isModalOpen || showDrawer ? "z-0" : "z-10"}`}
                                                 >
-                                                    <span
-                                                        className={`text-[10px] font-bold ${rowBadgeClass} px-2 py-1 rounded`}
-                                                    >
+                                                    <span className="text-[10px] font-bold text-white bg-white/20 border border-white/30 px-2 py-1 rounded">
                                                         {meta.from + index}
                                                     </span>
                                                 </td>
 
                                                 <td className="px-5 py-4 align-middle border-r border-slate-100 dark:border-slate-800/80 whitespace-nowrap">
                                                     <div className={`flex items-center text-sm font-bold ${rowTextClass}`}>
-                                                        <ClockIcon
-                                                            className={`w-4 h-4 mr-1.5 ${rowIconClass}`}
-                                                        />
+                                                        <ClockIcon className="w-4 h-4 mr-1.5 text-white" />
                                                         {moment(
                                                             item.tanggal_insiden,
                                                         ).format("DD-MM-YYYY")}

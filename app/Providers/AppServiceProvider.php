@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->scoped('annual.periods', fn () => \App\Models\PeriodeKinerja::pluck('tahun', 'id')->all());
+        //
     }
 
     /**
@@ -23,7 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        \App\Models\RiskRegister::observe(\App\Observers\AnnualRiskObserver::class);
-        \App\Models\MUTU\MutuUnit::observe(\App\Observers\AnnualMutuObserver::class);
+        //
     }
 }

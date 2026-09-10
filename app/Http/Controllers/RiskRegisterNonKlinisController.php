@@ -42,10 +42,6 @@ class RiskRegisterNonKlinisController extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
-        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
-        $year = $request->integer('tahun', now()->year);
-        $whosLogin[] = ['tgl_register', '>=', "$year-01-01 00:00:00"];
-        $whosLogin[] = ['tgl_register', '<', ($year + 1).'-01-01 00:00:00'];
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 2)
             ->with('risk_category')
             ->with('identification_source')
@@ -81,7 +77,6 @@ class RiskRegisterNonKlinisController extends Controller
                 'per_page' => 10,
             ],
             'filtered' => [
-                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,

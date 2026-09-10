@@ -7,7 +7,6 @@ use App\Models\RiskRegister;
 use App\Models\RiskRegisterHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
@@ -19,12 +18,10 @@ class RiskRegisterInputTest extends TestCase
     public function test_input_and_update_preserve_control_plan_fields(string $route, int $type): void
     {
         $this->withoutExceptionHandling();
-        $template = RiskRegister::whereNotNull('periode_kinerja_id')->firstOrFail();
+        $template = RiskRegister::firstOrFail();
         $pic = Pic::firstOrFail();
-        $this->actingAs(User::factory()->create(['pic_id' => $pic->id]));
+        $this->actingAs(User::factory()->create(['pic_id' => $pic->id, 'username' => 'risk-input-'.uniqid()]));
         Gate::before(fn () => true);
-        DB::table('periode_kinerjas')->where('id', $template->periode_kinerja_id)->update(['status' => 'aktif']);
-        DB::table('indikator_fitur4s')->where('id', $template->indikator_fitur4_id)->update(['location_id' => '[0]', 'is_active' => true]);
 
         $payload = $template->only(RiskRegister::FORM_FIELDS);
         unset($payload['indikator_fitur04_id']);

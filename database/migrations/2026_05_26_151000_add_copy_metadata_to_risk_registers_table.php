@@ -8,15 +8,11 @@ return new class extends Migration
 {
     public function up()
     {
-        $copyMetadataAfterColumn = Schema::hasColumn('risk_registers', 'pihak_terkena')
-            ? 'pihak_terkena'
-            : 'target_waktu';
-
-        Schema::table('risk_registers', function (Blueprint $table) use ($copyMetadataAfterColumn) {
+        Schema::table('risk_registers', function (Blueprint $table) {
             if (!Schema::hasColumn('risk_registers', 'copied_from_risk_register_id')) {
                 $table->foreignId('copied_from_risk_register_id')
                     ->nullable()
-                    ->after($copyMetadataAfterColumn)
+                    ->after('pihak_terkena')
                     ->constrained('risk_registers')
                     ->nullOnDelete();
             }

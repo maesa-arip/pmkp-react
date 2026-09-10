@@ -33,8 +33,6 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         ikp_penindak_id: safeModel.ikp_penindak_id || "",
         terjadi_tempatlain: safeModel.terjadi_tempatlain || "",
         langkah_tempatlain: safeModel.langkah_tempatlain || "",
-        risiko_teridentifikasi: safeModel.risiko_teridentifikasi || false,
-        risk_register_id: safeModel.risk_register_id || "",
         user_id: safeModel.user_id || "",
         kronologis: safeModel.kronologis || [],
     });
@@ -87,8 +85,6 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
             ikp_penindak_id: model.ikp_penindak_id || "",
             terjadi_tempatlain: model.terjadi_tempatlain || "",
             langkah_tempatlain: model.langkah_tempatlain || "",
-            risiko_teridentifikasi: model.risiko_teridentifikasi || false,
-            risk_register_id: model.risk_register_id || "",
             user_id: model.user_id || "",
             kronologis: model.kronologis || [],
         });
