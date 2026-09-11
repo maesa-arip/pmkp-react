@@ -173,6 +173,18 @@ export default function Index(props) {
     return (
         <div className="relative min-h-screen p-0 font-sans bg-transparent dark:bg-transparent text-slate-900 dark:text-slate-100 sm:p-2">
             <Head title="Capaian Mutu Unit" />
+            <div className="flex items-center gap-3 my-4">
+                <label htmlFor="mutu-year" className="text-sm font-semibold text-slate-700 dark:text-slate-200">Tahun capaian</label>
+                <select
+                    id="mutu-year"
+                    name="tahun"
+                    value={params.tahun}
+                    onChange={onChange}
+                    className="w-32 text-sm bg-white border rounded-lg border-slate-300 text-slate-900 focus:border-sky-500 focus:ring-sky-500 dark:bg-slate-900 dark:border-slate-700 dark:text-white"
+                >
+                    {(props.dataYears || []).map(year => <option key={year} value={year}>{year}</option>)}
+                </select>
+            </div>
             
             {/* --- MODALS --- */}
             <AddModal isOpenAddDialog={isOpenAddDialog} setIsOpenAddDialog={setIsOpenAddDialog} size="max-w-4xl" title="Tambah Capaian Mutu Unit">

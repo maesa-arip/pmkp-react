@@ -3,6 +3,7 @@
 namespace App\Models\IKP;
 
 use App\Models\Pic;
+use App\Models\RiskRegister;
 use App\Models\RiskGrading;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,9 @@ class IkpPasien extends Model
 {
     use HasFactory,LogsActivity;
     protected $guarded = [];
+    protected $casts = [
+        'risiko_teridentifikasi' => 'boolean',
+    ];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -70,6 +74,10 @@ class IkpPasien extends Model
     public function kronologis()
     {
         return $this->hasMany(IkpKronologiPasien::class,'ikp_pasien_id');
+    }
+    public function risk_register()
+    {
+        return $this->belongsTo(RiskRegister::class);
     }
     /**
      * Get the user that owns the IkpPasien

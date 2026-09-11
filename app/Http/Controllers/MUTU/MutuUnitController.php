@@ -22,10 +22,18 @@ class MutuUnitController extends Controller
     public $loadDefault = 10;
     public function index(Request $request)
     {
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
+        $year = $request->integer('tahun', now()->year);
         $user = User::where('id',auth()->user()->id)->first();
         $pic = Pic::where('id',$user->pic_id)->first();
         $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? [['approved', 1]] : [['location_id', $pic->location_id]];
         $MutuUnit = MutuUnit::query()->with('mutu_indikator.indikator_fitur4')->with('mutu_indikator.kategori')->with('mutu_indikator.location')->with('mutu_pdsa')->whereRelation('mutu_indikator',$whosLogin);
+        $dataYears = (clone $MutuUnit)->whereNotNull('tanggal_mutu')
+            ->selectRaw('YEAR(tanggal_mutu) as tahun')->distinct()->pluck('tahun')
+            ->push(now()->year, $year)->map(fn ($value) => (int) $value)
+            ->filter(fn ($value) => $value >= 2000 && $value <= 2100)
+            ->unique()->sortDesc()->values();
+        $MutuUnit->whereYear('tanggal_mutu', $year);
         if ($request->q) {
             $this->applySearch($MutuUnit, $request->q);
         }
@@ -41,6 +49,7 @@ class MutuUnitController extends Controller
                 'per_page' =>10,
             ],
             'filtered' => [
+                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,
@@ -54,7 +63,7 @@ class MutuUnitController extends Controller
         $pic = Pic::where('id',$user->pic_id)->first();
         $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? [['location_id', '<>', 0]] : [['location_id', $pic->location_id]];
         $MutuIndikator = MutuIndikator::query()->with('indikator_fitur4')->with('kategori')->with('location')->where($whosLogin)->where('approved',1)->get();
-        return inertia('MUTU/MutuUnit/Index',['MutuUnit'=>$MutuUnit,'MutuIndikator'=>$MutuIndikator,'pic'=>$pic]);
+        return inertia('MUTU/MutuUnit/Index',['MutuUnit'=>$MutuUnit,'MutuIndikator'=>$MutuIndikator,'pic'=>$pic,'dataYears'=>$dataYears]);
     }
     public function store(Request $request)
     {
