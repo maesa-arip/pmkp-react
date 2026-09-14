@@ -38,7 +38,8 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\EnsureAnnualPeriodWritable::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
-            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            // @vite already renders preload tags in HTML. Duplicating them in a
+            // Link header can exceed Nginx's FastCGI response-header buffer.
         ],
 
         'api' => [
