@@ -72,6 +72,16 @@ class AnnualIndicatorService
                             $data['lineage_id'] = $lineage;
                             $data['copied_from_id'] = $id;
                             $data['created_at'] = $data['updated_at'] = now();
+                            if (! empty($row->penanggung_jawab_id)) {
+                                $position = DB::table('kinerja_penanggung_jawabs')->where('id', $row->penanggung_jawab_id)->first();
+                                $data['jabatan'] = $position->name;
+                                if ($table === 'indikator_fitur4s') {
+                                    $units = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $position->id)->orderBy('location_id')->pluck('location_id')->map(fn ($id) => (int) $id)->all();
+                                    if ($units) {
+                                        $data['location_id'] = json_encode($units);
+                                    }
+                                }
+                            }
                             if ($table === 'sasaran_strategis' && ! empty($row->parent_id)) {
                                 $data['parent_id'] = $maps[$table][$row->parent_id];
                             }

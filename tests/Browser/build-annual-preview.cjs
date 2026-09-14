@@ -26,7 +26,7 @@ async function main() {
             const collect = (items, parentId) => items.forEach(item => {
                 Object.assign(item, {periode_kinerja_id:1,is_active:1,sort_order:1,sasaran_strategis_id:1,tujuan:'Tujuan '+item.name});
                 if (item.level !== '1') item['indikator_fitur'+(Number(item.level)-1)+'_id'] = parentId;
-                if (item.level === '4') item.location_id = '[1]';
+                if (item.level === '4') { item.location_id = '[1]'; item.penanggung_jawab_id = 1; }
                 editNodes[item.level].push(item);
                 collect(item.children, item.id);
             });
@@ -37,7 +37,7 @@ async function main() {
                 2:[{...common,id:3,name:'Persentase capaian standar pelayanan',sasaran_strategis_id:1,indikator_fitur1_id:2}],
                 3:[{...common,id:4,name:'Kepatuhan standar pelayanan medik',sasaran_strategis_id:1,indikator_fitur2_id:3}],
                 4:Array.from({length:32},(_,i)=>({...common,id:5+i,name:'Persentase pelaksanaan pelayanan sesuai standar '+(i+1),sasaran_strategis_id:1,indikator_fitur3_id:4,location_id:'[1]'})), '04':[]
-            }} locations={[{id:1,name:'Unit Pelayanan Medik'}]} exports={[]} /></main>);
+            }} locations={[{id:1,name:'Unit Pelayanan Medik'},{id:2,name:'Unit Keperawatan'}]} responsiblePositions={[{id:1,name:'Kepala Pelayanan Medik',is_active:true,location_ids:[1]},{id:2,name:'Kepala Keperawatan',is_active:true,location_ids:[2]}]} exports={[]} /></main>);
         `, resolveDir: root, loader: 'jsx' },
         bundle: true, write: false, jsx: 'automatic', alias: {'@': path.join(root, 'resources/js')}, define: {'process.env.NODE_ENV':'"production"'},
         plugins: [{name:'fixture', setup(build) {

@@ -30,6 +30,8 @@ class AnnualIndicatorsTest extends TestCase
 
     private bool $admin = true;
 
+    private int $responsibleId;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,6 +40,8 @@ class AnnualIndicatorsTest extends TestCase
         $pic = Pic::firstOrFail();
         $this->actingAs(User::factory()->create(['pic_id' => $pic->id]));
         Gate::before(fn () => $this->admin);
+        $this->responsibleId = DB::table('kinerja_penanggung_jawabs')->insertGetId(['name' => 'Jabatan pengujian', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('kinerja_penanggung_jawab_units')->insert(['penanggung_jawab_id' => $this->responsibleId, 'location_id' => $pic->location_id]);
         DB::table('indikator_fitur4s')->where('id', $template->indikator_fitur4_id)->update(['location_id' => '[0]']);
         $this->source = $template->replicate(['copy_key', 'copied_from_risk_register_id', 'kode_risiko']);
         $this->source->user_id = auth()->id();
@@ -137,6 +141,7 @@ class AnnualIndicatorsTest extends TestCase
         $row = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->first();
         $payload = (array) $row;
         $payload['location_id'] = [0];
+        $payload['penanggung_jawab_id'] = $this->responsibleId;
         $payload['indikator_fitur3_id'] = DB::table('indikator_fitur3s')->where('periode_kinerja_id', $this->sourcePeriod->id)->value('id');
         $this->post(route('kinerja.nodes', [$this->target->id, '4']), $payload)->assertSessionHasErrors('indikator_fitur3_id');
         $payload['indikator_fitur3_id'] = $row->indikator_fitur3_id;
@@ -227,8 +232,10 @@ class AnnualIndicatorsTest extends TestCase
             $payload = (array) $row;
             $payload['name'] = 'Nama diperbarui fitur '.$level;
             $payload['tujuan'] = 'Tujuan diperbarui';
-            $payload['jabatan'] = 'Penanggung jawab diperbarui';
+            $payload['penanggung_jawab_id'] = $this->responsibleId;
+            $payload['jabatan'] = 'Jabatan pengujian';
             if ($level === 4) {
+                $payload['penanggung_jawab_id'] = $this->responsibleId;
                 $payload['location_id'] = [0];
             }
             $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, (string) $level]), $payload)->assertSessionHasNoErrors();
@@ -284,6 +291,89 @@ class AnnualIndicatorsTest extends TestCase
         $this->assertDatabaseHas('indikator_fitur1s', ['id' => $row->id, 'name' => $row->name]);
     }
 
+    public function test_responsible_master_validates_units_names_and_access(): void
+    {
+        $unit = DB::table('locations')->value('id');
+        $payload = ['name' => 'Kepala unit pengujian', 'is_active' => true, 'location_ids' => [$unit]];
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasNoErrors();
+        $id = DB::table('kinerja_penanggung_jawabs')->where('name', $payload['name'])->value('id');
+        $this->assertDatabaseHas('kinerja_penanggung_jawab_units', ['penanggung_jawab_id' => $id, 'location_id' => $unit]);
+        $this->get(route('kinerja.index', ['tahun' => 2024]))->assertInertia(fn (Assert $page) => $page
+            ->where('responsiblePositions', fn ($positions) => collect($positions)->contains('id', $id)));
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasErrors('name');
+        $payload['id'] = $id;
+        $payload['location_ids'] = [];
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasErrors('location_ids');
+        $payload['location_ids'] = [0];
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasErrors('location_ids.0');
+        $payload['location_ids'] = [$unit, $unit];
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasErrors('location_ids.0');
+        $payload['location_ids'] = [$unit];
+        $payload['is_active'] = false;
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('kinerja_penanggung_jawabs', ['id' => $id, 'is_active' => false]);
+        $this->admin = false;
+        $this->post(route('kinerja.responsible'), $payload)->assertForbidden();
+    }
+
+    public function test_feature_four_derives_units_from_responsible_master_and_rejects_missing_mapping(): void
+    {
+        $row = DB::table('indikator_fitur4s')->find($this->source->indikator_fitur4_id);
+        $payload = (array) $row;
+        $payload['penanggung_jawab_id'] = $this->responsibleId;
+        $payload['jabatan'] = 'Nama palsu';
+        $payload['location_id'] = [0, 999999];
+        $route = route('kinerja.nodes', [$this->sourcePeriod->id, '4']);
+        $this->post($route, $payload)->assertSessionHasNoErrors();
+        $saved = DB::table('indikator_fitur4s')->find($row->id);
+        $expected = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $this->responsibleId)->pluck('location_id')->map(fn ($id) => (int) $id)->all();
+        $this->assertSame($expected, json_decode($saved->location_id, true));
+        $this->assertSame('Jabatan pengujian', $saved->jabatan);
+        $payload['penanggung_jawab_id'] = null;
+        $this->post($route, $payload)->assertSessionHasErrors('penanggung_jawab_id');
+        $payload['penanggung_jawab_id'] = 999999999;
+        $this->post($route, $payload)->assertSessionHasErrors('penanggung_jawab_id');
+        $payload['penanggung_jawab_id'] = $this->responsibleId;
+        DB::table('kinerja_penanggung_jawabs')->where('id', $this->responsibleId)->update(['is_active' => false]);
+        $this->post($route, $payload)->assertSessionHasErrors('penanggung_jawab_id');
+        DB::table('kinerja_penanggung_jawabs')->where('id', $this->responsibleId)->update(['is_active' => true]);
+        DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $this->responsibleId)->delete();
+        $this->post($route, $payload)->assertSessionHasErrors('penanggung_jawab_id');
+        $this->assertSame($saved->location_id, DB::table('indikator_fitur4s')->where('id', $row->id)->value('location_id'));
+    }
+
+    public function test_master_changes_sync_open_indicators_and_preserve_closed_periods_and_archives(): void
+    {
+        $snapshot = $this->source->fresh()->indikator_snapshot;
+        $this->get(route('kinerja.export', $this->sourcePeriod->id))->assertOk();
+        $archive = DB::table('cascading_exports')->where('periode_kinerja_id', $this->sourcePeriod->id)->latest('id')->first();
+        foreach (range(1, 4) as $level) {
+            $table = 'indikator_fitur'.$level.'s';
+            DB::table($table)->where('id', $snapshot[$table]['id'])->update(['penanggung_jawab_id' => $this->responsibleId]);
+        }
+        $closed = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->where('copied_from_id', $this->source->indikator_fitur4_id)->first();
+        DB::table('indikator_fitur4s')->where('id', $closed->id)->update(['penanggung_jawab_id' => $this->responsibleId]);
+        $this->target->update(['status' => 'ditutup']);
+        $units = DB::table('locations')->orderBy('id')->take(2)->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $payload = ['id' => $this->responsibleId, 'name' => 'Jabatan diperbarui', 'is_active' => true, 'location_ids' => $units];
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasNoErrors();
+        foreach (range(1, 4) as $level) {
+            $table = 'indikator_fitur'.$level.'s';
+            $this->assertDatabaseHas($table, ['id' => $snapshot[$table]['id'], 'jabatan' => $payload['name']]);
+        }
+        $this->assertSame($units, json_decode(DB::table('indikator_fitur4s')->where('id', $this->source->indikator_fitur4_id)->value('location_id'), true));
+        $this->assertDatabaseHas('indikator_fitur4s', ['id' => $closed->id, 'jabatan' => $closed->jabatan, 'location_id' => $closed->location_id]);
+        $this->assertSame($snapshot, $this->source->fresh()->indikator_snapshot);
+        $this->assertSame($archive->snapshot, DB::table('cascading_exports')->where('id', $archive->id)->value('snapshot'));
+        $payload['is_active'] = false;
+        $this->post(route('kinerja.responsible'), $payload)->assertSessionHasErrors('is_active');
+        $draft = PeriodeKinerja::create(['tahun' => 2092, 'status' => 'draft']);
+        app(AnnualIndicatorService::class)->copyHierarchy($this->target->id, $draft);
+        $copy = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $draft->id)->where('copied_from_id', $closed->id)->first();
+        $this->assertSame($payload['name'], $copy->jabatan);
+        $this->assertSame($units, json_decode($copy->location_id, true));
+    }
+
     public function test_editor_can_create_draft_and_export_treats_text_as_literal(): void
     {
         $this->post(route('kinerja.store'), ['tahun' => 2092])->assertSessionHasNoErrors();
@@ -294,6 +384,7 @@ class AnnualIndicatorsTest extends TestCase
         for ($level = 2; $level <= 4; $level++) {
             $payload = ['name' => 'Fitur '.$level, 'sort_order' => 1, 'is_active' => true, 'indikator_fitur'.($level - 1).'_id' => $parent->id];
             if ($level === 4) {
+                $payload['penanggung_jawab_id'] = $this->responsibleId;
                 $payload['location_id'] = [0];
             }
             $this->post(route('kinerja.nodes', [$draft->id, (string) $level]), $payload)->assertSessionHasNoErrors();

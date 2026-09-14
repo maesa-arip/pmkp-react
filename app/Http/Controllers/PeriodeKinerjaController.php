@@ -33,12 +33,17 @@ class PeriodeKinerjaController extends Controller
             $data[$level] = $period ? DB::table($table)->where('periode_kinerja_id', $period->id)->orderBy('sort_order')->orderBy('id')->get()->all() : [];
         }
         $hierarchy = app(CascadingHierarchyService::class);
+        $positionUnits = DB::table('kinerja_penanggung_jawab_units')->orderBy('location_id')->get()->groupBy('penanggung_jawab_id');
 
         return inertia('Kinerja/Index', [
             'periods' => PeriodeKinerja::orderByDesc('tahun')->get(), 'period' => $period, 'nodes' => $hierarchy->decorate($data),
             'cascadingTree' => $hierarchy->build($data),
             'cascadingIssues' => $hierarchy->unlinked($data, $hierarchy->build($data)),
             'locations' => DB::table('locations')->select('id', 'name')->orderBy('name')->get(),
+            'responsiblePositions' => DB::table('kinerja_penanggung_jawabs')->orderBy('name')->get()->map(function ($position) use ($positionUnits) {
+                $position->location_ids = ($positionUnits[$position->id] ?? collect())->pluck('location_id');
+                return $position;
+            }),
             'exports' => $period ? DB::table('cascading_exports')->where('periode_kinerja_id', $period->id)->select('id', 'created_at', 'template_version')->orderByDesc('id')->limit(20)->get() : [],
         ]);
     }
@@ -112,20 +117,10 @@ class PeriodeKinerjaController extends Controller
         abort_unless(isset(CascadingHierarchyService::TABLES[$level]), 404);
         $table = CascadingHierarchyService::TABLES[$level];
         $rules = ['id' => 'nullable|integer', 'name' => 'required|string|max:255', 'tujuan' => 'nullable|string|max:255',
-            'jabatan' => 'nullable|string|max:255', 'kode_cascading' => 'nullable|string|max:50', 'sort_order' => 'required|integer|min:0', 'is_active' => 'required|boolean'];
+            'penanggung_jawab_id' => [$level === '4' ? 'required' : 'nullable', 'integer', Rule::exists('kinerja_penanggung_jawabs', 'id')],
+            'kode_cascading' => 'nullable|string|max:50', 'sort_order' => 'required|integer|min:0', 'is_active' => 'required|boolean'];
         if ($parent = AnnualIndicatorService::PARENTS[$table]) {
             $rules[$parent[0]] = ['required', Rule::exists($parent[1], 'id')->where('periode_kinerja_id', $period->id)];
-        }
-        if ($level === '4') {
-            $rules['location_id'] = 'required|array|min:1';
-            $rules['location_id.*'] = ['integer', function ($attribute, $value, $fail) {
-                if ((int) $value !== 0 && ! DB::table('locations')->where('id', $value)->exists()) {
-                    $fail('Unit tidak ditemukan.');
-                }
-            }];
-        }
-        if ($level === '04') {
-            $rules['location_id'] = 'required|exists:locations,id';
         }
         $data = $request->validate($rules);
         DB::transaction(function () use ($period, $table, $level, $data) {
@@ -141,6 +136,20 @@ class PeriodeKinerjaController extends Controller
                 abort_unless($before, 404);
             } elseif ($period->status === 'aktif') {
                 throw ValidationException::withMessages(['name' => 'Penambahan indikator dilakukan pada periode draft. Pilih indikator yang sudah ada untuk mengedit periode aktif.']);
+            }
+            $data['penanggung_jawab_id'] = $data['penanggung_jawab_id'] ?? null;
+            $position = $data['penanggung_jawab_id'] ? DB::table('kinerja_penanggung_jawabs')->where('id', $data['penanggung_jawab_id'])->lockForUpdate()->first() : null;
+            if ($position && ! $position->is_active) {
+                throw ValidationException::withMessages(['penanggung_jawab_id' => 'Pilih penanggung jawab yang aktif.']);
+            }
+            $data['jabatan'] = $position?->name;
+            if ($level === '4') {
+                $units = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $position->id)->orderBy('location_id')->pluck('location_id')->map(fn ($id) => (int) $id)->all();
+                if (! $units) {
+                    throw ValidationException::withMessages(['penanggung_jawab_id' => 'Atur unit bawahan pada master penanggung jawab terlebih dahulu.']);
+                }
+                // Derive permitted units on the server, never trust the submitted unit list.
+                $data['location_id'] = $units;
             }
             if ($period->status === 'aktif') {
                 $parent = AnnualIndicatorService::PARENTS[$table];
@@ -216,6 +225,53 @@ class PeriodeKinerjaController extends Controller
             DB::table('indikator_fitur04s')->where('periode_kinerja_id', $periodId)
                 ->whereIn('indikator_fitur4_id', $ids)->update(['sasaran_strategis_id' => $context, 'updated_at' => now()]);
         }
+    }
+
+    public function saveResponsible(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'nullable|integer|exists:kinerja_penanggung_jawabs,id',
+            'name' => ['required', 'string', 'max:255', Rule::unique('kinerja_penanggung_jawabs')->ignore($request->input('id'))],
+            'is_active' => 'required|boolean',
+            'location_ids' => 'required|array|min:1',
+            'location_ids.*' => 'required|integer|distinct|exists:locations,id',
+        ]);
+        DB::transaction(function () use ($data) {
+            // Same lock order as indicator edits: periods, then responsible position.
+            $openPeriods = PeriodeKinerja::whereIn('status', ['draft', 'aktif'])->orderBy('id')->lockForUpdate()->pluck('id');
+            $id = $data['id'] ?? null;
+            $before = $id ? DB::table('kinerja_penanggung_jawabs')->where('id', $id)->lockForUpdate()->first() : null;
+            $oldUnits = $id ? DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $id)->pluck('location_id')->all() : [];
+            if ($id && ! $data['is_active']) {
+                foreach (CascadingHierarchyService::TABLES as $table) {
+                    if (DB::table($table)->whereIn('periode_kinerja_id', $openPeriods)->where('penanggung_jawab_id', $id)->where('is_active', true)->exists()) {
+                        throw ValidationException::withMessages(['is_active' => 'Penanggung jawab masih dipakai indikator aktif. Ganti penanggung jawab indikator terlebih dahulu.']);
+                    }
+                }
+            }
+            $attributes = ['name' => trim($data['name']), 'is_active' => $data['is_active'], 'updated_at' => now()];
+            if ($id) {
+                DB::table('kinerja_penanggung_jawabs')->where('id', $id)->update($attributes);
+            } else {
+                $id = DB::table('kinerja_penanggung_jawabs')->insertGetId($attributes + ['created_at' => now()]);
+            }
+            $units = array_map('intval', $data['location_ids']);
+            sort($units);
+            DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $id)->delete();
+            DB::table('kinerja_penanggung_jawab_units')->insert(array_map(fn ($unit) => ['penanggung_jawab_id' => $id, 'location_id' => $unit], $units));
+            foreach (CascadingHierarchyService::TABLES as $level => $table) {
+                $changes = ['jabatan' => $attributes['name'], 'updated_at' => now()];
+                if ((string) $level === '4') {
+                    $changes['location_id'] = json_encode($units);
+                }
+                DB::table($table)->whereIn('periode_kinerja_id', $openPeriods)->where('penanggung_jawab_id', $id)->update($changes);
+            }
+            activity('indikator_tahunan')->causedBy(auth()->user())->withProperties([
+                'penanggung_jawab_id' => $id, 'old' => (array) $before + ['location_ids' => $oldUnits],
+                'attributes' => $attributes + ['location_ids' => $units], 'periode_ids' => $openPeriods->all(),
+            ])->log('Master penanggung jawab disimpan');
+        });
+        return back()->with(['type' => 'success', 'message' => 'Master penanggung jawab dan unit indikator periode terbuka berhasil disimpan.']);
     }
 
     public function mapping(Request $request)

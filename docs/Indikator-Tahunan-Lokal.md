@@ -59,3 +59,28 @@ Validasi: 20 pengujian AnnualIndicatorsTest, CascadingLayoutTest, dan
 PreloadResponseHeadersTest lulus; build frontend dan SSR berhasil. Editor
 keempat tingkat serta pembatasan periode ditutup diperiksa di browser dengan
 data contoh. Pengujian penyimpanan menggunakan transaksi database yang di-rollback.
+
+## Modal dan master penanggung jawab
+
+Editor fitur 1–4 sekarang berupa modal, baik dari bagan maupun daftar hierarki.
+Pilih **Master penanggung jawab** di bagian atas `/kinerja` untuk menambah atau
+mengedit jabatan dan memilih beberapa unit bawahannya. Master digunakan bersama
+antarperiode. Nama jabatan lama dipindahkan ke master; hubungan unit bawahannya
+harus diatur secara eksplisit dan tidak ditebak dari data lama.
+
+Pada fitur 4, penanggung jawab wajib dipilih. Unit pemakai tampil otomatis dari
+master dan ditentukan kembali oleh server saat penyimpanan. Daftar unit kiriman
+browser tidak digunakan. Perubahan master menyelaraskan nama jabatan pada fitur
+1–4 dan unit fitur 4 pada periode draft/aktif. Periode ditutup, snapshot risiko,
+dan arsip ekspor tetap dipertahankan. Copy ke tahun baru menggunakan pengaturan
+master terkini. Jabatan yang masih dipakai indikator aktif pada periode terbuka
+tidak dapat dinonaktifkan.
+
+Pemilihan induk dimulai dari sasaran fitur 1, dilanjutkan program fitur 2 dan
+kegiatan fitur 3 sesuai tingkat yang diedit. Mengganti induk atas mengosongkan
+pilihan di bawahnya agar tidak tersimpan relasi dari cabang yang berbeda.
+
+Migrasi lokal `2026_09_14_000000_add_indicator_responsible_positions.php` sudah
+dijalankan. Validasi terbaru: 23 pengujian lulus, build frontend dan SSR berhasil,
+serta modal, pergantian unit otomatis, penyaringan induk, dan master jabatan
+diperiksa melalui browser dengan data contoh Tailwind.

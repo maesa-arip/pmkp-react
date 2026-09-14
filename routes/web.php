@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::put('kinerja/{period}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'update'])->name('kinerja.update');
     Route::post('kinerja/{period}/nodes/{level}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveNode'])->name('kinerja.nodes');
     Route::post('kinerja-mapping', [\App\Http\Controllers\PeriodeKinerjaController::class, 'mapping'])->name('kinerja.mapping');
+    Route::post('kinerja-penanggung-jawab', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveResponsible'])->name('kinerja.responsible');
     Route::get('kinerja/{period}/export', [\App\Http\Controllers\PeriodeKinerjaController::class, 'export'])->withoutMiddleware(\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class)->name('kinerja.export');
     Route::get('kinerja-export/{export}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'archivedExport'])->withoutMiddleware(\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class)->name('kinerja.exportArchive');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

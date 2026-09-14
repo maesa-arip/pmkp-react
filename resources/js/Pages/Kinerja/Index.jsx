@@ -1,9 +1,11 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ArrowDownTrayIcon, ArrowPathIcon, CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon, FolderOpenIcon, LockClosedIcon, MagnifyingGlassIcon, PencilSquareIcon, PlusIcon, Squares2X2Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import App from '@/Layouts/App';
 import CascadingChart from './CascadingChart';
 import KinerjaSelect from './KinerjaSelect';
+import KinerjaModal from './KinerjaModal';
+import ResponsiblePositions from './ResponsiblePositions';
 import { Disclosure } from '@headlessui/react';
 
 const input = 'w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm transition focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:disabled:bg-slate-800 dark:disabled:text-slate-400';
@@ -23,14 +25,15 @@ const Field = ({ label, children }) => {
 const Errors = ({ errors }) => Object.keys(errors).length > 0 && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300">{Object.values(errors).map((v, i) => <p key={i}>{v}</p>)}</div>;
 const Status = ({ status }) => <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${status === 'aktif' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : status === 'draft' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{statusLabels[status] || 'Tidak aktif'}</span>;
 
-export default function Index({ periods, period, nodes, locations, exports, cascadingTree = [], cascadingIssues = [] }) {
+export default function Index({ periods, period, nodes, locations, exports, cascadingTree = [], cascadingIssues = [], responsiblePositions = [] }) {
     const [level, setLevel] = useState('1');
     const [search, setSearch] = useState('');
     const [editing, setEditing] = useState(false);
     const [tab, setTab] = useState('bagan');
     const [page, setPage] = useState(1);
     const [showCreate, setShowCreate] = useState(!period);
-    const editor = useRef(null);
+    const [showMaster, setShowMaster] = useState(false);
+    const [parentPath, setParentPath] = useState({});
     const create = useForm({ tahun: (periods[0]?.tahun || new Date().getFullYear()) + 1, source_period_id: period?.id || '' });
     const metadata = useForm({ nama_organisasi: period?.nama_organisasi || '', tujuan: period?.tujuan || '', status: period?.status || 'draft' });
     const node = useForm({});
@@ -43,17 +46,30 @@ export default function Index({ periods, period, nodes, locations, exports, casc
         setPage(1);
     }, [period?.id, period?.status]);
     useEffect(() => { setPage(1); }, [level, search]);
-    useEffect(() => { if (editing) editor.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [editing, node.data.id]);
     const begin = (item = {}) => {
         const selectedLevel = String(item.level || level);
         setLevel(selectedLevel);
-        setTab('hierarki');
+        const path = {};
+        let child = item;
+        for (let parentLevel = Number(selectedLevel) - 1; parentLevel >= 1; parentLevel--) {
+            const id = child?.['indikator_fitur'+parentLevel+'_id'] || '';
+            path[parentLevel] = id;
+            child = (nodes[parentLevel] || []).find(row => String(row.id) === String(id));
+        }
+        setParentPath(path);
         node.clearErrors();
-        node.setData({ id: item.id || '', name: item.name || '', tujuan: item.tujuan || '', jabatan: item.jabatan || '', kode_cascading: item.kode_cascading || '', sort_order: item.sort_order || 0, is_active: item.is_active === undefined ? true : !!item.is_active,
-            ...(parents[selectedLevel] ? { [parents[selectedLevel][0]]: item[parents[selectedLevel][0]] || '' } : {}),
-            location_id: selectedLevel === '4' ? (Array.isArray(item.location_id) ? item.location_id : [].concat(JSON.parse(item.location_id || '[]'))) : item.location_id || '' });
+        node.setData({ id: item.id || '', name: item.name || '', tujuan: item.tujuan || '', penanggung_jawab_id: item.penanggung_jawab_id || '', kode_cascading: item.kode_cascading || '', sort_order: item.sort_order || 0, is_active: item.is_active === undefined ? true : !!item.is_active,
+            ...(parents[selectedLevel] ? { [parents[selectedLevel][0]]: item[parents[selectedLevel][0]] || '' } : {}) });
         setEditing(true);
     };
+    const changeParent = (id, value) => {
+        const path = {...parentPath, [id]: value};
+        for (let child = Number(id) + 1; child < Number(level); child++) path[child] = '';
+        setParentPath(path);
+        node.setData(parents[level][0], path[Number(level)-1] || '');
+    };
+    const responsible = responsiblePositions.find(position => String(position.id) === String(node.data.penanggung_jawab_id));
+    const responsibleUnits = locations.filter(unit => (responsible?.location_ids || []).map(Number).includes(Number(unit.id)));
     const options = items => [{ value: '', label: 'Pilih indikator' }, ...(items || []).map(x => ({ value: x.id, label: `${x.display_code || x.kode_cascading || '#' + x.id} — ${x.name}` }))];
     const isDraft = period?.status === 'draft';
     const canEdit = isDraft || period?.status === 'aktif';
@@ -66,8 +82,26 @@ export default function Index({ periods, period, nodes, locations, exports, casc
         <Head title="Indikator Tahunan dan Cascading" />
         <header className="flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
             <div className="min-w-0 space-y-2"><p className="text-xs font-semibold uppercase tracking-widest text-sky-600 dark:text-sky-400">Master data / Kinerja</p><h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Indikator Tahunan & Cascading</h1><p className={muted}>Kelola sasaran dan indikator setiap tahun, lalu susun dokumen Cascading.</p></div>
-            <div className="flex shrink-0 flex-wrap gap-2"><button type="button" className={secondary} aria-expanded={showCreate} aria-controls="create-period" onClick={() => setShowCreate(!showCreate)}><PlusIcon className="h-4 w-4" />Buat tahun baru</button>{period && <a className={button} href={route('kinerja.export', period.id)}><ArrowDownTrayIcon className="h-4 w-4" />Ekspor Cascading</a>}</div>
+            <div className="flex shrink-0 flex-wrap gap-2"><button type="button" className={secondary} aria-expanded={showMaster} onClick={() => setShowMaster(!showMaster)}>Master penanggung jawab</button><button type="button" className={secondary} aria-expanded={showCreate} aria-controls="create-period" onClick={() => setShowCreate(!showCreate)}><PlusIcon className="h-4 w-4" />Buat tahun baru</button>{period && <a className={button} href={route('kinerja.export', period.id)}><ArrowDownTrayIcon className="h-4 w-4" />Ekspor Cascading</a>}</div>
         </header>
+        {showMaster && <ResponsiblePositions positions={responsiblePositions} locations={locations} />}
+            {editing && canEdit && <KinerjaModal show={editing} busy={node.processing} onClose={() => setEditing(false)} title={(node.data.id ? 'Edit ' : 'Tambah ') + levels[level].toLowerCase()} description={'Perubahan disimpan pada ' + (isDraft ? 'draft' : 'periode aktif') + ' tahun ' + period.tahun + '.'}><form className="space-y-5" onSubmit={e => { e.preventDefault(); node.post(route('kinerja.nodes', [period.id, level]), { preserveScroll: true, onSuccess: () => setEditing(false) }); }}>
+                <div className="grid gap-3 md:grid-cols-2">
+                    <Field label="Nama indikator/sasaran *"><textarea autoFocus rows={3} className={input} value={node.data.name} maxLength={255} onChange={e => node.setData('name', e.target.value)} required /></Field>
+                    <Field label="Tujuan/sasaran penjelas"><textarea rows={3} className={input} value={node.data.tujuan} maxLength={255} onChange={e => node.setData('tujuan', e.target.value)} /></Field>
+                    <div className="min-w-0 space-y-2"><Field label={level === '4' ? 'Jabatan penanggung jawab *' : 'Jabatan penanggung jawab'}><KinerjaSelect value={node.data.penanggung_jawab_id} onChange={value => node.setData('penanggung_jawab_id', value)} options={[{value:'',label:'Pilih jabatan'}, ...responsiblePositions.filter(position => position.is_active || String(position.id) === String(node.data.penanggung_jawab_id)).map(position => ({value:position.id,label:position.name + (position.is_active ? '' : ' (tidak aktif)'),disabled:!position.is_active}))]} /></Field><button type="button" className="text-sm font-semibold text-sky-600 hover:underline dark:text-sky-400" onClick={() => { setEditing(false); setShowMaster(true); }}>Atur master penanggung jawab</button></div>
+                    <Field label="Kode Cascading khusus (opsional)"><input className={input} placeholder="Kosongkan untuk kode otomatis" value={node.data.kode_cascading} onChange={e => node.setData('kode_cascading', e.target.value)} /></Field>
+                    <Field label="Urutan tampil"><input type="number" min="0" className={input} value={node.data.sort_order} onChange={e => node.setData('sort_order', e.target.value)} /></Field>
+                    {parents[level] && <fieldset className="min-w-0 space-y-3 rounded-xl border border-slate-200 p-4 dark:border-slate-700 md:col-span-2"><legend className="px-1 text-sm font-semibold">Indikator induk mulai dari fitur 1</legend>{levelOrder.filter(id => Number(id) < Number(level)).map(id => {
+                        const available = (nodes[id] || []).filter(item => (isDraft || item.is_active) && (id === '1' || String(item['indikator_fitur'+(Number(id)-1)+'_id']) === String(parentPath[Number(id)-1])));
+                        return <Field key={id} label={levels[id] + ' *'}><KinerjaSelect value={parentPath[id] || ''} disabled={id !== '1' && !parentPath[Number(id)-1]} onChange={value => changeParent(id, value)} options={options(available)} /></Field>;
+                    })}</fieldset>}
+                    {level === '4' && <section aria-label="Unit yang dapat memakai indikator" className="min-w-0 rounded-xl bg-sky-50 p-4 dark:bg-sky-900/20 md:col-span-2"><h4 className="text-sm font-semibold">Unit yang dapat memakai indikator</h4><p className={muted}>Terisi otomatis dari unit bawahan penanggung jawab yang dipilih.</p>{responsibleUnits.length ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{responsibleUnits.map(unit => <li key={unit.id} className="rounded-lg border border-sky-100 bg-white px-3 py-2 text-sm dark:border-sky-900 dark:bg-slate-900">{unit.name}</li>)}</ul> : <p className="mt-3 text-sm font-medium text-amber-700 dark:text-amber-400">{node.data.penanggung_jawab_id ? 'Unit bawahan belum diatur. Lengkapi master penanggung jawab sebelum menyimpan.' : 'Pilih penanggung jawab untuk menampilkan unit.'}</p>}</section>}
+                </div>
+                <p className={muted}>Kode otomatis mengikuti induk dan urutan: 1 → 1.1 → 1.1.a → 1.1.a.1. Isi kode khusus untuk mengikuti penomoran dokumen, misalnya 1.1.b.</p>
+                <label className="flex items-center gap-2.5 text-sm"><input className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 dark:border-slate-600 dark:bg-slate-900" type="checkbox" checked={node.data.is_active} onChange={e => node.setData('is_active', e.target.checked)} />Indikator aktif</label>
+                <Errors errors={node.errors} /><div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4 dark:border-slate-800"><button className={button} disabled={node.processing || (level === '4' && !responsibleUnits.length)}>{node.processing ? 'Menyimpan…' : 'Simpan indikator'}</button><button type="button" className={secondary} disabled={node.processing} onClick={() => setEditing(false)}>Batal</button></div>
+            </form></KinerjaModal>}
         {showCreate && <section id="create-period" className={`${panel} border-sky-200 p-5 dark:border-sky-900 sm:p-6`}>
             <div className="mb-5 flex items-start justify-between gap-3"><div><h2 className="font-semibold">Siapkan periode tahun baru</h2><p className={`mt-1 ${muted}`}>Salin struktur tahun sebelumnya atau mulai kosong. Periode baru disimpan sebagai draft.</p></div><button type="button" className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-sky-500 dark:hover:bg-slate-800" aria-label="Tutup formulir tahun baru" onClick={() => setShowCreate(false)}><XMarkIcon className="h-5 w-5" /></button></div>
             <form className="space-y-4" onSubmit={e => { e.preventDefault(); create.post(route('kinerja.store'), { onSuccess: () => setShowCreate(false) }); }}>
@@ -104,21 +138,7 @@ export default function Index({ periods, period, nodes, locations, exports, casc
                 <aside className="min-w-0"><div className={`${panel} p-3`}><p className="mb-3 px-2 pt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Tingkat hierarki</p><div className="grid gap-1 sm:grid-cols-2 xl:grid-cols-1">{levelOrder.map(id => <button type="button" key={id} aria-pressed={level === id} onClick={() => { setLevel(id); setEditing(false); setSearch(''); }} className={`flex items-center justify-between gap-2 rounded-xl px-3 py-3 text-left text-sm transition focus-visible:outline-sky-500 ${level === id ? 'bg-sky-50 font-semibold text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'}`}><span>{levels[id]}</span><span className={`rounded-md px-2 py-0.5 text-xs tabular-nums ${level === id ? 'bg-sky-100 dark:bg-sky-900' : 'bg-slate-100 dark:bg-slate-800'}`}>{nodes[id]?.length || 0}</span></button>)}</div></div></aside>
                 <div className="min-w-0 space-y-4">
             {!canEdit && <div className="flex gap-2.5 rounded-xl bg-slate-100 p-3 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300"><LockClosedIcon className="mt-0.5 h-4 w-4 shrink-0" /><p>Periode tahun {period.tahun} sudah ditutup. Indikator bersifat baca saja.</p></div>}
-            {editing && canEdit && <form ref={editor} className={`${panel} scroll-mt-6 space-y-5 border-sky-200 p-5 dark:border-sky-900`} onSubmit={e => { e.preventDefault(); node.post(route('kinerja.nodes', [period.id, level]), { onSuccess: () => setEditing(false) }); }}>
-                <div className="flex items-start justify-between gap-3"><div><h3 className="font-semibold">{node.data.id ? 'Edit' : 'Tambah'} {levels[level].toLowerCase()}</h3><p className={`mt-1 ${muted}`}>Perubahan disimpan pada {isDraft ? 'draft' : 'periode aktif'} tahun {period.tahun}.</p></div><button type="button" className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Tutup editor indikator" onClick={() => setEditing(false)}><XMarkIcon className="h-5 w-5" /></button></div>
-                <div className="grid gap-3 md:grid-cols-2">
-                    <Field label="Nama indikator/sasaran *"><textarea autoFocus rows={3} className={input} value={node.data.name} maxLength={255} onChange={e => node.setData('name', e.target.value)} required /></Field>
-                    <Field label="Tujuan/sasaran penjelas"><textarea rows={3} className={input} value={node.data.tujuan} maxLength={255} onChange={e => node.setData('tujuan', e.target.value)} /></Field>
-                    <Field label="Jabatan penanggung jawab"><input className={input} value={node.data.jabatan} onChange={e => node.setData('jabatan', e.target.value)} /></Field>
-                    <Field label="Kode Cascading khusus (opsional)"><input className={input} placeholder="Kosongkan untuk kode otomatis" value={node.data.kode_cascading} onChange={e => node.setData('kode_cascading', e.target.value)} /></Field>
-                    <Field label="Urutan tampil"><input type="number" min="0" className={input} value={node.data.sort_order} onChange={e => node.setData('sort_order', e.target.value)} /></Field>
-                    {parents[level] && <Field label="Indikator induk"><KinerjaSelect value={node.data[parents[level][0]]} onChange={value => node.setData(parents[level][0], value)} options={options(nodes[parents[level][1]])} /></Field>}
-                    {level === '4' && <fieldset className="min-w-0 md:col-span-2"><legend className="mb-2 text-sm font-medium">Unit yang dapat memakai indikator</legend><p className={`mb-3 ${muted}`}>Centang satu atau beberapa unit, atau pilih semua unit.</p><div className="grid max-h-52 gap-2 overflow-y-auto rounded-xl border border-slate-200 p-3 dark:border-slate-700 sm:grid-cols-2">{[{ id: 0, name: 'Semua unit' }, ...locations].map(unit => <label key={unit.id} className="flex cursor-pointer items-start gap-3 rounded-lg p-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"><input type="checkbox" className="mt-0.5 rounded border-slate-300 text-sky-600 focus:ring-sky-500 dark:border-slate-600 dark:bg-slate-900" checked={node.data.location_id.map(Number).includes(Number(unit.id))} onChange={e => { const selected = node.data.location_id.map(Number); const id = Number(unit.id); node.setData('location_id', e.target.checked ? (id === 0 ? [0] : [...selected.filter(x => x !== 0), id]) : selected.filter(x => x !== id)); }} /><span>{unit.name}</span></label>)}</div></fieldset>}
-                </div>
-                <p className={muted}>Kode otomatis mengikuti induk dan urutan: 1 → 1.1 → 1.1.a → 1.1.a.1. Isi kode khusus untuk mengikuti penomoran dokumen, misalnya 1.1.b.</p>
-                <label className="flex items-center gap-2.5 text-sm"><input className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 dark:border-slate-600 dark:bg-slate-900" type="checkbox" checked={node.data.is_active} onChange={e => node.setData('is_active', e.target.checked)} />Indikator aktif</label>
-                <Errors errors={node.errors} /><div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4 dark:border-slate-800"><button className={button} disabled={node.processing}>{node.processing ? 'Menyimpan…' : 'Simpan indikator'}</button><button type="button" className={secondary} onClick={() => setEditing(false)}>Batal</button></div>
-            </form>}
+
             <div className={`${panel} overflow-hidden`}>
                 <div className="space-y-4 p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-semibold">{levels[level]}</h2><p className={`mt-1 ${muted}`}>{nodes[level]?.length || 0} data pada periode {period.tahun}</p></div>{isDraft && <button type="button" className={button} onClick={() => begin()}><PlusIcon className="h-4 w-4" />Tambah</button>}</div><div className="relative"><MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-slate-400" /><input className={`${input} pl-10`} aria-label="Cari indikator" placeholder="Cari nama, jabatan, kode, atau ID…" value={search} onChange={e => setSearch(e.target.value)} /></div></div>
                 <div className="relative overflow-x-auto"><table className="w-full text-left text-sm"><caption className="sr-only">{levels[level]} tahun {period.tahun}</caption><thead className="border-y border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400"><tr><th scope="col" className="px-5 py-3">Nama / Kode Cascading</th><th scope="col" className="px-4 py-3">Penanggung jawab</th><th scope="col" className="px-4 py-3">Status</th>{canEdit && <th scope="col" className="px-4 py-3"><span className="sr-only">Tindakan</span></th>}</tr></thead><tbody className="divide-y divide-slate-100 dark:divide-slate-800">{visibleRows.map(x => <tr key={x.id} className="transition hover:bg-slate-50/80 dark:hover:bg-slate-800/40"><td className="min-w-[220px] px-5 py-4 align-top"><div className="mb-1.5 flex flex-wrap items-center gap-2 text-xs text-slate-400"><span>#{x.id}</span>{(x.display_code || x.kode_cascading) && <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">{x.display_code || x.kode_cascading}</span>}</div><p className="max-w-xl whitespace-normal break-words font-medium leading-relaxed">{x.name}</p></td><td className="min-w-[160px] px-4 py-4 align-top text-slate-600 dark:text-slate-400"><p className="max-w-xs whitespace-normal break-words leading-relaxed">{x.jabatan || <span className="italic text-slate-400">Belum diisi</span>}</p></td><td className="px-4 py-4 align-top"><Status status={x.is_active ? 'aktif' : 'nonaktif'} /></td>{canEdit && <td className="px-4 py-4 align-top"><button type="button" className="inline-flex items-center gap-1.5 rounded-lg p-2 text-sm font-semibold text-sky-600 hover:bg-sky-50 focus-visible:ring-2 focus-visible:ring-sky-500 dark:text-sky-400 dark:hover:bg-sky-900/30" aria-label={`Edit ${x.name}`} onClick={() => begin(x)}><PencilSquareIcon className="h-4 w-4" />Edit</button></td>}</tr>)}</tbody></table></div>
