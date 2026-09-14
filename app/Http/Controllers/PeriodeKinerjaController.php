@@ -130,13 +130,28 @@ class PeriodeKinerjaController extends Controller
         $data = $request->validate($rules);
         DB::transaction(function () use ($period, $table, $level, $data) {
             $period = PeriodeKinerja::whereKey($period->id)->lockForUpdate()->firstOrFail();
-            if ($period->status !== 'draft') {
-                throw ValidationException::withMessages(['name' => 'Hierarki hanya dapat diubah saat periode draft.']);
+            if (! in_array($period->status, ['draft', 'aktif'], true)) {
+                throw ValidationException::withMessages(['name' => 'Periode sudah ditutup. Indikator bersifat baca saja.']);
             }
             $id = $data['id'] ?? null;
             unset($data['id']);
+            $before = null;
             if ($id) {
-                abort_unless(DB::table($table)->where('id', $id)->where('periode_kinerja_id', $period->id)->exists(), 404);
+                $before = DB::table($table)->where('id', $id)->where('periode_kinerja_id', $period->id)->first();
+                abort_unless($before, 404);
+            } elseif ($period->status === 'aktif') {
+                throw ValidationException::withMessages(['name' => 'Penambahan indikator dilakukan pada periode draft. Pilih indikator yang sudah ada untuk mengedit periode aktif.']);
+            }
+            if ($period->status === 'aktif') {
+                $parent = AnnualIndicatorService::PARENTS[$table];
+                if ($data['is_active'] && $parent && ! DB::table($parent[1])->where('id', $data[$parent[0]])
+                    ->where('periode_kinerja_id', $period->id)->where('is_active', true)->exists()) {
+                    throw ValidationException::withMessages([$parent[0] => 'Pilih induk aktif pada tahun yang sama.']);
+                }
+                if (! $data['is_active'] && (int) $level < 4 && DB::table('indikator_fitur'.((int) $level + 1).'s')
+                    ->where('periode_kinerja_id', $period->id)->where('indikator_fitur'.$level.'_id', $id)->where('is_active', true)->exists()) {
+                    throw ValidationException::withMessages(['is_active' => 'Masih ada anak aktif. Pindahkan atau nonaktifkan anak terlebih dahulu agar bagan tetap terhubung.']);
+                }
             }
             $data['tujuan'] = $data['tujuan'] ?? '';
             $data['kode_cascading'] = trim($data['kode_cascading'] ?? '') ?: null;
@@ -172,12 +187,35 @@ class PeriodeKinerjaController extends Controller
             $data['updated_at'] = now();
             if ($id) {
                 DB::table($table)->where('id', $id)->update($data);
+                if ((int) $before->sasaran_strategis_id !== (int) $context) {
+                    $this->syncDescendantContext((int) $level, (int) $id, $period->id, (int) $context);
+                }
+                activity('indikator_tahunan')->performedOn($period)->causedBy(auth()->user())
+                    ->withProperties(['level' => $level, 'indicator_id' => $id,
+                        'old' => (array) $before, 'attributes' => (array) DB::table($table)->find($id)])
+                    ->log('Indikator fitur '.$level.' diubah');
             } else {
                 DB::table($table)->insert($data + ['periode_kinerja_id' => $period->id, 'lineage_id' => (string) Str::uuid(), 'created_at' => now()]);
             }
+            $period->update(['updated_by' => auth()->id()]);
         });
 
-        return back()->with('message', 'Indikator disimpan.');
+        return back()->with(['type' => 'success', 'message' => 'Indikator fitur '.$level.' berhasil disimpan.']);
+    }
+
+    private function syncDescendantContext(int $level, int $id, int $periodId, int $context): void
+    {
+        $ids = [$id];
+        for ($childLevel = $level + 1; $childLevel <= 4 && $ids; $childLevel++) {
+            $table = 'indikator_fitur'.$childLevel.'s';
+            $ids = DB::table($table)->where('periode_kinerja_id', $periodId)
+                ->whereIn('indikator_fitur'.($childLevel - 1).'_id', $ids)->pluck('id')->all();
+            DB::table($table)->whereIn('id', $ids)->update(['sasaran_strategis_id' => $context, 'updated_at' => now()]);
+        }
+        if ($ids && Schema::hasTable('indikator_fitur04s')) {
+            DB::table('indikator_fitur04s')->where('periode_kinerja_id', $periodId)
+                ->whereIn('indikator_fitur4_id', $ids)->update(['sasaran_strategis_id' => $context, 'updated_at' => now()]);
+        }
     }
 
     public function mapping(Request $request)

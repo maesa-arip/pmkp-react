@@ -20,8 +20,12 @@ Urutan hierarki:
 Pilih **Buat tahun baru** untuk membuat periode draft kosong atau menyalin
 hierarki tahun sebelumnya. Pada tab **Hierarki indikator**, pilih tingkat lalu
 tambah/edit nama, tujuan, jabatan, kode, urutan, dan status aktif. Induk harus
-berasal dari tahun yang sama. Periode draft dapat diedit; aktivasi mengunci
-hierarki dan mengizinkan transaksi. Periode yang ditutup bersifat baca saja.
+berasal dari tahun yang sama. Indikator fitur 1–4 dapat diedit pada periode draft
+dan aktif, melalui tombol Edit pada kartu bagan atau daftar hierarki. Penambahan
+indikator baru dilakukan pada draft. Periode yang ditutup bersifat baca saja.
+Perubahan indikator dicatat dalam log aktivitas. Snapshot risiko dan arsip
+Cascading sebelumnya tetap tersimpan. Pada periode aktif, induk yang dipilih
+harus aktif; induk dengan anak aktif tidak dapat dinonaktifkan.
 
 Tab **Bagan Cascading** menampilkan hubungan keempat tingkat. **Ekspor Cascading**
 menghasilkan Excel dan menyimpan snapshot arsip. Copy Risk Register memetakan
@@ -46,3 +50,12 @@ halaman aplikasi langsung memerlukan login pengguna.
 Perubahan indikator disimpan pada branch `codex/indikator-tahunan-lokal`.
 Branch `main` tetap pada commit rilis production `61fb174`.
 Branch indikator belum di-push atau dideploy ke production.
+
+## Editor fitur 1–4, 14 September 2026
+
+Tombol Edit tersedia pada kartu bagan dan daftar hierarki untuk periode draft
+dan aktif. Pemindahan induk menyelaraskan konteks sasaran seluruh turunannya.
+Validasi: 20 pengujian AnnualIndicatorsTest, CascadingLayoutTest, dan
+PreloadResponseHeadersTest lulus; build frontend dan SSR berhasil. Editor
+keempat tingkat serta pembatasan periode ditutup diperiksa di browser dengan
+data contoh. Pengujian penyimpanan menggunakan transaksi database yang di-rollback.

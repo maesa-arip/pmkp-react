@@ -215,6 +215,75 @@ class AnnualIndicatorsTest extends TestCase
         $duplicate->save();
     }
 
+    public function test_active_period_supports_editing_all_four_levels_without_rewriting_saved_snapshots(): void
+    {
+        $snapshot = $this->source->fresh()->indikator_snapshot;
+        $this->get(route('kinerja.export', $this->sourcePeriod->id))->assertOk();
+        $archive = DB::table('cascading_exports')->where('periode_kinerja_id', $this->sourcePeriod->id)->latest('id')->first();
+
+        foreach (range(1, 4) as $level) {
+            $table = 'indikator_fitur'.$level.'s';
+            $row = DB::table($table)->find($snapshot[$table]['id']);
+            $payload = (array) $row;
+            $payload['name'] = 'Nama diperbarui fitur '.$level;
+            $payload['tujuan'] = 'Tujuan diperbarui';
+            $payload['jabatan'] = 'Penanggung jawab diperbarui';
+            if ($level === 4) {
+                $payload['location_id'] = [0];
+            }
+            $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, (string) $level]), $payload)->assertSessionHasNoErrors();
+            $this->assertDatabaseHas($table, ['id' => $row->id, 'name' => $payload['name'], 'tujuan' => $payload['tujuan'], 'jabatan' => $payload['jabatan']]);
+            $this->assertDatabaseHas($table, ['periode_kinerja_id' => $this->target->id, 'copied_from_id' => $row->id, 'name' => $row->name]);
+            $activity = \Spatie\Activitylog\Models\Activity::where('log_name', 'indikator_tahunan')->latest('id')->firstOrFail();
+            $this->assertEquals($row->name, $activity->properties['old']['name']);
+            $this->assertEquals($payload['name'], $activity->properties['attributes']['name']);
+            $this->assertEquals(auth()->id(), $activity->causer_id);
+        }
+
+        $this->assertSame($snapshot, $this->source->fresh()->indikator_snapshot);
+        $this->assertSame($archive->snapshot, DB::table('cascading_exports')->where('id', $archive->id)->value('snapshot'));
+        $this->get(route('kinerja.index', ['tahun' => $this->sourcePeriod->tahun]))->assertInertia(fn (Assert $page) => $page
+            ->where('period.status', 'aktif')
+            ->where('nodes.4', fn ($rows) => collect($rows)->contains('name', 'Nama diperbarui fitur 4')));
+    }
+
+    public function test_active_reparenting_updates_descendant_context_and_rejects_disconnected_children(): void
+    {
+        $snapshot = $this->source->fresh()->indikator_snapshot;
+        $program = DB::table('indikator_fitur2s')->find($snapshot['indikator_fitur2s']['id']);
+        $newParent = DB::table('indikator_fitur1s')->where('periode_kinerja_id', $this->sourcePeriod->id)
+            ->where('id', '<>', $program->indikator_fitur1_id)->where('is_active', true)->first();
+        $payload = (array) $program;
+        $payload['indikator_fitur1_id'] = $newParent->id;
+        $payload['kode_cascading'] = null;
+        $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, '2']), $payload)->assertSessionHasNoErrors();
+        foreach ([2 => $program->id, 3 => $snapshot['indikator_fitur3s']['id'], 4 => $snapshot['indikator_fitur4s']['id']] as $level => $id) {
+            $this->assertDatabaseHas('indikator_fitur'.$level.'s', ['id' => $id, 'sasaran_strategis_id' => $newParent->sasaran_strategis_id]);
+        }
+        $payload['is_active'] = false;
+        $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, '2']), $payload)->assertSessionHasErrors('is_active');
+        $this->assertDatabaseHas('indikator_fitur2s', ['id' => $program->id, 'is_active' => true]);
+        $payload['is_active'] = true;
+        DB::table('indikator_fitur1s')->where('id', $newParent->id)->update(['is_active' => false]);
+        $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, '2']), $payload)->assertSessionHasErrors('indikator_fitur1_id');
+        $payload['indikator_fitur1_id'] = DB::table('indikator_fitur1s')->where('periode_kinerja_id', $this->target->id)->value('id');
+        $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, '2']), $payload)->assertSessionHasErrors('indikator_fitur1_id');
+        $this->assertSame($snapshot, $this->source->fresh()->indikator_snapshot);
+    }
+
+    public function test_closed_cross_period_and_unauthorized_edits_are_rejected(): void
+    {
+        $row = DB::table('indikator_fitur1s')->where('periode_kinerja_id', $this->sourcePeriod->id)->first();
+        $payload = (array) $row;
+        $payload['name'] = 'Perubahan ditolak';
+        $this->post(route('kinerja.nodes', [$this->target->id, '1']), $payload)->assertNotFound();
+        $this->sourcePeriod->update(['status' => 'ditutup']);
+        $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, '1']), $payload)->assertSessionHasErrors('name');
+        $this->admin = false;
+        $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, '1']), $payload)->assertForbidden();
+        $this->assertDatabaseHas('indikator_fitur1s', ['id' => $row->id, 'name' => $row->name]);
+    }
+
     public function test_editor_can_create_draft_and_export_treats_text_as_literal(): void
     {
         $this->post(route('kinerja.store'), ['tahun' => 2092])->assertSessionHasNoErrors();

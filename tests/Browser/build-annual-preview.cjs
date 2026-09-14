@@ -22,7 +22,16 @@ async function main() {
                 tree[0].children[2].children = [];
             }
             if (params.get('case') === 'empty') tree.length = 0;
-            createRoot(document.getElementById('root')).render(<main className="min-h-screen bg-slate-50 p-4 font-sans dark:bg-slate-900 sm:p-6"><Index periods={[period]} period={period} cascadingTree={tree} nodes={{
+            const editNodes = {sasaran:[],1:[],2:[],3:[],4:[],'04':[]};
+            const collect = (items, parentId) => items.forEach(item => {
+                Object.assign(item, {periode_kinerja_id:1,is_active:1,sort_order:1,sasaran_strategis_id:1,tujuan:'Tujuan '+item.name});
+                if (item.level !== '1') item['indikator_fitur'+(Number(item.level)-1)+'_id'] = parentId;
+                if (item.level === '4') item.location_id = '[1]';
+                editNodes[item.level].push(item);
+                collect(item.children, item.id);
+            });
+            collect(tree, null);
+            createRoot(document.getElementById('root')).render(<main className="min-h-screen bg-slate-50 p-4 font-sans dark:bg-slate-900 sm:p-6"><Index periods={[period]} period={period} cascadingTree={tree} nodes={params.get('case') === 'edit' ? editNodes : {
                 sasaran:[{...common,id:1,name:'Meningkatnya mutu pelayanan',parent_id:0}],
                 1:[{...common,id:2,name:'Indeks kepuasan masyarakat',tujuan:'Meningkatnya kepuasan pengguna layanan',sasaran_strategis_id:1}],
                 2:[{...common,id:3,name:'Persentase capaian standar pelayanan',sasaran_strategis_id:1,indikator_fitur1_id:2}],
