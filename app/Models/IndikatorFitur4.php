@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class IndikatorFitur4 extends Model
 {
     use HasFactory;
+    use \App\Models\Concerns\HasAnnualIndicator;
     protected  $guarded = [];
     public function risk_register()
     {

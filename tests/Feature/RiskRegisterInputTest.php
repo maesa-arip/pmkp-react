@@ -7,6 +7,7 @@ use App\Models\RiskRegister;
 use App\Models\RiskRegisterHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
@@ -20,6 +21,7 @@ class RiskRegisterInputTest extends TestCase
         $this->withoutExceptionHandling();
         $template = RiskRegister::firstOrFail();
         $pic = Pic::firstOrFail();
+        DB::table('indikator_fitur4s')->where('id', $template->indikator_fitur4_id)->update(['location_id' => '[0]']);
         $this->actingAs(User::factory()->create(['pic_id' => $pic->id, 'username' => 'risk-input-'.uniqid()]));
         Gate::before(fn () => true);
 

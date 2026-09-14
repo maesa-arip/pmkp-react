@@ -13,6 +13,8 @@ class RiskRegister extends Model
 {
     use HasFactory,SoftDeletes,LogsActivity;
 
+    protected $casts = ['indikator_snapshot' => 'array', 'needs_review' => 'boolean'];
+
     public const FORM_FIELDS = [
         'indikator_fitur4_id',
         'indikator_fitur04_id',

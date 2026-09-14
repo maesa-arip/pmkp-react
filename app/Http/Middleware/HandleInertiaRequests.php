@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
             ->where($whosStatus)->where('currently_id',1)->count() : '';
             $permissionNames = $request->user() ? $request->user()->getAllPermissions() : null;
         return array_merge(parent::share($request), [
+            'annualPeriods' => fn () => $request->user() ? \App\Models\PeriodeKinerja::orderByDesc('tahun')->get(['id', 'tahun', 'status']) : [],
             'auth' => [
                 'user' => $request->user(),
             ],

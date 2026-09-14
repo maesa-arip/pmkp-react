@@ -66,8 +66,8 @@ export default function Index({ filters, preview, options }) {
     const hasMounted = useRef(false);
     const { data, setData } = useForm({
         copy_mode: filters.copy_mode || "year",
-        source_year: filters.source_year || 2025,
-        target_year: filters.target_year || 2026,
+        source_year: filters.source_year || new Date().getFullYear() - 1,
+        target_year: filters.target_year || new Date().getFullYear(),
         tipe_id: filters.tipe_id || "",
         currently_id: filters.currently_id || "",
         user_id: filters.user_id || "",
@@ -177,6 +177,13 @@ export default function Index({ filters, preview, options }) {
                     </div>
                 </div>
 
+                <div className="space-y-2 rounded-xl border p-4 text-sm">
+                    <p>Hasil copy memakai indikator tahun tujuan dan perlu review. Nilai evaluasi, realisasi, dan bukti tahun sebelumnya dikosongkan. Padanan teks hanya peringatan kemungkinan duplikat.</p>
+                    {options.canManageIndicators && <a className="text-sky-600 underline" href={route('kinerja.index', { tahun: data.target_year })}>Kelola indikator dan pemetaan tahun tujuan</a>}
+                    {preview.period_error && <p role="alert" className="text-red-600">{preview.period_error}</p>}
+                    <p>Belum terpetakan: {preview.unmapped || 0}. Unit tidak sesuai: {preview.unit_mismatch || 0}.</p>
+                    {(preview.blocked || []).length > 0 && <details><summary>Lihat risiko yang perlu penyesuaian (maks. 100)</summary><ul>{preview.blocked.map(x => <li key={x.id}>{x.kode || x.id} — indikator sumber #{x.indicator_id}: {x.reason}</li>)}</ul></details>}
+                </div>
                 <DestroyModal
                     title="Konfirmasi Copy Risk Register"
                     warning={

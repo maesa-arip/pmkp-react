@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\MUTU\MutuUnit;
+use App\Models\PeriodeKinerja;
+use App\Services\AnnualIndicatorService;
 use App\Models\Pic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -22,11 +24,22 @@ class MutuYearFilterTest extends TestCase
         $this->actingAs(User::factory()->create(['pic_id' => $pic->id, 'username' => 'mutu-year-'.uniqid()]));
         Gate::before(fn () => true);
         DB::table('mutu_indikators')->where('id', $sample->mutu_indikator_id)->update(['approved' => 1, 'location_id' => $pic->location_id]);
+        $masters = [];
+        foreach ([2097, 2098] as $year) {
+            $period = PeriodeKinerja::create(['tahun' => $year, 'status' => 'draft']);
+            app(AnnualIndicatorService::class)->copyHierarchy($sample->mutu_indikator->periode_kinerja_id, $period);
+            $masters[$year] = DB::table('mutu_indikators')->where('periode_kinerja_id', $period->id)
+                ->where('copied_from_id', $sample->mutu_indikator_id)->value('id');
+            DB::table('mutu_indikators')->where('id', $masters[$year])->update(['approved' => 1]);
+            $period->update(['status' => 'aktif']);
+        }
         $first = $sample->replicate();
+        $first->mutu_indikator_id = $masters[2097];
         $first->tanggal_mutu = '2097-01-15';
         $first->code = 'yr2097';
         $first->save();
         $second = $sample->replicate();
+        $second->mutu_indikator_id = $masters[2098];
         $second->tanggal_mutu = '2098-01-15';
         $second->code = 'yr2098';
         $second->save();
