@@ -46,6 +46,8 @@ export default function Index(props) {
 
     let ShouldMap = {
         MutuKategori: props.MutuKategori,
+        Periods: props.MutuPeriods || [],
+        tahun: filtered.tahun,
         Penyebut: props.MutuPenyebut || [],
         IndikatorFitur3: props.IndikatorFitur3,
         IndikatorFitur4: props.IndikatorFitur4,

@@ -32,6 +32,7 @@ class AnnualIndicatorService
                 throw ValidationException::withMessages(['tahun' => 'Copy hierarki hanya ke periode draft yang berbeda.']);
             }
             $maps = [];
+            $sourceVersion = $sourcePeriod ? (int) PeriodeKinerja::whereKey($sourcePeriod)->value('feature_schema_version') : 1;
             foreach (self::TABLES as $table) {
                 if (! Schema::hasTable($table)) {
                     continue;
@@ -72,12 +73,12 @@ class AnnualIndicatorService
                             $data['lineage_id'] = $lineage;
                             $data['copied_from_id'] = $id;
                             $data['created_at'] = $data['updated_at'] = now();
-                            if (! empty($row->penanggung_jawab_id)) {
+                            if (! empty($row->penanggung_jawab_id) && ! ($sourceVersion === 2 && $table === 'indikator_fitur4s')) {
                                 $position = DB::table('kinerja_penanggung_jawabs')->where('id', $row->penanggung_jawab_id)->first();
                                 $data['jabatan'] = $position->name;
                                 if ($table === 'indikator_fitur4s') {
                                     $units = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $position->id)->orderBy('location_id')->pluck('location_id')->map(fn ($id) => (int) $id)->all();
-                                    if ($units) {
+                                    if ($units || $position->pic_id) {
                                         $data['location_id'] = json_encode($units);
                                     }
                                 }
@@ -101,6 +102,77 @@ class AnnualIndicatorService
                     }
                 }
             }
+            if ($sourcePeriod !== null && Schema::hasTable('indikator_kinerjas')) {
+                foreach (DB::table('indikator_kinerjas')->where('periode_kinerja_id', $sourcePeriod)->get() as $row) {
+                    $existing = DB::table('indikator_kinerjas')->where('periode_kinerja_id', $target->id)->where('lineage_id', $row->lineage_id)->first();
+                    if ($existing) {
+                        $maps['indikator_kinerjas'][$row->id] = $existing->id;
+
+                        continue;
+                    }
+                    $data = (array) $row;
+                    unset($data['id']);
+                    $data['periode_kinerja_id'] = $target->id;
+                    $data['copied_from_id'] = $row->id;
+                    foreach ([2, 3] as $level) {
+                        if ($row->{'indikator_fitur'.$level.'_id'}) {
+                            $data['indikator_fitur'.$level.'_id'] = $maps['indikator_fitur'.$level.'s'][$row->{'indikator_fitur'.$level.'_id'}];
+                        }
+                    }
+                    $data['created_at'] = $data['updated_at'] = now();
+                    $maps['indikator_kinerjas'][$row->id] = DB::table('indikator_kinerjas')->insertGetId($data);
+                }
+                $sourceVersion = PeriodeKinerja::whereKey($sourcePeriod)->value('feature_schema_version');
+                $locked->update(['feature_schema_version' => $sourceVersion ?? 1]);
+                if (Schema::hasTable('cascading_concepts') && ! DB::table('cascading_concepts')->where('periode_kinerja_id', $target->id)->exists()) {
+                    $concepts = DB::table('cascading_concepts')->where('periode_kinerja_id', $sourcePeriod)->orderBy('sort_order')->get()->keyBy('id')->all();
+                    $conceptMap = [];
+                    while ($concepts) {
+                        $progress = false;
+                        foreach ($concepts as $id => $node) {
+                            if ($node->parent_id && ! isset($conceptMap[$node->parent_id])) {
+                                continue;
+                            }
+                            $data = (array) $node;
+                            unset($data['id']);
+                            $data['periode_kinerja_id'] = $target->id;
+                            $data['parent_id'] = $node->parent_id ? $conceptMap[$node->parent_id] : null;
+                            if ($node->legacy_table) {
+                                if (! isset($maps[$node->legacy_table][$node->legacy_id])) {
+                                    throw ValidationException::withMessages(['hierarki' => 'Pemetaan konsep sumber tidak lengkap.']);
+                                }
+                                $data['legacy_id'] = $maps[$node->legacy_table][$node->legacy_id];
+                            }
+                            $data['created_at'] = $data['updated_at'] = now();
+                            $conceptMap[$id] = DB::table('cascading_concepts')->insertGetId($data);
+                            unset($concepts[$id]);
+                            $progress = true;
+                        }
+                        if (! $progress) {
+                            throw ValidationException::withMessages(['hierarki' => 'Hubungan konsep sumber membentuk siklus.']);
+                        }
+                    }
+                    if ($conceptMap && ($sourceTemplate = DB::table('cascading_workbook_templates')->where('periode_kinerja_id', $sourcePeriod)->first())) {
+                        $bindings = json_decode($sourceTemplate->bindings, true);
+                        foreach ($bindings as &$cells) {
+                            foreach ($cells as &$binding) {
+                                $binding['id'] = $conceptMap[$binding['id']];
+                            }
+                        }
+                        unset($cells,$binding);
+                        $structure = json_decode($sourceTemplate->structure, true);
+                        $structure['node_ids'] = array_values($conceptMap);
+                        $data = (array) $sourceTemplate;
+                        unset($data['id']);
+                        $data['periode_kinerja_id'] = $target->id;
+                        $data['bindings'] = json_encode($bindings);
+                        $data['structure'] = json_encode($structure);
+                        $data['created_at'] = $data['updated_at'] = now();
+                        DB::table('cascading_workbook_templates')->insert($data);
+                    }
+                }
+            }
+
             if ($sourcePeriod !== null && Schema::hasTable('mutu_indikators')) {
                 foreach (DB::table('mutu_indikators')->where('periode_kinerja_id', $sourcePeriod)->get() as $master) {
                     if (! isset($maps['indikator_fitur4s'][$master->indikator_fitur4_id])) {
@@ -144,25 +216,40 @@ class AnnualIndicatorService
 
     public function acceptsPics(object $indicator, array $picIds): bool
     {
-        $locations = array_map('intval', (array) (is_string($indicator->location_id) ? json_decode($indicator->location_id, true) : $indicator->location_id));
-        if (in_array(0, $locations, true)) {
-            return true;
-        }
-        if (! $picIds || in_array(0, $picIds, true)) {
+        if (! $picIds) {
             return false;
         }
-        $pics = DB::table('pics')->whereIn('id', $picIds)->pluck('location_id', 'id');
+        // Zero is the existing all-units sentinel; it does not change account access.
+        if (in_array(0, $picIds, true)) {
+            return true;
+        }
+        $pics = DB::table('pics')->whereIn('id', $picIds)->pluck('id');
+        $access = app(RiskIndicatorAccess::class);
 
-        return $pics->count() === count(array_unique($picIds)) && $pics->every(fn ($id) => in_array((int) $id, $locations, true));
+        return $pics->count() === count(array_unique($picIds))
+            && $pics->every(fn ($id) => $access->forPic((int) $id)->whereKey($indicator->id)->exists());
     }
 
     public static function ids($value): array
     {
-        if (is_string($value)) {
-            $value = json_decode($value, true) ?? explode(',', trim($value, '[]"'));
+        // Legacy rows include CSV, scalars, arrays and repeatedly encoded JSON strings.
+        for ($depth = 0; is_string($value) && $depth < 8; $depth++) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $value = explode(',', trim($value, '[]" '));
+                break;
+            }
+            $value = $decoded;
+        }
+        $ids = [];
+        foreach ((array) $value as $id) {
+            if (! is_scalar($id) || ! preg_match('/^\d+$/', trim((string) $id))) {
+                return [];
+            }
+            $ids[] = (int) $id;
         }
 
-        return array_values(array_unique(array_map('intval', (array) $value)));
+        return array_values(array_unique($ids));
     }
 
     public function snapshot(int $indicatorId): array

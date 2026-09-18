@@ -1,10 +1,13 @@
-import { useForm } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import React from 'react';
 import Form from './Form';
 
 export default function Create({ setIsOpenAddDialog, ShouldMap }) {
     // Inisialisasi properti yang dibutuhkan
-    const { data, setData, post, reset, errors } = useForm({
+    const { annualPeriods = [] } = usePage().props;
+    const activeYear = annualPeriods.find(period => period.status === 'aktif')?.tahun;
+    const { data, setData, post, reset, errors, processing } = useForm({
+        tahun: activeYear ? String(activeYear) : "",
         tgl_register: "",
         tgl_selesai: "",
         pernyataan_risiko: "",
@@ -75,6 +78,7 @@ export default function Create({ setIsOpenAddDialog, ShouldMap }) {
         // FIX BUG: Menggunakan w-full h-full fleksibel agar tidak memaksa tergencet max-h
         <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
             <Form 
+                processing={processing}
                 errors={errors} 
                 data={data} 
                 ShouldMap={ShouldMap} 

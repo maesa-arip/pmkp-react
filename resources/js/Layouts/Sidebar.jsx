@@ -106,6 +106,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         "riskTypes",
         "pics",
         "jenisSebabs",
+        "celahPengendalians",
         "riskGradings",
         "impactValues",
         "probabilityValues",
@@ -242,6 +243,9 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                         />
                         Dashboard
                     </div>
+                </Link>
+                <Link href={route("kinerja.performance.index")} onClick={closeSidebar} className={getNavClasses(isActive("kinerja.performance.index"))}>
+                    <div className="flex items-center"><DocumentChartBarIcon className={getIconClasses(isActive("kinerja.performance.index"))} />Kinerja Kegiatan</div>
                 </Link>
                 <Link
                     href={route("notifications")}
@@ -655,6 +659,11 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                             >
                                                 Jenis Sebab
                                             </Link>
+                                            {hasPermission("atur data master manajemen risiko", "edit data master manajemen risiko") && (
+                                                <Link href={route("celahPengendalians.index")} onClick={closeSidebar} className={getSubNavClasses(routeName.startsWith("celahPengendalians"))}>
+                                                    Celah Pengendalian
+                                                </Link>
+                                            )}
                                             <Link
                                                 href={route("riskGradings.index")}
                                                 onClick={closeSidebar}
@@ -666,7 +675,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                             </Link>
                                         </>
                                     )}
-                                    {hasPermission("atur data master manajemen risiko", "atur hak akses") && <Link href={route("kinerja.index")} onClick={closeSidebar} className={getSubNavClasses(routeName.startsWith("kinerja"))}>Indikator Tahunan & Cascading</Link>}
+                                    {hasPermission("atur data master manajemen risiko", "atur hak akses") && <Link href={route("kinerja.index")} onClick={closeSidebar} className={getSubNavClasses(routeName.startsWith("kinerja") && !routeName.startsWith("kinerja.performance"))}>Indikator Tahunan & Cascading</Link>}
                                     {canSeeRiskCopy && (
                                         <Link
                                             href={route("riskRegisterCopy.index")}

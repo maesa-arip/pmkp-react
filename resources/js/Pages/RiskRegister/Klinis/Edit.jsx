@@ -1,12 +1,13 @@
 import { useForm } from "@inertiajs/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     // PENGAMANAN: Mencegah crash jika model tiba-tiba kosong
     const safeModel = model || {}; 
 
-    const { data, setData, put, reset, errors } = useForm({
+    const { data, setData, put, reset, errors, processing } = useForm({
+        tahun: String(safeModel.tgl_register || "").slice(0, 4),
         tgl_register: safeModel.tgl_register || "",
         tgl_selesai: safeModel.tgl_selesai || "",
         pernyataan_risiko: safeModel.pernyataan_risiko || "",
@@ -60,12 +61,16 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         setIsOpenEditDialog(false);
     };
 
+    const submitting = useRef(false);
     const onSubmit = (e) => {
         e.preventDefault();
+        if (submitting.current || processing) return;
         if (!safeModel.id) return;
         
+        submitting.current = true;
         put(route("riskRegisterKlinis.update", safeModel.id), {
             data,
+            onFinish: () => { submitting.current = false; },
             onSuccess: () => {
                 reset();
                 setIsOpenEditDialog(false);
@@ -77,6 +82,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         if (!model) return;
         setData({
             ...data,
+            tahun: String(model.tgl_register || "").slice(0, 4),
             tgl_register: model.tgl_register,
             tgl_selesai: model.tgl_selesai,
             pernyataan_risiko: model.pernyataan_risiko,
@@ -135,6 +141,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         // FIX BUG: Menggunakan w-full h-full fleksibel agar tidak memaksa tergencet max-h
         <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
             <Form
+                processing={processing}
                 errors={errors}
                 data={data}
                 model={model}

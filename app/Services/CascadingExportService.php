@@ -28,11 +28,24 @@ class CascadingExportService
                 throw \Illuminate\Validation\ValidationException::withMessages(['hierarki' => count($unlinked).' data aktif memiliki induk tidak aktif atau tidak ditemukan. Perbaiki hierarki sebelum ekspor.']);
             }
 
-            return ['period' => $period->toArray(), 'template_version' => '2',
+            $data = ['period' => $period->toArray(), 'template_version' => '3',
                 'levels' => array_map(fn ($rows) => array_values(array_filter($rows, fn ($row) => $row['is_active'])), $hierarchy->decorate($levels)),
                 'tree' => $tree];
+            $concept = app(CascadingConceptService::class)->snapshot($data);
+            if ($concept) {
+                $data['concept_workbook'] = $concept;
+                $data['template_version'] = ! empty($concept['director_from_database']) ? '6' : '5';
+                return $data;
+            }
+            $source = app(CascadingSourceWorkbookService::class)->snapshot($data);
+            if ($source) {
+                $data['source_workbook'] = $source;
+                $data['template_version'] = '4';
+            }
+
+            return $data;
         });
-        $id = DB::table('cascading_exports')->insertGetId(['periode_kinerja_id' => $period->id, 'template_version' => '2',
+        $id = DB::table('cascading_exports')->insertGetId(['periode_kinerja_id' => $period->id, 'template_version' => $snapshot['template_version'],
             'snapshot' => json_encode($snapshot), 'created_by' => auth()->id(), 'created_at' => now(), 'updated_at' => now()]);
 
         return $this->response($snapshot, $id);
@@ -51,14 +64,28 @@ class CascadingExportService
     private function response(array $snapshot, int $id)
     {
         return response()->streamDownload(function () use ($snapshot) {
-            $book = ($snapshot['template_version'] ?? '2') === '1'
-                ? app(LegacyCascadingExportService::class)->build($snapshot) : $this->build($snapshot);
+            $book = match ((string) ($snapshot['template_version'] ?? '3')) {
+                '1' => app(LegacyCascadingExportService::class)->build($snapshot),
+                '2' => $this->buildChart($snapshot),
+                default => $this->build($snapshot),
+            };
             (new Xlsx($book))->save('php://output');
             $book->disconnectWorksheets();
         }, 'Cascading-'.$snapshot['period']['tahun'].'-'.$id.'.xlsx', ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
     }
 
     public function build(array $data): Spreadsheet
+    {
+        if (isset($data['concept_workbook'])) {
+            return app(CascadingConceptService::class)->build($data);
+        }
+        return isset($data['source_workbook'])
+            ? app(CascadingSourceWorkbookService::class)->build($data)
+            : app(CascadingTemplateExportService::class)->build($data);
+    }
+
+    /** Keep the original layout for version 2 archives. */
+    private function buildChart(array $data): Spreadsheet
     {
         $book = new Spreadsheet();
         $sheet = $book->getActiveSheet()->setTitle('Cascading '.$data['period']['tahun']);
@@ -108,9 +135,12 @@ class CascadingExportService
                         foreach ($activity['children'] as $indicator) {
                             $cursor = $this->node($sheet, $indicator, $left + 1, 8, $cursor) + 1;
                         }
-                        $this->vertical($sheet, $left, $branchEnd + 1, $cursor);
+
                         $sheet->getStyle(Coordinate::stringFromColumnIndex($left).$railStart)->getBorders()->getTop()->setBorderStyle('thin')->getColor()->setRGB('94A3B8');
                         $cursor += 2;
+                    }
+                    if ($branch['children']) {
+                        $this->vertical($sheet, $left, $branchEnd + 1, $cursor - 2);
                     }
                     $ends[] = $cursor;
                 }
@@ -162,16 +192,19 @@ class CascadingExportService
         $range = $first.':'.Coordinate::stringFromColumnIndex($right).$bottom;
         $sheet->mergeCells($range);
         $sheet->setCellValueExplicit($first, $value, DataType::TYPE_STRING);
-        $style = $sheet->getStyle($range);
-        $style->getFont()->setBold($bold);
-        $style->getFill()->setFillType('solid')->getStartColor()->setRGB($color);
-        $style->getBorders()->getOutline()->setBorderStyle('thin')->getColor()->setRGB($color === 'FFFFFF' && $top < 9 ? 'FFFFFF' : 'CBD5E1');
+        $sheet->getStyle($range)->applyFromArray([
+            'font' => ['bold' => $bold],
+            'fill' => ['fillType' => 'solid', 'startColor' => ['rgb' => $color]],
+            'borders' => ['outline' => ['borderStyle' => 'thin', 'color' => ['rgb' => $color === 'FFFFFF' && $top < 9 ? 'FFFFFF' : 'CBD5E1']]],
+        ]);
     }
 
     private function vertical(Worksheet $sheet, int $col, int $top, int $bottom): void
     {
         $letter = Coordinate::stringFromColumnIndex($col);
-        $sheet->getStyle($letter.$top.':'.$letter.$bottom)->getBorders()->getRight()->setBorderStyle('thin')->getColor()->setRGB('94A3B8');
+        $sheet->getStyle($letter.$top.':'.$letter.$bottom)->applyFromArray([
+            'borders' => ['right' => ['borderStyle' => 'thin', 'color' => ['rgb' => '94A3B8']]],
+        ]);
     }
 
     private function lines(string $text, int $width): int

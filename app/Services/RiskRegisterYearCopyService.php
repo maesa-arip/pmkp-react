@@ -43,9 +43,11 @@ class RiskRegisterYearCopyService
     {
         $sourceYear = (int) $filters['source_year'];
         $targetYear = (int) $filters['target_year'];
+        $codeMode = $filters['risk_code_mode'] ?? ($unit ? 'new' : 'preserve');
+        $preserveCode = $codeMode === 'preserve';
         $result = ['source_year' => $sourceYear, 'target_year' => $targetYear, 'source_total' => 0,
             'already_copied' => 0, 'equivalent_target' => 0, 'eligible' => 0, 'unmapped' => 0,
-            'unit_mismatch' => 0, 'blocked' => [], 'copied' => 0, 'skipped' => 0, 'type' => 'success'];
+            'unit_mismatch' => 0, 'code_conflict' => 0, 'missing_code' => 0, 'blocked' => [], 'copied' => 0, 'skipped' => 0, 'type' => 'success'];
         $period = \App\Models\PeriodeKinerja::where('tahun', $targetYear)->first();
         $error = ! $period || $period->status !== 'aktif' ? 'Siapkan dan aktifkan indikator tahun tujuan terlebih dahulu.' : null;
         if (! $unit && $targetYear <= $sourceYear) {
@@ -60,10 +62,15 @@ class RiskRegisterYearCopyService
                 $error = 'User tujuan harus sesuai dengan unit tujuan.';
             }
         }
+        if (! in_array($codeMode, ['preserve', 'new'], true)) {
+            $error = 'Pilihan kode risiko tidak valid.';
+        } elseif ($unit && $preserveCode) {
+            $error = 'Copy antar unit harus menggunakan kode risiko baru.';
+        }
         if ($error) {
             return array_merge($result, ['message' => $error, 'period_error' => $error, 'type' => 'error']);
         }
-        $run = function () use ($filters, $unit, $execute, $period, $sourceYear, $targetYear, &$result) {
+        $run = function () use ($filters, $unit, $execute, $period, $sourceYear, $targetYear, $codeMode, $preserveCode, &$result) {
             if ($execute) {
                 \App\Models\PeriodeKinerja::whereKey($period->id)->lockForUpdate()->firstOrFail()->assertWritable();
             }
@@ -72,7 +79,8 @@ class RiskRegisterYearCopyService
             if ($execute) {
                 $query->lockForUpdate();
             }
-            $query->chunkById(100, function ($risks) use ($filters, $unit, $execute, $period, $sourceYear, $targetYear, $service, &$result) {
+            $seenCodes = [];
+            $query->chunkById(100, function ($risks) use ($filters, $unit, $execute, $period, $sourceYear, $targetYear, $service, $codeMode, $preserveCode, &$seenCodes, &$result) {
                 foreach ($risks as $risk) {
                     $result['source_total']++;
                     $already = RiskRegister::withTrashed()->where('copied_from_risk_register_id', $risk->id)->where('copied_to_year', $targetYear);
@@ -87,6 +95,22 @@ class RiskRegisterYearCopyService
                         $result['already_copied']++;
 
                         continue;
+                    }
+                    if ($preserveCode) {
+                        $reason = ! trim((string) $risk->kode_risiko) ? 'missing_code' : null;
+                        if (! $reason && (isset($seenCodes[$risk->kode_risiko]) || RiskRegister::withTrashed()
+                            ->whereYear('tgl_register', $targetYear)->where('kode_risiko', $risk->kode_risiko)->exists())) {
+                            $reason = 'code_conflict';
+                        }
+                        if ($reason) {
+                            $result[$reason]++;
+                            if (count($result['blocked']) < 100) {
+                                $result['blocked'][] = ['id' => $risk->id, 'kode' => $risk->kode_risiko,
+                                    'indicator_id' => $risk->indikator_fitur4_id,
+                                    'reason' => $reason === 'missing_code' ? 'Kode sumber kosong; pilih kode baru' : 'Kode risiko sudah ada di tahun tujuan atau dalam pilihan sumber'];
+                            }
+                            continue;
+                        }
                     }
                     $indicator = $service->resolve($risk->indikator_fitur4_id, $period->id);
                     $pics = $unit ? [(int) $filters['target_pic_id']] : AnnualIndicatorService::ids($risk->pic_id);
@@ -107,6 +131,9 @@ class RiskRegisterYearCopyService
                         $result['equivalent_target']++;
                     }
                     $result['eligible']++;
+                    if ($preserveCode) {
+                        $seenCodes[$risk->kode_risiko] = true;
+                    }
                     if (! $execute) {
                         continue;
                     }
@@ -117,7 +144,7 @@ class RiskRegisterYearCopyService
                     $copy->indikator_fitur4_id = $indicator->id;
                     $copy->periode_kinerja_id = $period->id;
                     $copy->currently_id = 2;
-                    $copy->is_risiko_lama = 1;
+                    $copy->is_risiko_lama = $preserveCode ? 1 : 0;
                     $copy->needs_review = true;
                     $copy->copied_from_risk_register_id = $risk->id;
                     $copy->copied_from_year = $sourceYear;
@@ -138,12 +165,17 @@ class RiskRegisterYearCopyService
                             $copy->$field = null;
                         }
                     }
-                    $copy->save();
-                    $prefix = (int) $copy->risk_category_id === 5 ? 'RSO' : 'ROO';
-                    $copy->kode_risiko = $prefix.'.'.$date->format('y').'.02.43.'.$copy->id;
+                    if ($preserveCode) {
+                        $copy->kode_risiko = $risk->kode_risiko;
+                    } else {
+                        $copy->save();
+                        $prefix = (int) $copy->risk_category_id === 5 ? 'RSO' : 'ROO';
+                        $copy->kode_risiko = $prefix.'.'.$date->format('y').'.02.43.'.$copy->id;
+                    }
                     $copy->save();
                     \App\Models\RiskRegisterHistory::recordForRisk($copy, \App\Models\RiskRegisterHistory::EVENT_COPIED_FROM_PREVIOUS_YEAR, null,
-                        ['source_indicator_id' => $risk->indikator_fitur4_id, 'target_indicator_id' => $indicator->id, 'needs_review' => true]);
+                        ['source_indicator_id' => $risk->indikator_fitur4_id, 'target_indicator_id' => $indicator->id, 'needs_review' => true,
+                            'risk_code_mode' => $codeMode, 'source_kode_risiko' => $risk->kode_risiko]);
                     $result['copied']++;
                 }
             });
@@ -155,6 +187,8 @@ class RiskRegisterYearCopyService
         }
         $result['skipped'] = $result['source_total'] - $result['copied'];
         $result['message'] = "{$result['copied']} risiko disalin; {$result['already_copied']} sudah disalin; ".($result['unmapped'] + $result['unit_mismatch']).' perlu pemetaan indikator/unit.';
+
+        $result['message'] .= " {$result['code_conflict']} kode sudah ada; {$result['missing_code']} kode sumber kosong.";
 
         return $result;
     }

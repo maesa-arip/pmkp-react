@@ -1,3 +1,4 @@
+import { picIds } from "@/utils/picIds";
 import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import DangerButton from "@/Components/DangerButton";
 import AddModal from "@/Components/Modal/AddModal";
@@ -117,6 +118,7 @@ export default function Index(props) {
         riskVarieties: props.riskVarieties,
         riskTypes: props.riskTypes,
         jenisSebabs: props.jenisSebabs,
+        celahPengendalians: props.celahPengendalians,
         opsiPengendalian: props.opsiPengendalian,
         pembiayaanRisiko: props.pembiayaanRisiko,
         efektif: props.efektif,
@@ -355,7 +357,7 @@ export default function Index(props) {
                                         const isSelected = selectedRow === index;
                                         const gradingName = item.risk_grading_display_name || "UNRATED";
                                         const gradingStyle = getGradingStyle(gradingName, item.risk_grading_display_color);
-                                        const picName = item.pic?.name || "Sistem";
+                                        const picName = picIds(item.pic_id).includes("0") ? "SEMUA UNIT" : item.pic?.name || "Sistem";
                                         
                                         return (
                                             <tr key={index} onClick={() => onSelectRow(index)} className={`group transition-colors cursor-pointer ${isSelected ? "bg-sky-50/50 dark:bg-white/[0.04]" : "bg-white dark:bg-[#0f172a] hover:bg-slate-50/80 dark:hover:bg-[#161f33]"}`}>

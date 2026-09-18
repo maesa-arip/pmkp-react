@@ -75,6 +75,7 @@ class RiskRegisterCopyController extends Controller
             'identification_source_id' => ['nullable', 'integer', 'exists:identification_sources,id'],
             'priority_scope' => ['nullable', 'string', 'in:all,priority,bpkp'],
             'copy_mode' => ['nullable', 'string', 'in:year,unit'],
+            'risk_code_mode' => ['nullable', 'string', 'in:preserve,new'],
             'source_pic_id' => ['nullable', 'integer', 'exists:pics,id'],
             'target_pic_id' => ['nullable', 'integer', 'exists:pics,id', 'different:source_pic_id'],
             'target_user_id' => ['nullable', 'integer', 'exists:users,id'],
@@ -95,6 +96,7 @@ class RiskRegisterCopyController extends Controller
 
         return [
             'copy_mode' => $copyMode,
+            'risk_code_mode' => $validated['risk_code_mode'] ?? ($copyMode === 'unit' ? 'new' : 'preserve'),
             'source_year' => $sourceYear,
             'target_year' => $targetYear,
             'tipe_id' => $validated['tipe_id'] ?? null,

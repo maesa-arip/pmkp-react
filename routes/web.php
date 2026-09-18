@@ -73,9 +73,12 @@ use Inertia\Inertia;
 
 
 Route::middleware('auth')->group(function () {
+    Route::post('kinerja/{period}/direktur', [\App\Http\Controllers\DirectorCascadingController::class, 'save'])->name('kinerja.director.store');
+    Route::put('kinerja/{period}/direktur/{concept}', [\App\Http\Controllers\DirectorCascadingController::class, 'save'])->name('kinerja.director.update');
     Route::get('kinerja', [\App\Http\Controllers\PeriodeKinerjaController::class, 'index'])->name('kinerja.index');
     Route::post('kinerja', [\App\Http\Controllers\PeriodeKinerjaController::class, 'store'])->name('kinerja.store');
     Route::put('kinerja/{period}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'update'])->name('kinerja.update');
+    Route::put('kinerja/{period}/concepts/{concept}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveConcept'])->name('kinerja.concepts.update');
     Route::post('kinerja/{period}/nodes/{level}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveNode'])->name('kinerja.nodes');
     Route::post('kinerja-mapping', [\App\Http\Controllers\PeriodeKinerjaController::class, 'mapping'])->name('kinerja.mapping');
     Route::post('kinerja-penanggung-jawab', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveResponsible'])->name('kinerja.responsible');
@@ -109,6 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('probabilityValues', ProbabilityValueController::class);
     Route::apiResource('controlValues', ControlValueController::class);
     Route::apiResource('jenisSebabs', JenisSebabController::class);
+    Route::apiResource('celahPengendalians', \App\Http\Controllers\CelahPengendalianController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['celahPengendalians' => 'celahPengendalian']);
 
     Route::apiResource('IkpJenisInsidens', IKPJenisInsidenController::class);
     Route::apiResource('IkpTipeInsiden', IKPTipeInsidenController::class);
@@ -124,6 +128,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/hasilinvestigasi/{IkpPasien}',[IKPPasienController::class,'hasilinvestigasi'])->name('ikppasien.hasilinvestigasi');
     Route::apiResource('MutuKategori', MutuKategoriController::class);
     Route::apiResource('MutuPenyebut', MutuPenyebutController::class);
+    Route::get('IndikatorKinerja', [\App\Http\Controllers\IndikatorKinerjaController::class, 'index'])->name('kinerja.performance.index');
+    Route::post('IndikatorKinerja', [\App\Http\Controllers\IndikatorKinerjaController::class, 'save'])->name('kinerja.performance.store');
+    Route::delete('IndikatorKinerja/{indicator}', [\App\Http\Controllers\IndikatorKinerjaController::class, 'destroy'])->name('kinerja.performance.destroy');
+    Route::put('IndikatorKinerja/{indicator}', [\App\Http\Controllers\IndikatorKinerjaController::class, 'save'])->name('kinerja.performance.update');
     Route::apiResource('MutuIndikator', MutuIndikatorController::class);
     Route::put('/MutuIndikatorApproved/{MutuIndikator}',[MutuIndikatorController::class,'approved'])->name('MutuIndikator.approved');
     Route::apiResource('MutuUnit', MutuUnitController::class);

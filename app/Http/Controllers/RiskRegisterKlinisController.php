@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
+use App\Models\CelahPengendalian;
 use App\Models\Efektif;
 use App\Models\FgdActual;
 use App\Models\FgdInherent;
@@ -111,24 +112,7 @@ class RiskRegisterKlinisController extends Controller
         $impactValues = ImpactValue::where('type', 1)->orderBy('value', 'ASC')->get();
         $probabilityValues = ProbabilityValue::where('type', 1)->orderBy('value', 'ASC')->get();
         $controlValues = ControlValue::where('type', 1)->orderBy('value', 'ASC')->get();
-        $location_login = Pic::where('id', auth()->user()->pic_id)->pluck('location_id');
-        // if (auth()->user()->can('lihat data semua risk register')) {
-        //     return $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get();
-        // }
-        // if (auth()->user()->can('lihat data indikator wakil direktur')) {
-        //     return $indikatorFitur4s = IndikatorFitur4::leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
-        //     ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')->orderBy('indikator_fitur4s.name', 'DESC')->get();
-        // }
-        // if (auth()->user()->can('lihat indikator kabag/kabid')) {
-        //     return $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get();
-        // }
-        // if (auth()->user()->can('lihat indikator ketua tim kerja')) {
-        //     return $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get();
-        // }
-        // if (auth()->user()->can('lihat indikator unit')) {
-        //     $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name', 'DESC')->get();
-        // }
-        $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name', 'DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orwhereJsonContains('location_id', 0)->orderBy('name', 'DESC')->get();
+        $indikatorFitur4s = app(\App\Services\RiskIndicatorAccess::class)->optionsForUser($request->user());
         return Inertia::render('RiskRegister/Klinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,
@@ -141,6 +125,7 @@ class RiskRegisterKlinisController extends Controller
             'riskVarieties' => $riskVarieties,
             'riskTypes' => $riskTypes,
             'jenisSebabs' => $jenisSebabs,
+            'celahPengendalians' => CelahPengendalian::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'pics' => $pics,
             'impactValues' => $impactValues,
             'probabilityValues' => $probabilityValues,
@@ -162,7 +147,15 @@ class RiskRegisterKlinisController extends Controller
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
             'kronologi' => 'required_if:risk_category_id,6',
-            'tgl_register' => 'required',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100|exists:periode_kinerjas,tahun',
+            'tgl_register' => [
+                'bail', 'required', 'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('tahun') && substr($value, 0, 4) !== (string) $request->integer('tahun')) {
+                        $fail('Tanggal register harus sesuai tahun data yang dipilih.');
+                    }
+                },
+            ],
             'sebab' => 'required',
             'currently_id' => 'required',
             'pic_id' => 'required',
@@ -180,7 +173,7 @@ class RiskRegisterKlinisController extends Controller
             'efektif_id' => 'required',
             'pengendalian_harus_ada' => 'required',
             'c_uc' => 'nullable',
-            'celah_pengendalian' => 'nullable',
+            'celah_pengendalian' => ['nullable', 'string', 'max:255', Rule::in(CelahPengendalian::allowedValues())],
             'media_pengkomunikasian' => 'nullable',
             'penyedia_informasi' => 'nullable',
             'penerima_informasi' => 'nullable',
@@ -193,7 +186,8 @@ class RiskRegisterKlinisController extends Controller
             'pihak_terkena' => 'required',
         ]);
         $date = Carbon::parse($request->tgl_register);
-        $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
+        $picIds = \App\Services\AnnualIndicatorService::ids($request->pic_id);
+        $encodedPic = json_encode(in_array(0, $picIds, true) ? [0] : $picIds);
         // dd($encodedPic);
         $tgl_selesai = $date->addDays($request->target_waktu);
         $request->merge([
@@ -237,7 +231,16 @@ class RiskRegisterKlinisController extends Controller
         $this->validate($request, [
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
-            'tgl_register' => 'required',
+            'kronologi' => 'required_if:risk_category_id,6',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100|exists:periode_kinerjas,tahun',
+            'tgl_register' => [
+                'bail', 'required', 'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('tahun') && substr($value, 0, 4) !== (string) $request->integer('tahun')) {
+                        $fail('Tanggal register harus sesuai tahun data yang dipilih.');
+                    }
+                },
+            ],
             'sebab' => 'required',
             'pic_id' => 'required',
             'identification_source_id' => 'required',
@@ -256,7 +259,7 @@ class RiskRegisterKlinisController extends Controller
             'efektif_id' => 'required',
             'pengendalian_harus_ada' => 'required',
             'c_uc' => 'nullable',
-            'celah_pengendalian' => 'nullable',
+            'celah_pengendalian' => ['nullable', 'string', 'max:255', Rule::in(CelahPengendalian::allowedValues(RiskRegister::findOrFail($id)->celah_pengendalian))],
             'media_pengkomunikasian' => 'nullable',
             'penyedia_informasi' => 'nullable',
             'penerima_informasi' => 'nullable',
@@ -270,7 +273,8 @@ class RiskRegisterKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
-        $encodedPic = json_encode($request->pic_id, JSON_NUMERIC_CHECK);
+        $picIds = \App\Services\AnnualIndicatorService::ids($request->pic_id);
+        $encodedPic = json_encode(in_array(0, $picIds, true) ? [0] : $picIds);
         // $osd1_dampak = ImpactValue::where('id', $request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id', $request->osd1_probabilitas)->pluck('value');
         $request->merge([
@@ -333,246 +337,56 @@ class RiskRegisterKlinisController extends Controller
         ]);
     }
 
-    public function fgdinherent(Request $request)
+    public function fgdinherent(Request $request) { return $this->saveFgd($request, 1); }
+    public function fgdresidual(Request $request) { return $this->saveFgd($request, 2); }
+    public function fgdtreated(Request $request) { return $this->saveFgd($request, 3); }
+    public function fgdactual(Request $request) { return $this->saveFgd($request, 4); }
+
+    private function saveFgd(Request $request, int $stage)
     {
-        $riskRegisterKlinis = RiskRegister::findOrFail($request->id);
-        $this->validate($request, [
-            'osd1_dampak' => 'required|integer|between:1,5',
-            'osd1_probabilitas' => 'required|integer|between:1,5',
-            'osd1_controllability' => [
-                'required', 'integer',
-                Rule::exists('control_values', 'value')->where('type', $riskRegisterKlinis->tipe_id),
-            ],
-            'perlu_penanganan_id' => 'required|integer|in:1,2',
-            'dampak_responden1' => 'required|numeric|min:1|max:5',
-            'dampak_responden2' => 'required|numeric|min:1|max:5',
-            'dampak_responden3' => 'required|numeric|min:1|max:5',
-            'dampak_responden4' => 'required|numeric|min:1|max:5',
-            'dampak_responden5' => 'required|numeric|min:1|max:5',
-            'dampak_responden6' => 'required|numeric|min:1|max:5',
+        $risk = RiskRegister::findOrFail($request->id);
+        $prefix = 'osd'.$stage;
+        $rules = [
+            $prefix.'_dampak' => 'required|integer|between:1,5',
+            $prefix.'_probabilitas' => 'required|integer|between:1,5',
+        ];
+        foreach (['dampak', 'probabilitas'] as $field) {
+            for ($i = 1; $i <= 8; $i++) {
+                $rules[$field.'_responden'.$i] = ($i <= 6 ? 'required' : 'nullable').'|integer|between:1,5';
+            }
+        }
+        if ($stage === 1) {
+            $rules['osd1_controllability'] = ['required', 'integer', Rule::exists('control_values', 'value')->where('type', $risk->tipe_id)];
+            $rules['perlu_penanganan_id'] = 'required|integer|in:1,2';
+        }
+        $data = $request->validate($rules);
+        $models = [1 => FgdInherent::class, 2 => FgdResidual::class, 3 => FgdTreated::class, 4 => FgdActual::class];
+        $labels = [1 => 'Inherent', 2 => 'Residual', 3 => 'Treated', 4 => 'Actual'];
 
+        DB::transaction(function () use ($risk, $data, $stage, $prefix, $models) {
+            $risk = RiskRegister::whereKey($risk->id)->lockForUpdate()->firstOrFail();
+            $respondents = [];
+            foreach (['dampak', 'probabilitas'] as $field) {
+                for ($i = 1; $i <= 8; $i++) $respondents[$field.'_responden'.$i] = $data[$field.'_responden'.$i] ?? null;
+            }
+            $models[$stage]::updateOrCreate(['risk_register_id' => $risk->id], $respondents);
+            $scores = [
+                $prefix.'_dampak' => $data[$prefix.'_dampak'],
+                $prefix.'_probabilitas' => $data[$prefix.'_probabilitas'],
+                'concatdp'.$stage => $data[$prefix.'_dampak'].$data[$prefix.'_probabilitas'],
+            ];
+            if ($stage === 1) {
+                $scores['osd1_controllability'] = $data['osd1_controllability'];
+                $scores['perlu_penanganan_id'] = $data['perlu_penanganan_id'];
+                $scores['osd1_inherent'] = $data['osd1_dampak'] * $data['osd1_probabilitas'] * $data['osd1_controllability'];
+            } elseif ($stage === 2) {
+                $scores['osd2_inherent'] = $data['osd2_dampak'] * $data['osd2_probabilitas'] * $risk->osd2_controllability;
+            }
+            $risk->update($scores);
+        });
 
-            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
-
-        ]);
-        $atrributes = ([
-            'dampak_responden1' => $request->dampak_responden1,
-            'dampak_responden2' => $request->dampak_responden2,
-            'dampak_responden3' => $request->dampak_responden3,
-            'dampak_responden4' => $request->dampak_responden4,
-            'dampak_responden5' => $request->dampak_responden5,
-            'dampak_responden6' => $request->dampak_responden6,
-            'dampak_responden7' => $request->dampak_responden7,
-            'dampak_responden8' => $request->dampak_responden8,
-
-            'probabilitas_responden1' => $request->probabilitas_responden1,
-            'probabilitas_responden2' => $request->probabilitas_responden2,
-            'probabilitas_responden3' => $request->probabilitas_responden3,
-            'probabilitas_responden4' => $request->probabilitas_responden4,
-            'probabilitas_responden5' => $request->probabilitas_responden5,
-            'probabilitas_responden6' => $request->probabilitas_responden6,
-            'probabilitas_responden7' => $request->probabilitas_responden7,
-            'probabilitas_responden8' => $request->probabilitas_responden8,
-        ]);
-        FgdInherent::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-
-
-        $request->merge([
-            'concatdp1' => $request->osd1_dampak . $request->osd1_probabilitas,
-            'osd1_inherent' => $request->osd1_dampak * $request->osd1_probabilitas * $request->osd1_controllability,
-        ]);
-        $riskRegisterKlinis->update([
-            'osd1_dampak' => $request->osd1_dampak,
-            'osd1_probabilitas' => $request->osd1_probabilitas,
-            'osd1_controllability' => $request->osd1_controllability,
-            'perlu_penanganan_id' => $request->perlu_penanganan_id,
-            'concatdp1' => $request->concatdp1,
-            'osd1_inherent' => $request->osd1_inherent,
-        ]);
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data FGD Inherent berhasil disimpan',
-        ]);
+        return back()->with(['type' => 'success', 'message' => 'Data FGD '.$labels[$stage].' berhasil disimpan']);
     }
-    public function fgdresidual(Request $request)
-    {
-        $this->validate($request, [
-            'dampak_responden1' => 'required|numeric|min:1|max:5',
-            'dampak_responden2' => 'required|numeric|min:1|max:5',
-            'dampak_responden3' => 'required|numeric|min:1|max:5',
-            'dampak_responden4' => 'required|numeric|min:1|max:5',
-            'dampak_responden5' => 'required|numeric|min:1|max:5',
-            'dampak_responden6' => 'required|numeric|min:1|max:5',
-
-
-            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
-
-        ]);
-        $atrributes = ([
-            'dampak_responden1' => $request->dampak_responden1,
-            'dampak_responden2' => $request->dampak_responden2,
-            'dampak_responden3' => $request->dampak_responden3,
-            'dampak_responden4' => $request->dampak_responden4,
-            'dampak_responden5' => $request->dampak_responden5,
-            'dampak_responden6' => $request->dampak_responden6,
-            'dampak_responden7' => $request->dampak_responden7,
-            'dampak_responden8' => $request->dampak_responden8,
-
-            'probabilitas_responden1' => $request->probabilitas_responden1,
-            'probabilitas_responden2' => $request->probabilitas_responden2,
-            'probabilitas_responden3' => $request->probabilitas_responden3,
-            'probabilitas_responden4' => $request->probabilitas_responden4,
-            'probabilitas_responden5' => $request->probabilitas_responden5,
-            'probabilitas_responden6' => $request->probabilitas_responden6,
-            'probabilitas_responden7' => $request->probabilitas_responden7,
-            'probabilitas_responden8' => $request->probabilitas_responden8,
-        ]);
-        FgdResidual::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-        $riskRegisterKlinis = RiskRegister::find($request->id);
-        $this->validate($request, [
-            'osd2_dampak' => 'required',
-            'osd2_probabilitas' => 'required',
-        ]);
-        $request->merge([
-            'concatdp2' => $request->osd2_dampak . $request->osd2_probabilitas,
-            'osd2_inherent' => $request->osd2_dampak * $request->osd2_probabilitas * $riskRegisterKlinis->osd2_controllability,
-        ]);
-        $riskRegisterKlinis->update([
-            'osd2_dampak' => $request->osd2_dampak,
-            'osd2_probabilitas' => $request->osd2_probabilitas,
-            'concatdp2' => $request->concatdp2,
-            'osd2_inherent' => $request->osd2_inherent,
-        ]);
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data FGD Residual berhasil disimpan',
-        ]);
-    }
-    public function fgdtreated(Request $request)
-    {
-        $this->validate($request, [
-            'dampak_responden1' => 'required|numeric|min:1|max:5',
-            'dampak_responden2' => 'required|numeric|min:1|max:5',
-            'dampak_responden3' => 'required|numeric|min:1|max:5',
-            'dampak_responden4' => 'required|numeric|min:1|max:5',
-            'dampak_responden5' => 'required|numeric|min:1|max:5',
-            'dampak_responden6' => 'required|numeric|min:1|max:5',
-
-
-            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
-
-        ]);
-        $atrributes = ([
-            'dampak_responden1' => $request->dampak_responden1,
-            'dampak_responden2' => $request->dampak_responden2,
-            'dampak_responden3' => $request->dampak_responden3,
-            'dampak_responden4' => $request->dampak_responden4,
-            'dampak_responden5' => $request->dampak_responden5,
-            'dampak_responden6' => $request->dampak_responden6,
-            'dampak_responden7' => $request->dampak_responden7,
-            'dampak_responden8' => $request->dampak_responden8,
-
-            'probabilitas_responden1' => $request->probabilitas_responden1,
-            'probabilitas_responden2' => $request->probabilitas_responden2,
-            'probabilitas_responden3' => $request->probabilitas_responden3,
-            'probabilitas_responden4' => $request->probabilitas_responden4,
-            'probabilitas_responden5' => $request->probabilitas_responden5,
-            'probabilitas_responden6' => $request->probabilitas_responden6,
-            'probabilitas_responden7' => $request->probabilitas_responden7,
-            'probabilitas_responden8' => $request->probabilitas_responden8,
-        ]);
-        FgdTreated::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-        $riskRegisterKlinis = RiskRegister::find($request->id);
-        $this->validate($request, [
-            'osd3_dampak' => 'required',
-            'osd3_probabilitas' => 'required',
-        ]);
-        $request->merge([
-            'concatdp3' => $request->osd3_dampak . $request->osd3_probabilitas,
-        ]);
-        $riskRegisterKlinis->update([
-            'osd3_dampak' => $request->osd3_dampak,
-            'osd3_probabilitas' => $request->osd3_probabilitas,
-            'concatdp3' => $request->concatdp3,
-        ]);
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data FGD Treated berhasil disimpan',
-        ]);
-    }
-    public function fgdactual(Request $request)
-    {
-        $this->validate($request, [
-            'dampak_responden1' => 'required|numeric|min:1|max:5',
-            'dampak_responden2' => 'required|numeric|min:1|max:5',
-            'dampak_responden3' => 'required|numeric|min:1|max:5',
-            'dampak_responden4' => 'required|numeric|min:1|max:5',
-            'dampak_responden5' => 'required|numeric|min:1|max:5',
-            'dampak_responden6' => 'required|numeric|min:1|max:5',
-
-
-            'probabilitas_responden1' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden2' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden3' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden4' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden5' => 'required|numeric|min:1|max:5',
-            'probabilitas_responden6' => 'required|numeric|min:1|max:5',
-
-        ]);
-        $atrributes = ([
-            'dampak_responden1' => $request->dampak_responden1,
-            'dampak_responden2' => $request->dampak_responden2,
-            'dampak_responden3' => $request->dampak_responden3,
-            'dampak_responden4' => $request->dampak_responden4,
-            'dampak_responden5' => $request->dampak_responden5,
-            'dampak_responden6' => $request->dampak_responden6,
-            'dampak_responden7' => $request->dampak_responden7,
-            'dampak_responden8' => $request->dampak_responden8,
-
-            'probabilitas_responden1' => $request->probabilitas_responden1,
-            'probabilitas_responden2' => $request->probabilitas_responden2,
-            'probabilitas_responden3' => $request->probabilitas_responden3,
-            'probabilitas_responden4' => $request->probabilitas_responden4,
-            'probabilitas_responden5' => $request->probabilitas_responden5,
-            'probabilitas_responden6' => $request->probabilitas_responden6,
-            'probabilitas_responden7' => $request->probabilitas_responden7,
-            'probabilitas_responden8' => $request->probabilitas_responden8,
-        ]);
-        FgdActual::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-        $riskRegisterKlinis = RiskRegister::find($request->id);
-        $this->validate($request, [
-            'osd4_dampak' => 'required',
-            'osd4_probabilitas' => 'required',
-        ]);
-        $request->merge([
-            'concatdp4' => $request->osd4_dampak . $request->osd4_probabilitas,
-        ]);
-        $riskRegisterKlinis->update([
-            'osd4_dampak' => $request->osd4_dampak,
-            'osd4_probabilitas' => $request->osd4_probabilitas,
-            'concatdp4' => $request->concatdp4,
-        ]);
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data FGD Actual berhasil disimpan',
-        ]);
-    }
-
     public function requestupdatestatus(Request $request)
     {
         $this->validate($request, [

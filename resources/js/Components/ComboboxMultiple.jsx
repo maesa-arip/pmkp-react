@@ -41,6 +41,7 @@ export default function ComboboxMultiple({
     name,
     onChange,
     defaultValues,
+    exclusiveAll = false,
 }) {
     const [options, setOptions] = useState([
         { value: "0", label: "SEMUA UNIT", isDisabled: false },
@@ -52,6 +53,10 @@ export default function ComboboxMultiple({
     ]);
 
     const handleOptionSelect = (selectedOptions) => {
+        selectedOptions = selectedOptions || [];
+        if (exclusiveAll && selectedOptions.some(option => option.value === '0')) {
+            selectedOptions = selectedOptions.filter(option => option.value === '0');
+        }
         const updatedOptions = options.map((option) => {
             if (option.value === "0") {
                 return { ...option, isDisabled: false };
@@ -67,7 +72,8 @@ export default function ComboboxMultiple({
         onChange(selectedOptions.map(option => option.value).join(','));
     };
 
-    const initialSelectedOptions = defaultValues.map((value) =>
+    const selectedValues = exclusiveAll && defaultValues.includes('0') ? ['0'] : defaultValues;
+    const initialSelectedOptions = selectedValues.map((value) =>
         options.find((option) => option.value === value)
     ).filter(Boolean); // Filter undefined just in case
 
@@ -77,7 +83,8 @@ export default function ComboboxMultiple({
             components={animatedComponents}
             isMulti
             options={options}
-            defaultValue={initialSelectedOptions}
+            defaultValue={exclusiveAll ? undefined : initialSelectedOptions}
+            value={exclusiveAll ? initialSelectedOptions : undefined}
             onChange={handleOptionSelect}
             name={name}
             unstyled

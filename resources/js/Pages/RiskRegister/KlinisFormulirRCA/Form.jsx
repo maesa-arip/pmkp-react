@@ -9,6 +9,7 @@ export default function Form({
     data,
     setData,
     closeButton,
+    processing = false,
 }) {
     // Reusable styling classes untuk tema Shadcn
     const inputClass = "block w-full text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition-all shadow-sm placeholder:text-slate-400";
@@ -112,13 +113,13 @@ export default function Form({
             {/* --- ACTION FOOTER STICKY --- */}
             <div className="shrink-0 p-4 sm:p-6 bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row-reverse justify-start gap-3 rounded-b-xl z-20 mt-auto">
                 <button 
-                    type="submit" 
+                    type="submit" disabled={processing}
                     className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                 >
-                    {submit}
+                    {processing ? "Menyimpan..." : submit}
                 </button>
                 <button 
-                    type="button" 
+                    type="button" disabled={processing}
                     onClick={closeButton} 
                     className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none"
                 >

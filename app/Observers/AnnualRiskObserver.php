@@ -28,14 +28,22 @@ class AnnualRiskObserver
         if (! $indicator || (int) $indicator->periode_kinerja_id !== $period->id) {
             throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator harus berasal dari tahun register.']);
         }
-        $changed = ! $risk->exists || $risk->isDirty(['indikator_fitur4_id', 'tgl_register', 'pic_id']);
+        $oldPics = AnnualIndicatorService::ids($risk->getOriginal('pic_id'));
+        $newPics = AnnualIndicatorService::ids($risk->pic_id);
+        sort($oldPics);
+        sort($newPics);
+        $changed = ! $risk->exists || $risk->isDirty('indikator_fitur4_id')
+            || Carbon::parse($risk->getOriginal('tgl_register'))->year !== $period->tahun || $oldPics !== $newPics;
         if ($changed && ! $indicator->is_active) {
             throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator sudah tidak aktif.']);
         }
         $service = app(AnnualIndicatorService::class);
+        if ($changed && auth()->user() && ! app(\App\Services\RiskIndicatorAccess::class)->allowsUser(auth()->user(), $indicator->id)) {
+            throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator di luar tanggung jawab jabatan atau cakupan PIC akun Anda.']);
+        }
         // Existing historical assignments are preserved; new or changed assignments must match.
         if ($changed && ! $service->acceptsPics($indicator, AnnualIndicatorService::ids($risk->pic_id))) {
-            throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator tidak berlaku untuk seluruh unit/PIC yang dipilih.']);
+            throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator tidak berlaku untuk seluruh PIC yang dipilih. Pilih PIC jabatan pemilik indikator atau unit dalam cakupannya.']);
         }
         $risk->periode_kinerja_id = $period->id;
         if (! $risk->indikator_snapshot || $risk->isDirty('indikator_fitur4_id')) {

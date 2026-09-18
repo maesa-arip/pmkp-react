@@ -6,6 +6,8 @@ use App\Http\Resources\PICResource;
 use App\Models\Location;
 use App\Models\Pic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PicController extends Controller
 {
@@ -111,7 +113,27 @@ class PicController extends Controller
             'name' => 'required|string|max:255',
             'location_id' => 'required|numeric',
         ]);
-        $pic->update($validated);
+        DB::transaction(function () use ($pic, $validated) {
+            $periods = DB::table('periode_kinerjas')->whereIn('status', ['draft', 'aktif'])->orderBy('id')->lockForUpdate()->pluck('id');
+            $position = DB::table('kinerja_penanggung_jawabs')->where('pic_id', $pic->id)->lockForUpdate()->first();
+            if ($position) {
+                abort_unless(auth()->user()->can('atur data master manajemen risiko') || auth()->user()->can('atur hak akses'), 403);
+            }
+            if ($position && $pic->name !== $validated['name']) {
+                if (DB::table('kinerja_penanggung_jawabs')->where('name', trim($validated['name']))->where('id', '<>', $position->id)->exists()) {
+                    throw ValidationException::withMessages(['name' => 'Nama sudah digunakan jabatan kinerja lain.']);
+                }
+                DB::table('kinerja_penanggung_jawabs')->where('id', $position->id)->update(['name' => trim($validated['name']), 'updated_at' => now()]);
+                foreach (\App\Services\CascadingHierarchyService::TABLES as $table) {
+                    DB::table($table)->whereIn('periode_kinerja_id', $periods)->where('penanggung_jawab_id', $position->id)
+                        ->update(['jabatan' => trim($validated['name']), 'updated_at' => now()]);
+                }
+                activity('indikator_tahunan')->causedBy(auth()->user())->withProperties([
+                    'pic_id' => $pic->id, 'old_name' => $pic->name, 'name' => trim($validated['name']),
+                ])->log('Nama PIC jabatan diperbarui');
+            }
+            $pic->update($validated);
+        });
         return back()->with([
             'type' => 'success',
             'message' => 'Penanggungjawab berhasil diubah',
@@ -126,6 +148,9 @@ class PicController extends Controller
      */
     public function destroy(Pic $pic)
     {
+        if (DB::table('kinerja_penanggung_jawabs')->where('pic_id', $pic->id)->exists()) {
+            return back()->with(['type' => 'error', 'message' => 'PIC masih terhubung ke jabatan kinerja. Lepaskan relasinya melalui master penanggung jawab sebelum menghapus.']);
+        }
         $pic->delete();
         return back()->with([
             'type' => 'success',

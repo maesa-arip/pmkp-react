@@ -36,7 +36,13 @@ class AnnualIndicatorsTest extends TestCase
     {
         parent::setUp();
         $this->sourcePeriod = PeriodeKinerja::where('tahun', 2024)->firstOrFail();
-        $template = RiskRegister::where('periode_kinerja_id', $this->sourcePeriod->id)->firstOrFail();
+        // The local 2024 archive may have no registers after annual preparation.
+        // Build the fixture inside this rolled-back transaction instead.
+        $this->sourcePeriod->update(['status' => 'aktif']);
+        $template = RiskRegister::firstOrFail();
+        $template->periode_kinerja_id = $this->sourcePeriod->id;
+        $template->indikator_fitur4_id = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->sourcePeriod->id)->where('is_active', true)->value('id');
+        $template->indikator_snapshot = null;
         $pic = Pic::firstOrFail();
         $this->actingAs(User::factory()->create(['pic_id' => $pic->id]));
         Gate::before(fn () => $this->admin);
@@ -54,6 +60,16 @@ class AnnualIndicatorsTest extends TestCase
         $this->source->output = 'Realisasi tahun sumber';
         $this->source->dokumen_pendukung = 'bukti-lama.pdf';
         $this->source->save();
+        $this->source->kode_risiko = 'ROO.24.02.43.'.$this->source->id;
+        $this->source->save();
+        // Supply an annual MUTU master without moving existing transactions.
+        $mutu = (array) DB::table('mutu_indikators')->first();
+        unset($mutu['id']);
+        $mutu['periode_kinerja_id'] = $this->sourcePeriod->id;
+        $mutu['indikator_fitur4_id'] = $this->source->indikator_fitur4_id;
+        $mutu['lineage_id'] = (string) \Illuminate\Support\Str::uuid();
+        $mutu['approved'] = 1;
+        DB::table('mutu_indikators')->insert($mutu);
         $this->target = PeriodeKinerja::create(['tahun' => 2091, 'status' => 'draft']);
         app(AnnualIndicatorService::class)->copyHierarchy($this->sourcePeriod->id, $this->target);
         $this->target->update(['status' => 'aktif']);
@@ -81,6 +97,71 @@ class AnnualIndicatorsTest extends TestCase
         $this->assertEquals(1, $copy->risk_register_histories()->count());
     }
 
+    public function test_continuing_risk_keeps_original_code_across_multiple_years(): void
+    {
+        $service = app(RiskRegisterYearCopyService::class);
+        $this->sourcePeriod->update(['status' => 'ditutup']);
+        $this->post(route('riskRegisterCopy.store'), $this->filters + ['risk_code_mode' => 'preserve'])->assertSessionHasNoErrors();
+        $first = RiskRegister::where('copied_from_risk_register_id', $this->source->id)->firstOrFail();
+        $this->assertSame($this->source->kode_risiko, $first->kode_risiko);
+        $this->assertEquals(1, $first->is_risiko_lama);
+        $this->assertSame('preserve', $first->risk_register_histories()->first()->snapshot['risk_code_mode']);
+        $next = PeriodeKinerja::create(['tahun' => 2092, 'status' => 'draft']);
+        app(AnnualIndicatorService::class)->copyHierarchy($this->target->id, $next);
+        $next->update(['status' => 'aktif']);
+        $filters = array_replace($this->filters, ['source_year' => 2091, 'target_year' => 2092]);
+        $this->assertEquals(1, $service->copy($filters)['copied']);
+        $second = RiskRegister::where('copied_from_risk_register_id', $first->id)->firstOrFail();
+        $this->assertSame($this->source->kode_risiko, $second->kode_risiko);
+        $this->assertEquals(2091, $second->copied_from_year);
+        $this->assertEquals(1, $service->copy($filters)['already_copied']);
+        // A direct copy from the original year must not create the same risk again.
+        $direct = array_replace($this->filters, ['target_year' => 2092]);
+        $this->assertEquals(1, $service->preview($direct)['code_conflict']);
+        $this->assertEquals(0, $service->copy($direct)['copied']);
+        $second->delete();
+        $this->assertEquals(0, $service->copy($direct)['copied']);
+    }
+
+    public function test_new_risk_gets_target_year_code_and_invalid_mode_is_rejected(): void
+    {
+        $this->post(route('riskRegisterCopy.store'), $this->filters + ['risk_code_mode' => 'invalid'])->assertSessionHasErrors('risk_code_mode');
+        $this->get(route('riskRegisterCopy.index', $this->filters))->assertInertia(fn (Assert $page) => $page->where('filters.risk_code_mode', 'preserve'));
+        $this->post(route('riskRegisterCopy.store'), $this->filters + ['risk_code_mode' => 'new'])->assertSessionHasNoErrors();
+        $copy = RiskRegister::where('copied_from_risk_register_id', $this->source->id)->firstOrFail();
+        $prefix = (int) $copy->risk_category_id === 5 ? 'RSO' : 'ROO';
+        $this->assertSame($prefix.'.91.02.43.'.$copy->id, $copy->kode_risiko);
+        $this->assertNotSame($this->source->kode_risiko, $copy->kode_risiko);
+        $this->assertEquals(0, $copy->is_risiko_lama);
+        $this->assertNull($copy->output);
+        $this->assertTrue($copy->needs_review);
+        $this->assertSame('new', $copy->risk_register_histories()->first()->snapshot['risk_code_mode']);
+        $this->assertEquals(0, app(RiskRegisterYearCopyService::class)->copy($this->filters)['copied']);
+    }
+
+    public function test_missing_source_code_requires_new_code_mode(): void
+    {
+        $this->source->kode_risiko = null;
+        $this->source->save();
+        $service = app(RiskRegisterYearCopyService::class);
+        $this->assertEquals(1, $service->preview($this->filters)['missing_code']);
+        $this->assertEquals(0, $service->copy($this->filters)['copied']);
+        $this->assertEquals(1, $service->copy($this->filters + ['risk_code_mode' => 'new'])['copied']);
+    }
+
+    public function test_duplicate_source_codes_have_matching_preview_and_execution_counts(): void
+    {
+        $duplicate = $this->source->replicate(['copy_key']);
+        $duplicate->save();
+        $service = app(RiskRegisterYearCopyService::class);
+        $preview = $service->preview($this->filters);
+        $this->assertEquals(1, $preview['eligible']);
+        $this->assertEquals(1, $preview['code_conflict']);
+        $result = $service->copy($this->filters);
+        $this->assertEquals(1, $result['copied']);
+        $this->assertEquals(1, $result['code_conflict']);
+    }
+
     public function test_missing_mapping_blocks_copy_then_explicit_mapping_resolves_it(): void
     {
         $service = app(AnnualIndicatorService::class);
@@ -103,7 +184,10 @@ class AnnualIndicatorsTest extends TestCase
         DB::table('indikator_fitur4s')->where('id', $indicator->id)->update(['location_id' => '[-1]']);
         $this->assertEquals(1, $service->previewUnit($filters)['unit_mismatch']);
         DB::table('indikator_fitur4s')->where('id', $indicator->id)->update(['location_id' => '[0]']);
+        $this->assertEquals('error', $service->copyUnit($filters + ['risk_code_mode' => 'preserve'])['type']);
         $this->assertEquals(1, $service->copyUnit($filters)['copied']);
+        $unitCopy = RiskRegister::where('copied_from_risk_register_id', $this->source->id)->where('copy_type', 'unit')->firstOrFail();
+        $this->assertNotSame($this->source->kode_risiko, $unitCopy->kode_risiko);
         $this->assertEquals(1, $service->copy($this->filters)['copied']);
         $this->assertEquals(0, $service->copyUnit($filters)['copied']);
     }
@@ -171,7 +255,7 @@ class AnnualIndicatorsTest extends TestCase
         $this->assertCount(DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->where('is_active', true)->count(), $snapshot['levels']['4']);
         $this->assertStringStartsWith('PK', $response->streamedContent());
         $this->get(route('kinerja.exportArchive', $archive->id))->assertOk();
-        $this->assertEquals('2', $archive->template_version);
+        $this->assertEquals('3', $archive->template_version);
         $legacyId = DB::table('cascading_exports')->insertGetId([
             'periode_kinerja_id' => $this->target->id, 'template_version' => '1', 'snapshot' => json_encode($snapshot),
             'created_at' => now(), 'updated_at' => now(),
@@ -378,8 +462,8 @@ class AnnualIndicatorsTest extends TestCase
     {
         $this->post(route('kinerja.store'), ['tahun' => 2092])->assertSessionHasNoErrors();
         $draft = PeriodeKinerja::where('tahun', 2092)->firstOrFail();
-        $this->post(route('kinerja.nodes', [$draft->id, '1']), ['name' => '=1+1', 'sort_order' => 1, 'is_active' => true])->assertSessionHasNoErrors();
-        $this->assertEquals('=1+1', DB::table('sasaran_strategis')->where('periode_kinerja_id', $draft->id)->value('name'));
+        $this->post(route('kinerja.nodes', [$draft->id, '1']), ['name' => '=1+1', 'sasaran_baru' => 'Sasaran uji baru', 'sort_order' => 1, 'is_active' => true])->assertSessionHasNoErrors();
+        $this->assertEquals('Sasaran uji baru', DB::table('sasaran_strategis')->where('periode_kinerja_id', $draft->id)->value('name'));
         $parent = DB::table('indikator_fitur1s')->where('periode_kinerja_id', $draft->id)->first();
         for ($level = 2; $level <= 4; $level++) {
             $payload = ['name' => 'Fitur '.$level, 'sort_order' => 1, 'is_active' => true, 'indikator_fitur'.($level - 1).'_id' => $parent->id];
@@ -394,9 +478,11 @@ class AnnualIndicatorsTest extends TestCase
         }
         $this->post(route('kinerja.nodes', [$draft->id, 'sasaran']), ['name' => 'Tidak lagi dikelola'])->assertNotFound();
         $this->get(route('kinerja.index', ['tahun' => 2092]))->assertInertia(fn (Assert $page) => $page
-            ->missing('nodes.sasaran')->where('cascadingTree.0.children.0.children.0.children.0.display_code', '1.1.a.1'));
-        // An unused legacy target does not block activation of the actual feature hierarchy.
+            ->has('nodes.sasaran', 1)->where('cascadingTree.0.children.0.children.0.children.0.display_code', '1.1.a.1'));
+        // Schema 2 requires an active real sasaran above the IKU.
         DB::table('sasaran_strategis')->where('periode_kinerja_id', $draft->id)->update(['is_active' => false]);
+        $this->put(route('kinerja.update', $draft->id), ['status' => 'aktif', 'nama_organisasi' => 'RS Uji', 'tujuan' => 'Tujuan uji'])->assertSessionHasErrors('status');
+        DB::table('sasaran_strategis')->where('periode_kinerja_id', $draft->id)->update(['is_active' => true]);
         $this->put(route('kinerja.update', $draft->id), ['status' => 'aktif', 'nama_organisasi' => 'RS Uji', 'tujuan' => 'Tujuan uji'])->assertSessionHasNoErrors();
         $snapshot = ['period' => ['tahun' => 2092, 'nama_organisasi' => '=1+1', 'tujuan' => '', 'status' => 'draft', 'rekonstruksi' => false], 'levels' => []];
         $book = app(CascadingExportService::class)->build($snapshot);

@@ -17,7 +17,7 @@ class IndikatorFitur4 extends Model
     }
     public function mutu_indikator()
     {
-        return $this->hasMany(MutuIndikator::class,'mutu_indikator_id');
+        return $this->hasMany(MutuIndikator::class,'indikator_fitur4_id');
     }
     protected $casts = [
         'location_id' => 'array',

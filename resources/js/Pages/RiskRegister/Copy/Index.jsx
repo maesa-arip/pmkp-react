@@ -66,6 +66,7 @@ export default function Index({ filters, preview, options }) {
     const hasMounted = useRef(false);
     const { data, setData } = useForm({
         copy_mode: filters.copy_mode || "year",
+        risk_code_mode: filters.risk_code_mode || (filters.copy_mode === "unit" ? "new" : "preserve"),
         source_year: filters.source_year || new Date().getFullYear() - 1,
         target_year: filters.target_year || new Date().getFullYear(),
         tipe_id: filters.tipe_id || "",
@@ -115,6 +116,13 @@ export default function Index({ filters, preview, options }) {
         return () => window.clearTimeout(timeout);
     }, [queryData]);
 
+    const previewIsCurrent = Object.entries(data).every(([key, value]) =>
+        String(value ?? "") === String(filters[key] ?? ""),
+    );
+    const codeDescription = data.risk_code_mode === "preserve"
+        ? "Kode risiko asal tetap dipakai, termasuk tahun asal pada kode."
+        : "Kode risiko baru dibuat sesuai tahun tujuan.";
+
     const updateFilter = (field, value) => {
         setData(field, value);
     };
@@ -123,6 +131,7 @@ export default function Index({ filters, preview, options }) {
         setData((current) => ({
             ...current,
             copy_mode: mode,
+            risk_code_mode: mode === "unit" ? "new" : "preserve",
             pic_id: mode === "unit" ? "" : current.pic_id,
             source_pic_id: mode === "year" ? "" : current.source_pic_id,
             target_pic_id: mode === "year" ? "" : current.target_pic_id,
@@ -135,6 +144,7 @@ export default function Index({ filters, preview, options }) {
     };
 
     const executeCopy = () => {
+        if (!previewIsCurrent || isExecuting) return;
         setIsExecuting(true);
         router.post(route("riskRegisterCopy.store"), queryData, {
             preserveScroll: true,
@@ -168,7 +178,7 @@ export default function Index({ filters, preview, options }) {
                         <button
                             type="button"
                             onClick={() => setIsConfirmOpen(true)}
-                            disabled={isExecuting || (preview?.eligible || 0) < 1}
+                            disabled={isExecuting || !previewIsCurrent || (preview?.eligible || 0) < 1}
                             className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-600 px-5 text-sm font-black text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <DocumentDuplicateIcon className="mr-2 h-4 w-4" />
@@ -181,15 +191,18 @@ export default function Index({ filters, preview, options }) {
                     <p>Hasil copy memakai indikator tahun tujuan dan perlu review. Nilai evaluasi, realisasi, dan bukti tahun sebelumnya dikosongkan. Padanan teks hanya peringatan kemungkinan duplikat.</p>
                     {options.canManageIndicators && <a className="text-sky-600 underline" href={route('kinerja.index', { tahun: data.target_year })}>Kelola indikator dan pemetaan tahun tujuan</a>}
                     {preview.period_error && <p role="alert" className="text-red-600">{preview.period_error}</p>}
+                    <p>{codeDescription}</p>
+                    <p>Kode sudah ada di tahun tujuan: {preview.code_conflict || 0}. Kode sumber kosong: {preview.missing_code || 0}.</p>
+                    {!previewIsCurrent && <p role="status" className="text-sky-600">Memperbarui preview...</p>}
                     <p>Belum terpetakan: {preview.unmapped || 0}. Unit tidak sesuai: {preview.unit_mismatch || 0}.</p>
-                    {(preview.blocked || []).length > 0 && <details><summary>Lihat risiko yang perlu penyesuaian (maks. 100)</summary><ul>{preview.blocked.map(x => <li key={x.id}>{x.kode || x.id} — indikator sumber #{x.indicator_id}: {x.reason}</li>)}</ul></details>}
+                    {(preview.blocked || []).length > 0 && <details><summary>Lihat risiko yang perlu penyesuaian (maks. 100)</summary><ul>{preview.blocked.map(x => <li key={x.id}>{x.kode || x.id} ï¿½ indikator sumber #{x.indicator_id}: {x.reason}</li>)}</ul></details>}
                 </div>
                 <DestroyModal
                     title="Konfirmasi Copy Risk Register"
                     warning={
-                        data.copy_mode === "unit"
+                        (data.copy_mode === "unit"
                             ? `Eksekusi akan membuat ${preview?.eligible || 0} data baru dari unit sumber ke unit tujuan pada tahun ${data.target_year}. Data unit tujuan yang sudah ada tidak akan ditimpa.`
-                            : `Eksekusi akan membuat ${preview?.eligible || 0} data baru dari tahun ${data.source_year} ke ${data.target_year}. Data tahun tujuan yang sudah ada tidak akan ditimpa.`
+                            : `Eksekusi akan membuat ${preview?.eligible || 0} data baru dari tahun ${data.source_year} ke ${data.target_year}. Data tahun tujuan yang sudah ada tidak akan ditimpa.`) + ` ${codeDescription}`
                     }
                     isOpenDestroyDialog={isConfirmOpen}
                     setIsOpenDestroyDialog={setIsConfirmOpen}
@@ -198,7 +211,7 @@ export default function Index({ filters, preview, options }) {
                     <button
                         type="button"
                         onClick={executeCopy}
-                        disabled={isExecuting || (preview?.eligible || 0) < 1}
+                        disabled={isExecuting || !previewIsCurrent || (preview?.eligible || 0) < 1}
                         className="inline-flex w-full items-center justify-center rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                         <DocumentDuplicateIcon className="mr-2 h-4 w-4" />
@@ -262,6 +275,26 @@ export default function Index({ filters, preview, options }) {
                             </button>
                         ))}
                     </div>
+
+                    <fieldset className="mb-6 rounded-xl border border-slate-200 p-4 dark:border-slate-700">
+                        <legend className="px-2 text-sm font-bold">Kode Risiko Hasil Copy</legend>
+                        <div className="grid gap-3 md:grid-cols-2">
+                            {[
+                                { id: "preserve", title: "Lanjutkan risiko dengan kode yang sama", description: "Risiko masih dikelola unit yang sama. Contoh: kode tahun 2024 tetap dipakai pada 2025 dan 2026." },
+                                { id: "new", title: "Salin sebagai risiko baru", description: "Buat kode baru sesuai tahun tujuan. Data sumber menjadi acuan pengisian." },
+                            ].map((mode) => (
+                                <label key={mode.id} className={"flex items-start gap-3 rounded-xl border p-4 " + (data.risk_code_mode === mode.id ? "border-sky-300 bg-sky-50 dark:border-sky-500/40 dark:bg-sky-500/10" : "border-slate-200 dark:border-slate-700") + (data.copy_mode === "unit" && mode.id === "preserve" ? " cursor-not-allowed opacity-50" : " cursor-pointer")}>
+                                    <input type="radio" name="risk_code_mode" value={mode.id}
+                                        checked={data.risk_code_mode === mode.id}
+                                        disabled={data.copy_mode === "unit" && mode.id === "preserve"}
+                                        onChange={() => updateFilter("risk_code_mode", mode.id)}
+                                        className="mt-1 border-slate-300 text-sky-600 focus:ring-sky-500 dark:border-slate-600" />
+                                    <span><span className="block text-sm font-bold">{mode.title}</span><span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">{mode.description}</span></span>
+                                </label>
+                            ))}
+                        </div>
+                        {data.copy_mode === "unit" && <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Copy antar unit menggunakan kode baru karena menjadi risiko unit tujuan.</p>}
+                    </fieldset>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                         <Field label="Tahun Sumber">

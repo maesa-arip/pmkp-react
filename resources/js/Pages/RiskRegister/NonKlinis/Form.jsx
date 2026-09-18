@@ -1,3 +1,5 @@
+import RiskRegisterAnnualFields from "@/Components/RiskRegisterAnnualFields";
+import { picIds } from "@/utils/picIds";
 import InputError from "@/Components/InputError";
 import TextAreaInput from "@/Components/TextAreaInput";
 import TextInput from "@/Components/TextInput";
@@ -5,8 +7,6 @@ import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxPage from "@/Components/ComboboxPage";
 import Select from "@/Components/ui/Select";
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { ExclamationTriangleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
 export default function Form({
@@ -17,14 +17,10 @@ export default function Form({
     ShouldMap,
     model,
     closeButton,
+    processing = false,
 }) {
-    const registerYear = data.tgl_register ? Number(String(data.tgl_register).slice(0, 4)) : new Date().getFullYear();
-    const annualOptions = (ShouldMap.indikatorFitur4s || []).filter(x => Number(x.tahun) === registerYear && (x.is_active || x.id === model?.indikator_fitur4_id));
     const defaultValue = [{ name: "" }];
-    const picIdStrings = data.pic_id ? data.pic_id : ",";
-    const picIdString = picIdStrings.replace(/['"]+/g, '');
-    const defaultPicIds = picIdString.split(",");
-    const defaultPicIdStrings = defaultPicIds.map((value) => value.toString());
+    const defaultPicIdStrings = picIds(data.pic_id);
 
     // STATE INITIALIZATION
     const [selectedCategory, setSelectedCategory] = useState(() => model ? ShouldMap.riskCategories.find((x) => x.id === model.risk_category_id) : defaultValue[0]);
@@ -36,7 +32,6 @@ export default function Form({
     const [selectedVariety, setSelectedVariety] = useState(() => model ? ShouldMap.riskVarieties.find((x) => x.id === model.risk_variety_id) : defaultValue[0]);
     const [selectedType, setSelectedType] = useState(() => model ? ShouldMap.riskTypes.find((x) => x.id === model.risk_type_id) : defaultValue[0]);
     const [selectedJenisSebab, setSelectedJenisSebab] = useState(() => model ? ShouldMap.jenisSebabs.find((x) => x.id === model.jenis_sebab_id) : defaultValue[0]);
-    const [selectedIndikatorFitur4, setSelectedIndikatorFitur4] = useState(() => model ? ShouldMap.indikatorFitur4s.find((x) => x.id === model.indikator_fitur4_id) : defaultValue[0]);
     const [selectedOpsiPengendalian, setSelectedOpsiPengendalian] = useState(() => model ? ShouldMap.opsiPengendalian.find((x) => x.id === model.opsi_pengendalian_id) : defaultValue[0]);
     const [selectedPembiayaanRisiko, setSelectedPembiayaanRisiko] = useState(() => model ? ShouldMap.pembiayaanRisiko.find((x) => x.id === model.pembiayaan_risiko_id) : defaultValue[0]);
     const [selectedEfektif, setSelectedEfektif] = useState(() => model ? ShouldMap.efektif.find((x) => x.id === model.efektif_id) : defaultValue[0]);
@@ -46,9 +41,13 @@ export default function Form({
         { value: "C", label: "C" },
         { value: "UC", label: "UC" },
     ];
-    const celahPengendalianOptions = data.celah_pengendalian
-        ? [{ value: data.celah_pengendalian, label: data.celah_pengendalian }]
-        : [];
+    const celahPengendalianOptions = [
+        { value: "", label: "Tidak dipilih" },
+        ...(ShouldMap.celahPengendalians || []).map(item => ({ value: item.name, label: item.name })),
+    ];
+    if (data.celah_pengendalian && !celahPengendalianOptions.some(item => item.value === data.celah_pengendalian)) {
+        celahPengendalianOptions.push({ value: data.celah_pengendalian, label: data.celah_pengendalian + " (tersimpan)" });
+    }
 
     // Auto-generate Pernyataan Risiko
     useEffect(() => {
@@ -58,7 +57,6 @@ export default function Form({
         });
     }, [data.sebab, data.resiko, data.dampak]);
     
-    const [tglRegister, setTglRegister] = useState(model?.tgl_register ? new Date(model.tgl_register) : null);
 
     // REUSABLE STYLING CLASSES
     const inputClass = "block w-full text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition-all shadow-sm placeholder:text-slate-400";
@@ -79,32 +77,7 @@ export default function Form({
                     </div>
                     
                     <div className="relative z-10 grid grid-cols-1 gap-6 p-6 md:grid-cols-12">
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[60]">
-                            <label className={labelClass}>Indikator</label>
-                            <ComboboxPage ShouldMap={annualOptions} selected={annualOptions.find(x => x.id === data.indikator_fitur4_id) || { name: "Pilih indikator tahun register" }} onChange={(e) => { setData({ ...data, ["indikator_fitur4_id"]: e.id }); setSelectedIndikatorFitur4(e); }} />
-                            <InputError message={errors.indikator_fitur4_id} className="mt-1" />
-                        </div>
-
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[59]">
-                            <label className={labelClass}>Tanggal Register</label>
-                            <DatePicker
-                                dateFormat="dd-MM-yyyy"
-                                value={data.tgl_register}
-                                selected={tglRegister}
-                                id="tgl_register"
-                                name="tgl_register"
-                                autoComplete="off"
-                                className={inputClass}
-                                onChange={(date) => {
-                                    setTglRegister(date);
-                                    if(date) {
-                                        const d = new Date(date).toLocaleDateString("en-CA");
-                                        setData("tgl_register", d);
-                                    }
-                                }}
-                            />
-                            <p className="text-xs text-slate-500">Pilihan indikator mengikuti tahun tanggal register ({registerYear}).</p><InputError message={errors.periode_kinerja_id} /><InputError message={errors.tgl_register} className="mt-1" />
-                        </div>
+                        <RiskRegisterAnnualFields data={data} setData={setData} errors={errors} indicators={ShouldMap.indikatorFitur4s} model={model} inputClass={inputClass} labelClass={labelClass} />
 
                         <div className="col-span-12 flex flex-col relative z-[55]">
                             <label className={labelClass}>Risiko</label>
@@ -168,7 +141,7 @@ export default function Form({
 
                         <div className="col-span-12 flex flex-col relative z-[43]">
                             <label className={labelClass}>PIC Unit Terkait</label>
-                            <ComboboxMultiple ShouldMap={ShouldMap.pics} name={"pic_id"} onChange={(selectedIdsString) => setData({ ...data, ["pic_id"]: selectedIdsString })} defaultValues={defaultPicIdStrings} />
+                            <ComboboxMultiple exclusiveAll ShouldMap={ShouldMap.pics} name={"pic_id"} onChange={(selectedIdsString) => setData({ ...data, ["pic_id"]: selectedIdsString })} defaultValues={defaultPicIdStrings} />
                             <InputError message={errors.pic_id} className="mt-1" />
                         </div>
 
@@ -273,7 +246,8 @@ export default function Form({
 
                         <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
                             <label className={labelClass}>Celah Pengendalian</label>
-                            <Select value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} placeholder="Pilih celah pengendalian" />
+                            <Select value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} wrapLabels placeholder="Pilih celah pengendalian" />
+                            {!ShouldMap.celahPengendalians?.length && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Belum ada pilihan aktif. Tambahkan melalui Data Master → Celah Pengendalian.</p>}
                             <InputError message={errors.celah_pengendalian} className="mt-1" />
                         </div>
 
@@ -343,10 +317,10 @@ export default function Form({
 
             {/* --- FORM ACTIONS (STICKY BOTTOM / FOOTER) --- */}
             <div className="sticky bottom-0 p-4 sm:p-6 bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row-reverse justify-start gap-3 mt-auto z-[90] rounded-b-2xl">
-                <button type="submit" className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
-                    {submit}
+                <button type="submit" disabled={processing} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
+                    {processing ? "Menyimpan..." : submit}
                 </button>
-                <button type="button" onClick={closeButton} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none">
+                <button type="button" disabled={processing} onClick={closeButton} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none">
                     Batal
                 </button>
             </div>
