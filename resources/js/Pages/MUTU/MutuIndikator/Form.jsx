@@ -22,7 +22,9 @@ export default function Form({ errors, submit, data, setData, model, ShouldMap, 
     const periods = ShouldMap.Periods || [];
     const period = periods.find(p => Number(p.tahun) === year);
     const findOption = (items, value) => (items || []).find(x => String(x.id) === String(value)) || { name: "" };
-    const indicators = (ShouldMap.IndikatorFitur4 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && (x.is_active || String(x.id) === String(data.indikator_fitur4_id)));
+    // The same indicator name is used by several units, so the unit is shown with it.
+    const indicators = (ShouldMap.IndikatorFitur4 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && (x.is_active || String(x.id) === String(data.indikator_fitur4_id)))
+        .map(x => x.unit_names ? { ...x, name: x.name + ' — ' + x.unit_names } : x);
     const isNew = !model && Number(data.IndikatorBaru) === 1;
 
     useEffect(() => {

@@ -12,8 +12,10 @@ export default function RiskRegisterAnnualFields({ data, setData, errors, indica
     const year = data.tahun ?? (data.tgl_register ? String(data.tgl_register).slice(0, 4) : '');
     const period = annualPeriods.find(p => String(p.tahun) === String(year));
     const writable = period?.status === 'aktif';
+    // The same indicator name is used by several units, so the unit is shown with it.
     const options = year ? indicators.filter(item => Number(item.tahun) === Number(year) &&
-        ((item.is_active && item.can_select !== false) || item.id === model?.indikator_fitur4_id)) : [];
+        ((item.is_active && item.can_select !== false) || item.id === model?.indikator_fitur4_id))
+        .map(item => item.unit_names ? { ...item, name: item.name + ' — ' + item.unit_names } : item) : [];
     const date = data.tgl_register ? new Date(String(data.tgl_register).slice(0, 10) + 'T00:00:00') : null;
     const statuses = { aktif: 'Aktif', draft: 'Draft', ditutup: 'Ditutup' };
 

@@ -99,9 +99,13 @@ class RiskIndicatorAccess
     /** Yearly placements as form options whose value is the permanent master ID. */
     public static function present($placements, ?array $selectable)
     {
+        // Several units share an indicator name, so options carry their unit to tell them apart.
+        $locations = DB::table('locations')->pluck('name', 'id');
+
         return $placements->filter(fn ($row) => $row->master_id)->map(fn ($row) => array_merge($row->toArray(), [
             'id' => (int) $row->master_id, 'placement_id' => $row->id,
             'can_select' => $selectable === null || in_array($row->id, $selectable),
+            'unit_names' => collect(AnnualIndicatorService::ids($row->location_id))->map(fn ($id) => $locations[$id] ?? null)->filter()->implode(', '),
         ]))->values();
     }
 }
