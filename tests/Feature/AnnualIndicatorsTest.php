@@ -82,7 +82,9 @@ class AnnualIndicatorsTest extends TestCase
         $this->assertEquals(1, $service->preview($this->filters)['eligible']);
         $this->assertEquals(1, $service->copy($this->filters)['copied']);
         $copy = RiskRegister::where('copied_from_risk_register_id', $this->source->id)->firstOrFail();
-        $this->assertNotEquals($this->source->indikator_fitur4_id, $copy->indikator_fitur4_id);
+        // Level four is a permanent master: the copy keeps the same indicator in the new year.
+        $this->assertEquals($this->source->indikator_fitur4_id, $copy->indikator_fitur4_id);
+        $this->assertEquals($this->target->id, $copy->indikator_snapshot['indikator_fitur4s']['periode_kinerja_id']);
         $this->assertEquals($this->target->id, $copy->periode_kinerja_id);
         $this->assertSame('2091-02-28', substr($copy->tgl_register, 0, 10));
         $this->assertNull($copy->output);
@@ -166,12 +168,16 @@ class AnnualIndicatorsTest extends TestCase
     {
         $service = app(AnnualIndicatorService::class);
         $target = $service->resolve($this->source->indikator_fitur4_id, $this->target->id);
-        DB::table('indikator_fitur4s')->where('id', $target->id)->update(['lineage_id' => (string) \Illuminate\Support\Str::uuid()]);
+        // A master that is inactive in the target year cannot be copied until it is mapped.
+        DB::table('indikator_fitur4s')->where('id', $target->id)->update(['is_active' => false]);
         $copy = app(RiskRegisterYearCopyService::class);
         $this->assertEquals(1, $copy->preview($this->filters)['unmapped']);
         $this->assertEquals(0, $copy->copy($this->filters)['copied']);
-        $this->post(route('kinerja.mapping'), ['source_indicator_id' => $this->source->indikator_fitur4_id, 'target_period_id' => $this->target->id, 'target_indicator_id' => $target->id])->assertSessionHasNoErrors();
+        $replacement = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->where('is_active', true)->where('id', '<>', $target->id)->first();
+        DB::table('indikator_fitur4s')->where('id', $replacement->id)->update(['location_id' => '[0]']);
+        $this->post(route('kinerja.mapping'), ['source_indicator_id' => $this->source->indikator_fitur4_id, 'target_period_id' => $this->target->id, 'target_indicator_id' => $replacement->id])->assertSessionHasNoErrors();
         $this->assertEquals(1, $copy->copy($this->filters)['copied']);
+        $this->assertEquals($replacement->master_id, RiskRegister::where('copied_from_risk_register_id', $this->source->id)->value('indikator_fitur4_id'));
     }
 
     public function test_unit_copy_checks_target_location_and_is_separate_from_year_copy(): void
@@ -266,7 +272,7 @@ class AnnualIndicatorsTest extends TestCase
         $this->assertStringStartsWith('PK', $this->get(route('kinerja.exportArchive', $legacyId))->assertOk()->streamedContent());
     }
 
-    public function test_review_requires_new_assessment_and_closed_period_blocks_child_writes(): void
+    public function test_review_requires_new_assessment_and_closed_period_keeps_registers_editable(): void
     {
         app(RiskRegisterYearCopyService::class)->copy($this->filters);
         $copy = RiskRegister::where('copied_from_risk_register_id', $this->source->id)->firstOrFail();
@@ -276,23 +282,25 @@ class AnnualIndicatorsTest extends TestCase
         $copy->save();
         $this->post(route('riskRegisterCopy.review', $copy))->assertSessionHasNoErrors();
         $this->assertFalse($copy->fresh()->needs_review);
+        // A closed period locks its hierarchy, not the registers recorded in it.
         $this->target->update(['status' => 'ditutup']);
-        $this->put(route('riskregister.fgdinherent'), ['id' => $copy->id])->assertSessionHasErrors('periode_kinerja_id');
+        $this->put(route('riskregister.fgdinherent'), ['id' => $copy->id])->assertSessionDoesntHaveErrors('periode_kinerja_id');
     }
 
-    public function test_migrated_mutu_transactions_keep_their_year_and_future_copy_requires_approval(): void
+    public function test_mutu_dictionary_is_permanent_and_measurement_needs_active_placement(): void
     {
-        $mismatch = DB::table('mutu_units as u')->join('mutu_indikators as m', 'm.id', '=', 'u.mutu_indikator_id')
-            ->join('periode_kinerjas as p', 'p.id', '=', 'm.periode_kinerja_id')->whereRaw('YEAR(u.tanggal_mutu) <> p.tahun')->count();
-        $this->assertEquals(0, $mismatch);
-        $master = DB::table('mutu_indikators')->where('periode_kinerja_id', $this->target->id)->first();
-        $this->assertEquals(0, $master->approved);
-        $this->assertNotNull($master->copied_from_id);
-        $unit = new \App\Models\MUTU\MutuUnit();
-        $unit->mutu_indikator_id = $master->id;
-        $unit->tanggal_mutu = '2024-01-01';
+        // Dictionaries are not copied per year; a new year reuses the same dictionary.
+        $this->assertFalse(DB::table('mutu_indikators')->where('periode_kinerja_id', $this->target->id)->exists());
+        $masterId = (int) $this->source->indikator_fitur4_id;
+        $dictionary = \App\Models\MUTU\MutuIndikator::create(['indikator_fitur4_id' => $masterId, 'mutu_kategori_id' => DB::table('mutu_kategoris')->value('id'),
+            'location_id' => auth()->user()->pic->location_id, 'num_name' => 'Pembilang', 'denum_name' => 'Penyebut', 'standar' => 80, 'operator' => '≥', 'penyebut' => '%', 'approved' => 1]);
+        $this->assertNull($dictionary->fresh()->periode_kinerja_id);
+        $measure = fn ($date) => \App\Models\MUTU\MutuUnit::create(['mutu_indikator_id' => $dictionary->id, 'code' => \Illuminate\Support\Str::random(8), 'tanggal_mutu' => $date, 'num' => 8, 'denum' => 10, 'capaian' => 80]);
+        $this->assertNotNull($measure('2024-03-01')->id);
+        $this->assertNotNull($measure('2091-03-01')->id);
+        DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->where('master_id', $masterId)->update(['is_active' => false]);
         $this->expectException(ValidationException::class);
-        $unit->save();
+        $measure('2091-04-01');
     }
 
     public function test_copy_unique_key_is_enforced_by_database(): void
@@ -324,7 +332,8 @@ class AnnualIndicatorsTest extends TestCase
             }
             $this->post(route('kinerja.nodes', [$this->sourcePeriod->id, (string) $level]), $payload)->assertSessionHasNoErrors();
             $this->assertDatabaseHas($table, ['id' => $row->id, 'name' => $payload['name'], 'tujuan' => $payload['tujuan'], 'jabatan' => $payload['jabatan']]);
-            $this->assertDatabaseHas($table, ['periode_kinerja_id' => $this->target->id, 'copied_from_id' => $row->id, 'name' => $row->name]);
+            // Levels 1-3 are yearly copies; level four shares its master's wording in every year.
+            $this->assertDatabaseHas($table, ['periode_kinerja_id' => $this->target->id, 'copied_from_id' => $row->id, 'name' => $level === 4 ? $payload['name'] : $row->name]);
             $activity = \Spatie\Activitylog\Models\Activity::where('log_name', 'indikator_tahunan')->latest('id')->firstOrFail();
             $this->assertEquals($row->name, $activity->properties['old']['name']);
             $this->assertEquals($payload['name'], $activity->properties['attributes']['name']);
@@ -400,9 +409,9 @@ class AnnualIndicatorsTest extends TestCase
         $this->post(route('kinerja.responsible'), $payload)->assertForbidden();
     }
 
-    public function test_feature_four_derives_units_from_responsible_master_and_rejects_missing_mapping(): void
+    public function test_feature_four_keeps_master_units_and_new_indicator_derives_units_from_responsible_master(): void
     {
-        $row = DB::table('indikator_fitur4s')->find($this->source->indikator_fitur4_id);
+        $row = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->sourcePeriod->id)->where('master_id', $this->source->indikator_fitur4_id)->first();
         $payload = (array) $row;
         $payload['penanggung_jawab_id'] = $this->responsibleId;
         $payload['jabatan'] = 'Nama palsu';
@@ -410,9 +419,25 @@ class AnnualIndicatorsTest extends TestCase
         $route = route('kinerja.nodes', [$this->sourcePeriod->id, '4']);
         $this->post($route, $payload)->assertSessionHasNoErrors();
         $saved = DB::table('indikator_fitur4s')->find($row->id);
-        $expected = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $this->responsibleId)->pluck('location_id')->map(fn ($id) => (int) $id)->all();
-        $this->assertSame($expected, json_decode($saved->location_id, true));
+        // The unit of an existing indicator belongs to its master and never follows the request.
+        $this->assertSame($row->location_id, $saved->location_id);
         $this->assertSame('Jabatan pengujian', $saved->jabatan);
+        $this->assertSame($saved->location_id, DB::table('indikator_fitur4s')->where('id', $row->master_id)->value('location_id'));
+        $payload['penanggung_jawab_id'] = null;
+        $this->post($route, $payload)->assertSessionHasNoErrors();
+        $this->assertEquals($this->responsibleId, DB::table('indikator_fitur4s')->where('id', $row->id)->value('penanggung_jawab_id'));
+        // A new indicator derives its units from the responsible master on the server.
+        $this->sourcePeriod->update(['status' => 'draft']);
+        unset($payload['id']);
+        $payload['name'] = 'Indikator baru uji';
+        $payload['kode_cascading'] = null;
+        $payload['penanggung_jawab_id'] = $this->responsibleId;
+        $this->post($route, $payload)->assertSessionHasNoErrors();
+        $created = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->sourcePeriod->id)->where('name', 'Indikator baru uji')->first();
+        $expected = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $this->responsibleId)->pluck('location_id')->map(fn ($id) => (int) $id)->all();
+        $this->assertSame($expected, json_decode($created->location_id, true));
+        $this->assertDatabaseHas('indikator_fitur4s', ['id' => $created->master_id, 'periode_kinerja_id' => null, 'name' => 'Indikator baru uji']);
+        $payload['name'] = 'Indikator baru kedua';
         $payload['penanggung_jawab_id'] = null;
         $this->post($route, $payload)->assertSessionHasErrors('penanggung_jawab_id');
         $payload['penanggung_jawab_id'] = 999999999;
@@ -424,9 +449,10 @@ class AnnualIndicatorsTest extends TestCase
         DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $this->responsibleId)->delete();
         $this->post($route, $payload)->assertSessionHasErrors('penanggung_jawab_id');
         $this->assertSame($saved->location_id, DB::table('indikator_fitur4s')->where('id', $row->id)->value('location_id'));
+        $this->assertFalse(DB::table('indikator_fitur4s')->where('name', 'Indikator baru kedua')->exists());
     }
 
-    public function test_master_changes_sync_open_indicators_and_preserve_closed_periods_and_archives(): void
+    public function test_master_changes_sync_every_year_of_level_four_and_preserve_archives(): void
     {
         $snapshot = $this->source->fresh()->indikator_snapshot;
         $this->get(route('kinerja.export', $this->sourcePeriod->id))->assertOk();
@@ -435,7 +461,7 @@ class AnnualIndicatorsTest extends TestCase
             $table = 'indikator_fitur'.$level.'s';
             DB::table($table)->where('id', $snapshot[$table]['id'])->update(['penanggung_jawab_id' => $this->responsibleId]);
         }
-        $closed = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->where('copied_from_id', $this->source->indikator_fitur4_id)->first();
+        $closed = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $this->target->id)->where('master_id', $this->source->indikator_fitur4_id)->first();
         DB::table('indikator_fitur4s')->where('id', $closed->id)->update(['penanggung_jawab_id' => $this->responsibleId]);
         $this->target->update(['status' => 'ditutup']);
         $units = DB::table('locations')->orderBy('id')->take(2)->pluck('id')->map(fn ($id) => (int) $id)->all();
@@ -446,7 +472,8 @@ class AnnualIndicatorsTest extends TestCase
             $this->assertDatabaseHas($table, ['id' => $snapshot[$table]['id'], 'jabatan' => $payload['name']]);
         }
         $this->assertSame($units, json_decode(DB::table('indikator_fitur4s')->where('id', $this->source->indikator_fitur4_id)->value('location_id'), true));
-        $this->assertDatabaseHas('indikator_fitur4s', ['id' => $closed->id, 'jabatan' => $closed->jabatan, 'location_id' => $closed->location_id]);
+        // Level four shares its master's position and unit in every year, closed ones included.
+        $this->assertDatabaseHas('indikator_fitur4s', ['id' => $closed->id, 'jabatan' => $payload['name'], 'location_id' => json_encode($units)]);
         $this->assertSame($snapshot, $this->source->fresh()->indikator_snapshot);
         $this->assertSame($archive->snapshot, DB::table('cascading_exports')->where('id', $archive->id)->value('snapshot'));
         $payload['is_active'] = false;

@@ -19,7 +19,10 @@ class CascadingExportService
             $period = PeriodeKinerja::whereKey($period->id)->lockForUpdate()->firstOrFail();
             $levels = [];
             foreach (CascadingHierarchyService::TABLES as $level => $table) {
-                $levels[$level] = DB::table($table)->where('periode_kinerja_id', $period->id)->orderBy('sort_order')->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
+                $levels[$level] = DB::table($table)->where('periode_kinerja_id', $period->id)
+                    // Linked masters not yet positioned under an activity are not part of the chart.
+                    ->when($table === 'indikator_fitur4s', fn ($query) => $query->whereNotNull('indikator_fitur3_id'))
+                    ->orderBy('sort_order')->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
             }
             $hierarchy = app(CascadingHierarchyService::class);
             $tree = $hierarchy->build($levels);

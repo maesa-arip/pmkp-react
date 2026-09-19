@@ -41,7 +41,8 @@ class PeriodeKinerjaController extends Controller
             'cascadingConcepts' => $period ? array_values(array_filter(app(\App\Services\CascadingConceptService::class)->rows($period->id), fn ($row) => $row['kind'] !== 'indikator_kinerja' || $row['is_active'])) : [],
             'performanceIndicators' => $period ? DB::table('indikator_kinerjas')->where('periode_kinerja_id', $period->id)->where('is_active', true)->orderBy('sort_order')->orderBy('id')->get() : [],
             'cascadingTree' => $hierarchy->build($data),
-            'cascadingIssues' => $hierarchy->unlinked($data, $hierarchy->build($data)),
+            'cascadingIssues' => array_values(array_filter($hierarchy->unlinked($data, $hierarchy->build($data)), fn ($issue) => $issue['level'] !== '4' || ! $this->isUnplaced($data['4'], $issue['id']))),
+            'unplacedIndicators' => count(array_filter($data['4'], fn ($row) => $row->is_active && ! $row->indikator_fitur3_id)),
             'locations' => DB::table('locations')->select('id', 'name')->orderBy('name')->get(),
             'pics' => DB::table('pics')->select('id', 'name', 'location_id')->orderBy('name')->get(),
             'responsiblePositions' => DB::table('kinerja_penanggung_jawabs')->orderBy('name')->get()->map(function ($position) use ($positionUnits) {
@@ -123,6 +124,10 @@ class PeriodeKinerjaController extends Controller
                     $parents[] = ['sasaran_strategis_id', 'sasaran_strategis'];
                 }
                 foreach ($parents as [$column, $parentTable]) {
+                    // Linked masters may wait to be positioned under an activity.
+                    if ($table === 'indikator_fitur4s' && ! $row->indikator_fitur3_id) {
+                        continue;
+                    }
                     if (! DB::table($parentTable)->where('id', $row->$column)->where('periode_kinerja_id', $period->id)->where('is_active', true)->exists()) {
                         throw ValidationException::withMessages(['status' => "Parent/sasaran {$table} #{$row->id} tidak aktif atau berbeda tahun."]);
                     }
@@ -136,7 +141,7 @@ class PeriodeKinerjaController extends Controller
         abort_unless(isset(CascadingHierarchyService::TABLES[$level]), 404);
         $table = CascadingHierarchyService::TABLES[$level];
         $rules = ['id' => 'nullable|integer', 'name' => 'required|string|max:255', 'tujuan' => 'nullable|string|max:255',
-            'penanggung_jawab_id' => [$level === '4' ? 'required' : 'nullable', 'integer', Rule::exists('kinerja_penanggung_jawabs', 'id')],
+            'penanggung_jawab_id' => [$level === '4' && ! $request->input('id') ? 'required' : 'nullable', 'integer', Rule::exists('kinerja_penanggung_jawabs', 'id')],
             'kode_cascading' => 'nullable|string|max:50', 'sort_order' => 'required|integer|min:0', 'is_active' => 'required|boolean'];
         if ($parent = AnnualIndicatorService::PARENTS[$table]) {
             $rules[$parent[0]] = ['required', Rule::exists($parent[1], 'id')->where('periode_kinerja_id', $period->id)];
@@ -176,19 +181,22 @@ class PeriodeKinerjaController extends Controller
             } elseif ($period->status === 'aktif') {
                 throw ValidationException::withMessages(['name' => 'Penambahan indikator dilakukan pada periode draft. Pilih indikator yang sudah ada untuk mengedit periode aktif.']);
             }
-            $data['penanggung_jawab_id'] = $data['penanggung_jawab_id'] ?? null;
+            $data['penanggung_jawab_id'] = $data['penanggung_jawab_id'] ?? ($level === '4' ? $before?->penanggung_jawab_id : null);
             $position = $data['penanggung_jawab_id'] ? DB::table('kinerja_penanggung_jawabs')->where('id', $data['penanggung_jawab_id'])->lockForUpdate()->first() : null;
             if ($position && ! $position->is_active) {
                 throw ValidationException::withMessages(['penanggung_jawab_id' => 'Pilih penanggung jawab yang aktif.']);
             }
-            $data['jabatan'] = $level === '4' && (int) $period->feature_schema_version === 2 && $before && (int) $before->penanggung_jawab_id === (int) $data['penanggung_jawab_id'] ? $before->jabatan : $position?->name;
-            if ($level === '4') {
+            $data['jabatan'] = $level === '4' && $before && (int) $before->penanggung_jawab_id === (int) $data['penanggung_jawab_id'] ? $before->jabatan : $position?->name;
+            if ($level === '4' && $before) {
+                // The unit belongs to the permanent master and stays the same in every year.
+                $data['location_id'] = AnnualIndicatorService::ids($before->location_id);
+            } elseif ($level === '4') {
                 $units = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $position->id)->orderBy('location_id')->pluck('location_id')->map(fn ($id) => (int) $id)->all();
                 if (! $units && ! $position->pic_id) {
                     throw ValidationException::withMessages(['penanggung_jawab_id' => 'Hubungkan PIC jabatan atau atur unit pelaksana pada master penanggung jawab terlebih dahulu.']);
                 }
                 // Derive permitted units on the server, never trust the submitted unit list.
-                $data['location_id'] = (int) $period->feature_schema_version === 2 && $before && (int) $before->penanggung_jawab_id === (int) $position->id ? AnnualIndicatorService::ids($before->location_id) : $units;
+                $data['location_id'] = $units;
             }
             if ($period->status === 'aktif') {
                 $parent = AnnualIndicatorService::PARENTS[$table];
@@ -249,6 +257,9 @@ class PeriodeKinerjaController extends Controller
             } else {
                 $id = DB::table($table)->insertGetId($data + ['periode_kinerja_id' => $period->id, 'lineage_id' => (string) Str::uuid(), 'created_at' => now()]);
             }
+            if ($level === '4') {
+                \App\Services\Fitur4Master::syncFromPlacement($id);
+            }
             if ((int) $period->feature_schema_version === 2) {
                 $parentSpec = AnnualIndicatorService::PARENTS[$table] ?? ['sasaran_strategis_id', 'sasaran_strategis'];
                 app(\App\Services\OperationalConceptLink::class)->sync($period->id, $table, $id, $parentSpec[1], $data[$parentSpec[0]],
@@ -259,6 +270,17 @@ class PeriodeKinerjaController extends Controller
         });
 
         return back()->with(['type' => 'success', 'message' => 'Indikator fitur '.$level.' berhasil disimpan.']);
+    }
+
+    private function isUnplaced(array $rows, $id): bool
+    {
+        foreach ($rows as $row) {
+            if ((int) $row->id === (int) $id) {
+                return ! $row->indikator_fitur3_id;
+            }
+        }
+
+        return false;
     }
 
     private function syncDescendantContext(int $level, int $id, int $periodId, int $context): void
@@ -350,6 +372,11 @@ class PeriodeKinerjaController extends Controller
                     ? PeriodeKinerja::whereIn('id', $openPeriods)->where('feature_schema_version', '<>', 2)->pluck('id')
                     : $openPeriods;
                 DB::table($table)->whereIn('periode_kinerja_id', $syncPeriods)->where('penanggung_jawab_id', $id)->update($changes);
+                if ($table === 'indikator_fitur4s') {
+                    foreach (DB::table($table)->whereIn('periode_kinerja_id', $syncPeriods)->where('penanggung_jawab_id', $id)->get()->unique('master_id') as $placement) {
+                        \App\Services\Fitur4Master::syncFromPlacement($placement->id);
+                    }
+                }
             }
             activity('indikator_tahunan')->causedBy(auth()->user())->withProperties([
                 'penanggung_jawab_id' => $id, 'old' => (array) $before + ['location_ids' => $oldUnits],

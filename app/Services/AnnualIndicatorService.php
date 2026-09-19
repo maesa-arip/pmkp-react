@@ -32,7 +32,6 @@ class AnnualIndicatorService
                 throw ValidationException::withMessages(['tahun' => 'Copy hierarki hanya ke periode draft yang berbeda.']);
             }
             $maps = [];
-            $sourceVersion = $sourcePeriod ? (int) PeriodeKinerja::whereKey($sourcePeriod)->value('feature_schema_version') : 1;
             foreach (self::TABLES as $table) {
                 if (! Schema::hasTable($table)) {
                     continue;
@@ -63,7 +62,8 @@ class AnnualIndicatorService
                         if (! $row->lineage_id) {
                             DB::table($table)->where('id', $id)->update(['lineage_id' => $lineage]);
                         }
-                        $existing = DB::table($table)->where('periode_kinerja_id', $target->id)->where('lineage_id', $lineage)->first();
+                        $existing = DB::table($table)->where('periode_kinerja_id', $target->id)->where('lineage_id', $lineage)->first()
+                            ?? ($table === 'indikator_fitur4s' ? DB::table($table)->where('periode_kinerja_id', $target->id)->where('master_id', $row->master_id ?: $row->id)->first() : null);
                         if ($existing) {
                             $maps[$table][$id] = $existing->id;
                         } else {
@@ -73,20 +73,23 @@ class AnnualIndicatorService
                             $data['lineage_id'] = $lineage;
                             $data['copied_from_id'] = $id;
                             $data['created_at'] = $data['updated_at'] = now();
-                            if (! empty($row->penanggung_jawab_id) && ! ($sourceVersion === 2 && $table === 'indikator_fitur4s')) {
-                                $position = DB::table('kinerja_penanggung_jawabs')->where('id', $row->penanggung_jawab_id)->first();
-                                $data['jabatan'] = $position->name;
-                                if ($table === 'indikator_fitur4s') {
-                                    $units = DB::table('kinerja_penanggung_jawab_units')->where('penanggung_jawab_id', $position->id)->orderBy('location_id')->pluck('location_id')->map(fn ($id) => (int) $id)->all();
-                                    if ($units || $position->pic_id) {
-                                        $data['location_id'] = json_encode($units);
-                                    }
-                                }
+                            // Level four keeps its master's name, unit and position in every year.
+                            if (! empty($row->penanggung_jawab_id) && $table !== 'indikator_fitur4s') {
+                                $data['jabatan'] = DB::table('kinerja_penanggung_jawabs')->where('id', $row->penanggung_jawab_id)->value('name');
+                            }
+                            if ($table === 'indikator_fitur4s') {
+                                $data['master_id'] = $row->master_id ?: $row->id;
                             }
                             if ($table === 'sasaran_strategis' && ! empty($row->parent_id)) {
                                 $data['parent_id'] = $maps[$table][$row->parent_id];
                             }
                             foreach (array_filter([self::PARENTS[$table] ?? null, isset($row->sasaran_strategis_id) ? ['sasaran_strategis_id', 'sasaran_strategis'] : null]) as [$column, $parentTable]) {
+                                // A placement without a parent in the source stays unplaced in the target.
+                                if ($table === 'indikator_fitur4s' && ! isset($maps[$parentTable][$row->$column])) {
+                                    $data[$column] = null;
+
+                                    continue;
+                                }
                                 if (! isset($maps[$parentTable][$row->$column])) {
                                     throw ValidationException::withMessages(['hierarki' => "Relasi {$table} #{$id} ke {$parentTable} tidak ditemukan."]);
                                 }
@@ -173,45 +176,26 @@ class AnnualIndicatorService
                 }
             }
 
-            if ($sourcePeriod !== null && Schema::hasTable('mutu_indikators')) {
-                foreach (DB::table('mutu_indikators')->where('periode_kinerja_id', $sourcePeriod)->get() as $master) {
-                    if (! isset($maps['indikator_fitur4s'][$master->indikator_fitur4_id])) {
-                        continue;
-                    }
-                    $lineage = $master->lineage_id ?: (string) Str::uuid();
-                    if (DB::table('mutu_indikators')->where('periode_kinerja_id', $target->id)->where('lineage_id', $lineage)->exists()) {
-                        continue;
-                    }
-                    $data = (array) $master;
-                    unset($data['id']);
-                    $data['periode_kinerja_id'] = $target->id;
-                    $data['indikator_fitur4_id'] = $maps['indikator_fitur4s'][$master->indikator_fitur4_id];
-                    $data['lineage_id'] = $lineage;
-                    $data['copied_from_id'] = $master->id;
-                    $data['approved'] = 0;
-                    $data['created_at'] = $data['updated_at'] = now();
-                    DB::table('mutu_indikators')->insert($data);
-                }
-            }
+            // MUTU dictionaries reference permanent masters and are not copied per year.
         });
     }
 
+    /** The active placement in the target period for a master (or placement) ID. */
     public function resolve(int $sourceId, int $targetPeriod): ?object
     {
-        $source = DB::table('indikator_fitur4s')->find($sourceId);
-        if (! $source) {
+        $masterId = Fitur4Master::masterId($sourceId);
+        if (! $masterId) {
             return null;
         }
-        $mapped = DB::table('indikator_year_mappings')->where('source_indicator_id', $sourceId)->where('target_period_id', $targetPeriod)->value('target_indicator_id');
+        $mapped = DB::table('indikator_year_mappings')->whereIn('source_indicator_id', array_unique([$sourceId, $masterId]))->where('target_period_id', $targetPeriod)->value('target_indicator_id');
         $query = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $targetPeriod)->where('is_active', true);
         if ($mapped) {
-            return $query->where('id', $mapped)->first();
-        }
-        if (! $source->lineage_id) {
-            return null;
+            $mappedMaster = Fitur4Master::masterId((int) $mapped);
+
+            return $mappedMaster ? $query->where('master_id', $mappedMaster)->first() : null;
         }
 
-        return $query->where('lineage_id', $source->lineage_id)->first();
+        return $query->where('master_id', $masterId)->first();
     }
 
     public function acceptsPics(object $indicator, array $picIds): bool
