@@ -98,3 +98,9 @@ otomatis karena konfigurasi server production perlu dikonfirmasi terlebih dahulu
 ## Cascading 2024–2026
 
 Untuk permintaan eksekusi cascading production, ikuti [panduan khusus cascading 2024–2026](CASCADING-PRODUCTION-2024-2026.md). Panduan tersebut memuat sumber, status setiap tahun, cakupan tabel, prasyarat command, backup, serta audit. [Hasil lokal](CASCADING-2024-2026.md) merupakan acuan verifikasi, bukan database atau ID yang disalin langsung ke production.
+
+## Deployment dev-mutu
+
+Penerapan dev tanggal 19 September 2026 memakai branch `codex/indikator-tahunan-lokal`, checkout `/var/www/dev-pmkp`, dan database `dev_pmkp` pada host yang sama. Domain dev adalah `dev-mutu.balimandarahospital.com` (upstream HTTPS port 9011). Pengguna secara eksplisit membatasi deployment ini ke dev; alur `main`/production di atas tidak dijalankan.
+
+Baca [laporan deploy dev dan cascading 2024–2026](DEPLOYMENT-DEV-MUTU-2026-09-19.md) untuk rilis, backup, pengecualian dua tabel grading, hasil migrasi, dan audit. Jangan mengulang command persiapan cascading pada dev yang sudah mempunyai periode.
