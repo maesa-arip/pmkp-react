@@ -1,5 +1,8 @@
 # TASK 07 - Remove Stale Copy Files
 
+> Status: REGRESSED - file yang tercatat "dihapus" di bawah masih tracked di
+> branch aktif (audit 2026-09-19). Lihat `prompt/docs/FINDINGS_LOG.md` temuan #6.
+
 ## Tujuan
 
 Membersihkan file salinan/debug lama agar pencarian kode dan maintenance tidak

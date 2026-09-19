@@ -13,9 +13,16 @@ mengedit kode aplikasi.
 
 ```
 Task aktif : belum ada
-Backlog    : lihat prompt/docs/FINDINGS_LOG.md
+Terakhir   : TASK_09 selesai - modul akses dijaga otorisasi server-side
+Backlog    : 14 temuan terbuka - lihat prompt/docs/FINDINGS_LOG.md
+Mendesak   : ada item deploy - lihat bagian server di FINDINGS_LOG
 Onboarding : [x] selesai
+Audit ulang: 2026-09-19 pada branch codex/indikator-tahunan-lokal
 ```
+
+PERINGATAN: temuan #1-#6 yang sebelumnya tertulis FIXED ternyata tidak ada di
+branch aktif. Jangan percaya status DONE pada file task tanpa verifikasi ulang
+di kode.
 
 ## Stack & Perintah
 
@@ -27,18 +34,23 @@ Run   : php artisan serve dan npm run dev
 Lint  : vendor/bin/pint (tersedia, tidak ada script lint npm)
 ```
 
-Baseline onboarding:
+Test berjalan di atas database `dev_simdalin` dari `.env` dan me-rollback
+perubahannya lewat `DatabaseTransactions`. Semua test WAJIB memakai trait itu;
+`tests/TestCase.php` menolak `RefreshDatabase` dan `DatabaseMigrations` karena
+keduanya akan men-drop seluruh tabel kerja. Lihat temuan #7 dan TASK_08.
+
+Baseline per 2026-09-19:
 - `php artisan route:list` berhasil dan menampilkan 273 routes.
-- `php artisan test` gagal baseline: 23 failed, 1 passed. Penyebab dominan:
-  migration test gagal membuat FK `fgd_actuals.risk_register_id` karena tabel
-  `risk_registers` belum dibuat pada urutan migration yang aktif.
+- `php artisan test`: 6 failed, 137 passed (~200 detik). Kegagalan tersisa
+  berasal dari temuan #2 dan #13 yang masih terbuka, bukan regresi baru.
 
 ## Aturan Emas Brownfield
 
 1. Baca sebelum tulis: pahami file terkait dan dokumen prompt dulu.
 2. Diff sekecil mungkin. Jangan reformat/rename/refactor di luar task.
 3. Tiru konvensi existing di `prompt/docs/CONVENTIONS.md`.
-4. Jaga regresi: jalankan test baseline dan verifikasi manual bila test belum hijau.
+4. Jaga regresi: jalankan `php artisan test` dan bandingkan dengan baseline
+   6 failed / 133 passed. Test baru wajib memakai `DatabaseTransactions`.
 5. Jangan hapus/timpa kode yang tidak dibuat sendiri tanpa alasan jelas.
 6. Satu task = satu tujuan; temuan baru masuk `prompt/docs/FINDINGS_LOG.md`.
 7. Perubahan endpoint, props Inertia, atau skema DB wajib memperbarui dokumen terkait.
@@ -53,5 +65,5 @@ simdalin/
 │   ├── AUDIT_CHECKLIST.md
 │   ├── tasks/
 │   └── docs/
-└── .claude/skills/simdalin-ui/SKILL.md
+└── .codex/skills/simdalin-ui/SKILL.md
 ```

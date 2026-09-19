@@ -5,7 +5,7 @@
 | ID | TASK_03 |
 | Severity | P1 |
 | Tipe | bugfix |
-| Status | DONE |
+| Status | REGRESSED - perubahan tidak ada di branch aktif (audit 2026-09-19) |
 
 ## Masalah
 

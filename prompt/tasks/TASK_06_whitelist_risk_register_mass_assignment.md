@@ -1,5 +1,8 @@
 # TASK 06 - Whitelist Risk Register Mass Assignment
 
+> Status: REGRESSED - perubahan yang dijelaskan di bawah tidak ada di branch
+> aktif (audit 2026-09-19). Lihat `prompt/docs/FINDINGS_LOG.md` temuan #5.
+
 ## Tujuan
 
 Mengurangi risiko mass assignment pada `RiskRegister` tanpa mengubah perilaku

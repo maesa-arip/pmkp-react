@@ -1,5 +1,8 @@
 # TASK 05 - Preserve Risk Register History On Delete
 
+> Status: REGRESSED - perubahan yang dijelaskan di bawah tidak ada di branch
+> aktif (audit 2026-09-19). Lihat `prompt/docs/FINDINGS_LOG.md` temuan #4.
+
 ## Tujuan
 
 Memastikan penghapusan register risiko tidak ikut menghapus audit trail di

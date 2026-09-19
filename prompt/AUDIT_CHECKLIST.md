@@ -37,7 +37,8 @@ Severity:
 
 ## Test & Build
 
-- `php artisan test` dicatat baseline sebelum perubahan.
+- `php artisan test` dicatat baseline sebelum perubahan (6 failed / 133 passed).
+- Test baru memakai `DatabaseTransactions`, bukan `RefreshDatabase`.
 - `npm run build` dijalankan bila menyentuh React/CSS/Vite.
 - Test terkait ditambah bila memperbaiki bug yang bisa direproduksi.
 

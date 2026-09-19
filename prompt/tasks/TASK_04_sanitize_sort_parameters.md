@@ -5,7 +5,7 @@
 | ID | TASK_04 |
 | Severity | P0 |
 | Tipe | security hardening |
-| Status | DONE |
+| Status | REGRESSED - perubahan tidak ada di branch aktif (audit 2026-09-19) |
 
 ## Masalah
 
