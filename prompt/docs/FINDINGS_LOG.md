@@ -21,6 +21,7 @@ di branch aktif · FIXED terverifikasi ada di kode.
 | 14-16 | P0-P2 | Temuan konfigurasi server deploy | tidak dicatat di sini | Rincian sengaja disimpan di luar repo - lihat catatan di bawah | OPEN | - |
 | 17 | P0 | Data lama tanpa periode tidak bisa dilihat/diedit setelah fitur indikator tahunan | `app/Observers/AnnualRiskObserver.php`, `AnnualMutuObserver.php`, `app/Models/MUTU/MutuIndikator.php`, `EnsureAnnualPeriodWritable.php:27` | Setelah merge ke production: input MUTU, edit/ubah status risk register lama gagal; PDSA 500 | FIXED di lokal (belum commit/deploy) | `prompt/tasks/TASK_10_legacy_data_without_period.md`, `prompt/tasks/TASK_11_fitur4_master_tetap.md` |
 | 18 | P0 | PIC unit layanan tidak punya satu pun indikator 2026 untuk input risk register baru | `app/Services/RiskIndicatorAccess.php` `forPic()`, data `indikator_fitur4s.location_id` periode 2026 | 78/78 akun PIC unit tidak bisa membuat register 2026; 24 akun di antaranya aktif input 2026 (97 register) | FIXED di lokal (belum commit/deploy) | `prompt/tasks/TASK_11_fitur4_master_tetap.md` |
+| 20 | P1 | Form risk register: dropdown tertimpa, field hilang saat simpan, kartu terakhir terpotong saat edit | `resources/js/Pages/RiskRegister/{Klinis,NonKlinis}/Form.jsx`, `app/Models/RiskRegister.php` `FORM_FIELDS`, `NonKlinis/Edit.jsx` | Pilihan Lokasi/Tingkat Keefektifan tertutup field lain; `belum_tertangani`, `usulan_perbaikan`, dan unit tidak tersimpan | FIXED di lokal + dev-mutu (2026-09-20) | - |
 | 19 | P2 | Master indikator fitur 4 duplikat: nama dan unit sama | data `indikator_fitur4s` (master tanpa periode) | 23 pasang duplikat (46 baris); 17 kelebihannya sudah dipakai register/kamus MUTU, 6 belum dipakai. Pilihan di form tampak dobel | OPEN | - |
 | 7 | P0 | `php artisan test` menghapus database kerja `dev_simdalin` | `phpunit.xml`, `tests/Feature/Auth/*` | Menjalankan baseline test yang diperintahkan dokumen akan drop seluruh tabel dev | FIXED | `prompt/tasks/TASK_08_stop_tests_dropping_working_database.md` |
 | 8 | P0 | User/Role/Permission CRUD tanpa authorization server-side | `app/Http/Controllers/RoleController.php:64`, `PermissionController.php:66`, `UserController.php:58` | Privilege escalation: user login biasa bisa memberi dirinya permission apa pun | FIXED | `prompt/tasks/TASK_09_authorize_access_module.md` |
@@ -77,6 +78,28 @@ database, atau status kerentanan yang belum ditambal ke file mana pun di bawah
   tim kerja, unit tidak lagi input. Mode legacy TASK_10 tidak menyelesaikan ini.
 - Catatan tambahan: 4 indikator lama tanpa unit; 284 indikator lama menyimpan
   `location_id` sebagai angka tunggal, bukan array.
+
+### #20 - Tiga cacat form input risk register
+
+- Severity: P1
+- Dilaporkan user 2026-09-20 saat mencoba input di dev-mutu.
+- Gejala 1: daftar pilihan "Lokasi" dan "Tingkat Keefektifan" tertutup field
+  di bawahnya. Sebab: `C/UC` dan `Celah Pengendalian` memakai `z-[80]`
+  sementara field di atasnya bernilai lebih kecil, sehingga urutan z-index di
+  dalam kartu tidak menurun sesuai urutan DOM. Diperbaiki dengan menurunkan
+  ketiga outlier itu (`C/UC` 40/39/38, `Celah Pengendalian` 22).
+- Gejala 2: "Yang Belum Tertangani" dan "Usulan Perbaikan" tidak tersimpan.
+  Sebab: keduanya tidak ada di `RiskRegister::FORM_FIELDS` yang dipakai
+  `$request->only(...)` pada store/update, padahal form non-klinis mengirimnya.
+  Ditambahkan, dengan assertion baru di `RiskRegisterInputTest`.
+- Gejala 3: "Lokasi" juga kosong. Sebab: `risk_registers` belum punya kolom
+  `location_id` sama sekali - field ini tidak pernah tersimpan sejak sebelum
+  TASK_11 (validasinya dikomentari di controller lama). Atas keputusan user,
+  kolom `location_id` nullable ditambahkan (migration
+  `2026_09_20_010000_add_location_to_risk_registers_table`).
+- Gejala 4: saat edit, kartu terakhir tertutup footer tombol. Sebab: form
+  memakai `h-full max-h-[85vh]` sementara isinya tidak punya `min-h-0`/`flex-1`,
+  sehingga area scroll tidak pernah aktif.
 
 ### #19 - Master indikator fitur 4 duplikat
 

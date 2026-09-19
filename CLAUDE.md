@@ -14,7 +14,7 @@ mengedit kode aplikasi.
 ```
 Task aktif : TASK_11 ter-deploy di dev-mutu 2026-09-20; menunggu uji manual sebelum merge main
 Terakhir   : TASK_09 selesai - modul akses dijaga otorisasi server-side
-Backlog    : 17 temuan terbuka - lihat prompt/docs/FINDINGS_LOG.md
+Backlog    : 17 temuan terbuka (#20 sudah fixed) - lihat prompt/docs/FINDINGS_LOG.md
 Mendesak   : ada item deploy - lihat bagian server di FINDINGS_LOG
 Onboarding : [x] selesai
 Audit ulang: 2026-09-19 pada branch codex/indikator-tahunan-lokal

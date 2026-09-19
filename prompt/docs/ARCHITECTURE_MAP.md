@@ -90,7 +90,7 @@ GET riskRegisterKlinis
 | Entitas | Relasi penting | Catatan |
 |---------|----------------|---------|
 | User | hasMany RiskRegister, belongsTo Pic, HasRoles | `app/Models/User.php` |
-| RiskRegister | belongsTo master data, user, indikator; hasOne FGD/RCA/request/verification; hasMany history | memakai SoftDeletes dan activity log; `$guarded=[]` |
+| RiskRegister | belongsTo master data, user, indikator; hasOne FGD/RCA/request/verification; hasMany history | memakai SoftDeletes dan activity log; mass assignment dibatasi `$fillable` dan `FORM_FIELDS`; `location_id` nullable (unit pada form non-klinis) |
 | RiskRegisterHistory | belongsTo RiskRegister/User | menyimpan event dan snapshot status/copy |
 | RiskCategory, RiskType, RiskVariety | master risk register | CRUD master |
 | ImpactValue, ProbabilityValue, ControlValue, RiskGrading | nilai/grading risiko | dipakai hitung OSD dan grading |
