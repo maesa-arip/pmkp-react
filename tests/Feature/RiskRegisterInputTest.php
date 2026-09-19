@@ -23,6 +23,7 @@ class RiskRegisterInputTest extends TestCase
         $payload = $this->validPayload();
         $payload['belum_tertangani'] = 'Sisa kendala uji';
         $payload['usulan_perbaikan'] = 'Usulan uji';
+        $payload['location_id'] = DB::table('locations')->value('id');
         $this->post(route($route.'.store'), $payload)->assertRedirect()->assertSessionHasNoErrors();
         $risk = RiskRegister::latest('id')->firstOrFail();
         $this->assertEquals($type, $risk->tipe_id);
@@ -39,6 +40,7 @@ class RiskRegisterInputTest extends TestCase
         // The form submits both control-evaluation fields; they used to be dropped on save.
         $this->assertSame('Sisa kendala uji', $risk->belum_tertangani);
         $this->assertSame('Usulan uji', $risk->usulan_perbaikan);
+        $this->assertEquals($payload['location_id'], $risk->location_id);
         $this->assertSame(RiskRegisterHistory::EVENT_CREATED, $risk->risk_register_histories()->firstOrFail()->event_type);
 
         $payload['tgl_register'] = '2094-06-15 10:00:00'; // Existing records include a time component.
