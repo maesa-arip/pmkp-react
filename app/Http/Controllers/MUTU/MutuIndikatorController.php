@@ -22,7 +22,11 @@ class MutuIndikatorController extends Controller
         $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100', 'field' => 'nullable|in:id,num_name,created_at,approved,mutu_kategori_id,indikator_fitur4_id,standar,location_id', 'direction' => 'nullable|in:asc,desc']);
         $year = $request->integer('tahun', now()->year);
         $user = $request->user();
-        $query = MutuIndikator::with(['indikator_fitur4', 'kategori', 'location'])->where('periode_kinerja_id', PeriodeKinerja::where('tahun', $year)->value('id'));
+        $query = MutuIndikator::with(['indikator_fitur4', 'kategori', 'location']);
+        // Dictionaries are permanent; a year shows those whose indicator is placed in that year.
+        if ($periodId = PeriodeKinerja::where('tahun', $year)->value('id')) {
+            $query->whereIn('indikator_fitur4_id', DB::table('indikator_fitur4s')->where('periode_kinerja_id', $periodId)->whereNotNull('master_id')->select('master_id'));
+        }
         if (! $service->canViewAll($user)) {
             $query->where('location_id', $user->pic?->location_id ?? -1);
         }
@@ -48,7 +52,7 @@ class MutuIndikatorController extends Controller
     {
         return $r->validate([
             'periode_kinerja_id' => ['required', 'integer', 'exists:periode_kinerjas,id'],
-            'indikator_fitur3_id' => ['required', 'integer', 'exists:indikator_fitur3s,id'],
+            'indikator_fitur3_id' => ['nullable', Rule::requiredIf(! $editing && (int) $r->IndikatorBaru === 1), 'integer', 'exists:indikator_fitur3s,id'],
             'IndikatorBaru' => [$editing ? 'nullable' : 'required', Rule::in($editing ? [0] : [0, 1])],
             'indikator' => ['nullable', 'required_if:IndikatorBaru,1', 'string', 'max:255'],
             'indikator_fitur4_id' => ['nullable', Rule::requiredIf($editing || (int) $r->IndikatorBaru === 0), 'integer'],

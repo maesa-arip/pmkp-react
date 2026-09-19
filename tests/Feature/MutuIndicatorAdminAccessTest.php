@@ -38,7 +38,9 @@ class MutuIndicatorAdminAccessTest extends TestCase
         $this->assertTrue($service->canViewAll($user));
         $expected = IndikatorFitur4::orderBy('id')->pluck('id')->all();
         $this->assertNotEmpty($expected);
-        $this->assertSame($expected, $service->options($user)->sortBy('id')->pluck('id')->values()->all());
+        // Option values are permanent masters; each option still comes from one yearly placement.
+        $this->assertSame($expected, $service->options($user)->sortBy('placement_id')->pluck('placement_id')->values()->all());
+        $this->assertSame(IndikatorFitur4::orderBy('id')->pluck('master_id')->all(), $service->options($user)->sortBy('placement_id')->pluck('id')->values()->all());
         $this->actingAs($user);
         $year = (int) PeriodeKinerja::orderByDesc('tahun')->value('tahun');
         $this->get(route('MutuIndikator.index', ['tahun' => $year]))->assertOk()->assertInertia(fn (Assert $page) => $page
@@ -54,7 +56,7 @@ class MutuIndicatorAdminAccessTest extends TestCase
         $service = app(MutuIndicatorInput::class);
         $this->assertFalse($service->canViewAll($user));
         $expected = app(RiskIndicatorAccess::class)->forPic($user->pic_id)->orderBy('id')->pluck('id')->all();
-        $this->assertSame($expected, $service->options($user)->sortBy('id')->pluck('id')->values()->all());
+        $this->assertSame($expected, $service->options($user)->sortBy('placement_id')->pluck('placement_id')->values()->all());
         $this->assertLessThan(IndikatorFitur4::count(), count($expected));
     }
 

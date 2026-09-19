@@ -71,6 +71,8 @@ class MutuIndicatorPenyebutTest extends TestCase
                 $payload = $this->payload() + ['penyebut' => $option['id']];
                 $payload['IndikatorBaru'] = $isNew;
                 if ($isNew) {
+                    // A new indicator is always placed under an active activity of the year.
+                    $payload['indikator_fitur3_id'] = DB::table('indikator_fitur3s')->where('periode_kinerja_id', $payload['periode_kinerja_id'])->where('is_active', true)->value('id');
                     $payload['indikator_fitur4_id'] = '';
                     $payload['indikator'] = 'QA indikator penyebut '.Str::uuid();
                 }
@@ -80,6 +82,7 @@ class MutuIndicatorPenyebutTest extends TestCase
                 $next = $options[($index + 1) % count($options)];
                 $payload['IndikatorBaru'] = 0;
                 $payload['indikator_fitur4_id'] = $saved->indikator_fitur4_id;
+                $payload['indikator_fitur3_id'] = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $payload['periode_kinerja_id'])->where('master_id', $saved->indikator_fitur4_id)->value('indikator_fitur3_id');
                 $payload['penyebut'] = $next['id'];
                 $this->put(route('MutuIndikator.update', $saved), $payload)->assertSessionHasNoErrors()->assertRedirect();
                 $this->assertSame($next['name'], $saved->fresh()->penyebut);
