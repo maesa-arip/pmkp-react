@@ -42,6 +42,7 @@ class ImportCascadingWorkbook extends Command
             $backupPath = storage_path('app/cascading-import-backups/'.$year.'-'.now()->format('Ymd-His').'-'.bin2hex(random_bytes(3)).'.json');
             File::put($backupPath, json_encode($backup, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
             $result = $service->import($path, $year);
+            \App\Services\Fitur4Master::ensureAll();
             $this->info(json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $this->line('Cadangan: '.$backupPath);
             return self::SUCCESS;

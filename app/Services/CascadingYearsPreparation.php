@@ -111,6 +111,8 @@ class CascadingYearsPreparation
                 }
             }
             $report['source_unchanged'] = true;
+            // Level-four rows of every year get a permanent master after the source check.
+            $report['fitur4_masters_created'] = Fitur4Master::ensureAll();
             if ($apply) {
                 activity('indikator_tahunan')->withProperties($report)->log('Cascading lama disalin ke 2024 dan 2025; Excel menjadi cascading aktif 2026.');
                 DB::commit();

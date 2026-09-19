@@ -15,6 +15,7 @@ class AlignCascadingFeatures extends Command
     {
         try {
             $r = app(CascadingFeatureAlignment::class)->apply((int) $this->argument('year'));
+            \App\Services\Fitur4Master::ensureAll();
             $this->line(json_encode($r, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
             return self::SUCCESS;
