@@ -32,7 +32,7 @@ dengan risiko serendah mungkin, bukan menulis ulang sesuai selera.
 ## Keamanan Regresi
 
 1. Baseline dulu: jalankan `php artisan test` sebelum perubahan dan catat yang
-   sudah merah. Baseline per 2026-09-19 adalah 6 failed / 133 passed. Test
+   sudah merah. Baseline terbaru ada di `CLAUDE.md`. Test
    berjalan di atas `dev_simdalin` dan wajib memakai `DatabaseTransactions`;
    `tests/TestCase.php` menolak trait yang men-drop tabel (lihat TASK_08).
 2. Reproduce bug sebelum memperbaiki.

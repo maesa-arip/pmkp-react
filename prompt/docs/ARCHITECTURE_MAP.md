@@ -8,7 +8,7 @@ file nyata di repo ini.
 ```
 Stack : Laravel 9 / PHP ^8.0.2, MySQL, Inertia Laravel, React 18, Vite 4, Tailwind CSS 3
 Build : npm run build
-Test  : php artisan test (baseline onboarding: gagal, 23 failed / 1 passed)
+Test  : php artisan test (baseline terbaru di CLAUDE.md)
 Run   : php artisan serve dan npm run dev
 Lint  : vendor/bin/pint (Laravel Pint tersedia via composer, tidak ada script lint npm)
 ```
@@ -46,6 +46,7 @@ config/permission.php - konfigurasi Spatie Permission
 | Risk Register | Register risiko klinis/non-klinis, OSD, pengendalian, RCA, FGD, status, history | `RiskRegisterKlinisController.php`, `RiskRegisterNonKlinisController.php`, `RiskRegister.php`, `RiskRegisterHistory.php` |
 | IKP | Master IKP dan data pasien/insiden | `app/Http/Controllers/IKP/**`, `app/Models/IKP/**`, `resources/js/Pages/IKP/**` |
 | Mutu | Kategori mutu, indikator mutu, unit, PDSA, penyebut | `app/Http/Controllers/MUTU/**`, `app/Models/MUTU/**`, `resources/js/Pages/MUTU/**` |
+| Indikator tahunan & cascading | Periode kinerja, hierarki fitur 1-3 per tahun, fitur 4 master tetap + penautan per tahun, bagan dan ekspor cascading | `PeriodeKinerjaController.php`, `app/Services/AnnualIndicatorService.php`, `app/Services/Fitur4Master.php`, `app/Services/CascadingExportService.php`, `resources/js/Pages/Kinerja/Index.jsx` |
 | Export/PDF/Excel | Export risk register, IKP, PDSA, PDF, Excel | `ExportController.php`, `ExportPDFController.php`, `ExcelController.php`, `resources/views/pdfview.blade.php` |
 
 ## Alur Request Contoh
@@ -97,11 +98,13 @@ GET riskRegisterKlinis
 | FormulirRca, RequestUpdate | hasOne dari RiskRegister | RCA dan request perubahan status |
 | Pic, Location, IdentificationSource, JenisSebab | master referensi | dipakai risk register dan filter user |
 | IKP models | IkpPasien dan master IKP | folder `app/Models/IKP` |
-| MUTU models | MutuKategori, MutuIndikator, MutuUnit, MutuPenyebut, MutuPdsa | folder `app/Models/MUTU` |
+| MUTU models | MutuKategori, MutuIndikator, MutuUnit, MutuPenyebut, MutuPdsa | folder `app/Models/MUTU`; kamus `MutuIndikator` tidak berperiode dan menunjuk master fitur 4 |
+| PeriodeKinerja | hasMany fitur 1-3 dan penautan fitur 4 | status draft/aktif/ditutup; ditutup mengunci hierarki, bukan transaksi |
+| IndikatorFitur4 | master (`periode_kinerja_id` null) atau penautan tahun (`master_id`, `indikator_fitur3_id` nullable) | global scope `annual` hanya menampilkan penautan; relasi dari RiskRegister/MutuIndikator melepas scope karena menyimpan ID master |
 
 ## Endpoint / Route
 
-`php artisan route:list` berhasil dan menampilkan 273 routes. Ringkasan kelompok:
+`php artisan route:list` berhasil dan menampilkan 293 routes. Ringkasan kelompok:
 
 ```
 Auth: login, register, logout, forgot/reset password, verify email, confirm password
@@ -125,13 +128,12 @@ Export: export/*, export-excel, riskregister* reports, ikpdata*, print-* PDF rou
 
 ## Test
 
-- Test ada di `tests/Feature` dan `tests/Unit`, tampak sebagian besar scaffold
-  Laravel Breeze.
-- Baseline `php artisan test`: 23 failed, 1 passed.
-- Kegagalan utama: migration test gagal pada FK `fgd_actuals_risk_register_id_foreign`
-  karena migration `fgd_actuals` dijalankan sebelum tabel `risk_registers`.
-- `Tests\Feature\ExampleTest` juga mengharapkan `/` status 200, tetapi aplikasi
-  mengembalikan 302 karena `/` berada di group `auth`.
+- Test ada di `tests/Feature` dan `tests/Unit`; berjalan di atas `dev_simdalin`
+  dengan `DatabaseTransactions` (TASK_08), fixture dibuat di dalam test.
+- Baseline terbaru: lihat bagian Status di `CLAUDE.md`.
+- `Tests\Feature\ExampleTest` mengharapkan `/` status 200, tetapi aplikasi
+  mengembalikan 302 karena `/` berada di group `auth` (temuan #2).
+- `PreloadResponseHeadersTest` gagal bila `public/hot` (Vite dev server) ada.
 
 ## Catatan & Area Berisiko
 

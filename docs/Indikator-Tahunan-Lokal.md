@@ -84,3 +84,45 @@ Migrasi lokal `2026_09_14_000000_add_indicator_responsible_positions.php` sudah
 dijalankan. Validasi terbaru: 23 pengujian lulus, build frontend dan SSR berhasil,
 serta modal, pergantian unit otomatis, penyaringan induk, dan master jabatan
 diperiksa melalui browser dengan data contoh Tailwind.
+
+## Fitur 4 sebagai master tetap, 20 September 2026 (TASK_11)
+
+Indikator fitur 4 (indikator mutu unit) sekarang **master tetap lintas tahun**:
+baris `indikator_fitur4s` dengan `periode_kinerja_id` kosong. Baris berperiode
+adalah **penautan** master ke tahun itu (kolom `master_id`) dan hanya menyimpan
+induk fitur 3, status aktif tahun itu, urutan, dan kode. Nama, tujuan, unit,
+penanggung jawab, dan jabatan sama di semua tahun; edit dari `/kinerja` langsung
+diselaraskan ke master dan seluruh tahun. Riwayat redaksi dijaga oleh
+`indikator_snapshot` pada risk register.
+
+- Risk register dan kamus MUTU selalu menyimpan ID master. Kamus MUTU tidak
+  berperiode; tahun hanya ada pada tanggal pengukuran.
+- Data lama (termasuk 2023 tanpa periode dan periode ditutup) tetap dapat diedit.
+  Register baru, ganti indikator, atau ganti tahun wajib punya periode dan
+  penautan aktif. Pengukuran MUTU baru wajib memakai kamus aktif & disetujui dan,
+  bila tahunnya punya periode, penautan aktif.
+- Periode ditutup mengunci hierarki dan penautan, bukan transaksi.
+- Penautan tanpa induk (belum ditempatkan di bawah kegiatan) tampil sebagai info
+  di `/kinerja`, tidak ikut bagan dan ekspor cascading.
+- **Buat tahun baru** menyalin penautan dari tahun sumber; kamus MUTU tidak disalin.
+- Ekspor cascading 2026: sel KATIM yang nonaktif dibiarkan kosong (keputusan
+  user 2026-09-20).
+
+Command:
+
+- `php artisan indikator:link-masters {tahun} [--deactivate-existing] [--apply]`
+  menautkan semua master aktif yang belum tertaut ke tahun itu, tanpa induk.
+  Tanpa `--apply` hanya menampilkan angka. `--deactivate-existing` menonaktifkan
+  penautan yang sudah ada beserta masternya dan ditolak bila tahun itu sudah
+  pernah ditautkan ke master (mencegah jalan ulang menonaktifkan indikator unit).
+- `indikator:initialize-years` dihapus karena bertentangan dengan model ini.
+
+Data lokal setelah migration `2026_09_20_000000_make_fitur4_permanent_masters`
+dan `indikator:link-masters 2026 --deactivate-existing --apply`: 896 master
+(571 aktif); 2026 berisi 325 KATIM nonaktif dan 571 indikator unit tanpa induk.
+Backup sebelum perubahan: `storage/app/backups/before-task11-20260920-004621.sql`.
+
+Urutan deploy (setelah backup terverifikasi): `php artisan migrate`; khusus
+production jalankan `cascading:prepare-2024-2026` sesuai runbook; lalu
+`indikator:link-masters 2026 --deactivate-existing` (dry-run), periksa angka,
+ulangi dengan `--apply`.

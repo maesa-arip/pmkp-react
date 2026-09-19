@@ -12,9 +12,9 @@ mengedit kode aplikasi.
 ## Status Saat Ini
 
 ```
-Task aktif : belum ada
+Task aktif : TASK_11 terverifikasi di lokal (commit per fase; belum deploy dev-mutu)
 Terakhir   : TASK_09 selesai - modul akses dijaga otorisasi server-side
-Backlog    : 14 temuan terbuka - lihat prompt/docs/FINDINGS_LOG.md
+Backlog    : 16 temuan terbuka - lihat prompt/docs/FINDINGS_LOG.md
 Mendesak   : ada item deploy - lihat bagian server di FINDINGS_LOG
 Onboarding : [x] selesai
 Audit ulang: 2026-09-19 pada branch codex/indikator-tahunan-lokal
@@ -39,10 +39,11 @@ perubahannya lewat `DatabaseTransactions`. Semua test WAJIB memakai trait itu;
 `tests/TestCase.php` menolak `RefreshDatabase` dan `DatabaseMigrations` karena
 keduanya akan men-drop seluruh tabel kerja. Lihat temuan #7 dan TASK_08.
 
-Baseline per 2026-09-19:
-- `php artisan route:list` berhasil dan menampilkan 273 routes.
-- `php artisan test`: 6 failed, 137 passed (~200 detik). Kegagalan tersisa
-  berasal dari temuan #2 dan #13 yang masih terbuka, bukan regresi baru.
+Baseline per 2026-09-20 (setelah TASK_11, tanpa `public/hot`):
+- `php artisan route:list` berhasil dan menampilkan 293 routes.
+- `php artisan test`: 2 failed, 146 passed (~235 detik). Kegagalan tersisa:
+  `ExampleTest` (temuan #2) dan `CascadingFeaturesTest` flaky (temuan #13).
+  Hapus/pindah `public/hot` dulu; bila ada, `PreloadResponseHeadersTest` ikut gagal.
 
 ## Aturan Emas Brownfield
 
@@ -50,7 +51,7 @@ Baseline per 2026-09-19:
 2. Diff sekecil mungkin. Jangan reformat/rename/refactor di luar task.
 3. Tiru konvensi existing di `prompt/docs/CONVENTIONS.md`.
 4. Jaga regresi: jalankan `php artisan test` dan bandingkan dengan baseline
-   6 failed / 133 passed. Test baru wajib memakai `DatabaseTransactions`.
+   2 failed / 146 passed. Test baru wajib memakai `DatabaseTransactions`.
 5. Jangan hapus/timpa kode yang tidak dibuat sendiri tanpa alasan jelas.
 6. Satu task = satu tujuan; temuan baru masuk `prompt/docs/FINDINGS_LOG.md`.
 7. Perubahan endpoint, props Inertia, atau skema DB wajib memperbarui dokumen terkait.

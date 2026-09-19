@@ -114,3 +114,20 @@ Baca juga [CASCADING-DIRECTOR-INPUT.md](CASCADING-DIRECTOR-INPUT.md). Ekspor bar
 ## Keputusan yang masih terbuka
 
 18 indikator dalam kelompok gabungan TIM KERJA PENDIDIKAN,PELATIHAN, PENELITIAN DAN KEPEGAWIAN sudah termasuk data dan ekspor. Master mempunyai dua tim terpisah. Pembagian akses belum diputuskan; jangan memberikan akses bersama atau membagi indikator secara asumsi. Gunakan keputusan terbaru pengguna bila sudah diberikan sebelum pelaksanaan production.
+
+## Pembaruan 20 September 2026: fitur 4 master tetap (TASK_11)
+
+Indikator fitur 4 kini master tetap lintas tahun. Baris fitur 4 per periode adalah
+penautan master ke tahun itu (`master_id`); risk register dan kamus MUTU selalu
+menyimpan ID master. Transaksi lama tanpa periode tetap dapat dilihat dan diedit.
+
+Urutan tambahan setelah persiapan cascading:
+1. `php artisan migrate` harus sudah memuat `2026_09_20_000000_make_fitur4_permanent_masters`.
+   Persiapan cascading membuat master untuk baris 2026 setelah pemeriksaan sumber.
+2. `php artisan indikator:link-masters 2026 --deactivate-existing` (uji, tanpa simpan).
+   Hasil yang diharapkan pada data sumber yang sama: 325 indikator KATIM
+   dinonaktifkan dan 571 indikator mutu unit ditautkan tanpa induk kegiatan.
+3. Bila angka sesuai: ulangi dengan `--apply`.
+4. Tempatkan indikator unit di bawah kegiatan fitur 3 melalui `/kinerja` secara bertahap.
+
+Konsekuensi: selama KATIM nonaktif, ekspor cascading 2026 tidak memuat indikator KATIM.

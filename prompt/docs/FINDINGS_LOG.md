@@ -19,6 +19,8 @@ di branch aktif · FIXED terverifikasi ada di kode.
 | # | Sev | Judul | Lokasi | Dampak | Status | Task |
 |---|-----|-------|--------|--------|--------|------|
 | 14-16 | P0-P2 | Temuan konfigurasi server deploy | tidak dicatat di sini | Rincian sengaja disimpan di luar repo - lihat catatan di bawah | OPEN | - |
+| 17 | P0 | Data lama tanpa periode tidak bisa dilihat/diedit setelah fitur indikator tahunan | `app/Observers/AnnualRiskObserver.php`, `AnnualMutuObserver.php`, `app/Models/MUTU/MutuIndikator.php`, `EnsureAnnualPeriodWritable.php:27` | Setelah merge ke production: input MUTU, edit/ubah status risk register lama gagal; PDSA 500 | FIXED di lokal (belum commit/deploy) | `prompt/tasks/TASK_10_legacy_data_without_period.md`, `prompt/tasks/TASK_11_fitur4_master_tetap.md` |
+| 18 | P0 | PIC unit layanan tidak punya satu pun indikator 2026 untuk input risk register baru | `app/Services/RiskIndicatorAccess.php` `forPic()`, data `indikator_fitur4s.location_id` periode 2026 | 78/78 akun PIC unit tidak bisa membuat register 2026; 24 akun di antaranya aktif input 2026 (97 register) | FIXED di lokal (belum commit/deploy) | `prompt/tasks/TASK_11_fitur4_master_tetap.md` |
 | 7 | P0 | `php artisan test` menghapus database kerja `dev_simdalin` | `phpunit.xml`, `tests/Feature/Auth/*` | Menjalankan baseline test yang diperintahkan dokumen akan drop seluruh tabel dev | FIXED | `prompt/tasks/TASK_08_stop_tests_dropping_working_database.md` |
 | 8 | P0 | User/Role/Permission CRUD tanpa authorization server-side | `app/Http/Controllers/RoleController.php:64`, `PermissionController.php:66`, `UserController.php:58` | Privilege escalation: user login biasa bisa memberi dirinya permission apa pun | FIXED | `prompt/tasks/TASK_09_authorize_access_module.md` |
 | 3 | P0 | Endpoint list memakai sort field langsung dari request | `RiskCategoryController.php:26` + 40 controller lain | SQL error / identifier injection dari parameter sort | REGRESSED | `prompt/tasks/TASK_04_sanitize_sort_parameters.md` |
@@ -48,6 +50,46 @@ database, atau status kerentanan yang belum ditambal ke file mana pun di bawah
 `prompt/`, `docs/`, atau `app/`. Keputusan visibilitas repo masih ditunda.
 
 ## Detail Temuan Baru
+
+### #18 - PIC unit layanan tidak punya indikator 2026
+
+- Severity: P0 (pemblokir merge; terkait #17 tetapi bukan soal data lama)
+- Ditemukan: 2026-09-19, simulasi `RiskIndicatorAccess::forPic()` per akun di
+  `dev_simdalin` (periode 2026 aktif hasil `cascading:prepare-2024-2026`).
+- Akar: indikator fitur 4 lama (571, tanpa periode) dimiliki **unit layanan**
+  lewat `location_id` (72 unit: IRNA, IGD, LAB, ...), `jabatan` dan
+  `penanggung_jawab_id` kosong semua. Struktur 2026 (325) dimiliki **tim kerja**:
+  `location_id` hanya berisi unit tim kerja, `penanggung_jawab_id` menunjuk
+  Kabag/Kabid, dan `kinerja_penanggung_jawab_units` kosong. Tidak ada jalur dari
+  unit layanan ke indikator 2026.
+- Hasil simulasi akun dengan `edit data risk register sesuai lokasi`:
+  - 11 akun pejabat (Direktur, Wadir, Kabag/Kabid): punya indikator 2026.
+  - 13 akun tim kerja: 11 punya; Kepegawaian dan Pendidikan/Pelatihan/Penelitian
+    0 (18 indikator gabungan belum diputuskan, `location_id` = `[]`).
+  - 78 akun unit layanan: **semua 0**. 24 di antaranya sudah membuat 97 register
+    2026 (mis. PENDAPATAN, NICU, ICU, JEPUN, AKUNTANSI, LAB PK/MK).
+- Dampak: form risk register baru di unit kosong; memilih indikator lama ditolak
+  `AnnualRiskObserver` (`Indikator harus berasal dari tahun register.`).
+- Opsi (keputusan user): (a) isi `kinerja_penanggung_jawab_units` agar tim kerja
+  membawahi unit layanan dan akses mengalir ke unit; (b) tambahkan unit layanan
+  ke `location_id` indikator 2026 per indikator; (c) input risiko 2026 hanya oleh
+  tim kerja, unit tidak lagi input. Mode legacy TASK_10 tidak menyelesaikan ini.
+- Catatan tambahan: 4 indikator lama tanpa unit; 284 indikator lama menyimpan
+  `location_id` sebagai angka tunggal, bukan array.
+
+### #17 - Data lama tanpa periode putus setelah fitur indikator tahunan
+
+- Severity: P0 (pemblokir merge `codex/indikator-tahunan-lokal` -> `main`)
+- Ditemukan: 2026-09-19, review kesiapan merge fitur indikator tahunan.
+- Gejala: seluruh transaksi lama (1.246 risk register, 373 kamus MUTU) tidak
+  punya `periode_kinerja_id`. Global scope `MutuIndikator` menyembunyikan
+  semua kamus lama; observer risiko/MUTU menolak simpan data lama; middleware
+  PDSA mengakses relasi null; `updatestatus` menulis `RequestUpdate` sebelum
+  update risiko yang kemudian ditolak (data setengah tersimpan).
+- Bukti: simulasi rollback di `dev_simdalin` - lihat tabel reproduksi di TASK_10.
+- Test suite tetap 6 failed / 137 passed karena belum ada test untuk data lama.
+- Rencana: `prompt/tasks/TASK_10_legacy_data_without_period.md`, menunggu
+  keputusan user soal perlakuan data lama 2023-2026 dan kamus MUTU 2026.
 
 ### #7 - `php artisan test` menghapus database kerja
 
@@ -166,6 +208,14 @@ database, atau status kerentanan yang belum ditambal ke file mana pun di bawah
 - Ditemukan saat: TASK_08, ketika suite penuh pertama kali bisa berjalan utuh.
 - Rekomendasi: factory/seeder khusus test untuk entitas Mutu, IKP, dan Cascading.
   Cukup besar untuk task sendiri; tidak mendesak selama baseline dicatat.
+- Tambahan 2026-09-20 (review TASK_11):
+  `CascadingFeaturesTest::test_add_and_delete_performance_indicators_preserves_export_history_and_checks_access`
+  flaky. Di HEAD `2d78ae0b` tanpa perubahan lokal gagal 3/3, pada kode lain
+  kadang lulus. Gejala: nilai sel workbook konsep lama berakhiran spasi
+  (`'Persentase Capaian SPM Keuangan '`) sedangkan `indikator_kinerjas.name`
+  sudah di-`trim` oleh `CascadingWorkbookImportService:25`. Baris sumber dipilih
+  dengan `->get()->first(...)` tanpa urutan (`CascadingFeaturesTest.php:190`),
+  sehingga hasil bergantung baris yang terpilih. Bukan regresi TASK_11.
 
 ### #12 - Path skill salah + sisa debug
 
