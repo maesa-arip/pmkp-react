@@ -71,21 +71,37 @@ class RiskIndicatorAccess
         });
     }
 
-    public function allowsUser(User $user, int $indicatorId): bool
+    public function allowsUser(User $user, int $indicatorId, ?int $periodId = null): bool
     {
-        return $user->can('lihat data semua risk register')
-            || $this->forPic($user->pic_id)->whereKey($indicatorId)->exists();
+        if ($user->can('lihat data semua risk register')) {
+            return true;
+        }
+        // A placement ID is checked as-is; a master ID is checked through its yearly placements.
+        if (DB::table('indikator_fitur4s')->where('id', $indicatorId)->whereNotNull('periode_kinerja_id')->exists()) {
+            return $this->forPic($user->pic_id)->whereKey($indicatorId)->exists();
+        }
+
+        return $this->forPic($user->pic_id)->where('indikator_fitur4s.master_id', $indicatorId)
+            ->when($periodId, fn ($query) => $query->where('indikator_fitur4s.periode_kinerja_id', $periodId))->exists();
     }
 
     public function optionsForUser(User $user)
     {
         if ($user->can('lihat data semua risk register')) {
-            return IndikatorFitur4::orderBy('name')->get()->each(fn ($indicator) => $indicator->setAttribute('can_select', true));
+            return self::present(IndikatorFitur4::orderBy('name')->get(), null);
         }
         $available = $this->forPic($user->pic_id)->pluck('indikator_fitur4s.id')->all();
         $historical = DB::table('risk_registers')->where('user_id', $user->id)->whereNull('deleted_at')->pluck('indikator_fitur4_id')->all();
 
-        return IndikatorFitur4::whereIn('id', array_unique(array_merge($available, $historical)))->orderBy('name')->get()
-            ->each(fn ($indicator) => $indicator->setAttribute('can_select', in_array($indicator->id, $available)));
+        return self::present(IndikatorFitur4::whereIn('id', $available)->orWhereIn('master_id', $historical)->orderBy('name')->get(), $available);
+    }
+
+    /** Yearly placements as form options whose value is the permanent master ID. */
+    public static function present($placements, ?array $selectable)
+    {
+        return $placements->filter(fn ($row) => $row->master_id)->map(fn ($row) => array_merge($row->toArray(), [
+            'id' => (int) $row->master_id, 'placement_id' => $row->id,
+            'can_select' => $selectable === null || in_array($row->id, $selectable),
+        ]))->values();
     }
 }

@@ -5,56 +5,57 @@ namespace App\Observers;
 use App\Models\PeriodeKinerja;
 use App\Models\RiskRegister;
 use App\Services\AnnualIndicatorService;
+use App\Services\Fitur4Master;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AnnualRiskObserver
 {
     public function saving(RiskRegister $risk): void
     {
-        if ($risk->exists && $risk->getOriginal('periode_kinerja_id')) {
-            PeriodeKinerja::findOrFail($risk->getOriginal('periode_kinerja_id'))->assertWritable();
-        }
         if (! $risk->tgl_register) {
             throw ValidationException::withMessages(['tgl_register' => 'Tanggal register wajib diisi.']);
         }
-        $period = PeriodeKinerja::where('tahun', Carbon::parse($risk->tgl_register)->year)->first();
-        if (! $period) {
-            throw ValidationException::withMessages(['tgl_register' => 'Siapkan periode indikator untuk tahun register terlebih dahulu.']);
+        // Registers always store the permanent master, even when a placement ID is submitted.
+        if ($risk->indikator_fitur4_id && ($masterId = Fitur4Master::masterId((int) $risk->indikator_fitur4_id))) {
+            $risk->indikator_fitur4_id = $masterId;
         }
-        $period->assertWritable();
-        $indicator = DB::table('indikator_fitur4s')->find($risk->indikator_fitur4_id);
-        if (! $indicator || (int) $indicator->periode_kinerja_id !== $period->id) {
-            throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator harus berasal dari tahun register.']);
-        }
+        $year = Carbon::parse($risk->tgl_register)->year;
         $oldPics = AnnualIndicatorService::ids($risk->getOriginal('pic_id'));
         $newPics = AnnualIndicatorService::ids($risk->pic_id);
         sort($oldPics);
         sort($newPics);
-        $changed = ! $risk->exists || $risk->isDirty('indikator_fitur4_id')
-            || Carbon::parse($risk->getOriginal('tgl_register'))->year !== $period->tahun || $oldPics !== $newPics;
-        if ($changed && ! $indicator->is_active) {
+        $retarget = ! $risk->exists || $risk->isDirty('indikator_fitur4_id')
+            || Carbon::parse($risk->getOriginal('tgl_register'))->year !== $year;
+        $period = PeriodeKinerja::where('tahun', $year)->first();
+        // Existing registers stay editable in every year, including closed periods and years
+        // without a period. A changed PIC must still fit the indicator when it is placed.
+        if (! $retarget) {
+            $placement = $period ? Fitur4Master::placement((int) $risk->indikator_fitur4_id, $period->id) : null;
+            if ($oldPics !== $newPics && $placement && ! app(AnnualIndicatorService::class)->acceptsPics($placement, $newPics)) {
+                throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator tidak berlaku untuk seluruh PIC yang dipilih. Pilih PIC jabatan pemilik indikator atau unit dalam cakupannya.']);
+            }
+
+            return;
+        }
+        if (! $period) {
+            throw ValidationException::withMessages(['tgl_register' => 'Siapkan periode indikator untuk tahun register terlebih dahulu.']);
+        }
+        $period->assertWritable();
+        $placement = Fitur4Master::placement((int) $risk->indikator_fitur4_id, $period->id);
+        if (! $placement) {
+            throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator tidak tersedia pada tahun register.']);
+        }
+        if (! $placement->is_active) {
             throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator sudah tidak aktif.']);
         }
-        $service = app(AnnualIndicatorService::class);
-        if ($changed && auth()->user() && ! app(\App\Services\RiskIndicatorAccess::class)->allowsUser(auth()->user(), $indicator->id)) {
+        if (auth()->user() && ! app(\App\Services\RiskIndicatorAccess::class)->allowsUser(auth()->user(), (int) $risk->indikator_fitur4_id, $period->id)) {
             throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator di luar tanggung jawab jabatan atau cakupan PIC akun Anda.']);
         }
-        // Existing historical assignments are preserved; new or changed assignments must match.
-        if ($changed && ! $service->acceptsPics($indicator, AnnualIndicatorService::ids($risk->pic_id))) {
+        if (! app(AnnualIndicatorService::class)->acceptsPics($placement, $newPics)) {
             throw ValidationException::withMessages(['indikator_fitur4_id' => 'Indikator tidak berlaku untuk seluruh PIC yang dipilih. Pilih PIC jabatan pemilik indikator atau unit dalam cakupannya.']);
         }
         $risk->periode_kinerja_id = $period->id;
-        if (! $risk->indikator_snapshot || $risk->isDirty('indikator_fitur4_id')) {
-            $risk->indikator_snapshot = $service->snapshot($indicator->id);
-        }
-    }
-
-    public function deleting(RiskRegister $risk): void
-    {
-        if ($risk->periode_kinerja_id) {
-            PeriodeKinerja::findOrFail($risk->periode_kinerja_id)->assertWritable();
-        }
+        $risk->indikator_snapshot = app(AnnualIndicatorService::class)->snapshot($placement->id);
     }
 }

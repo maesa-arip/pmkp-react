@@ -147,7 +147,7 @@ class RiskRegisterKlinisController extends Controller
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
             'kronologi' => 'required_if:risk_category_id,6',
-            'tahun' => 'sometimes|required|integer|min:2000|max:2100|exists:periode_kinerjas,tahun',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100',
             'tgl_register' => [
                 'bail', 'required', 'date',
                 function ($attribute, $value, $fail) use ($request) {
@@ -232,7 +232,7 @@ class RiskRegisterKlinisController extends Controller
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
             'kronologi' => 'required_if:risk_category_id,6',
-            'tahun' => 'sometimes|required|integer|min:2000|max:2100|exists:periode_kinerjas,tahun',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100',
             'tgl_register' => [
                 'bail', 'required', 'date',
                 function ($attribute, $value, $fail) use ($request) {
@@ -417,13 +417,16 @@ class RiskRegisterKlinisController extends Controller
             'tgl_update_status' => now(),
         ]);
         // dd($request->all());
-        RequestUpdate::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
-        $riskRegister = RiskRegister::findOrFail($request->id);
-        $oldCurrentlyId = $riskRegister->currently_id;
-        $riskRegister->update(['currently_id' => $request->currently_id]);
-        if ((int) $oldCurrentlyId !== (int) $riskRegister->currently_id) {
-            RiskRegisterHistory::recordForRisk($riskRegister, RiskRegisterHistory::EVENT_STATUS_CHANGED);
-        }
+        // The request row and the status change succeed or fail together.
+        DB::transaction(function () use ($request, $atrributes) {
+            RequestUpdate::updateOrCreate(['risk_register_id' => $request->id], $atrributes);
+            $riskRegister = RiskRegister::findOrFail($request->id);
+            $oldCurrentlyId = $riskRegister->currently_id;
+            $riskRegister->update(['currently_id' => $request->currently_id]);
+            if ((int) $oldCurrentlyId !== (int) $riskRegister->currently_id) {
+                RiskRegisterHistory::recordForRisk($riskRegister, RiskRegisterHistory::EVENT_STATUS_CHANGED);
+            }
+        });
         return back()->with([
             'type' => 'success',
             'message' => 'Status Berhasil dirubah',

@@ -187,7 +187,8 @@ class RiskRegister extends Model
     }
     public function indikator_fitur4()
     {
-        return $this->belongsTo(IndikatorFitur4::class);
+        // Registers store the permanent master, which has no period.
+        return $this->belongsTo(IndikatorFitur4::class)->withoutGlobalScope('annual');
     }
     public function user()
     {

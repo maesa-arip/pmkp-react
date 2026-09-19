@@ -92,7 +92,7 @@ class RiskRegisterKlinisOpsiPengendalianController extends Controller
         $probabilityValues = ProbabilityValue::where('type',1)->get();
         $controlValues = ControlValue::where('type',1)->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
-        $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        $indikatorFitur4s = IndikatorFitur4::withoutGlobalScope('annual')->whereNull('periode_kinerja_id')->whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
         return Inertia::render('RiskRegister/KlinisOpsiPengendalian/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,

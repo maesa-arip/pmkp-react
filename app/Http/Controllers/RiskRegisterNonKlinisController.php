@@ -145,7 +145,7 @@ class RiskRegisterNonKlinisController extends Controller
             'risk_category_id' => 'required',
             
             'kronologi' => 'required_if:risk_category_id,6',
-            'tahun' => 'sometimes|required|integer|min:2000|max:2100|exists:periode_kinerjas,tahun',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100',
             'tgl_register' => [
                 'bail', 'required', 'date',
                 function ($attribute, $value, $fail) use ($request) {
@@ -236,7 +236,7 @@ class RiskRegisterNonKlinisController extends Controller
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
             'kronologi' => 'required_if:risk_category_id,6',
-            'tahun' => 'sometimes|required|integer|min:2000|max:2100|exists:periode_kinerjas,tahun',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100',
             'tgl_register' => [
                 'bail', 'required', 'date',
                 function ($attribute, $value, $fail) use ($request) {

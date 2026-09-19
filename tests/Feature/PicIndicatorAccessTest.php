@@ -118,7 +118,8 @@ class PicIndicatorAccessTest extends TestCase
     public function test_input_form_and_server_use_the_same_scope(string $route): void
     {
         $this->get(route($route.'.index', ['tahun' => 2024]))->assertOk()->assertInertia(fn (Assert $page) => $page
-            ->where('indikatorFitur4s', fn ($rows) => collect($rows)->contains(fn ($row) => $row['id'] === $this->indicator->id && $row['can_select'])));
+            // Options submit the permanent master; the placement proves the year and scope.
+            ->where('indikatorFitur4s', fn ($rows) => collect($rows)->contains(fn ($row) => $row['id'] === (int) $this->indicator->master_id && $row['placement_id'] === $this->indicator->id && $row['can_select'])));
         $payload = $this->payload();
         $this->post(route($route.'.store'), $payload)->assertSessionHasNoErrors();
         $risk = RiskRegister::latest('id')->firstOrFail();
@@ -142,7 +143,7 @@ class PicIndicatorAccessTest extends TestCase
         $snapshot = $risk->indikator_snapshot;
         DB::table('indikator_fitur4s')->where('id', $this->indicator->id)->update(['penanggung_jawab_id' => null, 'location_id' => '[]']);
         $options = app(RiskIndicatorAccess::class)->optionsForUser(auth()->user());
-        $this->assertFalse($options->firstWhere('id', $this->indicator->id)->can_select);
+        $this->assertFalse($options->firstWhere('placement_id', $this->indicator->id)['can_select']);
         $risk->pic_id = (string) $this->leader->id; // Same assignment in a legacy format.
         $risk->pernyataan_risiko = 'Perbaikan uraian historis';
         $risk->save();
@@ -204,12 +205,14 @@ class PicIndicatorAccessTest extends TestCase
         $this->assertFalse($service->acceptsPics($this->indicator, []));
     }
 
-    public function test_copy_owner_only_indicator_uses_current_scope_without_rewriting_source(): void
+    public function test_copy_keeps_the_master_unit_and_owner_without_rewriting_source(): void
     {
         $target = \App\Models\PeriodeKinerja::create(['tahun' => 2093, 'status' => 'draft']);
         app(AnnualIndicatorService::class)->copyHierarchy($this->indicator->periode_kinerja_id, $target);
         $copy = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $target->id)->where('copied_from_id', $this->indicator->id)->first();
-        $this->assertSame('[]', $copy->location_id);
+        // The unit belongs to the permanent master and is the same in the next year.
+        $this->assertSame($this->indicator->location_id, $copy->location_id);
+        $this->assertEquals($this->indicator->master_id, $copy->master_id);
         $this->assertEquals($this->position, $copy->penanggung_jawab_id);
         $this->assertSame($this->indicator->location_id, DB::table('indikator_fitur4s')->where('id', $this->indicator->id)->value('location_id'));
     }

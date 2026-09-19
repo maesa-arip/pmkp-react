@@ -25,7 +25,9 @@ class RiskRegisterInputTest extends TestCase
         $risk = RiskRegister::latest('id')->firstOrFail();
         $this->assertEquals($type, $risk->tipe_id);
         $this->assertEquals(PeriodeKinerja::where('tahun', 2094)->value('id'), $risk->periode_kinerja_id);
-        $this->assertEquals($payload['indikator_fitur4_id'], $risk->indikator_fitur4_id);
+        // The submitted yearly placement is stored as its permanent master.
+        $this->assertEquals(DB::table('indikator_fitur4s')->where('id', $payload['indikator_fitur4_id'])->value('master_id'), $risk->indikator_fitur4_id);
+        $this->assertNull(DB::table('indikator_fitur4s')->where('id', $risk->indikator_fitur4_id)->value('periode_kinerja_id'));
         $this->assertNotEmpty($risk->kode_risiko);
         $this->assertSame('C', $risk->c_uc);
         $this->assertSame('Celah uji', $risk->celah_pengendalian);

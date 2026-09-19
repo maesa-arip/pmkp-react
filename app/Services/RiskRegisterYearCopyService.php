@@ -125,7 +125,9 @@ class RiskRegisterYearCopyService
                         continue;
                     }
                     // Text similarity is advisory; it is not a unique risk identity.
-                    if (RiskRegister::whereYear('tgl_register', $targetYear)->where('indikator_fitur4_id', $indicator->id)
+                    // Registers keep the permanent master; the placement only proves it is active that year.
+                    $masterId = (int) $indicator->master_id;
+                    if (RiskRegister::whereYear('tgl_register', $targetYear)->where('indikator_fitur4_id', $masterId)
                         ->where('user_id', $unit ? $filters['target_user_id'] : $risk->user_id)
                         ->where('tipe_id', $risk->tipe_id)->where('pernyataan_risiko', $risk->pernyataan_risiko)->exists()) {
                         $result['equivalent_target']++;
@@ -141,7 +143,7 @@ class RiskRegisterYearCopyService
                     $date = Carbon::parse($risk->tgl_register)->addYearsNoOverflow($targetYear - $sourceYear);
                     $copy->tgl_register = $date;
                     $copy->tgl_selesai = $date->copy()->addDays((int) $risk->target_waktu);
-                    $copy->indikator_fitur4_id = $indicator->id;
+                    $copy->indikator_fitur4_id = $masterId;
                     $copy->periode_kinerja_id = $period->id;
                     $copy->currently_id = 2;
                     $copy->is_risiko_lama = $preserveCode ? 1 : 0;
@@ -174,7 +176,7 @@ class RiskRegisterYearCopyService
                     }
                     $copy->save();
                     \App\Models\RiskRegisterHistory::recordForRisk($copy, \App\Models\RiskRegisterHistory::EVENT_COPIED_FROM_PREVIOUS_YEAR, null,
-                        ['source_indicator_id' => $risk->indikator_fitur4_id, 'target_indicator_id' => $indicator->id, 'needs_review' => true,
+                        ['source_indicator_id' => $risk->indikator_fitur4_id, 'target_indicator_id' => $masterId, 'needs_review' => true,
                             'risk_code_mode' => $codeMode, 'source_kode_risiko' => $risk->kode_risiko]);
                     $result['copied']++;
                 }
