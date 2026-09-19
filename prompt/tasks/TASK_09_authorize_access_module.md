@@ -105,6 +105,48 @@ sebelum callback test dijalankan. Karena itu test mencabut permission dari role
 untuk sementara lalu memanggil `PermissionRegistrar::forgetCachedPermissions()`,
 dan transaksi mengembalikannya.
 
+### CSRF dan config cache
+
+Versi pertama test ini lulus di lokal tetapi gagal saat dijalankan di checkout
+dev: enam endpoint tulis mengembalikan 419, bukan 403.
+
+Penyebabnya bukan guard, melainkan `VerifyCsrfToken`. Middleware itu melewatkan
+dirinya bila `$app->runningUnitTests()`, yang membaca `config('app.env')`. Pada
+checkout yang punya `bootstrap/cache/config.php`, nilai itu datang dari cache
+(`env=local`), bukan dari `APP_ENV=testing` di `phpunit.xml`. Akibatnya CSRF
+tetap aktif dan request ditolak sebelum mencapai controller.
+
+Karena yang diuji adalah lapisan otorisasi, test kini memanggil
+`withoutMiddleware(VerifyCsrfToken::class)` di `setUp()` sehingga hasilnya tidak
+lagi bergantung pada ada-tidaknya config cache.
+
+Diverifikasi dengan mereplikasi kondisi tersebut di lokal: `php artisan config:cache`
+lalu menjalankan test - 4 passed - kemudian `php artisan config:clear`.
+
+Catatan keamanan: 419 pun menolak request, jadi celahnya tetap tertutup. Pada
+run yang gagal itu, ketiga assertion `GET` ke endpoint index tetap mengembalikan
+403, yang membuktikan guard bekerja di lingkungan dev.
+
+### Cache permission bocor antar-test
+
+Menambahkan test ini membuat suite penuh menjadi 7 failed / 136 passed, padahal
+tanpa file ini 6 failed / 137 passed. Dipastikan lewat `git stash`, bukan
+ditebak: satu test lain berubah dari lulus menjadi gagal.
+
+Sebabnya `CACHE_DRIVER=array` di `phpunit.xml`. Cache permission Spatie hidup
+selama satu proses PHPUnit, bukan per test. Test fallback super admin mencabut
+permission lalu memanggil `forgetCachedPermissions()`, sehingga Spatie mengisi
+ulang cache dengan keadaan tanpa permission. Transaksi mengembalikan baris di
+database, tetapi cache di memori tetap basi dan terbawa ke test berikutnya.
+
+Diperbaiki dengan `forgetCachedPermissions()` pada `tearDown()`, agar test
+sesudahnya membaca ulang baris yang sudah dipulihkan. Suite penuh kembali ke
+6 failed / 137 passed, persis sama dengan kondisi tanpa file ini.
+
+Pelajaran untuk test lain di repo ini: apa pun yang mengubah role atau
+permission wajib membersihkan cache Spatie di `tearDown`, karena rollback
+transaksi saja tidak cukup.
+
 ### Pint
 
 Ketiga controller gagal `vendor/bin/pint --test`, tetapi kegagalan itu sudah ada

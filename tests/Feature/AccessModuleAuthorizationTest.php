@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Pic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -14,6 +15,29 @@ use Tests\TestCase;
 class AccessModuleAuthorizationTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // What is under test is the authorization layer, so CSRF is taken out
+        // of the way. Without this the result depends on the environment: a
+        // checkout with a cached config never reports itself as "testing", so
+        // CSRF stays on and every write returns 419 before reaching the guard.
+        $this->withoutMiddleware(VerifyCsrfToken::class);
+    }
+
+    protected function tearDown(): void
+    {
+        // CACHE_DRIVER is array, so Spatie's permission cache lives for the
+        // whole process rather than per test. This class revokes a permission
+        // to exercise the super admin fallback; the transaction puts the row
+        // back, but the cache would keep serving the revoked state to later
+        // tests. Drop it so the next test reads the restored rows.
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        parent::tearDown();
+    }
 
     private function user(): User
     {
