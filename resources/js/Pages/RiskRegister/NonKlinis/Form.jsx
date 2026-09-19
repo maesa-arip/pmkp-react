@@ -66,7 +66,7 @@ export default function Form({
     const sectionHeaderClass = "px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-transparent rounded-t-2xl";
 
     return (
-        <div className="relative flex flex-col w-full h-full bg-slate-50/30 dark:bg-transparent">
+        <div className="relative flex min-h-0 flex-1 flex-col w-full bg-slate-50/30 dark:bg-transparent">
             
             <div className="flex-1 p-4 space-y-6 overflow-y-auto sm:p-6 custom-scrollbar">
                 
@@ -170,19 +170,19 @@ export default function Form({
                             <InputError message={errors.pernyataan_risiko} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[40]">
                             <label className={labelClass}>C/UC</label>
                             <Select value={data.c_uc || ""} onChange={(value) => setData("c_uc", value)} options={cUcOptions} placeholder="Pilih C/UC" />
                             <InputError message={errors.c_uc} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[46]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[39]">
                             <label className={labelClass}>Jenis Insiden</label>
                             <ComboboxPage ShouldMap={ShouldMap.riskVarieties} selected={selectedVariety} onChange={(e) => { setData({ ...data, ["risk_variety_id"]: e.id }); setSelectedVariety(e); }} />
                             <InputError message={errors.risk_variety_id} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[45]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[38]">
                             <label className={labelClass}>Tipe Insiden</label>
                             <ComboboxPage ShouldMap={ShouldMap.riskTypes} selected={selectedType} onChange={(e) => { setData({ ...data, ["risk_type_id"]: e.id }); setSelectedType(e); }} />
                             <InputError message={errors.risk_type_id} className="mt-1" />
@@ -244,7 +244,7 @@ export default function Form({
                             <InputError message={errors.pengendalian_harus_ada} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[22]">
                             <label className={labelClass}>Celah Pengendalian</label>
                             <Select value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} wrapLabels placeholder="Pilih celah pengendalian" />
                             {!ShouldMap.celahPengendalians?.length && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Belum ada pilihan aktif. Tambahkan melalui Data Master → Celah Pengendalian.</p>}

@@ -66,6 +66,9 @@ class RiskRegister extends Model
         'waktu_pengendalian_id',
         'rencana_pengendalian',
         'pihak_terkena',
+        // The non-clinical form saves the control evaluation together with the plan.
+        'belum_tertangani',
+        'usulan_perbaikan',
     ];
 
     protected $fillable = [

@@ -139,7 +139,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
 
     return (
         // FIX BUG: Menggunakan w-full h-full fleksibel agar tidak memaksa tergencet max-h
-        <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
+        <form onSubmit={onSubmit} className="flex flex-col w-full max-h-[85vh] overflow-hidden">
             <Form
                 processing={processing}
                 errors={errors}
