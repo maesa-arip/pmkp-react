@@ -285,5 +285,18 @@ Catatan terbuka:
 
 ## Aman di-merge?
 
-Belum. Kode lokal sudah memenuhi aturan baru, tetapi masih menunggu keputusan
-ekspor 2026, review diff oleh user, commit, dan eksekusi di dev-mutu.
+Belum ke `main`/production. Keputusan ekspor 2026 sudah diambil (opsi a) dan
+kode sudah di-commit (`67b5b034`..`ae4d0bd6`).
+
+Dev-mutu 2026-09-20: database dev diganti salinan production (tabel
+`risk_gradings` dan `risk_grading_settings` tetap milik dev). Kemudian dijalankan
+seluruh migration tahunan, `cascading:prepare-2024-2026 --apply`, dan
+`indikator:link-masters 2026 --deactivate-existing --apply`. Hasil: 2024/2025
+ditutup, 2026 aktif; 325 KATIM nonaktif dan 571 indikator unit tertaut tanpa
+induk. Audit data asli 69 tabel lulus di setiap langkah; semua akun PIC
+non-admin punya indikator 2026; smoke halaman utama 200. Rincian dan path
+backup disimpan di luar repo (lihat `storage/app/`, di-gitignore).
+
+Sisa sebelum merge ke `main`: review user dan uji manual di dev-mutu
+(penempatan indikator unit ke kegiatan di `/kinerja`, input risk register dan
+MUTU 2026 oleh PIC unit).

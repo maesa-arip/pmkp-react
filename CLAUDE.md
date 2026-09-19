@@ -12,7 +12,7 @@ mengedit kode aplikasi.
 ## Status Saat Ini
 
 ```
-Task aktif : TASK_11 terverifikasi di lokal (commit per fase; belum deploy dev-mutu)
+Task aktif : TASK_11 ter-deploy di dev-mutu 2026-09-20; menunggu uji manual sebelum merge main
 Terakhir   : TASK_09 selesai - modul akses dijaga otorisasi server-side
 Backlog    : 16 temuan terbuka - lihat prompt/docs/FINDINGS_LOG.md
 Mendesak   : ada item deploy - lihat bagian server di FINDINGS_LOG
