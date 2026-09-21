@@ -27,6 +27,7 @@ ada. Tujuannya agar perubahan baru menyatu dengan aplikasi existing.
 | Loading/empty/error | Empty state terpusat di `MasterDataIndex`; error form lewat `InputError`; loading eksplisit belum seragam | `MasterDataIndex.jsx`, `resources/js/Components/InputError.jsx` |
 | Form | Form menerima `errors`, `data`, `setData`, `submit`, `closeButton`; input memakai komponen existing | `resources/js/Pages/Master/RiskCategory/Form.jsx` |
 | Modal | Create/Edit/Destroy memakai komponen modal existing | `resources/js/Components/Modal/AddModal.jsx`, `EditModal.jsx`, `DestroyModal.jsx` |
+| Combobox | Opsi `ComboboxPage` boleh membawa `badge`; teks itu tampil sebagai chip di bawah nama dan ikut dicari. Pakai itu untuk keterangan tambahan (unit, penanggung jawab), jangan menempel ke `name` dengan strip. Setelah dipilih, tampilkan chip yang sama di bawah field karena input hanya memuat nama | `resources/js/Components/ComboboxPage.jsx`, `MUTU/MutuIndikator/Form.jsx`, `Components/RiskRegisterAnnualFields.jsx` |
 | Notifikasi | Flash Laravel dibaca dari `usePage().props.flash`, tampil via `react-hot-toast` | `resources/js/Layouts/AuthenticatedLayout.jsx` |
 | Warna/token | Tailwind utility dominan; warna modern di master data memakai slate/sky/cyan dan dark mode class | `MasterDataIndex.jsx`, `tailwind.config.js` |
 | Icon | Heroicons dipakai pada komponen master data; Tabler juga tersedia di dependencies | `MasterDataIndex.jsx`, `package.json` |

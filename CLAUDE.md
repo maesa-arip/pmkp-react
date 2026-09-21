@@ -13,12 +13,19 @@ mengedit kode aplikasi.
 
 ```
 Task aktif : TASK_11 ter-deploy di dev-mutu 2026-09-20; menunggu uji manual sebelum merge main
-Terakhir   : TASK_09 selesai - modul akses dijaga otorisasi server-side
-Backlog    : 17 temuan terbuka (#20 sudah fixed) - lihat prompt/docs/FINDINGS_LOG.md
+Berikutnya : TASK_12 (penautan massal fitur 4) - 54 master 2026 belum tertaut; kolom hierarki 129 register 2026 KOSONG sampai selesai
+Terakhir   : TASK_13 disesuaikan - indikator 2026 yang belum tertaut dikosongkan di export (daftar periksa)
+Backlog    : 26 temuan terbuka (#20/#23/#27/#28/#29/#33/#35/#37 fixed, #22 sisi export fixed; #30-#37 baru; #36 P2 peringkat residual campur penamaan klinis) - lihat prompt/docs/FINDINGS_LOG.md
 Mendesak   : ada item deploy - lihat bagian server di FINDINGS_LOG
 Onboarding : [x] selesai
 Audit ulang: 2026-09-19 pada branch codex/indikator-tahunan-lokal
+Periode    : 2023/2024/2025 ditutup (hierarki lama sama), 2026 aktif (fitur 1-3 baru)
 ```
+
+Periode 2023 diterapkan di lokal 2026-09-20. Production yang belum punya periode
+memakai `cascading:prepare-2023-2026` SEKALI SAJA (sudah mencakup 2023-2026);
+dev-mutu yang periodenya sudah ada memakai `cascading:prepare-2023`. Jangan
+menjalankan keduanya - lihat `docs/CASCADING-PRODUCTION-2024-2026.md`.
 
 PERINGATAN: temuan #1-#6 yang sebelumnya tertulis FIXED ternyata tidak ada di
 branch aktif. Jangan percaya status DONE pada file task tanpa verifikasi ulang
@@ -39,10 +46,14 @@ perubahannya lewat `DatabaseTransactions`. Semua test WAJIB memakai trait itu;
 `tests/TestCase.php` menolak `RefreshDatabase` dan `DatabaseMigrations` karena
 keduanya akan men-drop seluruh tabel kerja. Lihat temuan #7 dan TASK_08.
 
-Baseline per 2026-09-20 (setelah TASK_11, tanpa `public/hot`):
-- `php artisan route:list` berhasil dan menampilkan 293 routes.
-- `php artisan test`: 2 failed, 146 passed (~235 detik). Kegagalan tersisa:
-  `ExampleTest` (temuan #2) dan `CascadingFeaturesTest` flaky (temuan #13).
+Baseline per 2026-09-20 (setelah penanggung jawab PIC di /kinerja, tanpa `public/hot`):
+- `php artisan route:list` berhasil dan menampilkan 296 routes (293 + 3 export
+  baru: MR Terbaru klinis/non klinis dan Keterjadian Risiko).
+- `php artisan test`: 168 passed (158 + 5 VerificationAuthorizationTest + 4 RegisterHierarchyResolverTest + 1 filter unit copy #37);
+  `ExampleTest` selalu merah (temuan #2) dan
+  `CascadingFeaturesTest` merah/hijau berganti antar-run, bahkan saat dijalankan
+  sendiri (temuan #13). Jadi 1-2 failed adalah baseline, bukan regresi baru;
+  ulangi run-nya sebelum menuduh ada regresi.
   Hapus/pindah `public/hot` dulu; bila ada, `PreloadResponseHeadersTest` ikut gagal.
 
 ## Aturan Emas Brownfield
