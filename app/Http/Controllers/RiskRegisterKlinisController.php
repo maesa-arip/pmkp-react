@@ -68,6 +68,7 @@ class RiskRegisterKlinisController extends Controller
             ->with('fgdtreated')
             ->with('fgdactual')
             ->with(['risk_register_histories', 'copiedFromRiskRegister.risk_register_histories'])
+            ->with(['verificationpriorityadmin', 'verificationprioritymanagement'])
             ->where($whosLogin);
         // dd($riskRegisterKlinis);
         $riskRegisterCount = $riskRegisterKlinis->count();

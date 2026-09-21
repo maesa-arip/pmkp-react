@@ -5,6 +5,7 @@ import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
 import RiskOccurrenceModal from "@/Components/Modal/RiskOccurrenceModal";
+import RiskSupervisionModal from "@/Components/Modal/RiskSupervisionModal";
 import App from "@/Layouts/App";
 import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
@@ -107,7 +108,9 @@ const getInitials = (name) => {
 
 export default function Index(props) {
     const { data: riskRegisterKlinis, meta, filtered, attributes } = props.riskRegisterKlinis;
-    const { auth } = usePage().props;
+    const { auth, permissionNames } = usePage().props;
+    // Same permission that opens the Verifikasi menus in the sidebar.
+    const canSupervise = (permissionNames || []).some((item) => item.name === "lihat data verifikasi");
     const riskRegisterCount = props.riskRegisterCount;
     const riskRegisterOsd2Count = props.riskRegisterOsd2Count;
 
@@ -157,8 +160,9 @@ export default function Index(props) {
     const [isOpenEditDialogFGDActual, setIsOpenEditDialogFGDActual] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [isOpenOccurrenceDialog, setIsOpenOccurrenceDialog] = useState(false);
+    const [isOpenSupervisionDialog, setIsOpenSupervisionDialog] = useState(false);
 
-    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog || isOpenOccurrenceDialog;
+    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog || isOpenOccurrenceDialog || isOpenSupervisionDialog;
 
     const reload = useCallback(debounce((query) => { router.get(route(route().current()), { ...pickBy(query), page: query.page }, { preserveState: true, preserveScroll: true }); }, 150), []);
     useEffect(() => { if (!isInitialRender) reload(params); else setIsInitialRender(false); }, [params]);
@@ -211,6 +215,15 @@ export default function Index(props) {
                     onClose={() => setIsOpenOccurrenceDialog(false)}
                     onRecorded={(page) => setState((risk) =>
                         page.props.riskRegisterKlinis.data.find((item) => item.id === risk.id) || { ...risk, currently_id: 1 }
+                    )}
+                />
+            )}
+            {isOpenSupervisionDialog && (
+                <RiskSupervisionModal
+                    risk={state}
+                    onClose={() => setIsOpenSupervisionDialog(false)}
+                    onRecorded={(page) => setState((risk) =>
+                        page.props.riskRegisterKlinis.data.find((item) => item.id === risk.id) || risk
                     )}
                 />
             )}
@@ -515,6 +528,12 @@ export default function Index(props) {
                                         <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
                                         Risiko Sedang Terjadi
                                     </button>
+                                    {canSupervise && (
+                                        <button type="button" onClick={() => setIsOpenSupervisionDialog(true)} className="inline-flex items-center justify-center w-full gap-2 px-4 py-3 mt-3 text-sm font-bold transition-colors border rounded-lg text-sky-700 border-sky-200 bg-sky-50 hover:bg-sky-100 dark:bg-sky-500/10 dark:border-sky-500/30 dark:text-sky-400 dark:hover:bg-sky-500/20 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
+                                            <ShieldCheckIcon className="w-5 h-5 shrink-0" />
+                                            Supervisi
+                                        </button>
+                                    )}
                                 </div>
 
                                 <section className="p-5 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">

@@ -65,6 +65,7 @@ class RiskRegisterNonKlinisController extends Controller
             ->with('fgdtreated')
             ->with('fgdactual')
             ->with(['risk_register_histories', 'copiedFromRiskRegister.risk_register_histories'])
+            ->with(['verificationpriorityadmin', 'verificationprioritymanagement'])
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where(fn ($q) => $q->whereNull('efektif_id')->orWhere('efektif_id', 0))->count();
