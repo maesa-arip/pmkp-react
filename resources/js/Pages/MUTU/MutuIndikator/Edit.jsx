@@ -9,7 +9,6 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     // Logika asli Anda tanpa location_id
     const { data, setData, put, reset, errors, processing } = useForm({
         periode_kinerja_id: safeModel.periode_kinerja_id || "",
-        indikator_fitur3_id: safeModel.indikator_fitur4?.indikator_fitur3_id || "",
         IndikatorBaru: 0,
         indikator_fitur4_id: safeModel.indikator_fitur4_id || "",
         mutu_kategori_id: safeModel.mutu_kategori_id || "",
@@ -43,7 +42,6 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         setData({
             ...data,
             periode_kinerja_id: model.periode_kinerja_id,
-            indikator_fitur3_id: model.indikator_fitur4?.indikator_fitur3_id || '',
             indikator_fitur4_id: model.indikator_fitur4_id,
             mutu_kategori_id: model.mutu_kategori_id,
             num_name: model.num_name,

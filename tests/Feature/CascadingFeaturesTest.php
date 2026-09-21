@@ -83,7 +83,7 @@ class CascadingFeaturesTest extends TestCase
         $this->assertSame(40, DB::table('indikator_fitur4s')->where('periode_kinerja_id', $p->id)->count());
     }
 
-    public function test_mutu_requires_matching_activity_year_and_access_and_can_create_feature_four(): void
+    public function test_mutu_dictionary_ignores_the_hierarchy_unless_it_creates_a_new_indicator(): void
     {
         $p = $this->prepare();
         app(CascadingFeatureAlignment::class)->apply(2098);
@@ -92,18 +92,21 @@ class CascadingFeaturesTest extends TestCase
         $this->actingAs(User::factory()->create(['pic_id' => $pic->id]));
         Gate::before(fn () => false);
         $indicator = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $p->id)->whereJsonContains('location_id', (int) $pic->location_id)->first();
-        $payload = ['periode_kinerja_id' => $p->id, 'indikator_fitur3_id' => $indicator->indikator_fitur3_id, 'IndikatorBaru' => 0, 'indikator_fitur4_id' => $indicator->id, 'mutu_kategori_id' => DB::table('mutu_kategoris')->value('id'), 'num_name' => 'Jumlah sesuai', 'denum_name' => 'Jumlah semua', 'standar' => 100, 'operator' => '≥', 'penyebut' => '%'];
-        $wrong = DB::table('indikator_fitur3s')->where('periode_kinerja_id', $p->id)->where('id', '<>', $indicator->indikator_fitur3_id)->value('id');
-        $this->post(route('MutuIndikator.store'), array_replace($payload, ['indikator_fitur3_id' => $wrong]))->assertSessionHasErrors('indikator_fitur4_id');
-        $this->post(route('MutuIndikator.store'), array_replace($payload, ['indikator_fitur3_id' => '']))->assertSessionHasErrors('indikator_fitur3_id');
+        $payload = ['periode_kinerja_id' => $p->id, 'IndikatorBaru' => 0, 'indikator_fitur4_id' => $indicator->id, 'mutu_kategori_id' => DB::table('mutu_kategoris')->value('id'), 'num_name' => 'Jumlah sesuai', 'denum_name' => 'Jumlah semua', 'standar' => 100, 'operator' => '≥', 'penyebut' => '%'];
+        // A dictionary has no say over features 1-3, so a stray activity id is simply ignored.
+        $stray = DB::table('indikator_fitur3s')->where('periode_kinerja_id', '<>', $p->id)->whereNotNull('periode_kinerja_id')->value('id');
+        $this->post(route('MutuIndikator.store'), array_replace($payload, ['indikator_fitur3_id' => $stray]))->assertSessionHasNoErrors();
         $foreign = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $p->id)->where('jabatan', '<>', $pic->name)->first();
-        $this->post(route('MutuIndikator.store'), array_replace($payload, ['indikator_fitur3_id' => $foreign->indikator_fitur3_id, 'indikator_fitur4_id' => $foreign->id]))->assertSessionHasErrors('indikator_fitur4_id');
-        $otherYear = DB::table('indikator_fitur3s')->where('periode_kinerja_id', '<>', $p->id)->whereNotNull('periode_kinerja_id')->value('id');
-        $this->post(route('MutuIndikator.store'), array_replace($payload, ['indikator_fitur3_id' => $otherYear]))->assertSessionHasErrors('indikator_fitur3_id');
+        $this->post(route('MutuIndikator.store'), array_replace($payload, ['indikator_fitur4_id' => $foreign->id]))->assertSessionHasErrors('indikator_fitur4_id');
         $this->post(route('MutuIndikator.store'), $payload)->assertSessionHasNoErrors();
-        $this->post(route('MutuIndikator.store'), array_replace($payload, ['IndikatorBaru' => 1, 'indikator_fitur4_id' => '', 'indikator' => 'Indikator baru unit pengujian']))->assertSessionHasNoErrors();
+        // A brand new indicator must declare its activity straight away.
+        $fresh = ['IndikatorBaru' => 1, 'indikator_fitur4_id' => '', 'indikator' => 'Indikator baru unit pengujian'];
+        $this->post(route('MutuIndikator.store'), array_replace($payload, $fresh))->assertSessionHasErrors('indikator_fitur3_id');
+        $this->post(route('MutuIndikator.store'), array_replace($payload, $fresh, ['indikator_fitur3_id' => $stray]))->assertSessionHasErrors('indikator_fitur3_id');
+        $activity = $indicator->indikator_fitur3_id;
+        $this->post(route('MutuIndikator.store'), array_replace($payload, $fresh, ['indikator_fitur3_id' => $activity]))->assertSessionHasNoErrors();
         $new = DB::table('indikator_fitur4s')->where('periode_kinerja_id', $p->id)->where('name', 'Indikator baru unit pengujian')->first();
-        $this->assertSame($indicator->indikator_fitur3_id, $new->indikator_fitur3_id);
+        $this->assertSame($activity, $new->indikator_fitur3_id);
         $this->assertSame([(int) $pic->location_id], json_decode($new->location_id, true));
         $this->assertDatabaseHas('cascading_concepts', ['legacy_table' => 'indikator_fitur4s', 'legacy_id' => $new->id, 'kind' => 'indikator_mutu']);
         foreach (['mutu_kategori_id', 'indikator_fitur4_id', 'standar', 'location_id'] as $field) {

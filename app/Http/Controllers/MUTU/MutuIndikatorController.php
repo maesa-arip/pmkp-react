@@ -22,9 +22,11 @@ class MutuIndikatorController extends Controller
         $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100', 'field' => 'nullable|in:id,num_name,created_at,approved,mutu_kategori_id,indikator_fitur4_id,standar,location_id', 'direction' => 'nullable|in:asc,desc']);
         $year = $request->integer('tahun', now()->year);
         $user = $request->user();
-        $query = MutuIndikator::with(['indikator_fitur4', 'kategori', 'location']);
+        // The responsible person of a dictionary is the PIC of its unit.
+        $query = MutuIndikator::with(['indikator_fitur4', 'kategori', 'location.pic']);
         // Dictionaries are permanent; a year shows those whose indicator is placed in that year.
-        if ($periodId = PeriodeKinerja::where('tahun', $year)->value('id')) {
+        $periodId = PeriodeKinerja::where('tahun', $year)->value('id');
+        if ($periodId) {
             $query->whereIn('indikator_fitur4_id', DB::table('indikator_fitur4s')->where('periode_kinerja_id', $periodId)->whereNotNull('master_id')->select('master_id'));
         }
         if (! $service->canViewAll($user)) {
@@ -42,16 +44,29 @@ class MutuIndikatorController extends Controller
             'attributes' => ['total' => 1100, 'per_page' => 10],
             'filtered' => ['tahun' => $year, 'load' => $request->load ?? 10, 'q' => $request->q ?? '', 'page' => $request->page ?? 1, 'field' => $request->field ?? '', 'direction' => $request->direction ?? ''],
         ]);
-        $activities = DB::table('indikator_fitur3s as f')->join('periode_kinerjas as p', 'p.id', '=', 'f.periode_kinerja_id')->select('f.*', 'p.tahun', 'p.status as periode_status')->orderBy('f.name')->get();
-
         return inertia('MUTU/MutuIndikator/Index', ['MutuIndikator' => $items, 'MutuKategori' => MutuKategori::get(), 'MutuPenyebut' => MutuPenyebut::orderBy('name')->pluck('name')->map(fn ($name) => ['id' => $name, 'name' => $name]),
-            'IndikatorFitur3' => $activities, 'IndikatorFitur4' => $service->options($user), 'MutuPeriods' => PeriodeKinerja::orderBy('tahun')->get(['id', 'tahun', 'status'])]);
+            // Only the chosen year's indicators and activities are offered.
+            'IndikatorFitur4' => $service->options($user, $periodId),
+            // The responsible person shown with an activity is the PIC behind its position.
+            'IndikatorFitur3' => $periodId ? DB::table('indikator_fitur3s as f')
+                ->leftJoin('kinerja_penanggung_jawabs as j', 'j.id', '=', 'f.penanggung_jawab_id')
+                ->leftJoin('pics as p', 'p.id', '=', 'j.pic_id')
+                ->where('f.periode_kinerja_id', $periodId)->where('f.is_active', true)
+                ->orderBy('f.name')
+                ->select('f.*', DB::raw('coalesce(p.name, f.jabatan) as penanggung_jawab'))
+                ->get() : collect(),
+            'MutuPeriods' => PeriodeKinerja::orderBy('tahun')->get(['id', 'tahun', 'status']),
+            // Masters linked to the year but not yet positioned under a level-three activity.
+            'UnplacedIndicators' => $periodId ? DB::table('indikator_fitur4s')->where('periode_kinerja_id', $periodId)
+                ->whereNotNull('master_id')->whereNull('indikator_fitur3_id')->pluck('master_id') : collect()]);
     }
 
     private function validated(Request $r, bool $editing = false): array
     {
         return $r->validate([
             'periode_kinerja_id' => ['required', 'integer', 'exists:periode_kinerjas,id'],
+            // Required only when a new indicator is created; ignored when picking an existing
+            // one, because positioning an existing indicator belongs to /kinerja.
             'indikator_fitur3_id' => ['nullable', Rule::requiredIf(! $editing && (int) $r->IndikatorBaru === 1), 'integer', 'exists:indikator_fitur3s,id'],
             'IndikatorBaru' => [$editing ? 'nullable' : 'required', Rule::in($editing ? [0] : [0, 1])],
             'indikator' => ['nullable', 'required_if:IndikatorBaru,1', 'string', 'max:255'],

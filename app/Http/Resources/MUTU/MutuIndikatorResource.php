@@ -14,6 +14,13 @@ class MutuIndikatorResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $user = $request->user();
+
+        return parent::toArray($request) + [
+            // Mirrors MutuIndicatorInput::authorize(): read access is wider than edit access,
+            // because canViewAll() also accepts the super admin role while editing does not.
+            'can_edit' => (bool) $user?->can('lihat semua data indikator mutu')
+                || (int) $this->location_id === (int) $user?->pic?->location_id,
+        ];
     }
 }

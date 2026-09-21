@@ -22,9 +22,14 @@ export default function Form({ errors, submit, data, setData, model, ShouldMap, 
     const periods = ShouldMap.Periods || [];
     const period = periods.find(p => Number(p.tahun) === year);
     const findOption = (items, value) => (items || []).find(x => String(x.id) === String(value)) || { name: "" };
-    // The same indicator name is used by several units, so the unit is shown with it.
+    // The same indicator name is used by several units, so the unit rides along as a badge.
     const indicators = (ShouldMap.IndikatorFitur4 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && (x.is_active || String(x.id) === String(data.indikator_fitur4_id)))
-        .map(x => x.unit_names ? { ...x, name: x.name + ' — ' + x.unit_names } : x);
+        .map(x => ({ ...x, badge: x.unit_names || 'Unit belum diisi' }));
+    const indicator = indicators.find(x => String(x.id) === String(data.indikator_fitur4_id));
+    // The responsible person rides along as a badge instead of being glued to the name.
+    const activities = (ShouldMap.IndikatorFitur3 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && x.is_active)
+        .map(x => ({ ...x, badge: x.penanggung_jawab || 'Penanggung jawab belum diisi' }));
+    const activity = activities.find(x => String(x.id) === String(data.indikator_fitur3_id));
     const isNew = !model && Number(data.IndikatorBaru) === 1;
 
     useEffect(() => {
@@ -34,7 +39,7 @@ export default function Form({ errors, submit, data, setData, model, ShouldMap, 
         if (period && String(data.periode_kinerja_id) !== String(period.id)) setData('periode_kinerja_id', period.id);
     }, [period?.id, data.periode_kinerja_id]);
 
-    const selectIndicator = indicator => setData({ ...data, indikator_fitur4_id: indicator.id, indikator_fitur3_id: indicator.indikator_fitur3_id, periode_kinerja_id: indicator.periode_kinerja_id });
+    const selectIndicator = indicator => setData({ ...data, indikator_fitur4_id: indicator.id, periode_kinerja_id: indicator.periode_kinerja_id });
     const select = (field, options, placeholder, onChange) => (
         <ComboboxPage
             inputId={field}
@@ -56,20 +61,13 @@ export default function Form({ errors, submit, data, setData, model, ShouldMap, 
                     <TagIcon aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
                     <div className="min-w-0">
                         <h3 id="mutu-information-title" className="text-sm font-bold text-slate-900 dark:text-white">Informasi Kamus Indikator</h3>
-                        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Pilih tahun, indikator, dan kategori mutu yang akan diukur.</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Pilih indikator dan kategori mutu yang akan diukur.</p>
                     </div>
                 </header>
                 <div className="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:p-5">
                     <Field id="mutu-year" label="Tahun indikator" error={errors.periode_kinerja_id}>
-                        <select id="mutu-year" className={`${inputClass} disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500 dark:disabled:bg-slate-800 dark:disabled:text-slate-400`} disabled={!!model} value={year} aria-invalid={!!errors.periode_kinerja_id || undefined} aria-describedby={errors.periode_kinerja_id ? 'mutu-year-error' : undefined} onChange={e => {
-                            const nextYear = Number(e.target.value);
-                            setYear(nextYear);
-                            setData({ ...data, periode_kinerja_id: periods.find(p => Number(p.tahun) === nextYear)?.id || '', indikator_fitur4_id: '', indikator_fitur3_id: '' });
-                        }}>
-                            {!period && <option value={year}>{year}</option>}
-                            {periods.map(p => <option key={p.id} value={p.tahun}>{p.tahun}</option>)}
-                        </select>
-                        {model && <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Tahun mengikuti data indikator yang diedit.</p>}
+                        <p id="mutu-year" className="px-4 py-2.5 text-sm font-bold rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">{year}</p>
+                        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Mengikuti filter tahun pada daftar indikator mutu.</p>
                     </Field>
                     {!model && (
                         <Field id="IndikatorBaru" label="Buat indikator baru?" error={errors.IndikatorBaru} className="relative z-40">
@@ -81,16 +79,29 @@ export default function Form({ errors, submit, data, setData, model, ShouldMap, 
                             <Field id="indikator" label="Nama indikator baru" error={errors.indikator} className="sm:col-span-2">
                                 <TextInput id="indikator" value={data.indikator || ''} handleChange={e => setData('indikator', e.target.value)} className={inputClass} placeholder="Masukkan nama indikator mutu" />
                             </Field>
-                            <Field id="indikator_fitur3_id" label="Indikator induk (Fitur 3)" error={errors.indikator_fitur3_id} className="relative z-30 sm:col-span-2">
-                                {select('indikator_fitur3_id', (ShouldMap.IndikatorFitur3 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && x.is_active), 'Cari dan pilih indikator induk')}
+                            <Field id="indikator_fitur3_id" label="Kegiatan Kabag/Kabid (Fitur 3) *" error={errors.indikator_fitur3_id} className="relative z-30 sm:col-span-2">
+                                {select('indikator_fitur3_id', activities, 'Cari dan pilih kegiatan induk')}
+                                {activity && (
+                                    <p className="mt-2 flex flex-wrap items-center gap-2 text-xs leading-5">
+                                        <span className="font-semibold text-slate-500 dark:text-slate-400">Penanggung jawab</span>
+                                        <span className="inline-flex items-center rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-bold leading-4 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">{activity.badge}</span>
+                                    </p>
+                                )}
+                                <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Indikator baru wajib langsung ditempatkan di bawah satu kegiatan tahun {year}. Pemindahan berikutnya dilakukan di menu Indikator Tahunan &amp; Cascading.</p>
+                                {activities.length === 0 && <p className="mt-2 text-xs leading-5 text-amber-600 dark:text-amber-400">Belum ada kegiatan Kabag/Kabid aktif pada tahun {year}.</p>}
                             </Field>
                         </>
                     ) : (
                         <Field id="indikator_fitur4_id" label="Indikator mutu" error={errors.indikator_fitur4_id} className="relative z-30 sm:col-span-2">
                             {select('indikator_fitur4_id', indicators, 'Cari dan pilih indikator mutu', selectIndicator)}
-                            {data.indikator_fitur4_id && <p className="mt-2 break-words text-xs leading-5 text-slate-500 dark:text-slate-400">{findOption(ShouldMap.IndikatorFitur4, data.indikator_fitur4_id).name}</p>}
+                            {indicator && <p className="mt-2 break-words text-xs leading-5 text-slate-500 dark:text-slate-400">{indicator.name}</p>}
+                            {indicator && (
+                                <p className="mt-2 flex flex-wrap items-center gap-2 text-xs leading-5">
+                                    <span className="font-semibold text-slate-500 dark:text-slate-400">Unit</span>
+                                    <span className="inline-flex items-center rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-bold leading-4 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">{indicator.badge}</span>
+                                </p>
+                            )}
                             {indicators.length === 0 && <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Tidak ada indikator aktif yang dapat Anda akses pada tahun {year}. Periksa tahun atau pemetaan unit/tim kerja Anda.</p>}
-                            <InputError message={errors.indikator_fitur3_id} className="mt-1.5" />
                         </Field>
                     )}
                     <Field id="mutu_kategori_id" label="Kategori mutu" error={errors.mutu_kategori_id} className="relative z-20 sm:col-span-2">

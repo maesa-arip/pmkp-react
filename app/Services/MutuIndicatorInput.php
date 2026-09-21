@@ -16,11 +16,15 @@ class MutuIndicatorInput
         return $user->hasRole('super admin') || $user->can('lihat semua data indikator mutu');
     }
 
-    public function options(User $user)
+    public function options(User $user, ?int $periodId = null)
     {
         $query = \App\Models\IndikatorFitur4::query();
         if (! $this->canViewAll($user)) {
             $query = app(RiskIndicatorAccess::class)->forPic($user->pic_id);
+        }
+        // The dictionary offers the indicators of one year only.
+        if ($periodId) {
+            $query->where('indikator_fitur4s.periode_kinerja_id', $periodId);
         }
 
         // Options are yearly placements whose value is the permanent master ID.
@@ -46,9 +50,14 @@ class MutuIndicatorInput
             if (! $model) {
                 $period->assertWritable();
             }
-            $parent = null;
-            if (! empty($input['indikator_fitur3_id'])) {
-                $parent = DB::table('indikator_fitur3s')->where('id', $input['indikator_fitur3_id'])->where('periode_kinerja_id', $period->id)->where('is_active', true)->first();
+            // Choosing an existing indicator never touches the feature 1-3 hierarchy; that is
+            // done in /kinerja. Creating a new indicator does declare its activity right away.
+            if ((int) ($input['IndikatorBaru'] ?? 0) === 1) {
+                if ($model) {
+                    throw ValidationException::withMessages(['IndikatorBaru' => 'Buat indikator baru melalui formulir tambah.']);
+                }
+                $parent = DB::table('indikator_fitur3s')->where('id', $input['indikator_fitur3_id'] ?? 0)
+                    ->where('periode_kinerja_id', $period->id)->where('is_active', true)->first();
                 if (! $parent) {
                     throw ValidationException::withMessages(['indikator_fitur3_id' => 'Pilih kegiatan Kabag/Kabid aktif pada tahun yang sama.']);
                 }
@@ -56,20 +65,11 @@ class MutuIndicatorInput
                 if (! $f2 || ! DB::table('indikator_fitur1s')->where('id', $f2->indikator_fitur1_id)->where('periode_kinerja_id', $period->id)->where('is_active', true)->exists()) {
                     throw ValidationException::withMessages(['indikator_fitur3_id' => 'Induk kegiatan Wadir atau IKU tidak aktif.']);
                 }
-            }
-            if ((int) ($input['IndikatorBaru'] ?? 0) === 1) {
-                // A new indicator creates a master placed under an activity of the year.
-                if (! $parent) {
-                    throw ValidationException::withMessages(['indikator_fitur3_id' => 'Pilih kegiatan Kabag/Kabid aktif pada tahun yang sama.']);
-                }
-                if ($model) {
-                    throw ValidationException::withMessages(['IndikatorBaru' => 'Buat indikator baru melalui formulir tambah.']);
-                }
                 $name = trim($input['indikator'] ?? '');
                 if ($name === '') {
                     throw ValidationException::withMessages(['indikator' => 'Nama indikator mutu wajib diisi.']);
                 }
-                if (DB::table('indikator_fitur4s')->where('periode_kinerja_id', $period->id)->where('indikator_fitur3_id', $parent->id)->where('name', $name)->whereJsonContains('location_id', (int) $location)->exists()) {
+                if (DB::table('indikator_fitur4s')->where('periode_kinerja_id', $period->id)->where('name', $name)->whereJsonContains('location_id', (int) $location)->exists()) {
                     throw ValidationException::withMessages(['indikator' => 'Indikator sudah tersedia untuk unit ini. Pilih indikator yang sudah ada.']);
                 }
                 $id = DB::table('indikator_fitur4s')->insertGetId(['periode_kinerja_id' => $period->id, 'indikator_fitur3_id' => $parent->id, 'sasaran_strategis_id' => $parent->sasaran_strategis_id,
@@ -80,14 +80,9 @@ class MutuIndicatorInput
                 $id = Fitur4Master::masterId($id);
             } else {
                 $id = (int) Fitur4Master::masterId((int) ($input['indikator_fitur4_id'] ?? 0));
-                $indicator = $this->options($user)->first(fn ($option) => $option['id'] === $id && (int) $option['periode_kinerja_id'] === $period->id);
-                if (! $indicator || (! $indicator['is_active'] && (int) $model?->indikator_fitur4_id !== $id)
-                    || ($parent && (int) $indicator['indikator_fitur3_id'] !== (int) $parent->id)) {
-                    throw ValidationException::withMessages(['indikator_fitur4_id' => 'Pilih indikator mutu aktif milik unit/tim Anda yang sesuai kegiatan dan tahun.']);
-                }
-                // Only an indicator not yet positioned under an activity may omit it.
-                if (! $parent && $indicator['indikator_fitur3_id']) {
-                    throw ValidationException::withMessages(['indikator_fitur3_id' => 'Pilih kegiatan Kabag/Kabid aktif pada tahun yang sama.']);
+                $indicator = $this->options($user, $period->id)->first(fn ($option) => $option['id'] === $id);
+                if (! $indicator || (! $indicator['is_active'] && (int) $model?->indikator_fitur4_id !== $id)) {
+                    throw ValidationException::withMessages(['indikator_fitur4_id' => 'Pilih indikator mutu aktif milik unit/tim Anda pada tahun tersebut.']);
                 }
             }
             $data = array_intersect_key($input, array_flip(['mutu_kategori_id', 'num_name', 'denum_name', 'standar', 'operator', 'penyebut']));
