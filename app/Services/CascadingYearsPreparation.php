@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
- * Approved reconstruction: unchanged legacy source -> 2024 and 2025;
+ * Approved reconstruction: unchanged legacy source -> 2023, 2024 and 2025;
  * the supplied workbook -> active 2026. Transactional and intentionally one-shot.
  */
 class CascadingYearsPreparation
@@ -45,7 +45,7 @@ class CascadingYearsPreparation
                 throw new RuntimeException('Daftar sasaran tanpa induk berubah.');
             }
             $report = ['applied' => $apply, 'source_sha256' => hash_file('sha256', $path), 'orphan_sasaran_ids' => $orphans, 'periods' => []];
-            foreach ([2024, 2025] as $year) {
+            foreach ([2023, 2024, 2025] as $year) {
                 $period = PeriodeKinerja::create([
                     'tahun' => $year, 'status' => 'draft', 'feature_schema_version' => 1,
                     'nama_organisasi' => 'RSUD Bali Mandara Provinsi Bali', 'tujuan' => '', 'rekonstruksi' => true,
@@ -53,7 +53,7 @@ class CascadingYearsPreparation
                         'source' => 'Database hasil pemulihan, baris tanpa periode',
                         'orphan_sasaran_ids' => $orphans,
                         'original_parents' => array_map(fn ($id) => ['id' => $id, 'parent_id' => $source['sasaran_strategis'][$id]['parent_id']], $orphans),
-                        'note' => 'Salinan 2024 dan 2025 sama dengan master sumber. Empat sasaran tanpa induk menjadi akar sesuai persetujuan pengguna; sumber asli dipertahankan.',
+                        'note' => 'Salinan 2023, 2024 dan 2025 sama dengan master sumber; register tahun itu memakai hierarki lama yang sama dan perubahan fitur 1-3 berlaku mulai 2026. Empat sasaran tanpa induk menjadi akar sesuai persetujuan pengguna; sumber asli dipertahankan.',
                     ],
                 ]);
                 $maps = [];
@@ -114,7 +114,7 @@ class CascadingYearsPreparation
             // Level-four rows of every year get a permanent master after the source check.
             $report['fitur4_masters_created'] = Fitur4Master::ensureAll();
             if ($apply) {
-                activity('indikator_tahunan')->withProperties($report)->log('Cascading lama disalin ke 2024 dan 2025; Excel menjadi cascading aktif 2026.');
+                activity('indikator_tahunan')->withProperties($report)->log('Cascading lama disalin ke 2023, 2024 dan 2025; Excel menjadi cascading aktif 2026.');
                 DB::commit();
             } else {
                 DB::rollBack();

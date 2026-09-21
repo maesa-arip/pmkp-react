@@ -73,7 +73,8 @@ class AnnualIndicatorService
                             $data['lineage_id'] = $lineage;
                             $data['copied_from_id'] = $id;
                             $data['created_at'] = $data['updated_at'] = now();
-                            // Level four keeps its master's name, unit and position in every year.
+                            // Level four keeps its master's name and unit, and its jabatan as written
+                            // (imported team names differ from the position name).
                             if (! empty($row->penanggung_jawab_id) && $table !== 'indikator_fitur4s') {
                                 $data['jabatan'] = DB::table('kinerja_penanggung_jawabs')->where('id', $row->penanggung_jawab_id)->value('name');
                             }

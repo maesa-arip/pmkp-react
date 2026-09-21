@@ -37,7 +37,7 @@ class PeriodeKinerjaController extends Controller
         $positionUnits = DB::table('kinerja_penanggung_jawab_units')->orderBy('location_id')->get()->groupBy('penanggung_jawab_id');
 
         return inertia('Kinerja/Index', [
-            'periods' => PeriodeKinerja::orderByDesc('tahun')->get(), 'period' => $period, 'nodes' => $hierarchy->decorate($data),
+            'periods' => PeriodeKinerja::orderByDesc('tahun')->get(), 'period' => $period, 'nodes' => $this->withResponsiblePics($hierarchy->decorate($data)),
             'cascadingConcepts' => $period ? array_values(array_filter(app(\App\Services\CascadingConceptService::class)->rows($period->id), fn ($row) => $row['kind'] !== 'indikator_kinerja' || $row['is_active'])) : [],
             'performanceIndicators' => $period ? DB::table('indikator_kinerjas')->where('periode_kinerja_id', $period->id)->where('is_active', true)->orderBy('sort_order')->orderBy('id')->get() : [],
             'cascadingTree' => $hierarchy->build($data),
@@ -52,6 +52,34 @@ class PeriodeKinerjaController extends Controller
             }),
             'exports' => $period ? DB::table('cascading_exports')->where('periode_kinerja_id', $period->id)->select('id', 'created_at', 'template_version')->orderByDesc('id')->limit(20)->get() : [],
         ]);
+    }
+
+    /**
+     * The responsible person shown in /kinerja is the PIC behind the position. Level-four
+     * masters owned by a service unit have no position, so they fall back to that unit's PIC.
+     */
+    private function withResponsiblePics(array $levels): array
+    {
+        $positionPics = DB::table('kinerja_penanggung_jawabs as j')->leftJoin('pics as p', 'p.id', '=', 'j.pic_id')
+            ->select('j.id as id', 'p.name as pic_name')->pluck('pic_name', 'id');
+        $unitPics = DB::table('pics')->pluck('name', 'location_id');
+        $unitNames = DB::table('locations')->pluck('name', 'id');
+        foreach (CascadingHierarchyService::TABLES as $level => $table) {
+            $levels[$level] = array_map(function (array $row) use ($level, $positionPics, $unitPics, $unitNames) {
+                $units = AnnualIndicatorService::ids($row['location_id'] ?? null);
+                $row['unit_names'] = collect($units)->map(fn ($id) => $unitNames->get($id))->filter()->implode(', ');
+                $unitPic = collect($units)->map(fn ($id) => $unitPics->get($id))->filter()->unique()->implode(', ');
+                $positionPic = $positionPics->get($row['penanggung_jawab_id'] ?? 0);
+                // Level four names the PIC of its unit; its position mostly follows the activity.
+                $row['penanggung_jawab'] = (string) $level === '4'
+                    ? ($unitPic ?: $positionPic ?: $row['jabatan'])
+                    : ($positionPic ?: $unitPic ?: $row['jabatan']);
+
+                return $row;
+            }, $levels[$level] ?? []);
+        }
+
+        return $levels;
     }
 
     public function saveConcept(Request $request, PeriodeKinerja $period, int $concept)
@@ -182,8 +210,13 @@ class PeriodeKinerjaController extends Controller
                 throw ValidationException::withMessages(['name' => 'Penambahan indikator dilakukan pada periode draft. Pilih indikator yang sudah ada untuk mengedit periode aktif.']);
             }
             $data['penanggung_jawab_id'] = $data['penanggung_jawab_id'] ?? ($level === '4' ? $before?->penanggung_jawab_id : null);
+            // A unit indicator placed under an activity takes that activity's position.
+            $followsActivity = $level === '4' && $before && $this->followsActivity($before);
+            if ($followsActivity) {
+                $data['penanggung_jawab_id'] = DB::table('indikator_fitur3s')->where('id', $data['indikator_fitur3_id'])->value('penanggung_jawab_id');
+            }
             $position = $data['penanggung_jawab_id'] ? DB::table('kinerja_penanggung_jawabs')->where('id', $data['penanggung_jawab_id'])->lockForUpdate()->first() : null;
-            if ($position && ! $position->is_active) {
+            if ($position && ! $position->is_active && ! $followsActivity) {
                 throw ValidationException::withMessages(['penanggung_jawab_id' => 'Pilih penanggung jawab yang aktif.']);
             }
             $data['jabatan'] = $level === '4' && $before && (int) $before->penanggung_jawab_id === (int) $data['penanggung_jawab_id'] ? $before->jabatan : $position?->name;
@@ -270,6 +303,16 @@ class PeriodeKinerjaController extends Controller
         });
 
         return back()->with(['type' => 'success', 'message' => 'Indikator fitur '.$level.' berhasil disimpan.']);
+    }
+
+    /**
+     * A level-four placement without its own position, or with the one of its current
+     * activity, follows the activity; only a position chosen for a new indicator is kept.
+     */
+    private function followsActivity(object $row): bool
+    {
+        return ! $row->penanggung_jawab_id || (int) $row->penanggung_jawab_id
+            === (int) DB::table('indikator_fitur3s')->where('id', $row->indikator_fitur3_id ?? 0)->value('penanggung_jawab_id');
     }
 
     private function isUnplaced(array $rows, $id): bool

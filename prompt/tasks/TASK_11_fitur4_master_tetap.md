@@ -266,7 +266,9 @@ dengan `--deactivate-existing` ditolak sesuai guard.
 
 Urutan deploy (dev-mutu/production, setelah backup):
 1. `php artisan migrate` (termasuk migration ini).
-2. Production saja: `cascading:prepare-2024-2026` sesuai runbook (kini membuat
+2. Production saja: `cascading:prepare-2023-2026` sesuai runbook, sekali saja dan
+   sudah mencakup 2023-2026; server yang periodenya sudah ada memakai
+   `cascading:prepare-2023` (kini membuat
    master otomatis setelah pemeriksaan sumber).
 3. `php artisan indikator:link-masters 2026 --deactivate-existing` (dry-run),
    periksa angka, lalu ulangi dengan `--apply`.
@@ -300,3 +302,30 @@ backup disimpan di luar repo (lihat `storage/app/`, di-gitignore).
 Sisa sebelum merge ke `main`: review user dan uji manual di dev-mutu
 (penempatan indikator unit ke kegiatan di `/kinerja`, input risk register dan
 MUTU 2026 oleh PIC unit).
+
+## Revisi 2026-09-21 - jabatan fitur 4 mengikuti kegiatan
+
+Keputusan user: "Hubungkan ke kegiatan" di `/kinerja` tidak lagi meminta jabatan
+penanggung jawab, karena kegiatan Kabag/Kabid (fitur 3) sudah menentukannya.
+Kolom "Penanggung jawab" di tabel fitur 4 tetap menampilkan PIC unit. Form
+"Tambah" indikator baru tidak berubah (jabatan masih menentukan unit).
+
+Ini mengubah jawaban #1: unit tetap di master, tetapi jabatan kini **per tahun**.
+- `Fitur4Master::SHARED` = nama, tujuan, unit (jabatan dikeluarkan).
+- `PeriodeKinerjaController::saveNode` level 4 (edit): bila baris belum punya
+  jabatan atau jabatannya sama dengan kegiatan lamanya, `penanggung_jawab_id`
+  diambil dari kegiatan fitur 3 yang dipilih (jabatan kegiatan yang nonaktif
+  juga diterima). Jabatan milik indikator "Tambah" yang berbeda dari kegiatannya
+  tetap dipertahankan.
+- `withResponsiblePics`: fitur 4 mendahulukan PIC unit.
+- `Kinerja/Index.jsx`: pilihan jabatan diganti teks baca-saja; tombol simpan
+  indikator lama tidak lagi diblokir oleh syarat unit/PIC.
+- Test `AnnualIndicatorsTest` disesuaikan (jabatan dari kegiatan, pindah
+  kegiatan ikut pindah jabatan, tahun lain tidak berubah, tahun ditutup tidak
+  ditulis ulang). Suite penuh tanpa `public/hot`: 1 failed (`ExampleTest`, #2) /
+  167 passed. `npm run build` berhasil. Temuan baru #37.
+- Lanjutan 2026-09-21: form edit/hubungkan fitur 4 yang mengikuti kegiatan tidak
+  menampilkan field jabatan maupun baris "PIC jabatan". Daftar fitur 4 di
+  `/kinerja` (tabel, badge navigasi, total hierarki) hanya menghitung dan
+  menampilkan indikator aktif; tombol "Tampilkan N indikator nonaktif" untuk
+  melihat 325 KATIM yang dinonaktifkan. Hanya tampilan, data tidak berubah.

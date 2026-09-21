@@ -12,8 +12,11 @@ use RuntimeException;
  */
 class Fitur4Master
 {
-    /** Attributes that belong to the master and are identical in every year. */
-    public const SHARED = ['name', 'tujuan', 'location_id', 'penanggung_jawab_id', 'jabatan'];
+    /**
+     * Attributes that belong to the master and are identical in every year. The position
+     * (penanggung_jawab_id, jabatan) is per year because it follows that year's activity.
+     */
+    public const SHARED = ['name', 'tujuan', 'location_id'];
 
     public static function masterId(int $id): ?int
     {

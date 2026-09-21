@@ -7,9 +7,9 @@ use Illuminate\Console\Command;
 
 class PrepareCascadingYears extends Command
 {
-    protected $signature = 'cascading:prepare-2024-2026 {--apply : Simpan; tanpa opsi ini transaksi dibatalkan} {--backup= : Path cadangan SQL lengkap}';
+    protected $signature = 'cascading:prepare-2023-2026 {--apply : Simpan; tanpa opsi ini transaksi dibatalkan} {--backup= : Path cadangan SQL lengkap}';
 
-    protected $description = 'Persiapan cascading historis 2024/2025 dan Excel aktif 2026 sesuai persetujuan pengguna';
+    protected $description = 'Persiapan cascading historis 2023/2024/2025 dan Excel aktif 2026 dalam satu kali jalan; hanya untuk server yang belum punya periode';
 
     public function handle(CascadingYearsPreparation $service): int
     {

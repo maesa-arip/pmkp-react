@@ -123,6 +123,8 @@ dan `indikator:link-masters 2026 --deactivate-existing --apply`: 896 master
 Backup sebelum perubahan: `storage/app/backups/before-task11-20260920-004621.sql`.
 
 Urutan deploy (setelah backup terverifikasi): `php artisan migrate`; khusus
-production jalankan `cascading:prepare-2024-2026` sesuai runbook; lalu
+production jalankan `cascading:prepare-2023-2026` sesuai runbook (satu kali,
+mencakup 2023-2026); server yang periodenya sudah ada memakai
+`cascading:prepare-2023`; lalu
 `indikator:link-masters 2026 --deactivate-existing` (dry-run), periksa angka,
 ulangi dengan `--apply`.

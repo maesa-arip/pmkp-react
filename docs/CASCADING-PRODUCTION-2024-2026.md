@@ -73,12 +73,37 @@ Pengguna menyetujui empat sasaran tersebut menjadi akar pada salinan 2024/2025, 
 
 Jika prasyarat production berbeda, rekonsiliasi kondisi sebenarnya dan sesuaikan rencana/implementasi dalam cakupan yang diminta. **Jangan mengosongkan tabel, menghapus periode, atau melewati pemeriksaan untuk memaksa command berjalan.** Identifikasi sasaran production berdasarkan data sebenarnya; jangan menganggap ID lokal berlaku di server.
 
+## Cakupan tahun: 2023 sampai 2026, satu kali jalan (20 September 2026)
+
+Keputusan pengguna: register 2023 memakai hierarki lama yang sama dengan 2024 dan
+2025; hanya 2026 ke atas yang memakai struktur fitur 1-3 yang baru. Karena itu
+command persiapan kini bernama `cascading:prepare-2023-2026` dan menyalin sumber
+legacy ke **2023, 2024, dan 2025** lalu mengimpor Excel sebagai 2026 aktif.
+
+Di production command ini dijalankan **sekali saja** dan sudah mencakup 2023
+sampai 2026. Jangan menjalankan `cascading:prepare-2023` sesudahnya; command itu
+khusus server yang periodenya sudah dibuat sebelum keputusan ini.
+
+| Lingkungan | Kondisi | Perintah |
+|---|---|---|
+| Production | belum punya periode sama sekali | `cascading:prepare-2023-2026` sekali, mencakup 2023-2026 |
+| dev-mutu | sudah punya 2024/2025/2026 sejak 19-20 September 2026 | `cascading:prepare-2023` sekali, hanya menambah 2023 |
+| Lokal `dev_simdalin` | sudah punya 2023/2024/2025/2026 per 20 September 2026 | selesai, tidak perlu dijalankan lagi |
+
+Kedua command menolak berjalan ulang: yang gabungan menolak bila sudah ada
+periode apa pun, yang 2023 menolak bila periode 2023 sudah ada. Keduanya juga
+menolak `--apply` tanpa `--backup` yang menunjuk file cadangan SQL nyata.
+
+Sesudah penerapan, tiap tahun register wajib punya penempatan indikator. Periksa
+dengan membandingkan jumlah register per tahun terhadap jumlah register yang
+menemukan penempatan pada periode tahun itu; keduanya harus sama.
+
 ## Pelaksanaan ketika pengguna meminta eksekusi production
 
 Dari folder aplikasi yang sudah diverifikasi:
 
 ```bash
-php artisan cascading:prepare-2024-2026
+php artisan cascading:prepare-2023-2026
 ```
 
 Tanpa --apply, persiapan dijalankan dalam transaksi yang di-rollback. Ini bukan kueri read-only: counter AUTO_INCREMENT dapat maju dan file cadangan impor dapat dibuat. Jalankan setelah backup, dalam lingkungan/jendela yang telah disiapkan.
@@ -86,7 +111,7 @@ Tanpa --apply, persiapan dijalankan dalam transaksi yang di-rollback. Ini bukan 
 Jika hasil uji cocok dengan cakupan yang diminta:
 
 ```bash
-php artisan cascading:prepare-2024-2026 --apply --backup=/path/privat/cadangan-production.sql
+php artisan cascading:prepare-2023-2026 --apply --backup=/path/privat/cadangan-production.sql
 ```
 
 Ganti path contoh dengan cadangan production yang sudah diverifikasi. Command hanya memeriksa keberadaan dan ukuran minimum file; keberhasilan backup harus diverifikasi tersendiri.

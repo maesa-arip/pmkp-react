@@ -51,6 +51,6 @@ storage/app/cascading-template-qa/annual-2024-2026-20260917-041518/
 
 ## Perintah penerapan
 
-php artisan cascading:prepare-2024-2026
+php artisan cascading:prepare-2023-2026
 
 Tanpa --apply, perintah menjalankan persiapan dan membatalkan transaksinya. Penerapan membutuhkan --apply dan --backup dengan path cadangan SQL. Perintah menolak pengulangan jika periode sudah tersedia agar tidak menggandakan data. Tidak menjalankan ulang perintah setelah penerapan ini.

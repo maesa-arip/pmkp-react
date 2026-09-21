@@ -33,7 +33,10 @@ class IkpRiskLinkTest extends TestCase
 
         $this->risk = $risk;
         // This fixture tests access to risks, with an indicator valid for any unit.
-        DB::table('indikator_fitur4s')->where('id', $risk->indikator_fitur4_id)->update(['location_id' => '[0]']);
+        // The master and every yearly placement must agree, because the PIC scope of an
+        // edited register is checked against the placement of that register's year.
+        DB::table('indikator_fitur4s')->where(fn ($q) => $q->where('id', $risk->indikator_fitur4_id)
+            ->orWhere('master_id', $risk->indikator_fitur4_id))->update(['location_id' => '[0]']);
         $this->risk->update(['pic_id' => (string) $unit->id, 'currently_id' => 2]);
         $this->actingAs(User::factory()->create(['pic_id' => $unit->id, 'username' => 'ikp-test-'.uniqid()]));
         Gate::before(fn () => $this->admin);
