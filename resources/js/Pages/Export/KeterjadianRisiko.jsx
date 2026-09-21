@@ -8,15 +8,15 @@ import ComboboxMultipleWithOutSemuaUnit from "@/Components/ComboboxMultipleWithO
 import ComboboxPage from "@/Components/ComboboxPage";
 import { InformationCircleIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
-export default function LarsDHPKlinis({ setIsOpenAddDialog }) {
-    const { data, setData, post, reset, errors, processing } = useForm({
+export default function KeterjadianRisiko({ setIsOpenAddDialog }) {
+    const { data, setData } = useForm({
         name: "",
     });
     const closeButton = (e) => setIsOpenAddDialog(false);
     const [period, setPeriod] = useState({ startDate: "", endDate: "" });
     const [exportError, setExportError] = useState("");
     const [userId, setUserId] = useState(null);
-    const [loadingLars, setLoadingLars] = useState(false);
+    const [loadingKeterjadian, setLoadingKeterjadian] = useState(false);
     const [currently_id, setCurrently_id] = useState([]);
 
     const handleSubmit = (e) => {
@@ -26,9 +26,9 @@ export default function LarsDHPKlinis({ setIsOpenAddDialog }) {
             return;
         }
         setExportError("");
-        const url = "/riskregisterklinislarsdhp";
+        const url = "/riskregisterketerjadian";
         const payload = { ...period, userId, currently_id };
-        setLoadingLars(true);
+        setLoadingKeterjadian(true);
 
         axios
             .post(url, payload, { responseType: "blob" })
@@ -36,22 +36,22 @@ export default function LarsDHPKlinis({ setIsOpenAddDialog }) {
                 const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = downloadUrl;
-                link.setAttribute("download", "Form Manajemen Risiko Klinis LARS DHP " + period.startDate.slice(0, 4) + ".xlsx");
+                link.setAttribute("download", "Format Keterjadian Risiko " + period.startDate.slice(0, 4) + ".xlsx");
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
                 setIsOpenAddDialog(false);
-                setLoadingLars(false);
+                setLoadingKeterjadian(false);
             })
             .catch(async (error) => {
                 setExportError(await exportErrorMessage(error));
-                setLoadingLars(false);
+                setLoadingKeterjadian(false);
             });
     };
 
-    const { users, auth, permissionNames } = usePage().props;
+    const { users, permissionNames } = usePage().props;
     const permission_name = permissionNames ? permissionNames.map((p) => p.name) : [];
-    
+
     let ShouldMap = {
         currently: [
             { id: 1, name: "Sedang Terjadi" },
@@ -60,11 +60,9 @@ export default function LarsDHPKlinis({ setIsOpenAddDialog }) {
         ],
     };
 
-    const inputClass = "w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-xl focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-slate-900 dark:text-white transition-all shadow-sm outline-none placeholder:text-slate-400";
-
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-2">
-            
+
             <ExportPeriodPicker value={period} onChange={setPeriod} />
 
             <div className="grid grid-cols-1 gap-6">
@@ -108,7 +106,7 @@ export default function LarsDHPKlinis({ setIsOpenAddDialog }) {
                 <SecondaryButton onClick={closeButton} className="justify-center py-2.5">
                     Batal
                 </SecondaryButton>
-                {loadingLars ? (
+                {loadingKeterjadian ? (
                     <button disabled className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white transition-all bg-sky-600 rounded-xl opacity-70 cursor-not-allowed">
                         <ArrowPathIcon className="w-4 h-4 mr-2 animate-spin" /> Sedang Mengekspor...
                     </button>

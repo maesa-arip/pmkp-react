@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\RiskRegister;
+use App\Services\RegisterHierarchyResolver;
 use App\Models\RiskGrading;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -72,11 +73,7 @@ class Sheet1 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $subquery = RiskRegister::query()
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftJoin('indikator_fitur3s', 'indikator_fitur3s.id', 'indikator_fitur4s.indikator_fitur3_id')
-            ->leftJoin('indikator_fitur2s', 'indikator_fitur2s.id', 'indikator_fitur3s.indikator_fitur2_id')
-            ->leftJoin('indikator_fitur1s', 'indikator_fitur1s.id', 'indikator_fitur2s.indikator_fitur1_id')
-            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur1s.sasaran_strategis_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftJoin('pics', 'pics.id', 'risk_registers.pic_id')
             ->leftJoin('users', 'users.id', 'risk_registers.user_id')
             ->selectRaw(
@@ -219,8 +216,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $subquery = RiskRegister::query()
             ->leftJoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftJoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
-            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftJoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
             ->leftJoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftJoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -421,7 +417,7 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
 
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -430,7 +426,6 @@ class Sheet3 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
             ->leftJoin('locations', 'locations.id', 'pics.location_id')
             ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
-            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftjoin("risk_gradings", function ($join) {
                 $join->on("risk_gradings.kode", "=", "risk_registers.concatdp1")
                     ->whereRaw("risk_gradings.tahun = COALESCE(YEAR(risk_registers.tgl_register), " . RiskGrading::DEFAULT_TAHUN . ")");
@@ -761,7 +756,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -770,7 +765,6 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
             // ->leftJoin('pics as pic2', 'pic2.id', 'users.pic_id')
             // ->leftJoin('locations', 'locations.id', 'pics.location_id')
             // ->leftJoin('locations as loc2', 'loc2.id', 'pic2.location_id')
-            ->leftJoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftJoin('efektifs', 'efektifs.id', 'risk_registers.efektif_id')
             ->leftJoin('waktu_implementasis', 'waktu_implementasis.id', 'risk_registers.waktu_implementasi_id')
             ->leftJoin('opsi_pengendalians', 'opsi_pengendalians.id', 'risk_registers.opsi_pengendalian_id')
@@ -824,7 +818,7 @@ class Sheet4 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_grading3.name_bpkp AS name_bpkp3',
                 
             )
-            ->groupBy('risk_registers.id','risk_gradings.name_bpkp','risk_grading2.name_bpkp','risk_grading3.name_bpkp')
+            ->groupBy('risk_registers.id','risk_gradings.name_bpkp','risk_grading2.name_bpkp','risk_grading3.name_bpkp', ...RegisterHierarchyResolver::groupBy())
             ->where($whosLogin)
             ->orderBy('Peringkat', 'ASC');
         if (!empty($this->startDate) && !empty($this->endDate)) {
@@ -1300,7 +1294,7 @@ class Sheet5 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -1618,10 +1612,9 @@ class Sheet6 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         $query = RiskRegister::query()
             ->select(DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'), 'risk_registers.resiko as risiko_prioritas', 'risk_registers.rencana_pengendalian', 'risk_registers.output', 'waktu_pengendalians.name as rencana_waktu', 'waktu_implementasis.name as waktu_implementasi', 'pics.name as PJ','users.name as pemilik', 'risk_registers.dokumen_pendukung', 'risk_registers.kendala')
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('identification_sources', 'identification_sources.id', 'risk_registers.identification_source_id')
             ->leftjoin('locations', 'locations.id', 'indikator_fitur4s.location_id')
-            ->leftjoin('sasaran_strategis', 'sasaran_strategis.id', 'indikator_fitur4s.sasaran_strategis_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
             ->leftjoin('impact_values', 'impact_values.id', 'risk_registers.osd1_dampak')
@@ -1865,7 +1858,7 @@ class Sheet7 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -2038,7 +2031,7 @@ class Sheet8 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -2294,7 +2287,7 @@ class Sheet9 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -2572,7 +2565,7 @@ class Sheet10 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->leftjoin('risk_categories', 'risk_categories.id', 'risk_registers.risk_category_id')
             ->leftjoin('risk_varieties', 'risk_varieties.id', 'risk_registers.risk_variety_id')
             ->leftjoin('risk_types', 'risk_types.id', 'risk_registers.risk_type_id')
@@ -2848,7 +2841,7 @@ class Sheet11 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, 
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
         $query = RiskRegister::query()
-            ->leftjoin('indikator_fitur4s', 'indikator_fitur4s.id', 'risk_registers.indikator_fitur4_id')
+            ->tap(fn ($query) => RegisterHierarchyResolver::join($query))
             ->select(
                 DB::raw('row_number() OVER (ORDER BY risk_registers.osd1_dampak * risk_registers.osd1_probabilitas * risk_registers.osd1_controllability DESC) AS `row_number`'),
                 DB::raw("'' AS '1'"),

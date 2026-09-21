@@ -192,6 +192,9 @@ Route::middleware('auth')->group(function () {
     // Route::post('/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisternonklinislarsdhp', [ExportController::class, 'riskregisternonklinislarsdhp']);
+    Route::match(['GET', 'POST'], '/riskregisterklinismrterbaru', [ExportController::class, 'riskregisterklinismrterbaru']);
+    Route::match(['GET', 'POST'], '/riskregisternonklinismrterbaru', [ExportController::class, 'riskregisternonklinismrterbaru']);
+    Route::match(['GET', 'POST'], '/riskregisterketerjadian', [ExportController::class, 'riskregisterketerjadian']);
     Route::match(['GET', 'POST'], '/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp']);
     Route::match(['GET', 'POST'], '/riskregistersedangterjadi', [ExportController::class, 'riskregistersedangterjadi']);
     Route::match(['GET', 'POST'], '/ikpdatainsiden', [ExportController::class, 'ikpdatainsiden']);
