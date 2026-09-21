@@ -216,11 +216,11 @@ class RiskRegisterYearCopyService
         }
 
         if (! empty($filters['pic_id'])) {
-            $query->whereJsonContains('pic_id', (int) $filters['pic_id']);
+            $query->whereIn('id', $this->idsWithPic((int) $filters['source_year'], (int) $filters['pic_id']));
         }
 
         if (! empty($filters['source_pic_id'])) {
-            $query->whereJsonContains('pic_id', (int) $filters['source_pic_id']);
+            $query->whereIn('id', $this->idsWithPic((int) $filters['source_year'], (int) $filters['source_pic_id']));
         }
 
         if (($filters['priority_scope'] ?? 'all') !== 'all') {
@@ -236,6 +236,13 @@ class RiskRegisterYearCopyService
         }
 
         return $query;
+    }
+
+    /** Legacy pic_id values are scalars or repeatedly encoded strings, which JSON contains misses (finding #37). */
+    private function idsWithPic(int $year, int $picId): array
+    {
+        return RiskRegister::query()->whereYear('tgl_register', $year)->whereNull('deleted_at')->pluck('pic_id', 'id')
+            ->filter(fn ($pics) => in_array($picId, AnnualIndicatorService::ids($pics), true))->keys()->all();
     }
 
     private function priorityCodes(string $priorityScope, mixed $typeId = null): array

@@ -199,6 +199,21 @@ class AnnualIndicatorsTest extends TestCase
         $this->assertEquals(0, $service->copyUnit($filters)['copied']);
     }
 
+    public function test_unit_filters_match_legacy_encoded_pic_ids(): void
+    {
+        $picId = auth()->user()->pic_id;
+        $other = Pic::where('id', '<>', $picId)->firstOrFail();
+        $user = User::factory()->create(['pic_id' => $other->id]);
+        $service = app(RiskRegisterYearCopyService::class);
+        // Finding #37: legacy rows store "21,8,73" encoded repeatedly, which JSON contains missed.
+        foreach ([json_encode(json_encode(json_encode("{$other->id},{$picId}"))), (string) $picId] as $legacy) {
+            DB::table('risk_registers')->where('id', $this->source->id)->update(['pic_id' => $legacy]);
+            $this->assertEquals(1, $service->preview($this->filters + ['pic_id' => $picId])['source_total']);
+            $this->assertEquals(1, $service->previewUnit($this->filters + ['source_pic_id' => $picId, 'target_pic_id' => $other->id, 'target_user_id' => $user->id])['source_total']);
+        }
+        $this->assertEquals(0, $service->preview($this->filters + ['pic_id' => Pic::whereNotIn('id', [$picId, $other->id])->value('id')])['source_total']);
+    }
+
     public function test_closed_period_and_cross_year_indicator_are_rejected(): void
     {
         $this->target->update(['status' => 'ditutup']);
