@@ -1,8 +1,11 @@
+import { picIds } from "@/utils/picIds";
+import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import DangerButton from "@/Components/DangerButton";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
 import EditModal from "@/Components/Modal/EditModal";
 import RiskOccurrenceModal from "@/Components/Modal/RiskOccurrenceModal";
+import RiskSupervisionModal from "@/Components/Modal/RiskSupervisionModal";
 import App from "@/Layouts/App";
 import { Head, router, usePage } from "@inertiajs/react";
 import { debounce, pickBy } from "lodash";
@@ -105,7 +108,9 @@ const getInitials = (name) => {
 
 export default function Index(props) {
     const { data: riskRegisterKlinis, meta, filtered, attributes } = props.riskRegisterKlinis;
-    const { auth } = usePage().props;
+    const { auth, permissionNames } = usePage().props;
+    // Same permission that opens the Verifikasi menus in the sidebar.
+    const canSupervise = (permissionNames || []).some((item) => item.name === "lihat data verifikasi");
     const riskRegisterCount = props.riskRegisterCount;
     const riskRegisterOsd2Count = props.riskRegisterOsd2Count;
 
@@ -116,6 +121,7 @@ export default function Index(props) {
         riskVarieties: props.riskVarieties,
         riskTypes: props.riskTypes,
         jenisSebabs: props.jenisSebabs,
+        celahPengendalians: props.celahPengendalians,
         opsiPengendalian: props.opsiPengendalian,
         pembiayaanRisiko: props.pembiayaanRisiko,
         efektif: props.efektif,
@@ -154,8 +160,9 @@ export default function Index(props) {
     const [isOpenEditDialogFGDActual, setIsOpenEditDialogFGDActual] = useState(false);
     const [isOpenDestroyDialog, setIsOpenDestroyDialog] = useState(false);
     const [isOpenOccurrenceDialog, setIsOpenOccurrenceDialog] = useState(false);
+    const [isOpenSupervisionDialog, setIsOpenSupervisionDialog] = useState(false);
 
-    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog || isOpenOccurrenceDialog;
+    const isModalOpen = isOpenAddDialog || isOpenEditDialog || isOpenEditDialogOSDResidual || isOpenEditDialogFormulirRCA || isOpenEditDialogFGDInherent || isOpenEditDialogFGDResidual || isOpenEditDialogFGDTreated || isOpenEditDialogFGDActual || isOpenDestroyDialog || isOpenOccurrenceDialog || isOpenSupervisionDialog;
 
     const reload = useCallback(debounce((query) => { router.get(route(route().current()), { ...pickBy(query), page: query.page }, { preserveState: true, preserveScroll: true }); }, 150), []);
     useEffect(() => { if (!isInitialRender) reload(params); else setIsInitialRender(false); }, [params]);
@@ -197,6 +204,7 @@ export default function Index(props) {
     return (
         <div className="relative min-h-screen p-0 font-sans bg-transparent dark:bg-transparent text-slate-900 dark:text-slate-100 sm:p-2">
             <Head title="Data Risk Register Non Klinis" />
+            <AnnualYearFilter value={params.tahun} onChange={tahun => setParams({ ...params, tahun, page: 1 })} />
             
             {/* --- Modals Configuration --- */}
             {isOpenOccurrenceDialog && (
@@ -206,6 +214,15 @@ export default function Index(props) {
                     onClose={() => setIsOpenOccurrenceDialog(false)}
                     onRecorded={(page) => setState((risk) =>
                         page.props.riskRegisterKlinis.data.find((item) => item.id === risk.id) || { ...risk, currently_id: 1 }
+                    )}
+                />
+            )}
+            {isOpenSupervisionDialog && (
+                <RiskSupervisionModal
+                    risk={state}
+                    onClose={() => setIsOpenSupervisionDialog(false)}
+                    onRecorded={(page) => setState((risk) =>
+                        page.props.riskRegisterKlinis.data.find((item) => item.id === risk.id) || risk
                     )}
                 />
             )}
@@ -353,7 +370,7 @@ export default function Index(props) {
                                         const isSelected = selectedRow === index;
                                         const gradingName = item.risk_grading_display_name || "UNRATED";
                                         const gradingStyle = getGradingStyle(gradingName, item.risk_grading_display_color);
-                                        const picName = item.pic?.name || "Sistem";
+                                        const picName = picIds(item.pic_id).includes("0") ? "SEMUA UNIT" : item.pic?.name || "Sistem";
                                         
                                         return (
                                             <tr key={index} onClick={() => onSelectRow(index)} className={`group transition-colors cursor-pointer ${isSelected ? "bg-sky-50/50 dark:bg-white/[0.04]" : "bg-white dark:bg-[#0f172a] hover:bg-slate-50/80 dark:hover:bg-[#161f33]"}`}>
@@ -362,7 +379,7 @@ export default function Index(props) {
                                                 <td className={`px-5 py-5 sticky left-0 bg-clip-padding border-r border-slate-200 dark:border-slate-800/80 transition-colors duration-200 shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-[4px_0_10px_-4px_rgba(0,0,0,0.5)] ${isSelected ? "bg-sky-50 dark:bg-[#1e293b]" : "bg-white dark:bg-[#0f172a] group-hover:bg-slate-50 dark:group-hover:bg-[#161f33]"} ${isModalOpen || showDrawer ? 'z-0' : 'z-10'} align-top`}>
                                                     <div className="flex flex-col gap-1.5">
                                                         <div className="flex items-center justify-between">
-                                                            <span className="font-bold tracking-tight text-slate-900 dark:text-white">{item.kode_risiko}</span>
+                                                            <span className="font-bold tracking-tight text-slate-900 dark:text-white">{item.kode_risiko}</span>{item.needs_review && <span className="ml-2 text-xs text-amber-700">Perlu review tahun ini</span>}
                                                             <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 dark:text-slate-500 px-1.5 py-0.5 rounded">#{meta.from + index}</span>
                                                         </div>
                                                         <div className="flex flex-wrap gap-2 mt-1">
@@ -472,7 +489,7 @@ export default function Index(props) {
                         <div className="flex items-center justify-between px-6 py-5 bg-white border-b border-slate-100 dark:border-slate-800 dark:bg-[#0f172a]">
                             <div>
                                 <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">Detail & Aksi Risiko</h2>
-                                <p className="mt-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">{state.kode_risiko}</p>
+                                <p className="mt-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">{state.kode_risiko}</p>{state.needs_review && <div className="my-2 rounded bg-amber-50 p-3 text-sm text-amber-900">Hasil copy belum direview. Isi penilaian inherent, lalu <button className="underline" onClick={() => router.post(route('riskRegisterCopy.review', state.id), {}, { onSuccess: () => setState({ ...state, needs_review: false }) })}>tandai sudah direview</button>.</div>}{state.copied_from_risk_register_id && <p className="text-xs">Sumber: register #{state.copied_from_risk_register_id}, tahun {state.copied_from_year}. Evaluasi tahun sumber tetap berada pada register sumber.</p>}
                                 {isRiskOccurring(state) && (
                                     <span className={`mt-2 inline-flex items-center rounded-md border px-2.5 py-1 text-[10px] font-bold ${statusBadgeClass}`}>
                                         RISIKO SEDANG TERJADI
@@ -497,6 +514,12 @@ export default function Index(props) {
                                         <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
                                         Risiko Sedang Terjadi
                                     </button>
+                                    {canSupervise && (
+                                        <button type="button" onClick={() => setIsOpenSupervisionDialog(true)} className="inline-flex items-center justify-center w-full gap-2 px-4 py-3 mt-3 text-sm font-bold transition-colors border rounded-lg text-sky-700 border-sky-200 bg-sky-50 hover:bg-sky-100 dark:bg-sky-500/10 dark:border-sky-500/30 dark:text-sky-400 dark:hover:bg-sky-500/20 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
+                                            <ShieldCheckIcon className="w-5 h-5 shrink-0" />
+                                            Supervisi
+                                        </button>
+                                    )}
                                 </div>
 
                                 <section className="p-5 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">

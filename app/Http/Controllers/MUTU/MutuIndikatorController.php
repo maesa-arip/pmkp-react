@@ -4,135 +4,107 @@ namespace App\Http\Controllers\MUTU;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MUTU\MutuIndikatorResource;
-use App\Models\IndikatorFitur3;
-use App\Models\IndikatorFitur4;
 use App\Models\MUTU\MutuIndikator;
 use App\Models\MUTU\MutuKategori;
 use App\Models\MUTU\MutuPenyebut;
-use App\Models\MUTU\MutuUnit;
-use App\Models\Pic;
-use App\Models\User;
+use App\Models\PeriodeKinerja;
+use App\Services\MutuIndicatorInput;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class MutuIndikatorController extends Controller
 {
     public $loadDefault = 10;
-    public function index(Request $request)
+
+    public function index(Request $request, MutuIndicatorInput $service)
     {
-        $user = User::where('id',auth()->user()->id)->first();
-        $pic = Pic::where('id',$user->pic_id)->first();
-        $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? [['location_id', '<>', 0]] : [['location_id', $pic->location_id]];
-        $MutuIndikator = MutuIndikator::query()->with('indikator_fitur4')->with('kategori')->with('location')->where($whosLogin);
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100', 'field' => 'nullable|in:id,num_name,created_at,approved,mutu_kategori_id,indikator_fitur4_id,standar,location_id', 'direction' => 'nullable|in:asc,desc']);
+        $year = $request->integer('tahun', now()->year);
+        $user = $request->user();
+        // The responsible person of a dictionary is the PIC of its unit.
+        $query = MutuIndikator::with(['indikator_fitur4', 'kategori', 'location.pic']);
+        // Dictionaries are permanent; a year shows those whose indicator is placed in that year.
+        $periodId = PeriodeKinerja::where('tahun', $year)->value('id');
+        if ($periodId) {
+            $query->whereIn('indikator_fitur4_id', DB::table('indikator_fitur4s')->where('periode_kinerja_id', $periodId)->whereNotNull('master_id')->select('master_id'));
+        }
+        if (! $service->canViewAll($user)) {
+            $query->where('location_id', $user->pic?->location_id ?? -1);
+        }
         if ($request->q) {
-            $MutuIndikator->where('num_name','like','%'.$request->q.'%');
+            $query->where(fn ($q) => $q->where('num_name', 'like', '%'.$request->q.'%')
+                ->orWhere('denum_name', 'like', '%'.$request->q.'%')
+                ->orWhereHas('indikator_fitur4', fn ($i) => $i->where('name', 'like', '%'.$request->q.'%')));
         }
-
-        if ($request->has(['field','direction'])) {
-            $MutuIndikator->orderBy($request->field,$request->direction);
+        if ($request->field) {
+            $query->orderBy($request->field, $request->direction ?? 'asc');
         }
-        $MutuIndikator = (
-            MutuIndikatorResource::collection($MutuIndikator->latest()->fastPaginate($request->load)->withQueryString())
-        )->additional([
-            'attributes' => [
-                'total' => 1100,
-                'per_page' =>10,
-            ],
-            'filtered' => [
-                'load' => $request->load ?? $this->loadDefault,
-                'q' => $request->q ?? '',
-                'page' => $request->page ?? 1,
-                'field' => $request->field ?? '',
-                'direction' => $request->direction ?? '',
-
-            ]
+        $items = MutuIndikatorResource::collection($query->latest()->fastPaginate($request->load)->withQueryString())->additional([
+            'attributes' => ['total' => 1100, 'per_page' => 10],
+            'filtered' => ['tahun' => $year, 'load' => $request->load ?? 10, 'q' => $request->q ?? '', 'page' => $request->page ?? 1, 'field' => $request->field ?? '', 'direction' => $request->direction ?? ''],
         ]);
-        $MutuKategori = MutuKategori::get();
-        $location_login = Pic::where('id', auth()->user()->pic_id)->pluck('location_id');
-        $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? $IndikatorFitur4 = IndikatorFitur4::orderBy('name', 'DESC')->get() : $IndikatorFitur4 = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orwhereJsonContains('location_id', 0)->orderBy('name', 'DESC')->get();
-        // $IndikatorFitur4 = IndikatorFitur4::get();
-        $IndikatorFitur3 = IndikatorFitur3::get();
-        $MutuPenyebut = MutuPenyebut::orderBy('name')->get(['name as id', 'name']);
-        return inertia('MUTU/MutuIndikator/Index',['MutuIndikator'=>$MutuIndikator,'MutuKategori'=>$MutuKategori,'MutuPenyebut'=>$MutuPenyebut,'IndikatorFitur3'=>$IndikatorFitur3,'IndikatorFitur4'=>$IndikatorFitur4]);
+        return inertia('MUTU/MutuIndikator/Index', ['MutuIndikator' => $items, 'MutuKategori' => MutuKategori::get(), 'MutuPenyebut' => MutuPenyebut::orderBy('name')->pluck('name')->map(fn ($name) => ['id' => $name, 'name' => $name]),
+            // Only the chosen year's indicators and activities are offered.
+            'IndikatorFitur4' => $service->options($user, $periodId),
+            // The responsible person shown with an activity is the PIC behind its position.
+            'IndikatorFitur3' => $periodId ? DB::table('indikator_fitur3s as f')
+                ->leftJoin('kinerja_penanggung_jawabs as j', 'j.id', '=', 'f.penanggung_jawab_id')
+                ->leftJoin('pics as p', 'p.id', '=', 'j.pic_id')
+                ->where('f.periode_kinerja_id', $periodId)->where('f.is_active', true)
+                ->orderBy('f.name')
+                ->select('f.*', DB::raw('coalesce(p.name, f.jabatan) as penanggung_jawab'))
+                ->get() : collect(),
+            'MutuPeriods' => PeriodeKinerja::orderBy('tahun')->get(['id', 'tahun', 'status']),
+            // Masters linked to the year but not yet positioned under a level-three activity.
+            'UnplacedIndicators' => $periodId ? DB::table('indikator_fitur4s')->where('periode_kinerja_id', $periodId)
+                ->whereNotNull('master_id')->whereNull('indikator_fitur3_id')->pluck('master_id') : collect()]);
     }
-    public function store(Request $request)
+
+    private function validated(Request $r, bool $editing = false): array
     {
-        $validatedMutuIndikator = $request->validate([
-            'mutu_kategori_id' => 'required',
-            'num_name' => 'required|string|max:255',
-            'denum_name' => 'required|string|max:255',
-            'standar' => 'required|string|max:255',
-            'operator' => 'required|string|max:255',
-            'penyebut' => 'required|string|max:255',
-        ]);
-        if ($request->IndikatorBaru == 1) {
-            $indikator = $request->validate([
-                'indikator' => 'required',
-                'indikator_fitur3_id' => 'required',
-            ]);
-            $validatedFitur4['name'] = $indikator['indikator'];
-            $validatedFitur4['tujuan'] = $indikator['indikator'];
-            $validatedFitur4['indikator_fitur3_id'] = $indikator['indikator_fitur3_id'];
-        }
-        if ($request->IndikatorBaru == 0) {
-            $indikator = $request->validate([
-                'indikator_fitur4_id' => 'required',
-            ]);
-            $validatedMutuIndikator['indikator_fitur4_id'] = $indikator['indikator_fitur4_id'];
-        }
-        
-        $user = User::where('id',auth()->user()->id)->first();
-        $pic = Pic::where('id',$user->pic_id)->first();
-        $validatedMutuIndikator['location_id'] =  $pic->location_id;
-
-        $validatedFitur4['location_id'] =  $pic->location_id; 
-        $validatedFitur4['sasaran_strategis_id'] =  1; 
-
-        if ($request->IndikatorBaru == 1) {
-            $indikatorFitur4 = IndikatorFitur4::create($validatedFitur4);
-            $validatedMutuIndikator['indikator_fitur4_id'] = $indikatorFitur4->id;
-        }
-        MutuIndikator::create($validatedMutuIndikator);
-        
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data Indikator berhasil disimpan',
+        return $r->validate([
+            'periode_kinerja_id' => ['required', 'integer', 'exists:periode_kinerjas,id'],
+            // Required only when a new indicator is created; ignored when picking an existing
+            // one, because positioning an existing indicator belongs to /kinerja.
+            'indikator_fitur3_id' => ['nullable', Rule::requiredIf(! $editing && (int) $r->IndikatorBaru === 1), 'integer', 'exists:indikator_fitur3s,id'],
+            'IndikatorBaru' => [$editing ? 'nullable' : 'required', Rule::in($editing ? [0] : [0, 1])],
+            'indikator' => ['nullable', 'required_if:IndikatorBaru,1', 'string', 'max:255'],
+            'indikator_fitur4_id' => ['nullable', Rule::requiredIf($editing || (int) $r->IndikatorBaru === 0), 'integer'],
+            'mutu_kategori_id' => 'required|integer|exists:mutu_kategoris,id',
+            'num_name' => 'required|string|max:255', 'denum_name' => 'required|string|max:255',
+            'standar' => 'required|numeric', 'operator' => ['required', Rule::in(['≥', '≤', '>', '<', '='])], 'penyebut' => 'required|string|max:255',
         ]);
     }
-    public function update(Request $request, MutuIndikator $MutuIndikator)
+
+    public function store(Request $r, MutuIndicatorInput $service)
     {
-        // dd($MutuIndikator);
-        $validatedMutuIndikator = $request->validate([
-            'indikator_fitur4_id' => 'required',
-            'mutu_kategori_id' => 'required',
-            'num_name' => 'required|string|max:255',
-            'denum_name' => 'required|string|max:255',
-            'standar' => 'required',
-            'operator' => 'required',
-            'penyebut' => 'required|string|max:255',
-        ]);
-        // dd($validatedMutuIndikator);
-        $MutuIndikator->update($validatedMutuIndikator);
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data Indikator berhasil diubah',
-        ]);
+        $service->save($r->user(), $this->validated($r));
+
+        return back()->with(['type' => 'success', 'message' => 'Indikator mutu disimpan pada kegiatan Kabag/Kabid yang dipilih.']);
     }
-    public function approved(Request $request, MutuIndikator $MutuIndikator)
+
+    public function update(Request $r, MutuIndikator $MutuIndikator, MutuIndicatorInput $service)
     {
-        $MutuIndikator->update(['approved'=>1]);
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data Indikator berhasil di approved',
-        ]);
+        $service->save($r->user(), $this->validated($r, true), $MutuIndikator);
+
+        return back()->with(['type' => 'success', 'message' => 'Indikator mutu diperbarui.']);
     }
-    public function destroy(MutuIndikator $MutuIndikator)
+
+    public function approved(Request $r, MutuIndikator $MutuIndikator, MutuIndicatorInput $service)
     {
-        $MutuUnit = MutuUnit::where('mutu_indikator_id',$MutuIndikator->id);
-        $MutuUnit->delete();
+        abort_unless($r->user()->can('approved indikator mutu'), 403);
+        $service->authorize($r->user(), $MutuIndikator);
+        $MutuIndikator->update(['approved' => 1]);
+
+        return back()->with(['type' => 'success', 'message' => 'Indikator disetujui.']);
+    }
+
+    public function destroy(Request $r, MutuIndikator $MutuIndikator, MutuIndicatorInput $service)
+    {
+        $service->authorize($r->user(), $MutuIndikator);
         $MutuIndikator->delete();
-        return back()->with([
-            'type' => 'success',
-            'message' => 'Data Indikator berhasil dihapus',
-        ]);
+
+        return back()->with(['type' => 'success', 'message' => 'Indikator dihapus.']);
     }
 }

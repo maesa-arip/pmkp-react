@@ -17,249 +17,182 @@ class RiskRegisterYearCopyService
 
     public function preview(array $filters): array
     {
-        $sourceYear = (int) $filters['source_year'];
-        $targetYear = (int) $filters['target_year'];
-
-        $total = 0;
-        $alreadyCopied = 0;
-        $equivalent = 0;
-        $eligible = 0;
-
-        $this->buildSourceQuery($filters)
-            ->chunkById(100, function ($risks) use ($targetYear, &$total, &$alreadyCopied, &$equivalent, &$eligible) {
-                foreach ($risks as $risk) {
-                    $total++;
-
-                    if ($this->alreadyCopied($risk, $targetYear)) {
-                        $alreadyCopied++;
-                        continue;
-                    }
-
-                    if ($this->hasEquivalentTargetRisk($risk, $targetYear)) {
-                        $equivalent++;
-                        continue;
-                    }
-
-                    $eligible++;
-                }
-            });
-
-        return [
-            'source_year' => $sourceYear,
-            'target_year' => $targetYear,
-            'source_total' => $total,
-            'already_copied' => $alreadyCopied,
-            'equivalent_target' => $equivalent,
-            'eligible' => $eligible,
-        ];
+        return $this->process($filters, false, false);
     }
 
     public function previewUnit(array $filters): array
     {
-        $targetYear = (int) $filters['target_year'];
-        $targetPicId = (int) $filters['target_pic_id'];
-
-        if (empty($filters['source_pic_id']) || empty($filters['target_pic_id']) || empty($filters['target_user_id'])) {
-            return [
-                'source_year' => (int) $filters['source_year'],
-                'target_year' => $targetYear,
-                'source_total' => 0,
-                'already_copied' => 0,
-                'equivalent_target' => 0,
-                'eligible' => 0,
-            ];
-        }
-
-        $total = 0;
-        $alreadyCopied = 0;
-        $equivalent = 0;
-        $eligible = 0;
-
-        $this->buildSourceQuery($filters)
-            ->chunkById(100, function ($risks) use ($targetYear, $targetPicId, &$total, &$alreadyCopied, &$equivalent, &$eligible) {
-                foreach ($risks as $risk) {
-                    $total++;
-
-                    if ($this->alreadyCopiedToUnit($risk, $targetYear, $targetPicId)) {
-                        $alreadyCopied++;
-                        continue;
-                    }
-
-                    if ($this->hasEquivalentTargetUnitRisk($risk, $targetYear, $targetPicId)) {
-                        $equivalent++;
-                        continue;
-                    }
-
-                    $eligible++;
-                }
-            });
-
-        return [
-            'source_year' => (int) $filters['source_year'],
-            'target_year' => $targetYear,
-            'source_total' => $total,
-            'already_copied' => $alreadyCopied,
-            'equivalent_target' => $equivalent,
-            'eligible' => $eligible,
-        ];
+        return $this->process($filters, true, false);
     }
 
     public function copy(array|int $filters, ?int $targetYear = null, ?int $typeId = null): array
     {
         if (is_int($filters)) {
-            $filters = [
-                'source_year' => $filters,
-                'target_year' => $targetYear,
-                'type_id' => $typeId,
-            ];
+            $filters = ['source_year' => $filters, 'target_year' => $targetYear, 'tipe_id' => $typeId];
         }
 
-        $sourceYear = (int) $filters['source_year'];
-        $targetYear = (int) $filters['target_year'];
-
-        if ($sourceYear >= $targetYear) {
-            return [
-                'copied' => 0,
-                'skipped' => 0,
-                'message' => 'Tahun tujuan harus lebih besar dari tahun sumber.',
-                'type' => 'error',
-            ];
-        }
-
-        return DB::transaction(function () use ($filters, $sourceYear, $targetYear) {
-            $copied = 0;
-            $skipped = 0;
-
-            $this->buildSourceQuery($filters)
-                ->lockForUpdate()
-                ->chunkById(100, function ($risks) use ($sourceYear, $targetYear, &$copied, &$skipped) {
-                foreach ($risks as $risk) {
-                    if ($this->alreadyCopied($risk, $targetYear) || $this->hasEquivalentTargetRisk($risk, $targetYear)) {
-                        $skipped++;
-                        continue;
-                    }
-
-                    $newRisk = $risk->replicate([
-                        'kode_risiko',
-                        'created_at',
-                        'updated_at',
-                        'deleted_at',
-                    ]);
-
-                    $newRegisterDate = Carbon::parse($risk->tgl_register)->year($targetYear);
-                    $newRisk->tgl_register = $newRegisterDate;
-                    $newRisk->tgl_selesai = $newRegisterDate->copy()->addDays((int) $risk->target_waktu);
-                    $newRisk->currently_id = 1;
-                    $newRisk->is_risiko_lama = 1;
-                    $newRisk->copied_from_risk_register_id = $risk->id;
-                    $newRisk->copied_from_year = $sourceYear;
-                    $newRisk->copied_to_year = $targetYear;
-                    $newRisk->copied_by_user_id = auth()->id();
-                    $newRisk->copied_at = now();
-                    $newRisk->copy_type = 'year';
-                    $newRisk->save();
-
-                    $prefix = ((int) $newRisk->risk_category_id === 5) ? 'RSO' : 'ROO';
-                    $yearCode = Carbon::parse($newRisk->tgl_register)->format('y');
-                    $newRisk->kode_risiko = "{$prefix}.{$yearCode}.02.43.{$newRisk->id}";
-                    $newRisk->save();
-
-                    $copied++;
-                }
-            });
-
-            return [
-                'copied' => $copied,
-                'skipped' => $skipped,
-                'source_year' => $sourceYear,
-                'target_year' => $targetYear,
-                'message' => "Salin risiko {$sourceYear} ke {$targetYear} selesai. {$copied} disalin, {$skipped} dilewati.",
-                'type' => 'success',
-            ];
-        });
+        return $this->process($filters, false, true);
     }
 
     public function copyUnit(array $filters): array
     {
+        return $this->process($filters, true, true);
+    }
+
+    private function process(array $filters, bool $unit, bool $execute): array
+    {
         $sourceYear = (int) $filters['source_year'];
         $targetYear = (int) $filters['target_year'];
-        $sourcePicId = (int) $filters['source_pic_id'];
-        $targetPicId = (int) $filters['target_pic_id'];
-        $targetUserId = (int) $filters['target_user_id'];
-
-        if (empty($filters['source_pic_id']) || empty($filters['target_pic_id']) || empty($filters['target_user_id'])) {
-            return [
-                'copied' => 0,
-                'skipped' => 0,
-                'message' => 'Unit sumber, unit tujuan, dan user tujuan wajib dipilih.',
-                'type' => 'error',
-            ];
+        $codeMode = $filters['risk_code_mode'] ?? ($unit ? 'new' : 'preserve');
+        $preserveCode = $codeMode === 'preserve';
+        $result = ['source_year' => $sourceYear, 'target_year' => $targetYear, 'source_total' => 0,
+            'already_copied' => 0, 'equivalent_target' => 0, 'eligible' => 0, 'unmapped' => 0,
+            'unit_mismatch' => 0, 'code_conflict' => 0, 'missing_code' => 0, 'blocked' => [], 'copied' => 0, 'skipped' => 0, 'type' => 'success'];
+        $period = \App\Models\PeriodeKinerja::where('tahun', $targetYear)->first();
+        $error = ! $period || $period->status !== 'aktif' ? 'Siapkan dan aktifkan indikator tahun tujuan terlebih dahulu.' : null;
+        if (! $unit && $targetYear <= $sourceYear) {
+            $error = 'Tahun tujuan harus lebih besar dari tahun sumber.';
         }
-
-        if ($sourcePicId === $targetPicId) {
-            return [
-                'copied' => 0,
-                'skipped' => 0,
-                'message' => 'Unit sumber dan unit tujuan tidak boleh sama.',
-                'type' => 'error',
-            ];
+        if ($unit) {
+            if (empty($filters['source_pic_id']) || empty($filters['target_pic_id']) || empty($filters['target_user_id'])) {
+                $error = 'Pilih unit sumber, unit tujuan, dan user tujuan.';
+            } elseif ((int) $filters['source_pic_id'] === (int) $filters['target_pic_id']) {
+                $error = 'Unit sumber dan tujuan harus berbeda.';
+            } elseif ((int) \App\Models\User::whereKey($filters['target_user_id'])->value('pic_id') !== (int) $filters['target_pic_id']) {
+                $error = 'User tujuan harus sesuai dengan unit tujuan.';
+            }
         }
+        if (! in_array($codeMode, ['preserve', 'new'], true)) {
+            $error = 'Pilihan kode risiko tidak valid.';
+        } elseif ($unit && $preserveCode) {
+            $error = 'Copy antar unit harus menggunakan kode risiko baru.';
+        }
+        if ($error) {
+            return array_merge($result, ['message' => $error, 'period_error' => $error, 'type' => 'error']);
+        }
+        $run = function () use ($filters, $unit, $execute, $period, $sourceYear, $targetYear, $codeMode, $preserveCode, &$result) {
+            if ($execute) {
+                \App\Models\PeriodeKinerja::whereKey($period->id)->lockForUpdate()->firstOrFail()->assertWritable();
+            }
+            $service = app(AnnualIndicatorService::class);
+            $query = $this->buildSourceQuery($filters);
+            if ($execute) {
+                $query->lockForUpdate();
+            }
+            $seenCodes = [];
+            $query->chunkById(100, function ($risks) use ($filters, $unit, $execute, $period, $sourceYear, $targetYear, $service, $codeMode, $preserveCode, &$seenCodes, &$result) {
+                foreach ($risks as $risk) {
+                    $result['source_total']++;
+                    $already = RiskRegister::withTrashed()->where('copied_from_risk_register_id', $risk->id)->where('copied_to_year', $targetYear);
+                    if ($unit) {
+                        $already->where('copy_type', 'unit')->where('copied_to_pic_id', $filters['target_pic_id']);
+                    } else {
+                        $already->where(function ($q) {
+                        $q->where('copy_type', 'year')->orWhereNull('copy_type');
+                        });
+                    }
+                    if ($already->exists()) {
+                        $result['already_copied']++;
 
-        return DB::transaction(function () use ($filters, $sourceYear, $targetYear, $targetPicId, $targetUserId) {
-            $copied = 0;
-            $skipped = 0;
-
-            $this->buildSourceQuery($filters)
-                ->lockForUpdate()
-                ->chunkById(100, function ($risks) use ($sourceYear, $targetYear, $targetPicId, $targetUserId, &$copied, &$skipped) {
-                    foreach ($risks as $risk) {
-                        if ($this->alreadyCopiedToUnit($risk, $targetYear, $targetPicId) || $this->hasEquivalentTargetUnitRisk($risk, $targetYear, $targetPicId)) {
-                            $skipped++;
+                        continue;
+                    }
+                    if ($preserveCode) {
+                        $reason = ! trim((string) $risk->kode_risiko) ? 'missing_code' : null;
+                        if (! $reason && (isset($seenCodes[$risk->kode_risiko]) || RiskRegister::withTrashed()
+                            ->whereYear('tgl_register', $targetYear)->where('kode_risiko', $risk->kode_risiko)->exists())) {
+                            $reason = 'code_conflict';
+                        }
+                        if ($reason) {
+                            $result[$reason]++;
+                            if (count($result['blocked']) < 100) {
+                                $result['blocked'][] = ['id' => $risk->id, 'kode' => $risk->kode_risiko,
+                                    'indicator_id' => $risk->indikator_fitur4_id,
+                                    'reason' => $reason === 'missing_code' ? 'Kode sumber kosong; pilih kode baru' : 'Kode risiko sudah ada di tahun tujuan atau dalam pilihan sumber'];
+                            }
                             continue;
                         }
-
-                        $newRisk = $risk->replicate([
-                            'kode_risiko',
-                            'created_at',
-                            'updated_at',
-                            'deleted_at',
-                        ]);
-
-                        $newRegisterDate = Carbon::parse($risk->tgl_register)->year($targetYear);
-                        $newRisk->tgl_register = $newRegisterDate;
-                        $newRisk->tgl_selesai = $newRegisterDate->copy()->addDays((int) $risk->target_waktu);
-                        $newRisk->currently_id = 1;
-                        $newRisk->is_risiko_lama = 1;
-                        $newRisk->pic_id = json_encode([$targetPicId], JSON_NUMERIC_CHECK);
-                        $newRisk->user_id = $targetUserId;
-                        $newRisk->copied_from_risk_register_id = $risk->id;
-                        $newRisk->copied_from_year = $sourceYear;
-                        $newRisk->copied_to_year = $targetYear;
-                        $newRisk->copied_by_user_id = auth()->id();
-                        $newRisk->copied_at = now();
-                        $newRisk->copy_type = 'unit';
-                        $newRisk->copied_to_pic_id = $targetPicId;
-                        $newRisk->copied_to_user_id = $targetUserId;
-                        $newRisk->save();
-
-                        $prefix = ((int) $newRisk->risk_category_id === 5) ? 'RSO' : 'ROO';
-                        $yearCode = Carbon::parse($newRisk->tgl_register)->format('y');
-                        $newRisk->kode_risiko = "{$prefix}.{$yearCode}.02.43.{$newRisk->id}";
-                        $newRisk->save();
-
-                        $copied++;
                     }
-                });
+                    $indicator = $service->resolve($risk->indikator_fitur4_id, $period->id);
+                    $pics = $unit ? [(int) $filters['target_pic_id']] : AnnualIndicatorService::ids($risk->pic_id);
+                    $reason = ! $indicator ? 'unmapped' : (! $service->acceptsPics($indicator, $pics) ? 'unit_mismatch' : null);
+                    if ($reason) {
+                        $result[$reason]++;
+                        if (count($result['blocked']) < 100) {
+                            $result['blocked'][] = ['id' => $risk->id, 'kode' => $risk->kode_risiko,
+                                'indicator_id' => $risk->indikator_fitur4_id, 'reason' => $reason === 'unmapped' ? 'Belum ada indikator aktif yang dipetakan' : 'Indikator tidak berlaku untuk unit tujuan'];
+                        }
 
-            return [
-                'copied' => $copied,
-                'skipped' => $skipped,
-                'source_year' => $sourceYear,
-                'target_year' => $targetYear,
-                'message' => "Copy risiko antar unit selesai. {$copied} disalin, {$skipped} dilewati.",
-                'type' => 'success',
-            ];
-        });
+                        continue;
+                    }
+                    // Text similarity is advisory; it is not a unique risk identity.
+                    // Registers keep the permanent master; the placement only proves it is active that year.
+                    $masterId = (int) $indicator->master_id;
+                    if (RiskRegister::whereYear('tgl_register', $targetYear)->where('indikator_fitur4_id', $masterId)
+                        ->where('user_id', $unit ? $filters['target_user_id'] : $risk->user_id)
+                        ->where('tipe_id', $risk->tipe_id)->where('pernyataan_risiko', $risk->pernyataan_risiko)->exists()) {
+                        $result['equivalent_target']++;
+                    }
+                    $result['eligible']++;
+                    if ($preserveCode) {
+                        $seenCodes[$risk->kode_risiko] = true;
+                    }
+                    if (! $execute) {
+                        continue;
+                    }
+                    $copy = $risk->replicate(['kode_risiko', 'created_at', 'updated_at', 'deleted_at', 'copy_key', 'indikator_snapshot']);
+                    $date = Carbon::parse($risk->tgl_register)->addYearsNoOverflow($targetYear - $sourceYear);
+                    $copy->tgl_register = $date;
+                    $copy->tgl_selesai = $date->copy()->addDays((int) $risk->target_waktu);
+                    $copy->indikator_fitur4_id = $masterId;
+                    $copy->periode_kinerja_id = $period->id;
+                    $copy->currently_id = 2;
+                    $copy->is_risiko_lama = $preserveCode ? 1 : 0;
+                    $copy->needs_review = true;
+                    $copy->copied_from_risk_register_id = $risk->id;
+                    $copy->copied_from_year = $sourceYear;
+                    $copy->copied_to_year = $targetYear;
+                    $copy->copied_by_user_id = auth()->id();
+                    $copy->copied_at = now();
+                    $copy->copy_type = $unit ? 'unit' : 'year';
+                    $copy->copied_to_pic_id = $unit ? (int) $filters['target_pic_id'] : null;
+                    $copy->copied_to_user_id = $unit ? (int) $filters['target_user_id'] : null;
+                    $copy->copy_key = hash('sha256', implode(':', [$risk->id, $period->id, $copy->copy_type, $unit ? $filters['target_pic_id'] : 'source']));
+                    if ($unit) {
+                        $copy->pic_id = json_encode($pics);
+                        $copy->user_id = $filters['target_user_id'];
+                    }
+                    foreach (array_keys($copy->getAttributes()) as $field) {
+                        if (preg_match('/^(osd[1-4]_|concatdp[1-4]$|grading[12]$)/', $field)
+                            || in_array($field, ['efektif_id', 'perlu_penanganan_id', 'num', 'denum', 'waktudenumnum', 'output', 'dokumen_pendukung', 'kendala', 'waktu_implementasi_id', 'realisasi_id', 'belum_tertangani', 'usulan_perbaikan', 'kronologi'])) {
+                            $copy->$field = null;
+                        }
+                    }
+                    if ($preserveCode) {
+                        $copy->kode_risiko = $risk->kode_risiko;
+                    } else {
+                        $copy->save();
+                        $prefix = (int) $copy->risk_category_id === 5 ? 'RSO' : 'ROO';
+                        $copy->kode_risiko = $prefix.'.'.$date->format('y').'.02.43.'.$copy->id;
+                    }
+                    $copy->save();
+                    \App\Models\RiskRegisterHistory::recordForRisk($copy, \App\Models\RiskRegisterHistory::EVENT_COPIED_FROM_PREVIOUS_YEAR, null,
+                        ['source_indicator_id' => $risk->indikator_fitur4_id, 'target_indicator_id' => $masterId, 'needs_review' => true,
+                            'risk_code_mode' => $codeMode, 'source_kode_risiko' => $risk->kode_risiko]);
+                    $result['copied']++;
+                }
+            });
+        };
+        if ($execute) {
+            DB::transaction($run, 3);
+        } else {
+            $run();
+        }
+        $result['skipped'] = $result['source_total'] - $result['copied'];
+        $result['message'] = "{$result['copied']} risiko disalin; {$result['already_copied']} sudah disalin; ".($result['unmapped'] + $result['unit_mismatch']).' perlu pemetaan indikator/unit.';
+
+        $result['message'] .= " {$result['code_conflict']} kode sudah ada; {$result['missing_code']} kode sumber kosong.";
+
+        return $result;
     }
 
     private function buildSourceQuery(array $filters): Builder
@@ -277,17 +210,17 @@ class RiskRegisterYearCopyService
             'risk_variety_id',
             'identification_source_id',
         ] as $field) {
-            if (!empty($filters[$field])) {
+            if (! empty($filters[$field])) {
                 $query->where($field, (int) $filters[$field]);
             }
         }
 
-        if (!empty($filters['pic_id'])) {
-            $query->whereJsonContains('pic_id', (int) $filters['pic_id']);
+        if (! empty($filters['pic_id'])) {
+            $query->whereIn('id', $this->idsWithPic((int) $filters['source_year'], (int) $filters['pic_id']));
         }
 
-        if (!empty($filters['source_pic_id'])) {
-            $query->whereJsonContains('pic_id', (int) $filters['source_pic_id']);
+        if (! empty($filters['source_pic_id'])) {
+            $query->whereIn('id', $this->idsWithPic((int) $filters['source_year'], (int) $filters['source_pic_id']));
         }
 
         if (($filters['priority_scope'] ?? 'all') !== 'all') {
@@ -298,11 +231,18 @@ class RiskRegisterYearCopyService
             }
         }
 
-        if (!auth()->user()->can('lihat data semua risk register')) {
+        if (! auth()->user()->can('lihat data semua risk register')) {
             $query->where('user_id', auth()->id());
         }
 
         return $query;
+    }
+
+    /** Legacy pic_id values are scalars or repeatedly encoded strings, which JSON contains misses (finding #37). */
+    private function idsWithPic(int $year, int $picId): array
+    {
+        return RiskRegister::query()->whereYear('tgl_register', $year)->whereNull('deleted_at')->pluck('pic_id', 'id')
+            ->filter(fn ($pics) => in_array($picId, AnnualIndicatorService::ids($pics), true))->keys()->all();
     }
 
     private function priorityCodes(string $priorityScope, mixed $typeId = null): array
@@ -316,49 +256,5 @@ class RiskRegisterYearCopyService
         }
 
         return self::PRIORITY_CODES['clinical'];
-    }
-
-    private function alreadyCopied(RiskRegister $risk, int $targetYear): bool
-    {
-        return RiskRegister::query()
-            ->where('copied_from_risk_register_id', $risk->id)
-            ->where('copied_to_year', $targetYear)
-            ->exists();
-    }
-
-    private function alreadyCopiedToUnit(RiskRegister $risk, int $targetYear, int $targetPicId): bool
-    {
-        return RiskRegister::query()
-            ->where('copied_from_risk_register_id', $risk->id)
-            ->where('copied_to_year', $targetYear)
-            ->where('copied_to_pic_id', $targetPicId)
-            ->where('copy_type', 'unit')
-            ->exists();
-    }
-
-    private function hasEquivalentTargetRisk(RiskRegister $risk, int $targetYear): bool
-    {
-        return RiskRegister::query()
-            ->where('tipe_id', $risk->tipe_id)
-            ->whereYear('tgl_register', $targetYear)
-            ->where('user_id', $risk->user_id)
-            ->where('risk_category_id', $risk->risk_category_id)
-            ->where('pernyataan_risiko', $risk->pernyataan_risiko)
-            ->where('sebab', $risk->sebab)
-            ->whereNull('deleted_at')
-            ->exists();
-    }
-
-    private function hasEquivalentTargetUnitRisk(RiskRegister $risk, int $targetYear, int $targetPicId): bool
-    {
-        return RiskRegister::query()
-            ->where('tipe_id', $risk->tipe_id)
-            ->whereYear('tgl_register', $targetYear)
-            ->whereJsonContains('pic_id', $targetPicId)
-            ->where('risk_category_id', $risk->risk_category_id)
-            ->where('pernyataan_risiko', $risk->pernyataan_risiko)
-            ->where('sebab', $risk->sebab)
-            ->whereNull('deleted_at')
-            ->exists();
     }
 }

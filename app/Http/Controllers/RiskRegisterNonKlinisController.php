@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\RiskRegisterResource;
 use App\Models\ControlValue;
+use App\Models\CelahPengendalian;
 use App\Models\Efektif;
 use App\Models\FgdActual;
 use App\Models\FgdInherent;
@@ -33,6 +34,7 @@ use App\Notifications\RiskRegisterEditNotification;
 use App\Notifications\RiskRegisterNewNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 
@@ -42,6 +44,10 @@ class RiskRegisterNonKlinisController extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
+        $year = $request->integer('tahun', now()->year);
+        $whosLogin[] = ['tgl_register', '>=', "$year-01-01 00:00:00"];
+        $whosLogin[] = ['tgl_register', '<', ($year + 1).'-01-01 00:00:00'];
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 2)
             ->with('risk_category')
             ->with('identification_source')
@@ -59,6 +65,7 @@ class RiskRegisterNonKlinisController extends Controller
             ->with('fgdtreated')
             ->with('fgdactual')
             ->with(['risk_register_histories', 'copiedFromRiskRegister.risk_register_histories'])
+            ->with(['verificationpriorityadmin', 'verificationprioritymanagement'])
             ->where($whosLogin);
         $riskRegisterCount = $riskRegisterKlinis->count();
         $riskRegisterPengendalianCount = RiskRegister::query()->where($whosLogin)->where('tipe_id', 2)->where(fn ($q) => $q->whereNull('efektif_id')->orWhere('efektif_id', 0))->count();
@@ -77,6 +84,7 @@ class RiskRegisterNonKlinisController extends Controller
                 'per_page' => 10,
             ],
             'filtered' => [
+                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,
@@ -101,8 +109,7 @@ class RiskRegisterNonKlinisController extends Controller
         $impactValues = ImpactValue::where('type',2)->orderBy('value','ASC')->get();
         $probabilityValues = ProbabilityValue::where('type',2)->orderBy('value','ASC')->get();
         $controlValues = ControlValue::where('type',2)->orderBy('value','ASC')->get();
-        $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
-        $whosLogin = auth()->user()->can('lihat data semua risk register') ? $indikatorFitur4s = IndikatorFitur4::orderBy('name','DESC')->get() : $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orwhereJsonContains('location_id', 0)->orderBy('name','DESC')->get();
+        $indikatorFitur4s = app(\App\Services\RiskIndicatorAccess::class)->optionsForUser($request->user());
         return Inertia::render('RiskRegister/NonKlinis/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,
@@ -115,6 +122,7 @@ class RiskRegisterNonKlinisController extends Controller
             'riskVarieties' => $riskVarieties,
             'riskTypes' => $riskTypes,
             'jenisSebabs' => $jenisSebabs,
+            'celahPengendalians' => CelahPengendalian::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'pics' => $pics,
             'impactValues' => $impactValues,
             'probabilityValues' => $probabilityValues,
@@ -138,10 +146,19 @@ class RiskRegisterNonKlinisController extends Controller
             'risk_category_id' => 'required',
             
             'kronologi' => 'required_if:risk_category_id,6',
-            'tgl_register' => 'required',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100',
+            'tgl_register' => [
+                'bail', 'required', 'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('tahun') && substr($value, 0, 4) !== (string) $request->integer('tahun')) {
+                        $fail('Tanggal register harus sesuai tahun data yang dipilih.');
+                    }
+                },
+            ],
             'sebab' => 'required',
             'currently_id' => 'required',
             'pic_id' => 'required',
+            'location_id' => 'nullable|integer|exists:locations,id',
             'identification_source_id' => 'required',
             'resiko' => 'required',
             'dampak' => 'required',
@@ -158,7 +175,7 @@ class RiskRegisterNonKlinisController extends Controller
             'efektif_id' => 'required',
             'pengendalian_harus_ada' => 'required',
             'c_uc' => 'nullable',
-            'celah_pengendalian' => 'nullable',
+            'celah_pengendalian' => ['nullable', 'string', 'max:255', Rule::in(CelahPengendalian::allowedValues())],
             'media_pengkomunikasian' => 'nullable',
             'penyedia_informasi' => 'nullable',
             'penerima_informasi' => 'nullable',
@@ -172,7 +189,8 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
-        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
+        $picIds = \App\Services\AnnualIndicatorService::ids($request->pic_id);
+        $encodedPic = json_encode(in_array(0, $picIds, true) ? [0] : $picIds);
         // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
         $request->merge([
@@ -219,10 +237,20 @@ class RiskRegisterNonKlinisController extends Controller
         $this->validate($request, [
             'indikator_fitur4_id' => 'required',
             'risk_category_id' => 'required',
-            'tgl_register' => 'required',
+            'kronologi' => 'required_if:risk_category_id,6',
+            'tahun' => 'sometimes|required|integer|min:2000|max:2100',
+            'tgl_register' => [
+                'bail', 'required', 'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->filled('tahun') && substr($value, 0, 4) !== (string) $request->integer('tahun')) {
+                        $fail('Tanggal register harus sesuai tahun data yang dipilih.');
+                    }
+                },
+            ],
             'sebab' => 'required',
             'currently_id' => 'required',
             'pic_id' => 'required',
+            'location_id' => 'nullable|integer|exists:locations,id',
             'identification_source_id' => 'required',
             'resiko' => 'required',
             'dampak' => 'required',
@@ -239,7 +267,7 @@ class RiskRegisterNonKlinisController extends Controller
             'efektif_id' => 'required',
             'pengendalian_harus_ada' => 'required',
             'c_uc' => 'nullable',
-            'celah_pengendalian' => 'nullable',
+            'celah_pengendalian' => ['nullable', 'string', 'max:255', Rule::in(CelahPengendalian::allowedValues(RiskRegister::findOrFail($id)->celah_pengendalian))],
             'media_pengkomunikasian' => 'nullable',
             'penyedia_informasi' => 'nullable',
             'penerima_informasi' => 'nullable',
@@ -253,7 +281,8 @@ class RiskRegisterNonKlinisController extends Controller
         ]);
         $date = Carbon::parse($request->tgl_register);
         $tgl_selesai = $date->addDays($request->target_waktu);
-        $encodedPic = json_encode($request->pic_id,JSON_NUMERIC_CHECK);
+        $picIds = \App\Services\AnnualIndicatorService::ids($request->pic_id);
+        $encodedPic = json_encode(in_array(0, $picIds, true) ? [0] : $picIds);
         // $osd1_dampak = ImpactValue::where('id',$request->osd1_dampak)->pluck('value');
         // $osd1_probabilitas = ProbabilityValue::where('id',$request->osd1_probabilitas)->pluck('value');
         $request->merge([

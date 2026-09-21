@@ -73,6 +73,17 @@ use Inertia\Inertia;
 
 
 Route::middleware('auth')->group(function () {
+    Route::post('kinerja/{period}/direktur', [\App\Http\Controllers\DirectorCascadingController::class, 'save'])->name('kinerja.director.store');
+    Route::put('kinerja/{period}/direktur/{concept}', [\App\Http\Controllers\DirectorCascadingController::class, 'save'])->name('kinerja.director.update');
+    Route::get('kinerja', [\App\Http\Controllers\PeriodeKinerjaController::class, 'index'])->name('kinerja.index');
+    Route::post('kinerja', [\App\Http\Controllers\PeriodeKinerjaController::class, 'store'])->name('kinerja.store');
+    Route::put('kinerja/{period}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'update'])->name('kinerja.update');
+    Route::put('kinerja/{period}/concepts/{concept}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveConcept'])->name('kinerja.concepts.update');
+    Route::post('kinerja/{period}/nodes/{level}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveNode'])->name('kinerja.nodes');
+    Route::post('kinerja-mapping', [\App\Http\Controllers\PeriodeKinerjaController::class, 'mapping'])->name('kinerja.mapping');
+    Route::post('kinerja-penanggung-jawab', [\App\Http\Controllers\PeriodeKinerjaController::class, 'saveResponsible'])->name('kinerja.responsible');
+    Route::get('kinerja/{period}/export', [\App\Http\Controllers\PeriodeKinerjaController::class, 'export'])->withoutMiddleware(\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class)->name('kinerja.export');
+    Route::get('kinerja-export/{export}', [\App\Http\Controllers\PeriodeKinerjaController::class, 'archivedExport'])->withoutMiddleware(\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class)->name('kinerja.exportArchive');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -101,6 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::apiResource('probabilityValues', ProbabilityValueController::class);
     Route::apiResource('controlValues', ControlValueController::class);
     Route::apiResource('jenisSebabs', JenisSebabController::class);
+    Route::apiResource('celahPengendalians', \App\Http\Controllers\CelahPengendalianController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['celahPengendalians' => 'celahPengendalian']);
 
     Route::apiResource('IkpJenisInsidens', IKPJenisInsidenController::class);
     Route::apiResource('IkpTipeInsiden', IKPTipeInsidenController::class);
@@ -116,6 +128,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/hasilinvestigasi/{IkpPasien}',[IKPPasienController::class,'hasilinvestigasi'])->name('ikppasien.hasilinvestigasi');
     Route::apiResource('MutuKategori', MutuKategoriController::class);
     Route::apiResource('MutuPenyebut', MutuPenyebutController::class);
+    Route::get('IndikatorKinerja', [\App\Http\Controllers\IndikatorKinerjaController::class, 'index'])->name('kinerja.performance.index');
+    Route::post('IndikatorKinerja', [\App\Http\Controllers\IndikatorKinerjaController::class, 'save'])->name('kinerja.performance.store');
+    Route::delete('IndikatorKinerja/{indicator}', [\App\Http\Controllers\IndikatorKinerjaController::class, 'destroy'])->name('kinerja.performance.destroy');
+    Route::put('IndikatorKinerja/{indicator}', [\App\Http\Controllers\IndikatorKinerjaController::class, 'save'])->name('kinerja.performance.update');
     Route::apiResource('MutuIndikator', MutuIndikatorController::class);
     Route::put('/MutuIndikatorApproved/{MutuIndikator}',[MutuIndikatorController::class,'approved'])->name('MutuIndikator.approved');
     Route::apiResource('MutuUnit', MutuUnitController::class);
@@ -127,6 +143,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/riskRegisterCopy', [RiskRegisterCopyController::class, 'index'])->name('riskRegisterCopy.index');
     Route::post('/riskRegisterCopy', [RiskRegisterCopyController::class, 'store'])->name('riskRegisterCopy.store');
+    Route::post('/riskRegisterCopy/{risk}/review', [RiskRegisterCopyController::class, 'review'])->name('riskRegisterCopy.review');
     Route::apiResource('riskRegisterKlinis', RiskRegisterKlinisController::class);
     Route::get('/rca/sedangterjadi', [RCAController::class,'sedangterjadi'])->name('rca.sedangterjadi');
     Route::get('/rca/risikoprioritas', [RCAController::class,'risikoprioritas'])->name('rca.risikoprioritas');
@@ -175,6 +192,9 @@ Route::middleware('auth')->group(function () {
     // Route::post('/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisterklinislarsdhp', [ExportController::class, 'riskregisterklinislarsdhp']);
     Route::match(['GET', 'POST'], '/riskregisternonklinislarsdhp', [ExportController::class, 'riskregisternonklinislarsdhp']);
+    Route::match(['GET', 'POST'], '/riskregisterklinismrterbaru', [ExportController::class, 'riskregisterklinismrterbaru']);
+    Route::match(['GET', 'POST'], '/riskregisternonklinismrterbaru', [ExportController::class, 'riskregisternonklinismrterbaru']);
+    Route::match(['GET', 'POST'], '/riskregisterketerjadian', [ExportController::class, 'riskregisterketerjadian']);
     Route::match(['GET', 'POST'], '/riskregisterbpkp', [ExportController::class, 'riskregisterbpkp']);
     Route::match(['GET', 'POST'], '/riskregistersedangterjadi', [ExportController::class, 'riskregistersedangterjadi']);
     Route::match(['GET', 'POST'], '/ikpdatainsiden', [ExportController::class, 'ikpdatainsiden']);

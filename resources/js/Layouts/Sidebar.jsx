@@ -27,6 +27,9 @@ import ExportModal from "@/Components/Modal/ExportModal";
 // Export Modals
 import LarsDHPKlinis from "@/Pages/Export/LarsDHPKlinis";
 import LarsDHPNonKlinis from "@/Pages/Export/LarsDHPNonKlinis";
+import MRTerbaruKlinis from "@/Pages/Export/MRTerbaruKlinis";
+import MRTerbaruNonKlinis from "@/Pages/Export/MRTerbaruNonKlinis";
+import KeterjadianRisiko from "@/Pages/Export/KeterjadianRisiko";
 import BPKP from "@/Pages/Export/BPKP";
 import SedangTerjadi from "@/Pages/Export/SedangTerjadi";
 import IKPDataInsiden from "@/Pages/Export/IKPDataInsiden";
@@ -81,6 +84,18 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         isOpenExportDialogLarsDHPNonKlinis,
         setIsOpenExportDialogLarsDHPNonKlinis,
     ] = useState(false);
+    const [
+        isOpenExportDialogMRTerbaruKlinis,
+        setIsOpenExportDialogMRTerbaruKlinis,
+    ] = useState(false);
+    const [
+        isOpenExportDialogMRTerbaruNonKlinis,
+        setIsOpenExportDialogMRTerbaruNonKlinis,
+    ] = useState(false);
+    const [
+        isOpenExportDialogKeterjadianRisiko,
+        setIsOpenExportDialogKeterjadianRisiko,
+    ] = useState(false);
 
     const openExportDialogBPKP = () => setIsOpenExportDialogBPKP(true);
     const openExportDialogSedangTerjadi = () =>
@@ -93,6 +108,12 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         setIsOpenExportDialogLarsDHPKlinis(true);
     const openExportDialogLarsDHPNonKlinis = () =>
         setIsOpenExportDialogLarsDHPNonKlinis(true);
+    const openExportDialogMRTerbaruKlinis = () =>
+        setIsOpenExportDialogMRTerbaruKlinis(true);
+    const openExportDialogMRTerbaruNonKlinis = () =>
+        setIsOpenExportDialogMRTerbaruNonKlinis(true);
+    const openExportDialogKeterjadianRisiko = () =>
+        setIsOpenExportDialogKeterjadianRisiko(true);
 
     const routeName = route().current() || "";
     const isActive = (path) => routeName === path;
@@ -106,6 +127,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         "riskTypes",
         "pics",
         "jenisSebabs",
+        "celahPengendalians",
         "riskGradings",
         "impactValues",
         "probabilityValues",
@@ -123,6 +145,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         "MutuKategori",
         "MutuPenyebut",
         "riskRegisterCopy",
+        "kinerja",
     ].some((prefix) => routeName.startsWith(prefix));
 
     const [openMenu, setOpenMenu] = useState(() => {
@@ -242,6 +265,9 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                         Dashboard
                     </div>
                 </Link>
+                <Link href={route("kinerja.performance.index")} onClick={closeSidebar} className={getNavClasses(isActive("kinerja.performance.index"))}>
+                    <div className="flex items-center"><DocumentChartBarIcon className={getIconClasses(isActive("kinerja.performance.index"))} />Kinerja Kegiatan</div>
+                </Link>
                 <Link
                     href={route("notifications")}
                     onClick={closeSidebar}
@@ -328,44 +354,48 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                             </Link>
                         </AccordionItem>
                     )}
-                    <AccordionItem
-                        id="verifikasi-prioritas"
-                        active={
-                            isActive(
-                                "riskregister.verificationmanagementpriority",
-                            ) ||
-                            isActive("riskregister.verificationadminpriority")
-                        }
-                        title="Verifikasi Prioritas"
-                        icon={ShieldExclamationIcon}
-                    >
-                        <Link
-                            href={route(
-                                "riskregister.verificationmanagementpriority",
-                            )}
-                            onClick={closeSidebar}
-                            className={getSubNavClasses(
+                    {permission_name.indexOf("lihat data verifikasi") > -1 && (
+                        <AccordionItem
+                            id="verifikasi-prioritas"
+                            active={
                                 isActive(
                                     "riskregister.verificationmanagementpriority",
-                                ),
-                            )}
-                        >
-                            Level Manajemen
-                        </Link>
-                        <Link
-                            href={route(
-                                "riskregister.verificationadminpriority",
-                            )}
-                            onClick={closeSidebar}
-                            className={getSubNavClasses(
+                                ) ||
                                 isActive(
                                     "riskregister.verificationadminpriority",
-                                ),
-                            )}
+                                )
+                            }
+                            title="Verifikasi Prioritas"
+                            icon={ShieldExclamationIcon}
                         >
-                            Admin Risiko
-                        </Link>
-                    </AccordionItem>
+                            <Link
+                                href={route(
+                                    "riskregister.verificationmanagementpriority",
+                                )}
+                                onClick={closeSidebar}
+                                className={getSubNavClasses(
+                                    isActive(
+                                        "riskregister.verificationmanagementpriority",
+                                    ),
+                                )}
+                            >
+                                Level Manajemen
+                            </Link>
+                            <Link
+                                href={route(
+                                    "riskregister.verificationadminpriority",
+                                )}
+                                onClick={closeSidebar}
+                                className={getSubNavClasses(
+                                    isActive(
+                                        "riskregister.verificationadminpriority",
+                                    ),
+                                )}
+                            >
+                                Admin Risiko
+                            </Link>
+                        </AccordionItem>
+                    )}
                     <AccordionItem
                         id="data-risiko"
                         active={
@@ -468,6 +498,36 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                             className={`${getSubNavClasses(false)} flex justify-between items-center group/btn`}
                         >
                             Report BPKP{" "}
+                            <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                        </button>
+                        <button
+                            onClick={() => {
+                                openExportDialogMRTerbaruKlinis();
+                                closeSidebar();
+                            }}
+                            className={`${getSubNavClasses(false)} flex justify-between items-center group/btn`}
+                        >
+                            Laporan MR Terbaru Klinis{" "}
+                            <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                        </button>
+                        <button
+                            onClick={() => {
+                                openExportDialogMRTerbaruNonKlinis();
+                                closeSidebar();
+                            }}
+                            className={`${getSubNavClasses(false)} flex justify-between items-center group/btn`}
+                        >
+                            Laporan MR Terbaru Non Klinis{" "}
+                            <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                        </button>
+                        <button
+                            onClick={() => {
+                                openExportDialogKeterjadianRisiko();
+                                closeSidebar();
+                            }}
+                            className={`${getSubNavClasses(false)} flex justify-between items-center group/btn`}
+                        >
+                            Keterjadian Risiko{" "}
                             <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
                         </button>
                     </AccordionItem>
@@ -654,6 +714,11 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                             >
                                                 Jenis Sebab
                                             </Link>
+                                            {hasPermission("atur data master manajemen risiko", "edit data master manajemen risiko") && (
+                                                <Link href={route("celahPengendalians.index")} onClick={closeSidebar} className={getSubNavClasses(routeName.startsWith("celahPengendalians"))}>
+                                                    Celah Pengendalian
+                                                </Link>
+                                            )}
                                             <Link
                                                 href={route("riskGradings.index")}
                                                 onClick={closeSidebar}
@@ -665,6 +730,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                                             </Link>
                                         </>
                                     )}
+                                    {hasPermission("atur data master manajemen risiko", "atur hak akses") && <Link href={route("kinerja.index")} onClick={closeSidebar} className={getSubNavClasses(routeName.startsWith("kinerja") && !routeName.startsWith("kinerja.performance"))}>Indikator Tahunan & Cascading</Link>}
                                     {canSeeRiskCopy && (
                                         <Link
                                             href={route("riskRegisterCopy.index")}
@@ -935,6 +1001,44 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                     title={`Export BPKP Risk Register - ` + auth.user.name}
                 >
                     <BPKP setIsOpenAddDialog={setIsOpenExportDialogBPKP} />
+                </ExportModal>
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogMRTerbaruKlinis}
+                    setIsOpenExportDialog={setIsOpenExportDialogMRTerbaruKlinis}
+                    size="max-w-4xl"
+                    title={`Export Laporan MR Terbaru Klinis - ` + auth.user.name}
+                >
+                    <MRTerbaruKlinis
+                        setIsOpenAddDialog={setIsOpenExportDialogMRTerbaruKlinis}
+                    />
+                </ExportModal>
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogMRTerbaruNonKlinis}
+                    setIsOpenExportDialog={
+                        setIsOpenExportDialogMRTerbaruNonKlinis
+                    }
+                    size="max-w-4xl"
+                    title={`Export Laporan MR Terbaru Non Klinis - ` + auth.user.name}
+                >
+                    <MRTerbaruNonKlinis
+                        setIsOpenAddDialog={
+                            setIsOpenExportDialogMRTerbaruNonKlinis
+                        }
+                    />
+                </ExportModal>
+                <ExportModal
+                    isOpenExportDialog={isOpenExportDialogKeterjadianRisiko}
+                    setIsOpenExportDialog={
+                        setIsOpenExportDialogKeterjadianRisiko
+                    }
+                    size="max-w-4xl"
+                    title={`Export Keterjadian Risiko - ` + auth.user.name}
+                >
+                    <KeterjadianRisiko
+                        setIsOpenAddDialog={
+                            setIsOpenExportDialogKeterjadianRisiko
+                        }
+                    />
                 </ExportModal>
                 <ExportModal
                     isOpenExportDialog={isOpenExportDialogSedangTerjadi}

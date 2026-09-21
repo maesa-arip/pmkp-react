@@ -2,15 +2,14 @@ import { Fragment, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 
-export default function ComboboxPage({ShouldMap, selected, tampilkanvalue = 'false', onChange, name}) {
+export default function ComboboxPage({ShouldMap, selected, tampilkanvalue = 'false', onChange, name, placeholder = '', inputId, invalid, describedBy, wrapOptions = false, emptyMessage = 'Belum ada pilihan tersedia.'}) {
     const [query, setQuery] = useState('')
 
+    const squeeze = (text) => String(text ?? '').toLowerCase().replace(/\s+/g, '')
+    // An option may carry a `badge`, shown as a chip and searchable along with the name.
     const filteredShouldMap = query === ''
         ? ShouldMap
-        : ShouldMap.filter((item) =>
-            item.name.toLowerCase().replace(/\s+/g, '')
-            .includes(query.toLowerCase().replace(/\s+/g, ''))
-        )
+        : ShouldMap.filter((item) => (squeeze(item.name) + squeeze(item.badge)).includes(squeeze(query)))
 
     return (
         <div className="w-full">
@@ -18,9 +17,13 @@ export default function ComboboxPage({ShouldMap, selected, tampilkanvalue = 'fal
                 <div className="relative mt-1">
                     <div className="relative w-full overflow-hidden text-left bg-white dark:bg-[#09090b] border border-gray-200 dark:border-white/10 rounded-lg shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors">
                         <Combobox.Input
-                            className="w-full py-2.5 pl-3 pr-10 text-sm text-gray-900 dark:text-zinc-100 bg-transparent border-none outline-none focus:ring-0"
+                            id={inputId}
+                            aria-invalid={invalid || undefined}
+                            aria-describedby={describedBy}
+                            className="w-full py-2.5 pl-3 pr-10 text-sm text-gray-900 dark:text-zinc-100 bg-transparent border-none outline-none focus:ring-0 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                             autoComplete="off"
-                            displayValue={(item) => item?.value ? `(${item.value}) ${item.name}` : item?.name} 
+                            placeholder={placeholder}
+                            displayValue={(item) => item?.value ? `(${item.value}) ${item.name}` : (item?.name || '')}
                             onChange={(event) => setQuery(event.target.value)}
                         />
                         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -36,9 +39,9 @@ export default function ComboboxPage({ShouldMap, selected, tampilkanvalue = 'fal
                         afterLeave={() => setQuery('')}
                     >
                         <Combobox.Options className="absolute z-50 w-full py-1.5 mt-1 overflow-auto text-sm bg-white dark:bg-[#18181b] border border-gray-100 dark:border-white/10 rounded-xl shadow-lg max-h-60 focus:outline-none custom-scrollbar">
-                            {filteredShouldMap.length === 0 && query !== '' ? (
+                            {filteredShouldMap.length === 0 ? (
                                 <div className="relative px-4 py-3 text-center text-gray-500 cursor-default select-none dark:text-zinc-500">
-                                    Data tidak ditemukan.
+                                    {query !== '' ? 'Data tidak ditemukan.' : emptyMessage}
                                 </div>
                             ) : (
                                 filteredShouldMap.map((item) => (
@@ -53,9 +56,14 @@ export default function ComboboxPage({ShouldMap, selected, tampilkanvalue = 'fal
                                     >
                                         {({ selected, active }) => (
                                             <>
-                                                <span className={`block truncate ${selected ? 'font-semibold text-blue-600 dark:text-blue-400' : 'font-medium'}`}>
+                                                <span className={`block ${wrapOptions ? 'whitespace-normal break-words' : 'truncate'} ${selected ? 'font-semibold text-blue-600 dark:text-blue-400' : 'font-medium'}`}>
                                                     {item.value ? `${item.value} - ` : ''} {item.name}
                                                 </span>
+                                                {item.badge ? (
+                                                    <span className="mt-1.5 inline-flex max-w-full items-center rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-bold leading-4 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">
+                                                        <span className="whitespace-normal break-words">{item.badge}</span>
+                                                    </span>
+                                                ) : null}
                                                 {selected ? (
                                                     <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-blue-600 dark:text-blue-400' : 'text-blue-500'}`}>
                                                         <CheckIcon className="w-4 h-4" aria-hidden="true" />

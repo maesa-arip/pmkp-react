@@ -1,3 +1,5 @@
+import RiskRegisterAnnualFields from "@/Components/RiskRegisterAnnualFields";
+import { picIds } from "@/utils/picIds";
 import InputError from "@/Components/InputError";
 import TextAreaInput from "@/Components/TextAreaInput";
 import TextInput from "@/Components/TextInput";
@@ -5,8 +7,6 @@ import ComboboxMultiple from "@/Components/ComboboxMultiple";
 import ComboboxPage from "@/Components/ComboboxPage";
 import Select from "@/Components/ui/Select";
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { ExclamationTriangleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
 export default function Form({
@@ -17,12 +17,10 @@ export default function Form({
     ShouldMap,
     model,
     closeButton,
+    processing = false,
 }) {
     const defaultValue = [{ name: "" }];
-    const picIdStrings = data.pic_id ? data.pic_id : ",";
-    const picIdString = picIdStrings.replace(/['"]+/g, '');
-    const defaultPicIds = picIdString.split(",");
-    const defaultPicIdStrings = defaultPicIds.map((value) => value.toString());
+    const defaultPicIdStrings = picIds(data.pic_id);
 
     // STATE INITIALIZATION
     const [selectedCategory, setSelectedCategory] = useState(() => {
@@ -43,10 +41,6 @@ export default function Form({
     });
     const [selectedJenisSebab, setSelectedJenisSebab] = useState(() => {
         if (model) return ShouldMap.jenisSebabs.find((x) => x.id === model.jenis_sebab_id);
-        return defaultValue[0];
-    });
-    const [selectedIndikatorFitur4, setSelectedIndikatorFitur4] = useState(() => {
-        if (model) return ShouldMap.indikatorFitur4s.find((x) => x.id === model.indikator_fitur4_id);
         return defaultValue[0];
     });
     const [selectedOpsiPengendalian, setSelectedOpsiPengendalian] = useState(() => {
@@ -73,9 +67,13 @@ export default function Form({
         { value: "C", label: "C" },
         { value: "UC", label: "UC" },
     ];
-    const celahPengendalianOptions = data.celah_pengendalian
-        ? [{ value: data.celah_pengendalian, label: data.celah_pengendalian }]
-        : [];
+    const celahPengendalianOptions = [
+        { value: "", label: "Tidak dipilih" },
+        ...(ShouldMap.celahPengendalians || []).map(item => ({ value: item.name, label: item.name })),
+    ];
+    if (data.celah_pengendalian && !celahPengendalianOptions.some(item => item.value === data.celah_pengendalian)) {
+        celahPengendalianOptions.push({ value: data.celah_pengendalian, label: data.celah_pengendalian + " (tersimpan)" });
+    }
 
     // Auto-generate Pernyataan Risiko
     useEffect(() => {
@@ -85,7 +83,6 @@ export default function Form({
         });
     }, [data.sebab, data.resiko, data.dampak]);
     
-    const [tglRegister, setTglRegister] = useState(null);
 
     // REUSABLE STYLING CLASSES
     const inputClass = "block w-full text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition-all shadow-sm placeholder:text-slate-400";
@@ -95,7 +92,7 @@ export default function Form({
     const sectionHeaderClass = "px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-transparent rounded-t-2xl";
 
     return (
-        <div className="relative flex flex-col w-full h-full bg-slate-50/30 dark:bg-transparent">
+        <div className="relative flex min-h-0 flex-1 flex-col w-full bg-slate-50/30 dark:bg-transparent">
             
             {/* Scrollable Content Area */}
             <div className="flex-1 p-4 space-y-6 overflow-y-auto sm:p-6 custom-scrollbar">
@@ -107,32 +104,7 @@ export default function Form({
                     </div>
                     
                     <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-12">
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[60]">
-                            <label className={labelClass}>Indikator</label>
-                            <ComboboxPage ShouldMap={ShouldMap.indikatorFitur4s} selected={selectedIndikatorFitur4} onChange={(e) => { setData({ ...data, ["indikator_fitur4_id"]: e.id }); setSelectedIndikatorFitur4(e); }} />
-                            <InputError message={errors.indikator_fitur4_id} className="mt-1" />
-                        </div>
-
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[59]">
-                            <label className={labelClass}>Tanggal Register</label>
-                            <DatePicker
-                                dateFormat="dd-MM-yyyy"
-                                value={data.tgl_register}
-                                selected={tglRegister}
-                                id="tgl_register"
-                                name="tgl_register"
-                                autoComplete="off"
-                                className={inputClass}
-                                onChange={(date) => {
-                                    setTglRegister(date);
-                                    if(date) {
-                                        const d = new Date(date).toLocaleDateString("en-CA");
-                                        setData("tgl_register", d);
-                                    }
-                                }}
-                            />
-                            <InputError message={errors.tgl_register} className="mt-1" />
-                        </div>
+                        <RiskRegisterAnnualFields data={data} setData={setData} errors={errors} indicators={ShouldMap.indikatorFitur4s} model={model} inputClass={inputClass} labelClass={labelClass} />
 
                         <div className="col-span-12 flex flex-col relative z-[55]">
                             <label className={labelClass}>Risiko</label>
@@ -196,7 +168,7 @@ export default function Form({
 
                         <div className="col-span-12 flex flex-col relative z-[44]">
                             <label className={labelClass}>PIC Unit Terkait</label>
-                            <ComboboxMultiple ShouldMap={ShouldMap.pics} name={"pic_id"} onChange={(selectedIdsString) => setData({ ...data, ["pic_id"]: selectedIdsString })} defaultValues={defaultPicIdStrings} />
+                            <ComboboxMultiple exclusiveAll ShouldMap={ShouldMap.pics} name={"pic_id"} onChange={(selectedIdsString) => setData({ ...data, ["pic_id"]: selectedIdsString })} defaultValues={defaultPicIdStrings} />
                             <InputError message={errors.pic_id} className="mt-1" />
                         </div>
 
@@ -218,19 +190,19 @@ export default function Form({
                             <InputError message={errors.pernyataan_risiko} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[40]">
                             <label className={labelClass}>C/UC</label>
-                            <Select className="z-[100]" value={data.c_uc || ""} onChange={(value) => setData("c_uc", value)} options={cUcOptions} placeholder="Pilih C/UC" />
+                            <Select value={data.c_uc || ""} onChange={(value) => setData("c_uc", value)} options={cUcOptions} placeholder="Pilih C/UC" />
                             <InputError message={errors.c_uc} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[47]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[39]">
                             <label className={labelClass}>Jenis Insiden</label>
                             <ComboboxPage ShouldMap={ShouldMap.riskVarieties} selected={selectedVariety} onChange={(e) => { setData({ ...data, ["risk_variety_id"]: e.id }); setSelectedVariety(e); }} />
                             <InputError message={errors.risk_variety_id} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[46]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[38]">
                             <label className={labelClass}>Tipe Insiden</label>
                             <ComboboxPage ShouldMap={ShouldMap.riskTypes} selected={selectedType} onChange={(e) => { setData({ ...data, ["risk_type_id"]: e.id }); setSelectedType(e); }} />
                             <InputError message={errors.risk_type_id} className="mt-1" />
@@ -292,9 +264,10 @@ export default function Form({
                             <InputError message={errors.pengendalian_harus_ada} className="mt-1" />
                         </div>
 
-                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[80]">
+                        <div className="col-span-12 md:col-span-6 flex flex-col relative z-[22]">
                             <label className={labelClass}>Celah Pengendalian</label>
-                            <Select className="z-[100]" value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} placeholder="Pilih celah pengendalian" />
+                            <Select value={data.celah_pengendalian || ""} onChange={(value) => setData("celah_pengendalian", value)} options={celahPengendalianOptions} wrapLabels placeholder="Pilih celah pengendalian" />
+                            {!ShouldMap.celahPengendalians?.length && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Belum ada pilihan aktif. Tambahkan melalui Data Master → Celah Pengendalian.</p>}
                             <InputError message={errors.celah_pengendalian} className="mt-1" />
                         </div>
 
@@ -351,10 +324,10 @@ export default function Form({
 
             {/* --- FORM ACTIONS (STICKY BOTTOM / FOOTER) --- */}
             <div className="sticky bottom-0 p-4 sm:p-6 bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row-reverse justify-start gap-3 mt-auto z-[90] rounded-b-2xl">
-                <button type="submit" className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
-                    {submit}
+                <button type="submit" disabled={processing} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
+                    {processing ? "Menyimpan..." : submit}
                 </button>
-                <button type="button" onClick={closeButton} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none">
+                <button type="button" disabled={processing} onClick={closeButton} className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none">
                     Batal
                 </button>
             </div>

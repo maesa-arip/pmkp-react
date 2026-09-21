@@ -35,6 +35,8 @@ class RiskRegisterHistory extends Model
             'event_type' => $eventType,
             'snapshot' => array_merge([
                 'kode_risiko' => $riskRegister->kode_risiko,
+                'periode_kinerja_id' => $riskRegister->periode_kinerja_id,
+                'indikator_snapshot' => $riskRegister->indikator_snapshot,
                 'pernyataan_risiko' => $riskRegister->pernyataan_risiko,
                 'sebab' => $riskRegister->sebab,
                 'dampak' => $riskRegister->dampak,

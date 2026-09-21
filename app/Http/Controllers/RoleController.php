@@ -15,6 +15,18 @@ class RoleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public $loadDefault = 10;
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $user = $request->user();
+            abort_unless($user && ($user->hasRole('super admin')
+                || $user->can('atur hak akses')), 403);
+
+            return $next($request);
+        });
+    }
+
     public function index(Request $request)
     {
         $roles = Role::query()->with('permissions');

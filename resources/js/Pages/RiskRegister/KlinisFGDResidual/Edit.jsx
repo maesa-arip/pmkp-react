@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Form from "./Form";
 
 export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
@@ -7,7 +7,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     const safeModel = model || {};
     const safeResidual = safeModel.fgdresidual || {};
 
-    const { data, setData, put, reset, errors } = useForm({
+    const { data, setData, put, reset, errors, processing } = useForm({
         id: safeModel.id || "",
         osd2_dampak: safeModel.osd2_dampak || "",
         osd2_probabilitas: safeModel.osd2_probabilitas || "",
@@ -39,10 +39,14 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
         setIsOpenEditDialog(false);
     };
 
+    const submitting = useRef(false);
     const onSubmit = (e) => {
         e.preventDefault();
+        if (submitting.current || processing) return;
+        submitting.current = true;
         put(route("riskregister.fgdresidual", safeModel.id), {
             data,
+            onFinish: () => { submitting.current = false; },
             onSuccess: () => {
                 reset();
                 setIsOpenEditDialog(false);
@@ -85,6 +89,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     return (
         <form onSubmit={onSubmit} className="flex flex-col h-full w-full max-h-[85vh]">
             <Form
+                processing={processing}
                 errors={errors}
                 data={data}
                 model={model}

@@ -1,3 +1,4 @@
+import AnnualYearFilter from "@/Components/AnnualYearFilter";
 import DangerButton from "@/Components/DangerButton";
 import AddModal from "@/Components/Modal/AddModal";
 import DestroyModal from "@/Components/Modal/DestroyModal";
@@ -21,6 +22,7 @@ import {
     XMarkIcon,
     InformationCircleIcon,
     DocumentChartBarIcon,
+    ExclamationTriangleIcon,
     MapPinIcon
 } from "@heroicons/react/24/outline";
 
@@ -45,8 +47,11 @@ export default function Index(props) {
 
     let ShouldMap = {
         MutuKategori: props.MutuKategori,
+        Periods: props.MutuPeriods || [],
+        tahun: filtered.tahun,
         Penyebut: props.MutuPenyebut || [],
         IndikatorFitur3: props.IndikatorFitur3,
+
         IndikatorFitur4: props.IndikatorFitur4,
         IndikatorBaru: [
             { id: 0, name: "Tidak" },
@@ -61,8 +66,14 @@ export default function Index(props) {
         ],
     };
 
+    // Masters still waiting to be positioned under a Fitur 3 activity in /kinerja.
+    const unplacedIndicators = new Set((props.UnplacedIndicators || []).map(Number));
+    const isUnplaced = (item) => unplacedIndicators.has(Number(item?.indikator_fitur4_id));
+
     const { permissionNames } = usePage().props;
     const permission_name = permissionNames ? permissionNames.map((permission) => permission.name) : [];
+    // Same pair of permissions that guards PeriodeKinerjaController.
+    const canManageAnnual = permission_name.indexOf("atur data master manajemen risiko") > -1 || permission_name.indexOf("atur hak akses") > -1;
 
     const [pageNumber, setPageNumber] = useState([]);
     const [params, setParams] = useState(filtered);
@@ -156,6 +167,7 @@ export default function Index(props) {
     return (
         <div className="relative min-h-screen p-0 font-sans bg-transparent dark:bg-transparent text-slate-900 dark:text-slate-100 sm:p-2">
             <Head title="Kamus Indikator Mutu" />
+            <AnnualYearFilter value={params.tahun} onChange={tahun => setParams({ ...params, tahun, page: 1 })} />
 
             {/* --- MODALS --- */}
             <AddModal isOpenAddDialog={isOpenAddDialog} setIsOpenAddDialog={setIsOpenAddDialog} size="max-w-4xl" title="Tambah Indikator Mutu">
@@ -297,6 +309,11 @@ export default function Index(props) {
                                                         <span className="text-[13px] font-medium leading-snug text-slate-900 dark:text-white block break-words">
                                                             {item.indikator_fitur4?.name || "-"}
                                                         </span>
+                                                        {isUnplaced(item) && (
+                                                            <span className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
+                                                                <ExclamationTriangleIcon className="w-3 h-3" /> Belum terhubung fitur 1–3
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     
                                                     {/* Numerator */}
@@ -328,20 +345,29 @@ export default function Index(props) {
                                                             {openDropdownId === item.id && (
                                                                 <div className="absolute right-0 z-[100] w-48 mt-2 origin-top-right bg-white border border-slate-200 rounded-xl shadow-lg dark:bg-[#1e293b] dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-slate-100 dark:divide-slate-700/80">
                                                                     <div className="py-1">
-                                                                        {permission_name.indexOf("approved indikator mutu") > -1 && item.approved == 0 && (
+                                                                        {!item.can_edit && (
+                                                                            <p className="px-4 py-2.5 text-xs font-bold leading-relaxed text-slate-500 dark:text-slate-400">
+                                                                                Kamus unit lain. Anda hanya dapat melihatnya.
+                                                                            </p>
+                                                                        )}
+                                                                        {item.can_edit && permission_name.indexOf("approved indikator mutu") > -1 && item.approved == 0 && (
                                                                             <button onClick={() => triggerModal(setIsOpenApprovedDialog, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-emerald-600 transition-colors hover:bg-emerald-50 dark:hover:bg-emerald-500/10 dark:text-emerald-400 group">
                                                                                 <CheckCircleIcon className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" /> Approve
                                                                             </button>
                                                                         )}
-                                                                        <button onClick={() => triggerModal(setIsOpenEditDialog, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:text-slate-300 group">
-                                                                            <PencilSquareIcon className="w-4 h-4 mr-2 transition-transform text-sky-500 dark:text-sky-400 group-hover:scale-110" /> Edit Indikator
-                                                                        </button>
+                                                                        {item.can_edit && (
+                                                                            <button onClick={() => triggerModal(setIsOpenEditDialog, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:text-slate-300 group">
+                                                                                <PencilSquareIcon className="w-4 h-4 mr-2 transition-transform text-sky-500 dark:text-sky-400 group-hover:scale-110" /> Edit Indikator
+                                                                            </button>
+                                                                        )}
                                                                     </div>
-                                                                    <div className="py-1">
-                                                                        <button onClick={() => triggerModal(setIsOpenDestroyDialog, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10 dark:text-red-400 group">
-                                                                            <TrashIcon className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" /> Hapus Data
-                                                                        </button>
-                                                                    </div>
+                                                                    {item.can_edit && (
+                                                                        <div className="py-1">
+                                                                            <button onClick={() => triggerModal(setIsOpenDestroyDialog, item)} className="flex items-center w-full px-4 py-2.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10 dark:text-red-400 group">
+                                                                                <TrashIcon className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" /> Hapus Data
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             )}
                                                         </div>
@@ -453,30 +479,58 @@ export default function Index(props) {
                                     <MapPinIcon className="w-5 h-5 text-slate-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">Penanggung Jawab (Unit)</p>
-                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{state.location?.name || '-'}</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">Penanggung Jawab (PIC)</p>
+                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{state.location?.pic?.name || '-'}</p>
+                                    <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">{state.location?.name || '-'}</p>
                                 </div>
                             </section>
+
+                            {isUnplaced(state) && (
+                                <section className="flex items-start gap-3 p-4 border shadow-sm bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 rounded-xl">
+                                    <ExclamationTriangleIcon className="w-5 h-5 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                                    <div>
+                                        <p className="text-xs font-bold text-amber-700 dark:text-amber-300">Indikator belum terhubung fitur 1–3</p>
+                                        <p className="mt-1 text-xs font-medium leading-relaxed text-amber-700/80 dark:text-amber-300/80">
+                                            Penautan dilakukan pada indikator tahunan, <strong>bukan</strong> dengan mengedit kamus ini. Kamus tidak menyimpan induk fitur 3.
+                                        </p>
+                                        {canManageAnnual ? (
+                                            <a href={route("kinerja.index", { tahun: filtered.tahun })} className="inline-flex items-center mt-2 text-xs font-bold underline text-amber-800 dark:text-amber-200 hover:no-underline">
+                                                Buka Indikator Tahunan &amp; Cascading, tab Fitur 1–4
+                                            </a>
+                                        ) : (
+                                            <p className="mt-2 text-xs font-medium text-amber-700/80 dark:text-amber-300/80">Minta Admin Manajemen Risiko menautkannya di menu Indikator Tahunan &amp; Cascading.</p>
+                                        )}
+                                    </div>
+                                </section>
+                            )}
 
                         </div>
                         
                         {/* Footer Actions */}
                         <div className="flex flex-col gap-2.5 p-5 bg-white border-t shrink-0 border-slate-100 dark:border-slate-800 dark:bg-[#0f172a]">
                              
-                             {permission_name.indexOf("approved indikator mutu") > -1 && state.approved == 0 && (
+                             {!state.can_edit && (
+                                <p className="px-1 text-xs font-bold leading-relaxed text-center text-slate-500 dark:text-slate-400">
+                                    Kamus ini milik unit lain, jadi hanya dapat dilihat.
+                                </p>
+                             )}
+
+                             {state.can_edit && permission_name.indexOf("approved indikator mutu") > -1 && state.approved == 0 && (
                                 <button onClick={() => triggerModal(setIsOpenApprovedDialog)} className="flex items-center justify-center w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-emerald-500/50">
                                     <CheckCircleIcon className="w-4 h-4 mr-2" /> Approve Indikator Ini
                                 </button>
                              )}
 
-                             <div className="grid grid-cols-2 gap-2.5 mt-1">
-                                 <button onClick={() => triggerModal(setIsOpenEditDialog)} className="flex items-center justify-center w-full py-2 text-sm font-bold transition-colors border shadow-sm bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/30 rounded-xl focus:ring-2 focus:ring-sky-500/50">
-                                    <PencilSquareIcon className="w-4 h-4 mr-2" /> Edit Kamus
-                                 </button>
-                                 <button onClick={() => triggerModal(setIsOpenDestroyDialog)} className="flex items-center justify-center w-full py-2 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 text-[13px] font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-rose-500/50">
-                                    <TrashIcon className="w-4 h-4 mr-1.5 opacity-70" /> Hapus
-                                 </button>
-                             </div>
+                             {state.can_edit && (
+                                <div className="grid grid-cols-2 gap-2.5 mt-1">
+                                    <button onClick={() => triggerModal(setIsOpenEditDialog)} className="flex items-center justify-center w-full py-2 text-sm font-bold transition-colors border shadow-sm bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-100 dark:hover:bg-sky-500/20 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-500/30 rounded-xl focus:ring-2 focus:ring-sky-500/50">
+                                       <PencilSquareIcon className="w-4 h-4 mr-2" /> Edit Kamus
+                                    </button>
+                                    <button onClick={() => triggerModal(setIsOpenDestroyDialog)} className="flex items-center justify-center w-full py-2 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 text-[13px] font-bold rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-rose-500/50">
+                                       <TrashIcon className="w-4 h-4 mr-1.5 opacity-70" /> Hapus
+                                    </button>
+                                </div>
+                             )}
 
                         </div>
                     </div>

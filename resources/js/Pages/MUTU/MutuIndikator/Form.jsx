@@ -2,315 +2,152 @@ import ComboboxPage from "@/Components/ComboboxPage";
 import InputError from "@/Components/InputError";
 import TextAreaInput from "@/Components/TextAreaInput";
 import TextInput from "@/Components/TextInput";
-import React, { useState } from "react";
-import { 
-    CalculatorIcon, 
-    TagIcon 
-} from "@heroicons/react/24/outline";
+import React, { useEffect, useState } from "react";
+import { CalculatorIcon, TagIcon } from "@heroicons/react/24/outline";
 
-export default function Form({
-    errors,
-    submit,
-    data,
-    setData,
-    model,
-    ShouldMap,
-    closeButton,
-}) {
-    const defaultValue = [{ name: "" }];
+const inputClass = "block w-full min-w-0 rounded-lg border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:ring-sky-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100";
 
-    // --- STATES INIT ---
-    const [selectedIndikatorBaru, setSelectedIndikatorBaru] = useState(() => {
-        if (model) return ShouldMap.IndikatorBaru?.find((x) => x.id === model.IndikatorBaru) || defaultValue[0];
-        return ShouldMap.IndikatorBaru?.find((x) => x.id === data.IndikatorBaru) || defaultValue[0];
-    });
+function Field({ id, label, error, children, className = "" }) {
+    return (
+        <div className={`min-w-0 ${className}`}>
+            <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-200">{label}</label>
+            {children}
+            <div id={`${id}-error`}><InputError message={error} className="mt-1.5" /></div>
+        </div>
+    );
+}
 
-    const [selectedOperator, setSelectedOperator] = useState(() => {
-        if (model) return ShouldMap.Operator?.find((x) => x.id === model.operator) || defaultValue[0];
-        return defaultValue[0];
-    });
+export default function Form({ errors, submit, data, setData, model, ShouldMap, closeButton, processing = false }) {
+    const [year, setYear] = useState(Number(model?.tahun || ShouldMap.tahun || new Date().getFullYear()));
+    const periods = ShouldMap.Periods || [];
+    const period = periods.find(p => Number(p.tahun) === year);
+    const findOption = (items, value) => (items || []).find(x => String(x.id) === String(value)) || { name: "" };
+    // The same indicator name is used by several units, so the unit rides along as a badge.
+    const indicators = (ShouldMap.IndikatorFitur4 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && (x.is_active || String(x.id) === String(data.indikator_fitur4_id)))
+        .map(x => ({ ...x, badge: x.unit_names || 'Unit belum diisi' }));
+    const indicator = indicators.find(x => String(x.id) === String(data.indikator_fitur4_id));
+    // The responsible person rides along as a badge instead of being glued to the name.
+    const activities = (ShouldMap.IndikatorFitur3 || []).filter(x => String(x.periode_kinerja_id) === String(period?.id) && x.is_active)
+        .map(x => ({ ...x, badge: x.penanggung_jawab || 'Penanggung jawab belum diisi' }));
+    const activity = activities.find(x => String(x.id) === String(data.indikator_fitur3_id));
+    const isNew = !model && Number(data.IndikatorBaru) === 1;
 
-    const [selectedPenyebut, setSelectedPenyebut] = useState(() => {
-        if (model) return ShouldMap.Penyebut?.find((x) => x.id === model.penyebut) || defaultValue[0];
-        return defaultValue[0];
-    });
+    useEffect(() => {
+        setYear(Number(model?.tahun || ShouldMap.tahun || new Date().getFullYear()));
+    }, [model?.id, model?.tahun, ShouldMap.tahun]);
+    useEffect(() => {
+        if (period && String(data.periode_kinerja_id) !== String(period.id)) setData('periode_kinerja_id', period.id);
+    }, [period?.id, data.periode_kinerja_id]);
 
-    const [selectedIndikatorFitur4, setSelectedIndikatorFitur4] = useState(() => {
-        if (model) return ShouldMap.IndikatorFitur4?.find((x) => x.id === model.indikator_fitur4_id) || defaultValue[0];
-        return defaultValue[0];
-    });
-
-    const [selectedIndikatorFitur3, setSelectedIndikatorFitur3] = useState(() => defaultValue[0]);
-
-    const [selectedKategori, setSelectedKategori] = useState(() => {
-        if (model) return ShouldMap.MutuKategori?.find((x) => x.id === model.mutu_kategori_id) || defaultValue[0];
-        return defaultValue[0];
-    });
-
-    // --- STYLING CLASSES ---
-    const inputClass = "block w-full text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-lg dark:text-slate-100 dark:bg-[#0f172a] dark:border-slate-700 focus:bg-white dark:focus:bg-[#020817] focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none transition-all shadow-sm placeholder:text-slate-400";
-    const labelClass = "text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5 block";
-    const sectionCardClass = "bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/80 rounded-2xl flex flex-col shadow-sm relative";
-    const sectionHeaderClass = "px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-transparent rounded-t-2xl";
+    const selectIndicator = indicator => setData({ ...data, indikator_fitur4_id: indicator.id, periode_kinerja_id: indicator.periode_kinerja_id });
+    const select = (field, options, placeholder, onChange) => (
+        <ComboboxPage
+            inputId={field}
+            emptyMessage={field === 'indikator_fitur4_id' ? `Tidak ada indikator aktif yang dapat Anda akses pada tahun ${year}. Periksa tahun atau pemetaan unit/tim kerja Anda.` : undefined}
+            invalid={!!errors[field]}
+            describedBy={errors[field] ? `${field}-error` : undefined}
+            ShouldMap={options || []}
+            selected={findOption(options, data[field])}
+            onChange={onChange || (option => setData(field, option.id))}
+            placeholder={placeholder}
+            wrapOptions
+        />
+    );
 
     return (
-        <div className="relative flex flex-col w-full h-full bg-slate-50/30 dark:bg-transparent">
-            
-            {/* Scrollable Content Area */}
-            <div className="flex-1 p-4 space-y-6 overflow-y-auto sm:p-6 custom-scrollbar">
-                
-                {/* --- SECTION 1: INFORMASI INDIKATOR MUTU --- */}
-                <div className={`${sectionCardClass} relative z-[50]`}>
-                    <div className={sectionHeaderClass}>
-                        <div className="flex items-center">
-                            <TagIcon className="w-5 h-5 mr-2 text-sky-500 dark:text-sky-400" />
-                            <div>
-                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Informasi Kamus Indikator</h3>
-                                <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">Tentukan profil utama dari Indikator Mutu ini.</p>
-                            </div>
-                        </div>
+        <div className="w-full min-w-0 space-y-5">
+            <section aria-labelledby="mutu-information-title" className="relative z-20 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+                <header className="flex items-start gap-3 rounded-t-xl border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50 sm:px-5">
+                    <TagIcon aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
+                    <div className="min-w-0">
+                        <h3 id="mutu-information-title" className="text-sm font-bold text-slate-900 dark:text-white">Informasi Kamus Indikator</h3>
+                        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Pilih indikator dan kategori mutu yang akan diukur.</p>
                     </div>
-                    
-                    <div className="relative z-10 grid grid-cols-1 gap-6 p-6 md:grid-cols-12">
-                        
-                        {/* Menjaga Logika Persis Aslinya */}
-                        {!model ? (
-                            <>
-                                <div className="relative flex flex-col col-span-12 md:col-span-12 z-[60]">
-                                    <label className={labelClass}>Indikator Baru ?</label>
-                                    <ComboboxPage
-                                        ShouldMap={ShouldMap.IndikatorBaru || []}
-                                        selected={selectedIndikatorBaru}
-                                        onChange={(e) => {
-                                            setData({
-                                                ...data,
-                                                ["IndikatorBaru"]: e.id,
-                                            });
-                                            setSelectedIndikatorBaru(e);
-                                        }}
-                                    />
-                                    <InputError message={errors.IndikatorBaru} className="mt-1" />
-                                </div>
-                            </>
-                        ) : null}
-
-                        {model ? (
-                            <div className="relative flex flex-col col-span-12 md:col-span-12 z-[59]">
-                                <label className={labelClass}>Pilih Indikator</label>
-                                <ComboboxPage
-                                    ShouldMap={ShouldMap.IndikatorFitur4 || []}
-                                    selected={selectedIndikatorFitur4}
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            ["indikator_fitur4_id"]: e.id,
-                                        });
-                                        setSelectedIndikatorFitur4(e);
-                                    }}
-                                />
-                                <InputError message={errors.indikator_fitur4_id} className="mt-1" />
-                            </div>
-                        ) : (
-                            <>
-                                {data.IndikatorBaru == 1 ? (
-                                    <>
-                                        <div className="relative flex flex-col col-span-12 md:col-span-12 z-[59]">
-                                            <label className={labelClass}>Masukan Indikator Baru</label>
-                                            <TextInput
-                                                id="indikator"
-                                                value={data.indikator}
-                                                handleChange={(e) =>
-                                                    setData("indikator", e.target.value)
-                                                }
-                                                type="text"
-                                                className={inputClass}
-                                                placeholder="Ketikkan nama indikator mutu yang baru..."
-                                            />
-                                            <InputError message={errors.indikator} className="mt-1" />
-                                        </div>
-                                        <div className="relative flex flex-col col-span-12 md:col-span-12 z-[58]">
-                                            <label className={labelClass}>Pilih Indikator Fitur 3 (Parent)</label>
-                                            <ComboboxPage
-                                                ShouldMap={ShouldMap.IndikatorFitur3 || []}
-                                                selected={selectedIndikatorFitur3}
-                                                onChange={(e) => {
-                                                    setData({
-                                                        ...data,
-                                                        ["indikator_fitur3_id"]: e.id,
-                                                    });
-                                                    setSelectedIndikatorFitur3(e);
-                                                }}
-                                            />
-                                            <InputError message={errors.indikator_fitur3_id} className="mt-1" />
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="relative flex flex-col col-span-12 md:col-span-12 z-[59]">
-                                        <label className={labelClass}>Pilih Indikator</label>
-                                        <ComboboxPage
-                                            ShouldMap={ShouldMap.IndikatorFitur4 || []}
-                                            selected={selectedIndikatorFitur4}
-                                            onChange={(e) => {
-                                                setData({
-                                                    ...data,
-                                                    ["indikator_fitur4_id"]: e.id,
-                                                });
-                                                setSelectedIndikatorFitur4(e);
-                                            }}
-                                        />
-                                        <InputError message={errors.indikator_fitur4_id} className="mt-1" />
-                                    </div>
+                </header>
+                <div className="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:p-5">
+                    <Field id="mutu-year" label="Tahun indikator" error={errors.periode_kinerja_id}>
+                        <p id="mutu-year" className="px-4 py-2.5 text-sm font-bold rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">{year}</p>
+                        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Mengikuti filter tahun pada daftar indikator mutu.</p>
+                    </Field>
+                    {!model && (
+                        <Field id="IndikatorBaru" label="Buat indikator baru?" error={errors.IndikatorBaru} className="relative z-40">
+                            {select('IndikatorBaru', ShouldMap.IndikatorBaru, 'Pilih jenis indikator')}
+                        </Field>
+                    )}
+                    {isNew ? (
+                        <>
+                            <Field id="indikator" label="Nama indikator baru" error={errors.indikator} className="sm:col-span-2">
+                                <TextInput id="indikator" value={data.indikator || ''} handleChange={e => setData('indikator', e.target.value)} className={inputClass} placeholder="Masukkan nama indikator mutu" />
+                            </Field>
+                            <Field id="indikator_fitur3_id" label="Kegiatan Kabag/Kabid (Fitur 3) *" error={errors.indikator_fitur3_id} className="relative z-30 sm:col-span-2">
+                                {select('indikator_fitur3_id', activities, 'Cari dan pilih kegiatan induk')}
+                                {activity && (
+                                    <p className="mt-2 flex flex-wrap items-center gap-2 text-xs leading-5">
+                                        <span className="font-semibold text-slate-500 dark:text-slate-400">Penanggung jawab</span>
+                                        <span className="inline-flex items-center rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-bold leading-4 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">{activity.badge}</span>
+                                    </p>
                                 )}
-                            </>
-                        )}
-
-                        <div className="relative flex flex-col col-span-12 md:col-span-12 z-[57]">
-                            <label className={labelClass}>Kategori</label>
-                            <ComboboxPage
-                                ShouldMap={ShouldMap.MutuKategori || []}
-                                selected={selectedKategori}
-                                onChange={(e) => {
-                                    setData({
-                                        ...data,
-                                        ["mutu_kategori_id"]: e.id,
-                                    });
-                                    setSelectedKategori(e);
-                                }}
-                            />
-                            <InputError message={errors.mutu_kategori_id} className="mt-1" />
-                        </div>
-                    </div>
+                                <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Indikator baru wajib langsung ditempatkan di bawah satu kegiatan tahun {year}. Pemindahan berikutnya dilakukan di menu Indikator Tahunan &amp; Cascading.</p>
+                                {activities.length === 0 && <p className="mt-2 text-xs leading-5 text-amber-600 dark:text-amber-400">Belum ada kegiatan Kabag/Kabid aktif pada tahun {year}.</p>}
+                            </Field>
+                        </>
+                    ) : (
+                        <Field id="indikator_fitur4_id" label="Indikator mutu" error={errors.indikator_fitur4_id} className="relative z-30 sm:col-span-2">
+                            {select('indikator_fitur4_id', indicators, 'Cari dan pilih indikator mutu', selectIndicator)}
+                            {indicator && <p className="mt-2 break-words text-xs leading-5 text-slate-500 dark:text-slate-400">{indicator.name}</p>}
+                            {indicator && (
+                                <p className="mt-2 flex flex-wrap items-center gap-2 text-xs leading-5">
+                                    <span className="font-semibold text-slate-500 dark:text-slate-400">Unit</span>
+                                    <span className="inline-flex items-center rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-bold leading-4 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">{indicator.badge}</span>
+                                </p>
+                            )}
+                            {indicators.length === 0 && <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">Tidak ada indikator aktif yang dapat Anda akses pada tahun {year}. Periksa tahun atau pemetaan unit/tim kerja Anda.</p>}
+                        </Field>
+                    )}
+                    <Field id="mutu_kategori_id" label="Kategori mutu" error={errors.mutu_kategori_id} className="relative z-20 sm:col-span-2">
+                        {select('mutu_kategori_id', ShouldMap.MutuKategori, 'Pilih kategori mutu')}
+                    </Field>
                 </div>
+            </section>
 
-                {/* --- SECTION 2: FORMULA & STANDAR MUTU --- */}
-                <div className={`${sectionCardClass} relative z-[40] mb-4`}>
-                    <div className={sectionHeaderClass}>
-                        <div className="flex items-center">
-                            <CalculatorIcon className="w-5 h-5 mr-2 text-indigo-500 dark:text-indigo-400" />
-                            <div>
-                                <h3 className="text-base font-bold text-slate-900 dark:text-white">Formula & Standar Pengukuran</h3>
-                                <p className="mt-0.5 text-xs font-medium text-slate-500 dark:text-slate-400">Atur deskripsi pembilang, penyebut, dan target pencapaian.</p>
-                            </div>
-                        </div>
+            <section aria-labelledby="mutu-measurement-title" className="relative z-10 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+                <header className="flex items-start gap-3 rounded-t-xl border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50 sm:px-5">
+                    <CalculatorIcon aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
+                    <div className="min-w-0">
+                        <h3 id="mutu-measurement-title" className="text-sm font-bold text-slate-900 dark:text-white">Formula & Standar Pengukuran</h3>
+                        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Lengkapi pembilang, penyebut, dan target pencapaian.</p>
                     </div>
-                    
-                    <div className="relative z-10 p-6">
-                        
-                        <div className="flex flex-col gap-6">
-                            {/* NUMERATOR */}
-                            <div className="relative flex flex-col w-full z-[45]">
-                                <label className={labelClass}>
-                                    <span className="inline-flex px-1.5 py-0.5 mr-1 text-[10px] font-black text-sky-600 bg-sky-50 border border-sky-200 rounded dark:bg-sky-500/10 dark:border-sky-500/30 dark:text-sky-400">N</span> 
-                                    NUM (Numerator / Pembilang)
-                                </label>
-                                <TextAreaInput
-                                    id="num_name"
-                                    value={data.num_name}
-                                    handleChange={(e) => setData("num_name", e.target.value)}
-                                    rows={2}
-                                    className={inputClass}
-                                    placeholder="Deskripsi pembilang..."
-                                />
-                                <InputError message={errors.num_name} className="mt-1" />
-                            </div>
-
-                            {/* DENUMERATOR */}
-                            <div className="relative flex flex-col w-full z-[44]">
-                                <label className={labelClass}>
-                                    <span className="inline-flex px-1.5 py-0.5 mr-1 text-[10px] font-black text-rose-600 bg-rose-50 border border-rose-200 rounded dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-400">D</span> 
-                                    DENUM (Denumerator / Penyebut)
-                                </label>
-                                <TextAreaInput
-                                    id="denum_name"
-                                    value={data.denum_name}
-                                    handleChange={(e) => setData("denum_name", e.target.value)}
-                                    rows={2}
-                                    className={inputClass}
-                                    placeholder="Deskripsi penyebut..."
-                                />
-                                <InputError message={errors.denum_name} className="mt-1" />
-                            </div>
-
-                            {/* STANDAR & OPERATOR (PERBAIKAN TAMPILAN) */}
-                            <div className="pt-5 mt-2 border-t border-slate-100 dark:border-slate-800/80">
-                                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-3 block">
-                                    Target Standar Pencapaian
-                                </label>
-                                
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
-                                    
-                                    <div className="relative flex flex-col sm:col-span-4 z-[43]">
-                                        <label className={labelClass}>Pilih Operator</label>
-                                        <ComboboxPage
-                                            ShouldMap={ShouldMap.Operator || []}
-                                            selected={selectedOperator}
-                                            onChange={(e) => {
-                                                setData({ ...data, ["operator"]: e.id });
-                                                setSelectedOperator(e);
-                                            }}
-                                        />
-                                        <InputError message={errors.operator} className="mt-1" />
-                                    </div>
-                                    
-                                    <div className="relative flex flex-col sm:col-span-4 z-[42]">
-                                        <label className={labelClass}>Standar / Nilai Target</label>
-                                        <TextInput
-                                            id="standar"
-                                            value={data.standar}
-                                            handleChange={(e) => setData("standar", e.target.value)}
-                                            type="number"
-                                            className={inputClass}
-                                            placeholder="Contoh: 100"
-                                        />
-                                        <InputError message={errors.standar} className="mt-1" />
-                                    </div>
-
-                                    <div className="relative flex flex-col sm:col-span-4 z-[41]">
-                                        <label className={labelClass}>Pilih Satuan / Penyebut</label>
-                                        <ComboboxPage
-                                            ShouldMap={ShouldMap.Penyebut || []}
-                                            selected={selectedPenyebut}
-                                            onChange={(e) => {
-                                                setData({ ...data, ["penyebut"]: e.id });
-                                                setSelectedPenyebut(e);
-                                            }}
-                                        />
-                                        <InputError message={errors.penyebut} className="mt-1" />
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
+                </header>
+                <div className="space-y-5 p-4 sm:p-5">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <Field id="num_name" label="Numerator (pembilang)" error={errors.num_name}>
+                            <TextAreaInput id="num_name" value={data.num_name || ''} handleChange={e => setData('num_name', e.target.value)} rows={3} className={`${inputClass} resize-y`} />
+                        </Field>
+                        <Field id="denum_name" label="Denominator (penyebut)" error={errors.denum_name}>
+                            <TextAreaInput id="denum_name" value={data.denum_name || ''} handleChange={e => setData('denum_name', e.target.value)} rows={3} className={`${inputClass} resize-y`} />
+                        </Field>
                     </div>
+                    <fieldset className="min-w-0 border-t border-slate-200 pt-4 dark:border-slate-700">
+                        <legend className="pr-3 text-sm font-bold text-slate-900 dark:text-white">Target standar pencapaian</legend>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            <Field id="operator" label="Operator" error={errors.operator} className="relative z-20">
+                                {select('operator', ShouldMap.Operator, 'Pilih operator')}
+                            </Field>
+                            <Field id="standar" label="Nilai target" error={errors.standar}>
+                                <input id="standar" type="number" step="any" value={data.standar ?? ''} onChange={e => setData('standar', e.target.value)} className={`${inputClass} mt-1`} placeholder="Contoh: 100" aria-invalid={!!errors.standar || undefined} aria-describedby={errors.standar ? 'standar-error' : undefined} />
+                            </Field>
+                            <Field id="penyebut" label="Satuan / penyebut" error={errors.penyebut} className="relative z-10">
+                                {select('penyebut', ShouldMap.Penyebut, 'Pilih satuan')}
+                            </Field>
+                        </div>
+                    </fieldset>
                 </div>
-            </div>
+            </section>
 
-            {/* --- ACTION FOOTER STICKY --- */}
-            <div className="shrink-0 p-4 sm:p-6 bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row-reverse justify-start gap-3 mt-auto z-[90] rounded-b-2xl">
-                <button 
-                    type="submit" 
-                    className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-white transition-colors bg-sky-600 rounded-xl shadow-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                >
-                    {submit}
-                </button>
-                <button 
-                    type="button" 
-                    onClick={closeButton} 
-                    className="w-full sm:w-auto inline-flex justify-center items-center px-8 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors bg-white dark:bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl shadow-sm dark:shadow-none hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none"
-                >
-                    Batal
-                </button>
-            </div>
-
-            <style jsx>{`
-                .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-                :global(.dark) .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
-                :global(.dark) .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
-            `}</style>
+            <footer className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 dark:border-slate-700 sm:flex-row sm:justify-end">
+                <button type="button" onClick={closeButton} disabled={processing} className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-offset-slate-900">Batal</button>
+                <button type="submit" disabled={processing} aria-busy={processing} className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-60 dark:focus:ring-offset-slate-900">{processing ? 'Menyimpan...' : submit}</button>
+            </footer>
         </div>
     );
 }

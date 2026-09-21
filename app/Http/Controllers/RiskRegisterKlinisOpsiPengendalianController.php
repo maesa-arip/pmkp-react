@@ -36,6 +36,10 @@ class RiskRegisterKlinisOpsiPengendalianController extends Controller
     public function index(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
+        $request->validate(['tahun' => 'nullable|integer|min:2000|max:2100']);
+        $year = $request->integer('tahun', now()->year);
+        $whosLogin[] = ['tgl_register', '>=', "$year-01-01 00:00:00"];
+        $whosLogin[] = ['tgl_register', '<', ($year + 1).'-01-01 00:00:00'];
         $riskRegisterKlinis = RiskRegister::query()->where('tipe_id', 1)
             ->with('risk_category')
             ->with('identification_source')
@@ -63,6 +67,7 @@ class RiskRegisterKlinisOpsiPengendalianController extends Controller
                 'per_page' => 10,
             ],
             'filtered' => [
+                'tahun' => $year,
                 'load' => $request->load ?? $this->loadDefault,
                 'q' => $request->q ?? '',
                 'page' => $request->page ?? 1,
@@ -87,7 +92,7 @@ class RiskRegisterKlinisOpsiPengendalianController extends Controller
         $probabilityValues = ProbabilityValue::where('type',1)->get();
         $controlValues = ControlValue::where('type',1)->get();
         $location_login = Pic::where('id',auth()->user()->pic_id)->pluck('location_id');
-        $indikatorFitur4s = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
+        $indikatorFitur4s = IndikatorFitur4::withoutGlobalScope('annual')->whereNull('periode_kinerja_id')->whereJsonContains('location_id', $location_login[0])->orderBy('name','DESC')->get();
         return Inertia::render('RiskRegister/KlinisOpsiPengendalian/Index', [
             'riskRegisterKlinis' => $riskRegisterKlinis,
             'riskRegisterCount' => $riskRegisterCount,

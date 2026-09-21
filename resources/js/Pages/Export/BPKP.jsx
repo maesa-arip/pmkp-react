@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import ExportPeriodPicker, { isSingleYearRange, exportErrorMessage } from "@/Components/ExportPeriodPicker";
 import ComboboxMultipleWithOutSemuaUnit from "@/Components/ComboboxMultipleWithOutSemuaUnit";
 import ComboboxPage from "@/Components/ComboboxPage";
 import { InformationCircleIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
@@ -14,16 +13,21 @@ export default function BPKP({ setIsOpenAddDialog }) {
         name: "",
     });
     const closeButton = (e) => setIsOpenAddDialog(false);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    const [period, setPeriod] = useState({ startDate: "", endDate: "" });
+    const [exportError, setExportError] = useState("");
     const [userId, setUserId] = useState(null);
     const [loadingLars, setLoadingLars] = useState(false);
     const [currently_id, setCurrently_id] = useState([]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!isSingleYearRange(period)) {
+            setExportError("Pilih tahun lalu tekan Setahun penuh atau salah satu Triwulan. Satu berkas hanya boleh memuat satu tahun.");
+            return;
+        }
+        setExportError("");
         const url = "/riskregisterbpkp";
-        const payload = { startDate, endDate, userId, currently_id };
+        const payload = { ...period, userId, currently_id };
         setLoadingLars(true);
 
         axios
@@ -32,15 +36,15 @@ export default function BPKP({ setIsOpenAddDialog }) {
                 const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = downloadUrl;
-                link.setAttribute("download", "Form Manajemen Risiko BPKP.xlsx");
+                link.setAttribute("download", "Form Manajemen Risiko BPKP " + period.startDate.slice(0, 4) + ".xlsx");
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
                 setIsOpenAddDialog(false);
                 setLoadingLars(false);
             })
-            .catch((error) => {
-                console.error(error);
+            .catch(async (error) => {
+                setExportError(await exportErrorMessage(error));
                 setLoadingLars(false);
             });
     };
@@ -63,48 +67,7 @@ export default function BPKP({ setIsOpenAddDialog }) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-2">
             
             {/* Info Box */}
-            <div className="flex items-start gap-3 p-4 text-sm font-medium border shadow-sm text-amber-700 bg-amber-50 border-amber-200 rounded-xl dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30">
-                <InformationCircleIcon className="w-5 h-5 shrink-0 mt-0.5" />
-                <p>Kosongkan Tanggal dan langsung tekan Export jika ingin menarik seluruh data dari awal sampai sekarang.</p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                {/* Start Date */}
-                <div className="flex flex-col gap-1.5">
-                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="startDate" value="Tanggal Mulai" />
-                    <DatePicker
-                        dateFormat="dd-MM-yyyy"
-                        selected={startDate}
-                        id="startDate"
-                        name="startDate"
-                        autoComplete="off"
-                        placeholderText="Pilih Tanggal Mulai"
-                        className={inputClass}
-                        onChange={(date) => {
-                            setStartDate(date);
-                            if(date) setData("startDate", new Date(date).toLocaleDateString("en-CA"));
-                        }}
-                    />
-                </div>
-
-                {/* End Date */}
-                <div className="flex flex-col gap-1.5">
-                    <InputLabel className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400" htmlFor="endDate" value="Tanggal Akhir" />
-                    <DatePicker
-                        dateFormat="dd-MM-yyyy"
-                        selected={endDate}
-                        id="endDate"
-                        name="endDate"
-                        autoComplete="off"
-                        placeholderText="Pilih Tanggal Akhir"
-                        className={inputClass}
-                        onChange={(date) => {
-                            setEndDate(date);
-                            if(date) setData("endDate", new Date(date).toLocaleDateString("en-CA"));
-                        }}
-                    />
-                </div>
-            </div>
+            <ExportPeriodPicker value={period} onChange={setPeriod} />
 
             <div className="grid grid-cols-1 gap-6">
                 {/* Pilih Kejadian */}
@@ -140,6 +103,10 @@ export default function BPKP({ setIsOpenAddDialog }) {
                     </div>
                 )}
             </div>
+
+            {exportError && (
+                <p role="alert" className="p-3 text-sm font-semibold border text-rose-700 bg-rose-50 border-rose-200 rounded-xl dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30">{exportError}</p>
+            )}
 
             {/* Footer Buttons */}
             <div className="flex flex-col-reverse justify-end gap-3 pt-4 mt-2 border-t sm:flex-row border-slate-100 dark:border-slate-800">

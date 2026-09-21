@@ -13,6 +13,8 @@ class RiskRegister extends Model
 {
     use HasFactory,SoftDeletes,LogsActivity;
 
+    protected $casts = ['indikator_snapshot' => 'array', 'needs_review' => 'boolean'];
+
     public const FORM_FIELDS = [
         'indikator_fitur4_id',
         'indikator_fitur04_id',
@@ -23,6 +25,7 @@ class RiskRegister extends Model
         'sebab',
         'currently_id',
         'pic_id',
+        'location_id',
         'identification_source_id',
         'resiko',
         'dampak',
@@ -64,6 +67,9 @@ class RiskRegister extends Model
         'waktu_pengendalian_id',
         'rencana_pengendalian',
         'pihak_terkena',
+        // The non-clinical form saves the control evaluation together with the plan.
+        'belum_tertangani',
+        'usulan_perbaikan',
     ];
 
     protected $fillable = [
@@ -97,6 +103,7 @@ class RiskRegister extends Model
         'sebab',
         'currently_id',
         'pic_id',
+        'location_id',
         'identification_source_id',
         'resiko',
         'dampak',
@@ -185,7 +192,8 @@ class RiskRegister extends Model
     }
     public function indikator_fitur4()
     {
-        return $this->belongsTo(IndikatorFitur4::class);
+        // Registers store the permanent master, which has no period.
+        return $this->belongsTo(IndikatorFitur4::class)->withoutGlobalScope('annual');
     }
     public function user()
     {

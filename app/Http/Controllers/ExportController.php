@@ -14,8 +14,10 @@ use App\Models\IndikatorFitur3;
 use App\Models\IndikatorFitur4;
 use App\Models\RiskRegister;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use PDF;
@@ -25,8 +27,10 @@ use App\Exports\ExampleExport;
 use App\Exports\FormatBPKPKlinisExport;
 use App\Exports\FormatIKPDataEvaluasiExport;
 use App\Exports\FormatIKPDataInsidenExport;
+use App\Exports\FormatKeterjadianRisikoExport;
 use App\Exports\FormatLARSDHPKlinisExport;
 use App\Exports\FormatLARSDHPNonKlinisExport;
+use App\Exports\FormatMRTerbaruExport;
 use App\Exports\FormatSedangTerjadiExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -42,37 +46,72 @@ use OpenSpout\Writer\XLSX\Options;
 
 class ExportController extends Controller
 {
+    /**
+     * The register sheets group rows without a year key, so a file that spans several
+     * years melts registers of different years into one row. One file is one year.
+     */
+    private function registerRange(Request $request): array
+    {
+        $data = $request->validate([
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
+        ], [], ['startDate' => 'tanggal mulai', 'endDate' => 'tanggal akhir']);
+        $start = Carbon::parse($data['startDate'])->startOfDay();
+        $end = Carbon::parse($data['endDate'])->startOfDay();
+        if ($start->year !== $end->year) {
+            throw ValidationException::withMessages(['endDate' => 'Rentang tanggal harus berada dalam satu tahun agar satu berkas berisi satu tahun.']);
+        }
+
+        return [$start->toDateString(), $end->toDateString()];
+    }
 
     public function riskregisterbpkp(Request $request)
     {
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
+        [$startDate, $endDate] = $this->registerRange($request);
         $userId = $request->input('userId');
         $currently_id = $request->input('currently_id');
-        return Excel::download(new FormatBPKPExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko RSBM.xlsx');
+        return Excel::download(new FormatBPKPExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko RSBM '.Carbon::parse($startDate)->year.'.xlsx');
     }
     public function riskregisterklinislarsdhp(Request $request)
     {
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
+        [$startDate, $endDate] = $this->registerRange($request);
         $userId = $request->input('userId');
         $currently_id = $request->input('currently_id');
-        return Excel::download(new FormatLARSDHPKlinisExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko Klinis LARS DHP.xlsx');
+        return Excel::download(new FormatLARSDHPKlinisExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko Klinis LARS DHP '.Carbon::parse($startDate)->year.'.xlsx');
     }
     public function riskregisternonklinislarsdhp(Request $request)
     {
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
+        [$startDate, $endDate] = $this->registerRange($request);
         $userId = $request->input('userId');
         $currently_id = $request->input('currently_id');
-        return Excel::download(new FormatLARSDHPNonKlinisExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko Non Klinis LARS DHP.xlsx');
+        return Excel::download(new FormatLARSDHPNonKlinisExport($startDate, $endDate, $userId,$currently_id), 'Form Manajemen Risiko Non Klinis LARS DHP '.Carbon::parse($startDate)->year.'.xlsx');
+    }
+    public function riskregisterklinismrterbaru(Request $request)
+    {
+        [$startDate, $endDate] = $this->registerRange($request);
+        $userId = $request->input('userId');
+        $currently_id = $request->input('currently_id');
+        return Excel::download(new FormatMRTerbaruExport($startDate, $endDate, $userId, $currently_id, 1), 'Laporan MR Terbaru Klinis '.Carbon::parse($startDate)->year.'.xlsx');
+    }
+    public function riskregisternonklinismrterbaru(Request $request)
+    {
+        [$startDate, $endDate] = $this->registerRange($request);
+        $userId = $request->input('userId');
+        $currently_id = $request->input('currently_id');
+        return Excel::download(new FormatMRTerbaruExport($startDate, $endDate, $userId, $currently_id, 2), 'Laporan MR Terbaru Non Klinis '.Carbon::parse($startDate)->year.'.xlsx');
+    }
+    public function riskregisterketerjadian(Request $request)
+    {
+        [$startDate, $endDate] = $this->registerRange($request);
+        $userId = $request->input('userId');
+        $currently_id = $request->input('currently_id');
+        return Excel::download(new FormatKeterjadianRisikoExport($startDate, $endDate, $userId, $currently_id), 'Format Keterjadian Risiko '.Carbon::parse($startDate)->year.'.xlsx');
     }
     public function riskregistersedangterjadi(Request $request)
     {
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
+        [$startDate, $endDate] = $this->registerRange($request);
         $userId = $request->input('userId');
-        return Excel::download(new FormatSedangTerjadiExport($startDate, $endDate, $userId), 'Form Manajemen Risiko RSBM.xlsx');
+        return Excel::download(new FormatSedangTerjadiExport($startDate, $endDate, $userId), 'Form Manajemen Risiko RSBM '.Carbon::parse($startDate)->year.'.xlsx');
     }
 
     public function ikpdatainsiden(Request $request)
