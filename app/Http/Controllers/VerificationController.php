@@ -25,10 +25,30 @@ use App\Models\VerificationManagement;
 use App\Models\VerificationPriorityAdmin;
 use App\Models\VerificationPriorityManagement;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
 
 class VerificationController extends Controller
 {
     public $loadDefault = 10;
+
+    /**
+     * Supervision is done by the risk admin and by management, never by the unit
+     * being supervised, so every screen and every write here needs the same
+     * permission the sidebar uses. Mirrors CelahPengendalianController and TASK_09;
+     * the super admin fallback keeps the module reachable if the permission is
+     * ever unassigned from that role. See temuan #33.
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $user = $request->user();
+            abort_unless($user && ($user->hasRole('super admin')
+                || $user->can('lihat data verifikasi')), 403);
+
+            return $next($request);
+        });
+    }
+
     public function occurringmanagement(Request $request)
     {
         $whosLogin = auth()->user()->can('lihat data semua risk register') ? [['user_id', '<>', 0]] : [['user_id', auth()->user()->id]];
@@ -151,6 +171,7 @@ class VerificationController extends Controller
         // dd($request->all());
         $this->validate($request, [
             'keterangan' => 'required',
+            'request_update_id' => ['required', 'exists:request_updates,id'],
         ]);
         $atrributes = ([
             'keterangan' => $request->keterangan,
@@ -166,6 +187,7 @@ class VerificationController extends Controller
         // dd($request->all());
         $this->validate($request, [
             'keterangan' => 'required',
+            'request_update_id' => ['required', 'exists:request_updates,id'],
         ]);
         $atrributes = ([
             'keterangan' => $request->keterangan,
@@ -297,6 +319,7 @@ class VerificationController extends Controller
         // dd($request->all());
         $this->validate($request, [
             'keterangan' => 'required',
+            'id' => ['required', Rule::exists('risk_registers', 'id')->whereNull('deleted_at')],
         ]);
         $atrributes = ([
             'keterangan' => $request->keterangan,
@@ -312,6 +335,7 @@ class VerificationController extends Controller
         // dd($request->all());
         $this->validate($request, [
             'keterangan' => 'required',
+            'id' => ['required', Rule::exists('risk_registers', 'id')->whereNull('deleted_at')],
         ]);
         $atrributes = ([
             'keterangan' => $request->keterangan,
