@@ -51,7 +51,7 @@ class MutuIndikatorController extends Controller
         $whosLogin = auth()->user()->can('lihat semua data indikator mutu') ? $IndikatorFitur4 = IndikatorFitur4::orderBy('name', 'DESC')->get() : $IndikatorFitur4 = IndikatorFitur4::whereJsonContains('location_id', $location_login[0])->orwhereJsonContains('location_id', 0)->orderBy('name', 'DESC')->get();
         // $IndikatorFitur4 = IndikatorFitur4::get();
         $IndikatorFitur3 = IndikatorFitur3::get();
-        $MutuPenyebut = MutuPenyebut::orderBy('name')->get(['name as id', 'name']);
+        $MutuPenyebut = MutuPenyebut::orderBy('name')->pluck('name')->map(fn ($name) => ['id' => $name, 'name' => $name]);
         return inertia('MUTU/MutuIndikator/Index',['MutuIndikator'=>$MutuIndikator,'MutuKategori'=>$MutuKategori,'MutuPenyebut'=>$MutuPenyebut,'IndikatorFitur3'=>$IndikatorFitur3,'IndikatorFitur4'=>$IndikatorFitur4]);
     }
     public function store(Request $request)
