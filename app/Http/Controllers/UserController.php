@@ -16,6 +16,18 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     public $loadDefault = 10;
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $user = $request->user();
+            abort_unless($user && ($user->hasRole('super admin')
+                || $user->can('atur hak akses')), 403);
+
+            return $next($request);
+        });
+    }
+
     public function index(Request $request)
     {
         $users = User::query()->with(['roles', 'pic']);
