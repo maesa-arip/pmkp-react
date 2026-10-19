@@ -303,14 +303,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
         risk_registers.osd1_probabilitas,
         CONCAT(risk_registers.osd1_dampak, risk_registers.osd1_probabilitas) AS concatdp,
         risk_registers.osd1_inherent,
-        CASE COALESCE((SELECT value FROM risk_grading_settings WHERE `key` = "export_lars_dhp_nonklinis" LIMIT 1), "nonklinis_pergub")
-            WHEN "nonklinis" THEN risk_gradings.name_nonklinis
-            WHEN "klinis_pergub" THEN risk_gradings.name_klinis_pergub
-            WHEN "bpkp" THEN risk_gradings.name_bpkp
-            WHEN "klinis_bpkp" THEN risk_gradings.name_klinis_bpkp
-            WHEN "nonklinis_bpkp" THEN risk_gradings.name_nonklinis_bpkp
-            ELSE risk_gradings.name_nonklinis_pergub
-        END as grading_name,
+        ' . RiskGrading::selectNameSql('risk_gradings', 'export_lars_dhp_nonklinis', 'nonklinis_pergub', 'grading_name') . ',
         CASE
             WHEN risk_registers.perlu_penanganan_id = 1 THEN "Ya"
             WHEN risk_registers.perlu_penanganan_id = 2 THEN "Tidak"
@@ -367,9 +360,7 @@ class Sheet2 implements FromQuery, WithColumnWidths, WithHeadings, WithEvents, W
                 'risk_registers.osd1_dampak',
                 'risk_registers.osd1_probabilitas',
                 'risk_registers.osd1_inherent',
-                'risk_gradings.name_nonklinis',
-                'risk_gradings.name_nonklinis_pergub',
-                'risk_gradings.name_bpkp',
+                DB::raw(RiskGrading::nameColumnSql('risk_gradings', 'export_lars_dhp_nonklinis', 'nonklinis_pergub')),
                 'risk_registers.perlu_penanganan_id',
                 'opsi_pengendalians.name',
                 'risk_registers.pengendalian_risiko',

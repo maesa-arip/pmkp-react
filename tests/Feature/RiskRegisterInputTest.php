@@ -7,6 +7,7 @@ use App\Models\RiskRegister;
 use App\Models\RiskRegisterHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
@@ -48,6 +49,9 @@ class RiskRegisterInputTest extends TestCase
             'penyedia_informasi' => 'Kepala unit',
             'penerima_informasi' => 'Tim unit',
         ]);
+        $payload['belum_tertangani'] = 'Sisa kendala uji';
+        $payload['usulan_perbaikan'] = 'Usulan uji';
+        $payload['location_id'] = DB::table('locations')->value('id');
         foreach (['identification_source_id', 'risk_variety_id', 'risk_type_id', 'jenis_sebab_id', 'efektif_id', 'opsi_pengendalian_id', 'pembiayaan_risiko_id', 'jenis_pengendalian_id', 'waktu_pengendalian_id'] as $field) {
             $payload[$field] = $payload[$field] ?: 1;
         }
@@ -68,6 +72,10 @@ class RiskRegisterInputTest extends TestCase
         $this->assertSame('Rapat unit', $risk->media_pengkomunikasian);
         $this->assertSame('Kepala unit', $risk->penyedia_informasi);
         $this->assertSame('Tim unit', $risk->penerima_informasi);
+        // The form submits both control-evaluation fields and the unit; they used to be dropped on save.
+        $this->assertSame('Sisa kendala uji', $risk->belum_tertangani);
+        $this->assertSame('Usulan uji', $risk->usulan_perbaikan);
+        $this->assertEquals($payload['location_id'], $risk->location_id);
         $this->assertSame(RiskRegisterHistory::EVENT_CREATED, $risk->risk_register_histories()->firstOrFail()->event_type);
 
         $payload['media_pengkomunikasian'] = 'Laporan bulanan';
