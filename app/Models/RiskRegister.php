@@ -23,6 +23,7 @@ class RiskRegister extends Model
         'sebab',
         'currently_id',
         'pic_id',
+        'location_id',
         'identification_source_id',
         'resiko',
         'dampak',
@@ -64,6 +65,9 @@ class RiskRegister extends Model
         'waktu_pengendalian_id',
         'rencana_pengendalian',
         'pihak_terkena',
+        // The non-clinical form saves the control evaluation together with the plan.
+        'belum_tertangani',
+        'usulan_perbaikan',
     ];
 
     protected $fillable = [
@@ -97,6 +101,7 @@ class RiskRegister extends Model
         'sebab',
         'currently_id',
         'pic_id',
+        'location_id',
         'identification_source_id',
         'resiko',
         'dampak',

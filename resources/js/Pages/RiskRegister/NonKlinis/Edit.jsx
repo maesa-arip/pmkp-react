@@ -134,7 +134,7 @@ export default function Edit({ setIsOpenEditDialog, model, ShouldMap }) {
     if (!model || !model.id) return null;
 
     return (
-        <form onSubmit={onSubmit} className="flex flex-col w-full h-full max-h-[85vh]">
+        <form onSubmit={onSubmit} className="flex flex-col w-full max-h-[85vh] overflow-hidden">
             <Form
                 errors={errors}
                 data={data}

@@ -283,11 +283,11 @@ class RiskRegisterYearCopyService
         }
 
         if (!empty($filters['pic_id'])) {
-            $query->whereJsonContains('pic_id', (int) $filters['pic_id']);
+            $query->whereIn('id', $this->idsWithPic((int) $filters['source_year'], (int) $filters['pic_id']));
         }
 
         if (!empty($filters['source_pic_id'])) {
-            $query->whereJsonContains('pic_id', (int) $filters['source_pic_id']);
+            $query->whereIn('id', $this->idsWithPic((int) $filters['source_year'], (int) $filters['source_pic_id']));
         }
 
         if (($filters['priority_scope'] ?? 'all') !== 'all') {
@@ -303,6 +303,35 @@ class RiskRegisterYearCopyService
         }
 
         return $query;
+    }
+
+    /** Legacy pic_id values are scalars or repeatedly encoded strings, which JSON contains misses. */
+    private function idsWithPic(int $year, int $picId): array
+    {
+        return RiskRegister::query()->whereYear('tgl_register', $year)->whereNull('deleted_at')->pluck('pic_id', 'id')
+            ->filter(fn ($pics) => in_array($picId, self::picIds($pics), true))->keys()->all();
+    }
+
+    /** Legacy pic_id rows hold CSV, scalars, arrays or repeatedly encoded JSON strings. */
+    private static function picIds($value): array
+    {
+        for ($depth = 0; is_string($value) && $depth < 8; $depth++) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $value = explode(',', trim($value, '[]" '));
+                break;
+            }
+            $value = $decoded;
+        }
+        $ids = [];
+        foreach ((array) $value as $id) {
+            if (! is_scalar($id) || ! preg_match('/^\d+$/', trim((string) $id))) {
+                return [];
+            }
+            $ids[] = (int) $id;
+        }
+
+        return array_values(array_unique($ids));
     }
 
     private function priorityCodes(string $priorityScope, mixed $typeId = null): array

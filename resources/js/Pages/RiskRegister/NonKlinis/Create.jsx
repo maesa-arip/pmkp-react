@@ -71,7 +71,7 @@ export default function Create({setIsOpenAddDialog, ShouldMap}) {
     };
     
     return (
-        <form onSubmit={onSubmit} className="flex flex-col w-full h-full">
+        <form onSubmit={onSubmit} className="flex flex-col w-full max-h-[85vh] overflow-hidden">
             <Form 
                 errors={errors} 
                 data={data} 
